@@ -4,9 +4,9 @@ namespace AutoStep.Core
 {
     public class BuiltElement
     {
-        public string SourceLine { get; set; }
+        public int SourceLine { get; set; }
 
-        public string SourceColumn { get; set; }
+        public int SourceColumn { get; set; }
     }
 
     public class StepReference : BuiltElement
@@ -27,7 +27,7 @@ namespace AutoStep.Core
 
     public class BuiltStepCollection : BuiltElement
     {
-        
+
     }
 
     public class BuiltStepDefinition : BuiltStepCollection

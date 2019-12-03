@@ -9,6 +9,6 @@ namespace AutoStep.Compiler
     /// <summary>
     /// Warning - Feature contains no scenarios.
     /// </summary>
-    AS00001,
+    ASC00001,
   }
 }

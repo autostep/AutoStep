@@ -1,27 +1,35 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AutoStep.Compiler
 {
     public sealed class StringContentSource : IContentSource
     {
-        private MemoryStream _stream;
+        private StringReader reader;
+
+        public string? SourceName => null;
+
+        /// <summary>
+        /// UTF-16 for .net strings.
+        /// </summary>
+        public Encoding Encoding => Encoding.Unicode;
 
         public StringContentSource(string content)
         {
-            _stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+            reader = new StringReader(content);
         }
 
-        public Stream Open()
+        public ValueTask<TextReader> GetReaderAsync(CancellationToken cancelToken = default)
         {
-            return _stream;
+            return new ValueTask<TextReader>(reader);
         }
 
         public void Dispose()
         {
-            _stream.Dispose();
+            reader.Dispose();
         }
 
         public ValueTask DisposeAsync()
