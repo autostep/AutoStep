@@ -8,7 +8,7 @@ namespace AutoStep.Compiler
 {
     public interface IContentSource : IDisposable, IAsyncDisposable
     {
-        ValueTask<TextReader> GetReaderAsync(CancellationToken cancelToken = default);
+        ValueTask<string> GetContentAsync(CancellationToken cancelToken = default);
 
         string? SourceName { get; }
     }

@@ -4,11 +4,15 @@ using System.Text;
 
 namespace AutoStep.Compiler
 {
-  public enum CompilerMessageCode
-  {
-    /// <summary>
-    /// Warning - Feature contains no scenarios.
-    /// </summary>
-    ASC00001,
-  }
+#pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
+    public enum CompilerMessageCode
+    {
+        SyntaxError =          00001,
+        UnexpectedAnnotation = 00002,
+        OnlyOneFeatureAllowed = 00003,
+        NoScenarios = 00004,
+        StepNotExpected = 5,
+        AndMustFollowNormalStep = 6
+    }
+#pragma warning restore SA1025 // Code should not contain multiple whitespace in a row
 }

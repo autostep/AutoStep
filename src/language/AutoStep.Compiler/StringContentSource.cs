@@ -8,33 +8,26 @@ namespace AutoStep.Compiler
 {
     public sealed class StringContentSource : IContentSource
     {
-        private StringReader reader;
+        private string content;
 
-        public string? SourceName => null;
-
-        /// <summary>
-        /// UTF-16 for .net strings.
-        /// </summary>
-        public Encoding Encoding => Encoding.Unicode;
+        public string SourceName => null;
 
         public StringContentSource(string content)
         {
-            reader = new StringReader(content);
+            this.content = content;
         }
 
-        public ValueTask<TextReader> GetReaderAsync(CancellationToken cancelToken = default)
+        public ValueTask<string> GetContentAsync(CancellationToken cancelToken = default)
         {
-            return new ValueTask<TextReader>(reader);
+            return new ValueTask<string>(content);
         }
 
         public void Dispose()
         {
-            reader.Dispose();
         }
 
         public ValueTask DisposeAsync()
         {
-            Dispose();
             return default;
         }
     }

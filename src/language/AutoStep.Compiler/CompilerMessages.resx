@@ -117,10 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Feature" xml:space="preserve">
-    <value>Feature</value>
+  <data name="AndMustFollowNormalStep" xml:space="preserve">
+    <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
   </data>
-  <data name="Scenario" xml:space="preserve">
-    <value>Scenario</value>
+  <data name="NoScenarios" xml:space="preserve">
+    <value>Your Feature has no Scenarios, so will not run any tests.</value>
+  </data>
+  <data name="OnlyOneFeatureAllowed" xml:space="preserve">
+    <value>You can only have one Feature per file. Create a new file for this Feature.</value>
+  </data>
+  <data name="StepNotExpected" xml:space="preserve">
+    <value>A Step is not expected here.</value>
+  </data>
+  <data name="SyntaxError" xml:space="preserve">
+    <value>Syntax Error:</value>
+  </data>
+  <data name="UnexpectedAnnotation" xml:space="preserve">
+    <value>Not expecting an annotation at this position.</value>
   </data>
 </root>

@@ -62,6 +62,42 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitAnnotations([NotNull] AutoStepParser.AnnotationsContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>blankAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>blankAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -71,6 +107,16 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitFeatureDefinition([NotNull] AutoStepParser.FeatureDefinitionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.featureTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFeatureTitle([NotNull] AutoStepParser.FeatureTitleContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.featureTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFeatureTitle([NotNull] AutoStepParser.FeatureTitleContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureBody"/>.
 	/// </summary>
@@ -132,15 +178,53 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.statement"/>.
+	/// Enter a parse tree produced by the <c>given</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStatement([NotNull] AutoStepParser.StatementContext context);
+	void EnterGiven([NotNull] AutoStepParser.GivenContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.statement"/>.
+	/// Exit a parse tree produced by the <c>given</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStatement([NotNull] AutoStepParser.StatementContext context);
+	void ExitGiven([NotNull] AutoStepParser.GivenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>when</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterWhen([NotNull] AutoStepParser.WhenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>when</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitWhen([NotNull] AutoStepParser.WhenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>then</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterThen([NotNull] AutoStepParser.ThenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>then</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitThen([NotNull] AutoStepParser.ThenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>and</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAnd([NotNull] AutoStepParser.AndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>and</c>
+	/// labeled alternative in <see cref="AutoStepParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAnd([NotNull] AutoStepParser.AndContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.statementBody"/>.
 	/// </summary>
@@ -152,15 +236,15 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStatementBody([NotNull] AutoStepParser.StatementBodyContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.name"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.text"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterName([NotNull] AutoStepParser.NameContext context);
+	void EnterText([NotNull] AutoStepParser.TextContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.name"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.text"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitName([NotNull] AutoStepParser.NameContext context);
+	void ExitText([NotNull] AutoStepParser.TextContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.line"/>.
 	/// </summary>
@@ -181,29 +265,5 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitDescription([NotNull] AutoStepParser.DescriptionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>tag</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterTag([NotNull] AutoStepParser.TagContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>tag</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitTag([NotNull] AutoStepParser.TagContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>option</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterOption([NotNull] AutoStepParser.OptionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>option</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitOption([NotNull] AutoStepParser.OptionContext context);
 }
 } // namespace AutoStep.Compiler.Parser

@@ -22,14 +22,14 @@ namespace AutoStep.Compiler {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class CompilerKeywords {
+    internal class CompilerMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal CompilerKeywords() {
+        internal CompilerMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace AutoStep.Compiler {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Compiler.CompilerKeywords", typeof(CompilerKeywords).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Compiler.CompilerMessages", typeof(CompilerMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,20 +61,56 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Feature.
+        ///   Looks up a localized string similar to An &apos;And&apos; statement must be preceded by a &apos;Given&apos;, &apos;When&apos; or &apos;Then&apos;..
         /// </summary>
-        internal static string Feature {
+        internal static string AndMustFollowNormalStep {
             get {
-                return ResourceManager.GetString("Feature", resourceCulture);
+                return ResourceManager.GetString("AndMustFollowNormalStep", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scenario.
+        ///   Looks up a localized string similar to Your Feature has no Scenarios, so will not run any tests..
         /// </summary>
-        internal static string Scenario {
+        internal static string NoScenarios {
             get {
-                return ResourceManager.GetString("Scenario", resourceCulture);
+                return ResourceManager.GetString("NoScenarios", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only have one Feature per file. Create a new file for this Feature..
+        /// </summary>
+        internal static string OnlyOneFeatureAllowed {
+            get {
+                return ResourceManager.GetString("OnlyOneFeatureAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A Step is not expected here..
+        /// </summary>
+        internal static string StepNotExpected {
+            get {
+                return ResourceManager.GetString("StepNotExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syntax Error:.
+        /// </summary>
+        internal static string SyntaxError {
+            get {
+                return ResourceManager.GetString("SyntaxError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not expecting an annotation at this position..
+        /// </summary>
+        internal static string UnexpectedAnnotation {
+            get {
+                return ResourceManager.GetString("UnexpectedAnnotation", resourceCulture);
             }
         }
     }
