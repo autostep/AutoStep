@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Antlr4.Runtime;
@@ -38,7 +39,7 @@ namespace AutoStep.Compiler
                 sourceName,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.SyntaxError,
-                CompilerMessages.SyntaxError + finalMsg,
+                string.Format(CultureInfo.CurrentCulture, CompilerMessages.SyntaxError, finalMsg),
                 line,
                 charPositionInLine + 1, // Antlr uses 0 offset, but 1 offset for message display feels more natural,
                 line,

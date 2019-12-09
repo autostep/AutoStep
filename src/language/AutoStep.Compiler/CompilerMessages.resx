@@ -121,7 +121,7 @@
     <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
   </data>
   <data name="NoScenarios" xml:space="preserve">
-    <value>Your Feature has no Scenarios, so will not run any tests.</value>
+    <value>Your Feature '{0}' has no Scenarios, so will not run any tests.</value>
   </data>
   <data name="OnlyOneFeatureAllowed" xml:space="preserve">
     <value>You can only have one Feature per file. Create a new file for this Feature.</value>
@@ -130,7 +130,7 @@
     <value>A Step is not expected here.</value>
   </data>
   <data name="SyntaxError" xml:space="preserve">
-    <value>Syntax Error:</value>
+    <value>Syntax Error: {0}</value>
   </data>
   <data name="UnexpectedAnnotation" xml:space="preserve">
     <value>Not expecting an annotation at this position.</value>

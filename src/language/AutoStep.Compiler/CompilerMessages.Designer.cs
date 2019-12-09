@@ -70,7 +70,7 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your Feature has no Scenarios, so will not run any tests..
+        ///   Looks up a localized string similar to Your Feature &apos;{0}&apos; has no Scenarios, so will not run any tests..
         /// </summary>
         internal static string NoScenarios {
             get {
@@ -97,7 +97,7 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Syntax Error:.
+        ///   Looks up a localized string similar to Syntax Error: {0}.
         /// </summary>
         internal static string SyntaxError {
             get {

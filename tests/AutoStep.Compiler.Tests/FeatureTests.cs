@@ -6,9 +6,9 @@ using Xunit.Abstractions;
 
 namespace AutoStep.Compiler.Tests
 {
-    public class FeatureCompileTests : CompilerTestBase
+    public class FeatureTests : CompilerTestBase
     {
-        public FeatureCompileTests(ITestOutputHelper output) : base(output)
+        public FeatureTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -22,16 +22,16 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAndAssertMessages(TestFile, 
+            await CompileAndAssertWarnings(TestFile,
                 new CompilerMessage (
                     null,
                     CompilerMessageLevel.Warning,
                     CompilerMessageCode.NoScenarios,
-                    "Feature 'My Feature' contains no scenarios.",
+                    "Your Feature 'My Feature' has no Scenarios, so will not run any tests.",
                     startLineNo: 2,
                     startColumn: 15,
                     endLineNo: 2,
-                    endColumn: 15
+                    endColumn: 33
                 )
             );
         }
@@ -46,7 +46,7 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAndAssertMessages(TestFile,
+            await CompileAndAssertErrors(TestFile,
                 new CompilerMessage(
                     null,
                     CompilerMessageLevel.Error,
@@ -75,12 +75,12 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileSuccessNoWarnings(TestFile, file => file
-                .Feature("My Feature",  feat => feat
+            await CompileAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
                     .Description("Feature Description")
-                    .Scenario("My Scenario", scen => scen
-                        .Given("I have clicked on")
-                        .And("I have gone to")
+                    .Scenario("My Scenario", 5, 21, scen => scen
+                        .Given("I have clicked on", 7, 25)
+                        .And("I have gone to", 8, 25)
                     )
                 )
             );
@@ -105,12 +105,13 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileSuccessNoWarnings(TestFile, file => file
-                .Feature("My Feature", feat => feat
+            await CompileAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 3, 17, feat => feat
                    .Description("Feature Description")
-                   .Scenario("My Scenario", scen => scen
-                       .Given("I have clicked on")
-                       .And("I have gone to")
+                   .Scenario("My Scenario", 6, 21,  scen => scen
+                       .Description("Scenario Description")
+                       .Given("I have clicked on", 9, 25)
+                       .And("I have gone to", 11, 25)
                    )
                 )
             );

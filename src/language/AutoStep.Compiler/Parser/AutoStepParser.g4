@@ -34,8 +34,10 @@ scenarioBlock: annotations?
                scenarioDefinition
                scenarioBody;
 
-scenarioDefinition: WS? SCENARIO WS? text NEWLINE
+scenarioDefinition: WS? scenarioTitle NEWLINE
                     description?;
+
+scenarioTitle: SCENARIO WS? text;
 
 scenarioBody: (WS? statement NEWLINE | NEWLINE)*;
 
@@ -48,7 +50,7 @@ statement: GIVEN statementBody #given
 statementBody: (WS? WORD)+;
 
 text: (WS? WORD)+;
-line: (WS? WORD)* NEWLINE;
-description: line*
-             text
-             line*;
+line: WS? text? NEWLINE;
+description: NEWLINE*
+             line+
+             NEWLINE*;

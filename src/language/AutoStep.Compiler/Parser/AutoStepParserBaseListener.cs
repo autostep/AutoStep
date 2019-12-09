@@ -198,6 +198,18 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitScenarioDefinition([NotNull] AutoStepParser.ScenarioDefinitionContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBody"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

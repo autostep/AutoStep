@@ -168,6 +168,16 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitScenarioDefinition([NotNull] AutoStepParser.ScenarioDefinitionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBody"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

@@ -114,6 +114,12 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitScenarioDefinition([NotNull] AutoStepParser.ScenarioDefinitionContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioBody"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

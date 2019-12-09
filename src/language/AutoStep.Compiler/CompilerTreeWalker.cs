@@ -52,11 +52,17 @@ namespace AutoStep.Compiler
                 return file;
             }
 
-            file.Feature = LineInfo(new BuiltFeature(), context);
+            file.Feature = new BuiltFeature();
 
             currentAnnotatable = file.Feature;
 
             VisitChildren(context);
+
+            if (file.Feature.Scenarios.Count == 0)
+            {
+                // Warning should be associated to the title.
+                AddMessage(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, file.Feature.Name);
+            }
 
             return file;
         }
@@ -99,10 +105,14 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            var title = context.featureTitle().text().GetText();
-            var description = context.description()?.GetText();
+            var titleTree = context.featureTitle();
+
+            var title = titleTree.text().GetText();
+            var description = ExtractDescription(context.description());
 
             currentAnnotatable = null;
+
+            LineInfo(file.Feature, titleTree);
 
             file.Feature.Name = title;
             file.Feature.Description = string.IsNullOrWhiteSpace(description) ? null : description;
@@ -110,23 +120,103 @@ namespace AutoStep.Compiler
             return file;
         }
 
-        public override BuiltFile? VisitFeatureBody([NotNull] AutoStepParser.FeatureBodyContext context)
+        private string? ExtractDescription(AutoStepParser.DescriptionContext descriptionContext)
         {
-            Debug.Assert(file is object);
-            bool foundScenario = false;
-
-            foreach (var scenario in context.scenarioBlock())
+            if (descriptionContext is null)
             {
-                foundScenario = true;
-                Visit(scenario);
+                return null;
             }
 
-            if (!foundScenario)
+            var lines = descriptionContext.line();
+
+            if (lines.Length == 0)
             {
-                AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios);
+                return null;
             }
 
-            return file;
+            var descriptionBuilder = new StringBuilder();
+
+            int? whitespaceRemovalCount = null;
+            int? firstTextIndex = null;
+            int lastTextIndex = 0;
+
+            // First pass to get our whitespace size and last text position.
+            for (var lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            {
+                var line = lines[lineIdx];
+                var text = line.text();
+
+                if (text is object)
+                {
+                    if (firstTextIndex == null)
+                    {
+                        firstTextIndex = lineIdx;
+                    }
+
+                    lastTextIndex = lineIdx;
+                    var whiteSpaceSymbol = line.WS()?.Symbol;
+                    var whiteSpaceSize = 0;
+
+                    if (whiteSpaceSymbol is object)
+                    {
+                        // This is the size of the whitespace.
+                        whiteSpaceSize = 1 + whiteSpaceSymbol.StopIndex - whiteSpaceSymbol.StartIndex;
+                    }
+
+                    if (whitespaceRemovalCount is null)
+                    {
+                        // This is the first item of non-whitespace text we have reached.
+                        // Base our initial minimum whitespace on this.
+                        whitespaceRemovalCount = whiteSpaceSize;
+                    }
+                    else if (whiteSpaceSize < whitespaceRemovalCount)
+                    {
+                        // Bring the whitespace in if the amount of whitespace has changed.
+                        // We'll ignore whitespace lengths for lines with no text.
+                        whitespaceRemovalCount = whiteSpaceSize;
+                    }
+                }
+            }
+
+            // No point rendering anything if there were no text lines.
+            if (firstTextIndex is object)
+            {
+                // Second pass to render our description, only go up to the last text position.
+                for (var lineIdx = firstTextIndex.Value; lineIdx <= lastTextIndex; lineIdx++)
+                {
+                    var line = lines[lineIdx];
+                    var text = line.text();
+
+                    if (text is null)
+                    {
+                        descriptionBuilder.AppendLine();
+                    }
+                    else
+                    {
+                        var wsText = line.WS()?.GetText();
+                        if (whitespaceRemovalCount is object && wsText is object)
+                        {
+                            wsText = wsText.Substring(whitespaceRemovalCount.Value);
+                        }
+
+                        // Append all whitespace after the removal amount, plus the text.
+                        descriptionBuilder.Append(wsText);
+                        descriptionBuilder.Append(text.GetText());
+
+                        if(lineIdx < lastTextIndex)
+                        {
+                            // Only add the line if we're not at the end.
+                            descriptionBuilder.AppendLine();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+            return descriptionBuilder.ToString();
         }
 
         public override BuiltFile? VisitBackgroundBody([NotNull] AutoStepParser.BackgroundBodyContext context)
@@ -143,7 +233,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            var scenario = LineInfo(new BuiltScenario(), context);
+            var scenario = new BuiltScenario();
 
             currentScenario = scenario;
             currentAnnotatable = scenario;
@@ -155,9 +245,13 @@ namespace AutoStep.Compiler
             }
 
             var definition = context.scenarioDefinition();
-            var description = definition.description()?.GetText();
 
-            scenario.Name = definition.text().GetText();
+            var description = ExtractDescription(definition.description());
+            var title = definition.scenarioTitle();
+
+            LineInfo(scenario, title);
+
+            scenario.Name = title.text().GetText();
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
             currentStepSet = scenario.Steps;
@@ -230,7 +324,7 @@ namespace AutoStep.Compiler
                 }, context));
         }
 
-        private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code)
+        private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
             if(level == CompilerMessageLevel.Error)
             {
@@ -241,11 +335,11 @@ namespace AutoStep.Compiler
                 sourceName,
                 level,
                 code,
-                CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture),
+                string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
                 context.Start.Line,
                 context.Start.Column + 1,
                 context.Stop.Line,
-                context.Stop.Column);
+                context.Stop.Column + 1 + (context.Stop.StopIndex - context.Stop.StartIndex));
 
             messages.Add(message);
         }
