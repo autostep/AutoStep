@@ -117,25 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AndMustFollowNormalStep" xml:space="preserve">
-    <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
-  </data>
-  <data name="NoScenarios" xml:space="preserve">
-    <value>Your Feature '{0}' has no Scenarios, so will not run any tests.</value>
-  </data>
-  <data name="OnlyOneFeatureAllowed" xml:space="preserve">
-    <value>You can only have one Feature per file. Create a new file for this Feature.</value>
-  </data>
-  <data name="OptionWithNoSetting" xml:space="preserve">
-    <value>Provided Option '{0}' has a setting value marker ':', but no value has been provided.</value>
-  </data>
-  <data name="StepNotExpected" xml:space="preserve">
-    <value>A Step is not expected here.</value>
-  </data>
-  <data name="SyntaxError" xml:space="preserve">
-    <value>Syntax Error: {0}</value>
-  </data>
-  <data name="UnexpectedAnnotation" xml:space="preserve">
-    <value>Not expecting an annotation at this position.</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SingleScenarioSimple" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SingleScenarioSimple.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

@@ -1,0 +1,31 @@
+﻿$Option1
+$Option2: Setting 1
+$Option1: Setting 2
+
+# comments above line
+@Tag1 # comment end of line
+@Tag2
+# comments above feature
+Feature: My Feature
+# comments in feature description
+  This is a description only
+  partly this is part of the description # but this is a comment
+	
+  @scenariotag
+  $scenarioinstruction
+  Scenario: Setup
+    Given I have logged in to my app as 'USER', password 'PWD' # scenario has no description, this is a comment
+        And I have turned on the global system config flag
+
+        # Time travel to June 2019 for Order Rule start date
+        And the date/time is ':Tomorrow at 13:00'
+  
+    Given I have selected 'Client Management' -> 'Client Location' in the menu
+    Then the 'Client Management - Client Location' page should be displayed
+
+    When I press 'Add'
+    Then the 'Client Management - Client Location - Add' page should be displayed
+
+    Given I have entered 'My Name' into 'Name'
+      And I have entered 'My Code' into 'Code'
+      And I have selected 'A Type' in the 'Client Type' dropdown 

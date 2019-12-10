@@ -88,6 +88,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provided Option &apos;{0}&apos; has a setting value marker &apos;:&apos;, but no value has been provided..
+        /// </summary>
+        internal static string OptionWithNoSetting {
+            get {
+                return ResourceManager.GetString("OptionWithNoSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A Step is not expected here..
         /// </summary>
         internal static string StepNotExpected {

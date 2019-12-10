@@ -86,17 +86,17 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>blankAnnotation</c>
+	/// Enter a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context);
+	void EnterBlank([NotNull] AutoStepParser.BlankContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>blankAnnotation</c>
+	/// Exit a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context);
+	void ExitBlank([NotNull] AutoStepParser.BlankContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// </summary>
@@ -187,6 +187,16 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>given</c>
 	/// labeled alternative in <see cref="AutoStepParser.statement"/>.

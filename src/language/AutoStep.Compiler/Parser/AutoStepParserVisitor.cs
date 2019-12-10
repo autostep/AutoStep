@@ -65,12 +65,12 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>blankAnnotation</c>
+	/// Visit a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context);
+	Result VisitBlank([NotNull] AutoStepParser.BlankContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// </summary>
@@ -125,6 +125,12 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>given</c>
 	/// labeled alternative in <see cref="AutoStepParser.statement"/>.

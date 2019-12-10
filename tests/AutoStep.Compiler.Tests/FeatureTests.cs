@@ -75,7 +75,7 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccess(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Description("Feature Description")
                     .Scenario("My Scenario", 5, 21, scen => scen
@@ -105,7 +105,7 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccess(TestFile, file => file
                 .Feature("My Feature", 3, 17, feat => feat
                    .Description("Feature Description")
                    .Scenario("My Scenario", 6, 21,  scen => scen

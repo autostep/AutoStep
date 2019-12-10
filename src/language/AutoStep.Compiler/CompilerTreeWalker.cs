@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Core;
 
@@ -67,7 +68,7 @@ namespace AutoStep.Compiler
             return file;
         }
 
-        public override BuiltFile? VisitTagAnnotation(AutoStepParser.TagAnnotationContext context)
+        public override BuiltFile VisitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context)
         {
             Debug.Assert(file is object);
 
@@ -77,14 +78,16 @@ namespace AutoStep.Compiler
                 return file;
             }
 
-            var tagBody = context.TAG().GetText().Substring(1);
+            var tag = context.TAG();
 
-            currentAnnotatable.Annotations.Add(LineInfo(new TagElement { Tag = tagBody }, context));
+            var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
+
+            currentAnnotatable.Annotations.Add(LineInfo(new TagElement { Tag = tagBody }, tag));
 
             return file;
         }
 
-        public override BuiltFile? VisitOptionAnnotation(AutoStepParser.OptionAnnotationContext context)
+        public override BuiltFile VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context)
         {
             Debug.Assert(file is object);
 
@@ -94,9 +97,43 @@ namespace AutoStep.Compiler
                 return file;
             }
 
-            var tagBody = context.OPTION().GetText().Substring(1);
+            var option = context.OPTION();
 
-            currentAnnotatable.Annotations.Add(LineInfo(new TagElement { Tag = tagBody }, context));
+            var optBody = option.GetText().Substring(1);
+
+            // Trim the body to get rid of trailing whitespace.
+            optBody = optBody.TrimEnd();
+
+            // Now split on the first ':'.
+            var positionOfColon = optBody.IndexOf(':', StringComparison.CurrentCulture);
+
+            string? setting = null;
+            string name = optBody;
+
+            if (positionOfColon != -1)
+            {
+                var nextChar = positionOfColon + 1;
+                name = name.Substring(0, positionOfColon);
+
+                if (nextChar < optBody.Length)
+                {
+                    // Error, colon has been placed with no other content.
+                    setting = optBody.Substring(nextChar).Trim();
+                }
+
+                if (string.IsNullOrEmpty(setting))
+                {
+                    AddMessage(option, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
+                    return file;
+                }
+            }
+
+            currentAnnotatable.Annotations.Add(LineInfo(
+                new OptionElement
+                {
+                    Name = name,
+                    Setting = setting,
+                }, option));
 
             return file;
         }
@@ -344,11 +381,42 @@ namespace AutoStep.Compiler
             messages.Add(message);
         }
 
+        private void AddMessage(ITerminalNode context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            if (level == CompilerMessageLevel.Error)
+            {
+                Success = false;
+            }
+
+            var symbol = context.Symbol;
+
+            var message = new CompilerMessage(
+                sourceName,
+                level,
+                code,
+                string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
+                symbol.Line,
+                symbol.Column + 1,
+                symbol.Line,
+                symbol.Column + 1 + (symbol.StopIndex - symbol.StartIndex));
+
+            messages.Add(message);
+        }
+
         private TElement LineInfo<TElement>(TElement element, ParserRuleContext ctxt)
             where TElement : BuiltElement
         {
             element.SourceLine = ctxt.Start.Line;
             element.SourceColumn = ctxt.Start.Column + 1;
+
+            return element;
+        }
+
+        private TElement LineInfo<TElement>(TElement element, ITerminalNode ctxt)
+            where TElement : BuiltElement
+        {
+            element.SourceLine = ctxt.Symbol.Line;
+            element.SourceColumn = ctxt.Symbol.Column + 1;
 
             return element;
         }

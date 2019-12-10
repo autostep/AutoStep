@@ -100,19 +100,19 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>blankAnnotation</c>
+	/// Enter a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context) { }
+	public virtual void EnterBlank([NotNull] AutoStepParser.BlankContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>blankAnnotation</c>
+	/// Exit a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBlankAnnotation([NotNull] AutoStepParser.BlankAnnotationContext context) { }
+	public virtual void ExitBlank([NotNull] AutoStepParser.BlankContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -221,6 +221,18 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>given</c>
 	/// labeled alternative in <see cref="AutoStepParser.statement"/>.

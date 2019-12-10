@@ -31,6 +31,13 @@ namespace AutoStep.Compiler
             string finalMsg = offendingSymbol.Type switch
             {
                 AutoStepParser.Eof => "Unexpected end of file",
+                AutoStepParser.WORD => offendingSymbol.Text switch
+                {
+                    "@" => "Bad tag format. Tag must have the format '@tagName'",
+                    "$" => "Bad option format. Option must the format '$optionName', " +
+                           "optionally with a value separated by ':', e.g. '$optionName:value'",
+                    _ => msg
+                },
                 _ => msg
             };
 

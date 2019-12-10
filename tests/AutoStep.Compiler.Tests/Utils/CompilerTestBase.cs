@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
@@ -77,7 +78,7 @@ namespace AutoStep.Compiler.Tests.Utils
             AssertFileComparison(expectedBuilder.Built, result.Output);
         }
 
-        protected async Task CompileAssertSuccess(string content, Action<FileBuilder> cfg)
+        protected async Task CompileAndAssertSuccess(string content, Action<FileBuilder> cfg)
         {
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
@@ -99,8 +100,15 @@ namespace AutoStep.Compiler.Tests.Utils
         {
             Assert.NotNull(actual);
 
-            var resultAsJson = JsonSerializer.Serialize(actual, new JsonSerializerOptions { WriteIndented = true });
-            var expectedAsJson = JsonSerializer.Serialize(expected, new JsonSerializerOptions { WriteIndented = true });
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<AnnotationElement>());
+
+            var resultAsJson = JsonSerializer.Serialize(actual, options);
+            var expectedAsJson = JsonSerializer.Serialize(expected, options);
 
             TestOutput.WriteLine("Full Expected Tree");
             TestOutput.WriteLine(expectedAsJson);
@@ -108,6 +116,19 @@ namespace AutoStep.Compiler.Tests.Utils
             TestOutput.WriteLine(resultAsJson);
 
             Assert.Equal(expectedAsJson, resultAsJson);
+        }
+
+        private class PolymorphicWriteOnlyJsonConverter<T> : JsonConverter<T>
+        {
+            public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                throw new NotImplementedException($"Deserializing not supported. Type={typeToConvert}.");
+            }
+
+            public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+            {
+                JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            }
         }
     }
 }

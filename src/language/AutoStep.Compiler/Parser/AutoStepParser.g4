@@ -4,19 +4,21 @@ options { tokenVocab=AutoStepLexer; }
 
 file: NEWLINE*
       featureBlock+ // Multiple feature blocks aren't valid, 
-                    // but we want to give a warning later
+                    // but we want to give an error later instead of failing
+                    // the parse stage.
       WS? EOF;
 
-featureBlock: annotations? 
+featureBlock: annotations 
               featureDefinition
               backgroundBlock?
               featureBody;
 
-annotations: annotation+;
+annotations: annotation*;
 
-annotation: TAG NEWLINE    # tagAnnotation
-          | OPTION NEWLINE # optionAnnotation
-          | NEWLINE        # blankAnnotation;
+annotation: WS? TAG NEWLINE          #tagAnnotation
+          | WS? OPTION NEWLINE       #optionAnnotation
+          | NEWLINE                  #blank
+          ;
 
 featureDefinition: WS? featureTitle NEWLINE
                    description?;
@@ -30,7 +32,7 @@ backgroundBlock: WS? BACKGROUND NEWLINE
 
 backgroundBody: statement*;
 
-scenarioBlock: annotations?
+scenarioBlock: annotations
                scenarioDefinition
                scenarioBody;
 
@@ -39,7 +41,13 @@ scenarioDefinition: WS? scenarioTitle NEWLINE
 
 scenarioTitle: SCENARIO WS? text;
 
-scenarioBody: (WS? statement NEWLINE | NEWLINE)*;
+scenarioBody: scenarioBodyLine*;
+
+scenarioBodyLine: 
+      WS? statement NEWLINE |
+      WS? statement WS? EOF |
+      NEWLINE
+      ;
 
 statement: GIVEN statementBody #given
          | WHEN statementBody  #when
