@@ -12,7 +12,6 @@ WHEN=11
 THEN=12
 AND=13
 'Feature:'=1
-'Scenario:'=2
 'Background:'=3
 'Given '=10
 'When '=11

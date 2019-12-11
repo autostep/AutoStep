@@ -13,7 +13,8 @@ namespace AutoStep.Compiler
         NoScenarios = 00004,
         StepNotExpected = 5,
         AndMustFollowNormalStep = 6,
-        OptionWithNoSetting = 7
+        OptionWithNoSetting = 7,
+        InvalidScenarioKeyword = 8
     }
 #pragma warning restore SA1025 // Code should not contain multiple whitespace in a row
 }

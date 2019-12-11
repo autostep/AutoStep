@@ -59,11 +59,14 @@ namespace AutoStep.Compiler.Tests.Builders
             return this;
         }
 
-        public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder> cfg)
+        public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder> cfg = null)
         {
             var scenarioBuilder = new ScenarioBuilder(name, line, column);
 
-            cfg(scenarioBuilder);
+            if (cfg is object)
+            {
+                cfg(scenarioBuilder);
+            }
 
             Built.Scenarios.Add(scenarioBuilder.Built);
 

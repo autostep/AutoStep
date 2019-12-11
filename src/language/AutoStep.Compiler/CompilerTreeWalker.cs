@@ -286,6 +286,17 @@ namespace AutoStep.Compiler
             var description = ExtractDescription(definition.description());
             var title = definition.scenarioTitle();
 
+            var scenarioToken = title.SCENARIO();
+            var scenarioKeyWordText = scenarioToken.GetText();
+
+            // So, we want the parser to allow case-insensitive keywords through, so we can assert on them
+            // here and give more useful errors.
+            if (scenarioKeyWordText != "Scenario:")
+            {
+                AddMessage(title.SCENARIO(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
+                return file;
+            }
+
             LineInfo(scenario, title);
 
             scenario.Name = title.text().GetText();

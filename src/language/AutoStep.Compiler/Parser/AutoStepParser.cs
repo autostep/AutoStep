@@ -54,8 +54,8 @@ public partial class AutoStepParser : Parser {
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, "'Feature:'", "'Scenario:'", "'Background:'", null, null, null, 
-		null, null, null, "'Given '", "'When '", "'Then '", "'And '"
+		null, "'Feature:'", null, "'Background:'", null, null, null, null, null, 
+		null, "'Given '", "'When '", "'Then '", "'And '"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "FEATURE", "SCENARIO", "BACKGROUND", "TAG", "OPTION", "NEWLINE", 

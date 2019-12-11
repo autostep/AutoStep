@@ -70,6 +70,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;Scenario&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Scenario:&apos;.
+        /// </summary>
+        internal static string InvalidScenarioKeyword {
+            get {
+                return ResourceManager.GetString("InvalidScenarioKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your Feature &apos;{0}&apos; has no Scenarios, so will not run any tests..
         /// </summary>
         internal static string NoScenarios {
