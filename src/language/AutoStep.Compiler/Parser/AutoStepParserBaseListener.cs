@@ -222,17 +222,17 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepCollectionBodyLine"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context) { }
+	public virtual void EnterStepCollectionBodyLine([NotNull] AutoStepParser.StepCollectionBodyLineContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepCollectionBodyLine"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context) { }
+	public virtual void ExitStepCollectionBodyLine([NotNull] AutoStepParser.StepCollectionBodyLineContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>given</c>
 	/// labeled alternative in <see cref="AutoStepParser.statement"/>.

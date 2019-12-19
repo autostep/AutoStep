@@ -1,4 +1,5 @@
-﻿using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Builders;
+using AutoStep.Compiler.Tests.Utils;
 using System;
 using System.Threading.Tasks;
 using Xunit;

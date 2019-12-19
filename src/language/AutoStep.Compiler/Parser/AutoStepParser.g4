@@ -30,7 +30,7 @@ featureBody: scenarioBlock*;
 backgroundBlock: WS? BACKGROUND NEWLINE
                  backgroundBody;
 
-backgroundBody: statement*;
+backgroundBody: stepCollectionBodyLine*;
 
 scenarioBlock: annotations
                scenarioDefinition
@@ -41,9 +41,9 @@ scenarioDefinition: WS? scenarioTitle NEWLINE
 
 scenarioTitle: SCENARIO WS? text;
 
-scenarioBody: scenarioBodyLine*;
+scenarioBody: stepCollectionBodyLine*;
 
-scenarioBodyLine: 
+stepCollectionBodyLine: 
       WS? statement STATEMENT_NEWLINE |
       WS? statement WS? EOF |
       NEWLINE

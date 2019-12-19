@@ -1,4 +1,5 @@
-﻿using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Builders;
+using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
 using System;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument1' to something", 6, 21, step => step
-                            .Argument(ArgumentType.String, "argument1", 41, 51)
+                            .Argument(ArgumentType.Text, "argument1", 41, 51)
             ))));
         }
 
@@ -77,8 +78,8 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument1' and 'argument2' to something", 6, 21, step => step
-                            .Argument(ArgumentType.String, "argument1", 41, 51)
-                            .Argument(ArgumentType.String, "argument2", 57, 67)
+                            .Argument(ArgumentType.Text, "argument1", 41, 51)
+                            .Argument(ArgumentType.Text, "argument2", 57, 67)
             ))));
         }
 
@@ -99,7 +100,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument \\' quoted' to something", 6, 21, step => step
-                            .Argument(ArgumentType.String, "argument \\' quoted", 41, 60, arg => arg
+                            .Argument(ArgumentType.Text, "argument \\' quoted", 41, 60, arg => arg
                                 .Unescaped("argument ' quoted")
             ))))) ;
         }
@@ -143,7 +144,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123' to something", 6, 21, step => step
-                            .Argument(ArgumentType.Int, "123", 41, 45, arg => arg
+                            .Argument(ArgumentType.NumericInteger, "123", 41, 45, arg => arg
                                 .Value(123)                                
             )))));
         }
@@ -165,7 +166,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123.5' to something", 6, 21, step => step
-                            .Argument(ArgumentType.Decimal, "123.5", 41, 47, arg => arg 
+                            .Argument(ArgumentType.NumericDecimal, "123.5", 41, 47, arg => arg 
                                 .Value(123.5M)
                             )
                         )
@@ -191,7 +192,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '£123.5' to something", 6, 21, step => step
-                            .Argument(ArgumentType.Decimal, "£123.5", 41, 48, arg => arg
+                            .Argument(ArgumentType.NumericDecimal, "£123.5", 41, 48, arg => arg
                                 .Value(123.5M)
                                 .Symbol("£")
                             )
@@ -218,7 +219,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '$123.50' to something", 6, 21, step => step
-                            .Argument(ArgumentType.Decimal, "$123.50", 41, 49, arg => arg
+                            .Argument(ArgumentType.NumericDecimal, "$123.50", 41, 49, arg => arg
                                 .Value(123.50M)
                                 .Symbol("$")
                             )

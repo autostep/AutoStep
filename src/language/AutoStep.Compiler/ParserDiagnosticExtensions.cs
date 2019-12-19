@@ -8,14 +8,28 @@ using AutoStep.Compiler.Parser;
 
 namespace AutoStep.Compiler
 {
+    /// <summary>
+    /// Provides extensions to assist in rendering debug data inside the compiler.
+    /// </summary>
     internal static class ParserDiagnosticExtensions
     {
-
+        /// <summary>
+        /// Generate token debug text for a token stream.
+        /// </summary>
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="vocab">The token vocabulary.</param>
+        /// <returns>The textual representation of the tokens.</returns>
         public static string GetTokenDebugText(this CommonTokenStream tokenStream, IVocabulary vocab)
         {
             return string.Join('\n', tokenStream.GetTokens().Select(x => $"{vocab.GetDisplayName(x.Type)} {x}"));
         }
 
+        /// <summary>
+        /// Generate a parse tree with nesting that represents the outcome of a parse process.
+        /// </summary>
+        /// <param name="context">The context to start from.</param>
+        /// <param name="parser">The parser that generated the rule context.</param>
+        /// <returns>A textual representation of the parse tree.</returns>
         public static string GetParseTreeDebugText(this ParserRuleContext context, AutoStepParser parser)
         {
             var listener = new ParseDebugListener(parser);
@@ -56,6 +70,12 @@ namespace AutoStep.Compiler
                 indendation++;
             }
 
+            public override void ExitEveryRule(ParserRuleContext context)
+            {
+                indendation--;
+                output.AppendLine($"{new string(' ', indendation * 4)})");
+            }
+
             private string GetStatementSectionType(ParserRuleContext context)
             {
                 return context switch
@@ -69,12 +89,6 @@ namespace AutoStep.Compiler
                     AutoStepParser.ArgIntContext _ => "argInt",
                     _ => throw new ArgumentException($"Unexpected statement section alternate, context type {context.GetType().Name}", nameof(context))
                 };
-            }
-
-            public override void ExitEveryRule(ParserRuleContext context)
-            {
-                indendation--;
-                output.AppendLine($"{new string(' ', indendation * 4)})");
             }
         }
     }

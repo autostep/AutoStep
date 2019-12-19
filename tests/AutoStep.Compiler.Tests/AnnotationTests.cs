@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Compiler.Tests.Utils;
 using Xunit;
 using Xunit.Abstractions;

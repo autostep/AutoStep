@@ -5,6 +5,14 @@
     <CodeAnalysisRuleSet>..\..\Analysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\Subversion\autostep\autostep\src\AutoStep.Core\AutoStep.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Subversion\autostep\autostep\src\AutoStep.Core\AutoStep.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
       <PrivateAssets>all</PrivateAssets>

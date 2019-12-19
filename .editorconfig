@@ -118,3 +118,9 @@ csharp_preserve_single_line_blocks = true
 
 # SA1405: Debug.Assert should provide message text
 dotnet_diagnostic.SA1405.severity = silent
+
+# CS3021: Type or member does not need a CLSCompliant attribute because the assembly does not have a CLSCompliant attribute
+dotnet_diagnostic.CS3021.severity = silent
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = silent

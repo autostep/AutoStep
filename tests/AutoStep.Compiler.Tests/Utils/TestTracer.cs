@@ -16,17 +16,17 @@ namespace AutoStep.Compiler.Tests.Utils
             this.outputHelper = outputHelper;
         }
 
-        public void Error(Exception ex, string msg, object data)
+        public void TraceError(Exception ex, string msg, object data)
         {
             outputHelper.WriteLine("ERROR: " + msg.FormatWith(data) + $"\n{ex.ToString()}");
         }
 
-        public void Info(string msg, object data)
+        public void TraceInfo(string msg, object data)
         {
             outputHelper.WriteLine("INFO: " + msg.FormatWith(data));
         }
 
-        public void Warn(string msg, object data)
+        public void TraceWarn(string msg, object data)
         {
             outputHelper.WriteLine("WARN: " + msg.FormatWith(data));
         }

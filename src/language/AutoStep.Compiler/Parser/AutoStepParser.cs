@@ -47,13 +47,13 @@ public partial class AutoStepParser : Parser {
 		RULE_featureDefinition = 4, RULE_featureTitle = 5, RULE_featureBody = 6, 
 		RULE_backgroundBlock = 7, RULE_backgroundBody = 8, RULE_scenarioBlock = 9, 
 		RULE_scenarioDefinition = 10, RULE_scenarioTitle = 11, RULE_scenarioBody = 12, 
-		RULE_scenarioBodyLine = 13, RULE_statement = 14, RULE_statementBody = 15, 
+		RULE_stepCollectionBodyLine = 13, RULE_statement = 14, RULE_statementBody = 15, 
 		RULE_statementSection = 16, RULE_statementTextContentBlock = 17, RULE_text = 18, 
 		RULE_line = 19, RULE_description = 20;
 	public static readonly string[] ruleNames = {
 		"file", "featureBlock", "annotations", "annotation", "featureDefinition", 
 		"featureTitle", "featureBody", "backgroundBlock", "backgroundBody", "scenarioBlock", 
-		"scenarioDefinition", "scenarioTitle", "scenarioBody", "scenarioBodyLine", 
+		"scenarioDefinition", "scenarioTitle", "scenarioBody", "stepCollectionBodyLine", 
 		"statement", "statementBody", "statementSection", "statementTextContentBlock", 
 		"text", "line", "description"
 	};
@@ -711,11 +711,11 @@ public partial class AutoStepParser : Parser {
 	}
 
 	public partial class BackgroundBodyContext : ParserRuleContext {
-		public StatementContext[] statement() {
-			return GetRuleContexts<StatementContext>();
+		public StepCollectionBodyLineContext[] stepCollectionBodyLine() {
+			return GetRuleContexts<StepCollectionBodyLineContext>();
 		}
-		public StatementContext statement(int i) {
-			return GetRuleContext<StatementContext>(i);
+		public StepCollectionBodyLineContext stepCollectionBodyLine(int i) {
+			return GetRuleContext<StepCollectionBodyLineContext>(i);
 		}
 		public BackgroundBodyContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -741,22 +741,24 @@ public partial class AutoStepParser : Parser {
 	public BackgroundBodyContext backgroundBody() {
 		BackgroundBodyContext _localctx = new BackgroundBodyContext(Context, State);
 		EnterRule(_localctx, 16, RULE_backgroundBody);
-		int _la;
 		try {
+			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 114;
 			ErrorHandler.Sync(this);
-			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GIVEN) | (1L << WHEN) | (1L << THEN) | (1L << AND))) != 0)) {
-				{
-				{
-				State = 111; statement();
-				}
+			_alt = Interpreter.AdaptivePredict(TokenStream,13,Context);
+			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					{
+					{
+					State = 111; stepCollectionBodyLine();
+					}
+					} 
 				}
 				State = 116;
 				ErrorHandler.Sync(this);
-				_la = TokenStream.LA(1);
+				_alt = Interpreter.AdaptivePredict(TokenStream,13,Context);
 			}
 			}
 		}
@@ -952,11 +954,11 @@ public partial class AutoStepParser : Parser {
 	}
 
 	public partial class ScenarioBodyContext : ParserRuleContext {
-		public ScenarioBodyLineContext[] scenarioBodyLine() {
-			return GetRuleContexts<ScenarioBodyLineContext>();
+		public StepCollectionBodyLineContext[] stepCollectionBodyLine() {
+			return GetRuleContexts<StepCollectionBodyLineContext>();
 		}
-		public ScenarioBodyLineContext scenarioBodyLine(int i) {
-			return GetRuleContext<ScenarioBodyLineContext>(i);
+		public StepCollectionBodyLineContext stepCollectionBodyLine(int i) {
+			return GetRuleContext<StepCollectionBodyLineContext>(i);
 		}
 		public ScenarioBodyContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -993,7 +995,7 @@ public partial class AutoStepParser : Parser {
 				if ( _alt==1 ) {
 					{
 					{
-					State = 135; scenarioBodyLine();
+					State = 135; stepCollectionBodyLine();
 					}
 					} 
 				}
@@ -1014,7 +1016,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ScenarioBodyLineContext : ParserRuleContext {
+	public partial class StepCollectionBodyLineContext : ParserRuleContext {
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
@@ -1025,30 +1027,30 @@ public partial class AutoStepParser : Parser {
 		}
 		public ITerminalNode Eof() { return GetToken(AutoStepParser.Eof, 0); }
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
-		public ScenarioBodyLineContext(ParserRuleContext parent, int invokingState)
+		public StepCollectionBodyLineContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_scenarioBodyLine; } }
+		public override int RuleIndex { get { return RULE_stepCollectionBodyLine; } }
 		public override void EnterRule(IParseTreeListener listener) {
 			IAutoStepParserListener typedListener = listener as IAutoStepParserListener;
-			if (typedListener != null) typedListener.EnterScenarioBodyLine(this);
+			if (typedListener != null) typedListener.EnterStepCollectionBodyLine(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IAutoStepParserListener typedListener = listener as IAutoStepParserListener;
-			if (typedListener != null) typedListener.ExitScenarioBodyLine(this);
+			if (typedListener != null) typedListener.ExitStepCollectionBodyLine(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IAutoStepParserVisitor<TResult> typedVisitor = visitor as IAutoStepParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitScenarioBodyLine(this);
+			if (typedVisitor != null) return typedVisitor.VisitStepCollectionBodyLine(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public ScenarioBodyLineContext scenarioBodyLine() {
-		ScenarioBodyLineContext _localctx = new ScenarioBodyLineContext(Context, State);
-		EnterRule(_localctx, 26, RULE_scenarioBodyLine);
+	public StepCollectionBodyLineContext stepCollectionBodyLine() {
+		StepCollectionBodyLineContext _localctx = new StepCollectionBodyLineContext(Context, State);
+		EnterRule(_localctx, 26, RULE_stepCollectionBodyLine);
 		int _la;
 		try {
 			State = 157;
@@ -2008,7 +2010,7 @@ public partial class AutoStepParser : Parser {
 		'k', 'j', '\x3', '\x2', '\x2', '\x2', 'k', 'l', '\x3', '\x2', '\x2', '\x2', 
 		'l', 'm', '\x3', '\x2', '\x2', '\x2', 'm', 'n', '\a', '\x5', '\x2', '\x2', 
 		'n', 'o', '\a', '\b', '\x2', '\x2', 'o', 'p', '\x5', '\x12', '\n', '\x2', 
-		'p', '\x11', '\x3', '\x2', '\x2', '\x2', 'q', 's', '\x5', '\x1E', '\x10', 
+		'p', '\x11', '\x3', '\x2', '\x2', '\x2', 'q', 's', '\x5', '\x1C', '\xF', 
 		'\x2', 'r', 'q', '\x3', '\x2', '\x2', '\x2', 's', 'v', '\x3', '\x2', '\x2', 
 		'\x2', 't', 'r', '\x3', '\x2', '\x2', '\x2', 't', 'u', '\x3', '\x2', '\x2', 
 		'\x2', 'u', '\x13', '\x3', '\x2', '\x2', '\x2', 'v', 't', '\x3', '\x2', 

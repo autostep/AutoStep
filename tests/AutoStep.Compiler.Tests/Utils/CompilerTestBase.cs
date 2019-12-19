@@ -27,7 +27,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
 
-            var result = await compiler.Compile(source);
+            var result = await compiler.CompileAsync(source);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -40,7 +40,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
 
-            var result = await compiler.Compile(source);
+            var result = await compiler.CompileAsync(source);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -58,7 +58,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
 
-            var result = await compiler.Compile(source);
+            var result = await compiler.CompileAsync(source);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -70,7 +70,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
 
-            var result = await compiler.Compile(source);
+            var result = await compiler.CompileAsync(source);
 
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
@@ -87,7 +87,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
 
-            var result = await compiler.Compile(source);
+            var result = await compiler.CompileAsync(source);
 
             // Make sure there are 0 messages
             Assert.Empty(result.Messages);

@@ -59,6 +59,22 @@ namespace AutoStep.Compiler.Tests.Builders
             return this;
         }
 
+        public FeatureBuilder Background(int line, int column, Action<BackgroundBuilder> cfg)
+        {
+            if(cfg is null)
+            {
+                throw new ArgumentNullException(nameof(cfg));
+            }
+
+            var backgroundBuilder = new BackgroundBuilder(line, column);
+
+            cfg(backgroundBuilder);
+
+            Built.Background = backgroundBuilder.Built;
+
+            return this;
+        }
+
         public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder> cfg = null)
         {
             var scenarioBuilder = new ScenarioBuilder(name, line, column);

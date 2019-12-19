@@ -188,7 +188,7 @@ public partial class AutoStepParserBaseVisitor<Result> : AbstractParseTreeVisito
 	/// <return>The visitor result.</return>
 	public virtual Result VisitScenarioBody([NotNull] AutoStepParser.ScenarioBodyContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioBodyLine"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepCollectionBodyLine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -196,7 +196,7 @@ public partial class AutoStepParserBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitScenarioBodyLine([NotNull] AutoStepParser.ScenarioBodyLineContext context) { return VisitChildren(context); }
+	public virtual Result VisitStepCollectionBodyLine([NotNull] AutoStepParser.StepCollectionBodyLineContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>given</c>
 	/// labeled alternative in <see cref="AutoStepParser.statement"/>.

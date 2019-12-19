@@ -1,26 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using Antlr4.Runtime;
 using AutoStep.Compiler.Parser;
 
 namespace AutoStep.Compiler
 {
+    /// <summary>
+    /// Listener attached to the AutoStep parser that generates <see cref="CompilerMessage"/> items from any raised syntax errors.
+    /// </summary>
     internal class ParserErrorListener : BaseErrorListener
     {
-        private string? sourceName;
-        private ITokenStream tokenStream;
+        private readonly string? sourceName;
+        private readonly ITokenStream tokenStream;
+        private readonly List<CompilerMessage> messages;
 
-        public List<CompilerMessage> ParserErrors { get; } = new List<CompilerMessage>();
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParserErrorListener"/> class.
+        /// </summary>
+        /// <param name="sourceName">The source name.</param>
+        /// <param name="tokenStream">The token stream.</param>
         public ParserErrorListener(string? sourceName, ITokenStream tokenStream)
         {
             this.sourceName = sourceName;
             this.tokenStream = tokenStream;
+            this.messages = new List<CompilerMessage>();
         }
 
+        /// <summary>
+        /// Gets the set of compiler messages.
+        /// </summary>
+        public IReadOnlyList<CompilerMessage> ParserErrors => messages;
+
+        /// <inheritdoc/>
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             string finalMsg = msg;
@@ -70,7 +82,7 @@ namespace AutoStep.Compiler
                 line,
                 charPositionInLine + 1 + errorLength);
 
-            ParserErrors.Add(compileMsg);
+            messages.Add(compileMsg);
         }
 
         /// <summary>
