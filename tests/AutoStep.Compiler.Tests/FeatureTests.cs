@@ -1,4 +1,5 @@
 ﻿using AutoStep.Compiler.Tests.Utils;
+using AutoStep.Core;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -80,7 +81,7 @@ namespace AutoStep.Compiler.Tests
                     .Description("Feature Description")
                     .Scenario("My Scenario", 5, 21, scen => scen
                         .Given("I have clicked on", 7, 25)
-                        .And("I have gone to", 8, 25)
+                        .And("I have gone to", StepType.Given, 8, 25)
                     )
                 )
             );
@@ -111,7 +112,7 @@ namespace AutoStep.Compiler.Tests
                    .Scenario("My Scenario", 6, 21,  scen => scen
                        .Description("Scenario Description")
                        .Given("I have clicked on", 9, 25)
-                       .And("I have gone to", 11, 25)
+                       .And("I have gone to", StepType.Given, 11, 25)
                    )
                 )
             );

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.FullFiles;
 using AutoStep.Compiler.Tests.Utils;
+using AutoStep.Core;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,16 +30,41 @@ namespace AutoStep.Compiler.Tests
                         .Scenario("Setup", 16, 3, scen => scen
                             .Tag("scenariotag", 14, 3)
                             .Option("scenarioinstruction", 15, 3)
-                            .Given("I have logged in to my app as 'USER', password 'PWD'", 17, 5)
-                                .And("I have turned on the global system config flag", 18, 9)
-                                .And("the date/time is ':Tomorrow at 13:00'", 21, 9)
-                            .Given("I have selected 'Client Management' -> 'Client Location' in the menu", 23, 5)
-                            .Then("the 'Client Management - Client Location' page should be displayed", 24, 5)
-                            .When("I press 'Add'", 26, 5)
-                            .Then("the 'Client Management - Client Location - Add' page should be displayed", 27, 5)
-                            .Given("I have entered 'My Name' into 'Name'", 29, 5)
-                                .And("I have entered 'My Code' into 'Code'", 30, 7)
-                                .And("I have selected 'A Type' in the 'Client Type' dropdown", 31, 7)
+                            .Given("I have logged in to my app as 'USER', password 'PWD'", 17, 5, step => step
+                                .Argument(ArgumentType.String, "USER", 41, 46)
+                                .Argument(ArgumentType.String, "PWD", 58, 62)
+                            )
+                                .And("I have turned on the global system config flag", StepType.Given, 18, 9)
+                                .And("the date/time is ':Tomorrow at 13:00'", StepType.Given, 21, 9, step => step
+                                    .Argument(ArgumentType.Interpolated, "Tomorrow at 13:00", 30, 49, arg => arg
+                                        .NullValue()
+                                    )
+                                )
+                            .Given("I have selected 'Client Management' -> 'Client Location' in the menu", 23, 5, step => step
+                                .Argument(ArgumentType.String, "Client Management", 27, 45)
+                                .Argument(ArgumentType.String, "Client Location", 50, 66)                                
+                            )
+                            .Then("the 'Client Management - Client Location' page should be displayed", 24, 5, step => step
+                                .Argument(ArgumentType.String, "Client Management - Client Location", 14, 50)
+                            )
+                            .When("I press 'Add'", 26, 5, step => step
+                                .Argument(ArgumentType.String, "Add", 18, 22)                                
+                            )
+                            .Then("the 'Client Management - Client Location - Add' page should be displayed", 27, 5, step => step 
+                                .Argument(ArgumentType.String, "Client Management - Client Location - Add", 14, 56)
+                            )
+                            .Given("I have entered 'My Name' into 'Name'", 29, 5, step => step
+                                .Argument(ArgumentType.String, "My Name", 26, 34)
+                                .Argument(ArgumentType.String, "Name", 41, 46)
+                            )
+                                .And("I have entered 'My Code' into 'Code'", StepType.Given, 30, 7, step => step
+                                    .Argument(ArgumentType.String, "My Code", 26, 34)
+                                    .Argument(ArgumentType.String, "Code", 41, 46)
+                                )
+                                .And("I have selected 'A Type' in the 'Client Type' dropdown", StepType.Given, 31, 7, step => step
+                                    .Argument(ArgumentType.String, "A Type", 27, 34)
+                                    .Argument(ArgumentType.String, "Client Type", 43, 55)
+                                )
                     )));
         }
     }

@@ -67,7 +67,7 @@ namespace AutoStep.Compiler
             var parser = new AutoStepParser(tokenStream);
             parser.RemoveErrorListeners();
 
-            var errorListener = new ParserErrorListener(source.SourceName);
+            var errorListener = new ParserErrorListener(source.SourceName, tokenStream);
             parser.AddErrorListener(errorListener);
 
             var fileContext = parser.file();
@@ -95,7 +95,7 @@ namespace AutoStep.Compiler
             }
 
             // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
-            var compilerVisitor = new CompilerTreeWalker(source.SourceName);
+            var compilerVisitor = new CompilerTreeWalker(source.SourceName, tokenStream);
 
             var builtFile = compilerVisitor.Visit(fileContext);
 

@@ -47,11 +47,28 @@ namespace AutoStep.Compiler
                     AutoStepParser.RULE_line => context.GetText(),
                     AutoStepParser.RULE_text => context.GetText(),
                     AutoStepParser.RULE_statement => context.GetText(),
-                    _ => context.Start.ToString()
+                    AutoStepParser.RULE_statementSection => GetStatementSectionType(context) + " : " + context.GetText(),
+                    AutoStepParser.RULE_statementTextContentBlock => context.GetText(),
+                    _ => context.ToString()
                 };
 
                 output.AppendLine($"{new string(' ', indendation * 4)}( {parser.RuleNames[context.RuleIndex]} : {description}");
                 indendation++;
+            }
+
+            private string GetStatementSectionType(ParserRuleContext context)
+            {
+                return context switch
+                {
+                    AutoStepParser.StatementSectionPartContext _ => "statementSectionPart",
+                    AutoStepParser.StatementWsContext _ => "statementWs",
+                    AutoStepParser.ArgEmptyContext _ => "argEmpty",
+                    AutoStepParser.ArgInterpolateContext _ => "argInterpolate",
+                    AutoStepParser.ArgTextContext _ => "argText",
+                    AutoStepParser.ArgFloatContext _ => "argFloat",
+                    AutoStepParser.ArgIntContext _ => "argInt",
+                    _ => throw new ArgumentException($"Unexpected statement section alternate, context type {context.GetType().Name}", nameof(context))
+                };
             }
 
             public override void ExitEveryRule(ParserRuleContext context)

@@ -18,14 +18,18 @@ namespace AutoStep.Compiler
         private IAnnotatable? currentAnnotatable;
         private List<CompilerMessage> messages = new List<CompilerMessage>();
         private BuiltScenario? currentScenario;
-        private List<StepReference> currentStepSet = null;
-        private bool currentStepSetHasInitial = false;
+        private List<StepReference>? currentStepSet = null;
+        private TokenStreamRewriter currentRewriter = null;
+
+        private StepReference? currentStep = null;
+        private StepReference? currentStepSetLastConcrete = null;
 
         public IReadOnlyList<CompilerMessage> Messages => messages;
 
-        public CompilerTreeWalker(string? sourceName)
+        public CompilerTreeWalker(string? sourceName, ITokenStream tokens)
         {
             this.sourceName = sourceName;
+            currentRewriter = new TokenStreamRewriter(tokens);
         }
 
         public BuiltFile? Result => file;
@@ -261,7 +265,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
 
             currentStepSet = file.Feature.Background;
-            currentStepSetHasInitial = false;
+            currentStepSetLastConcrete = null;
 
             return base.VisitBackgroundBody(context);
         }
@@ -303,7 +307,7 @@ namespace AutoStep.Compiler
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
             currentStepSet = scenario.Steps;
-            currentStepSetHasInitial = false;
+            currentStepSetLastConcrete = null;
 
             currentAnnotatable = null;
 
@@ -352,24 +356,178 @@ namespace AutoStep.Compiler
                 return;
             }
 
+            StepType? bindingType = null;
+            var step = new UnknownStepReference
+            {
+                Type = type,
+                RawText = bodyContext.GetText(),
+            };
+
             if (type == StepType.And)
             {
-                if (!currentStepSetHasInitial)
+                if (currentStepSetLastConcrete is null)
                 {
                     AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep);
+                }
+                else
+                {
+                    bindingType = currentStepSetLastConcrete.BindingType;
                 }
             }
             else
             {
-                currentStepSetHasInitial = true;
+                bindingType = type;
+                currentStepSetLastConcrete = step;
             }
 
-            currentStepSet.Add(LineInfo(
-                new UnknownStepReference
+            step.BindingType = bindingType;
+
+            LineInfo(step, context);
+
+            currentStep = step;
+
+            VisitChildren(bodyContext);
+
+            currentStepSet.Add(step);
+        }
+
+        public override BuiltFile VisitArgEmpty([NotNull] AutoStepParser.ArgEmptyContext context)
+        {
+            Debug.Assert(currentStep is object);
+            Debug.Assert(file is object);
+
+            currentStep.AddArgument(PositionalLineInfo(
+                new StepArgument
                 {
-                    Type = type,
-                    Text = bodyContext.GetText(),
+                    RawArgument = string.Empty,
+                    Type = ArgumentType.Empty,
+                    UnescapedArgument = string.Empty,
+                    Value = string.Empty,
                 }, context));
+
+            return file;
+        }
+
+        public override BuiltFile VisitArgInterpolate([NotNull] AutoStepParser.ArgInterpolateContext context)
+        {
+            Debug.Assert(currentStep is object);
+            Debug.Assert(file is object);
+
+            var contentBlock = context.statementTextContentBlock();
+
+            var content = contentBlock.GetText();
+
+            if (!TryGetUnescapedArgumentText(contentBlock, out var unescaped))
+            {
+                // Nothing to escape, so just use the original value.
+                unescaped = content;
+            }
+
+            currentStep.AddArgument(PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.Interpolated,
+                    UnescapedArgument = unescaped,
+                    Value = null,
+                }, context));
+
+            return file;
+        }
+
+        public override BuiltFile VisitArgText([NotNull] AutoStepParser.ArgTextContext context)
+        {
+            Debug.Assert(currentStep is object);
+            Debug.Assert(file is object);
+
+            var contentBlock = context.statementTextContentBlock();
+
+            string content = contentBlock.GetText();
+
+            if (!TryGetUnescapedArgumentText(contentBlock, out var unescaped))
+            {
+                // Nothing to escape, so just use the original value.
+                unescaped = content;
+            }
+
+            currentStep.AddArgument(PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.String,
+                    UnescapedArgument = unescaped,
+                    Value = unescaped,
+                }, context));
+
+            return file;
+        }
+
+        private bool TryGetUnescapedArgumentText(AutoStepParser.StatementTextContentBlockContext context, out string? unescaped)
+        {
+            var escapedQuotes = context.ESCAPE_QUOTE();
+            bool anyQuotes = false;
+
+            foreach (var quoteSymbol in escapedQuotes)
+            {
+                anyQuotes = true;
+                currentRewriter.Replace(quoteSymbol.Symbol, "'");
+            }
+
+            if (anyQuotes)
+            {
+                // Get the rewritten text as a way to 'unescape'.
+                unescaped = currentRewriter.GetText(context.SourceInterval);
+            }
+            else
+            {
+                unescaped = null;
+            }
+
+            return anyQuotes;
+        }
+
+        public override BuiltFile VisitArgFloat([NotNull] AutoStepParser.ArgFloatContext context)
+        {
+            Debug.Assert(currentStep is object);
+            Debug.Assert(file is object);
+
+            var valueText = context.FLOAT().GetText(); ;
+            var symbolText = context.CURR_SYMBOL()?.GetText();
+            var content = symbolText + valueText;
+
+            currentStep.AddArgument(PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.Decimal,
+                    UnescapedArgument = content,
+                    Value = decimal.Parse(valueText, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
+                    Symbol = symbolText,
+                }, context));
+
+            return file;
+        }
+
+        public override BuiltFile VisitArgInt([NotNull] AutoStepParser.ArgIntContext context)
+        {
+            Debug.Assert(currentStep is object);
+            Debug.Assert(file is object);
+
+            var valueText = context.INT().GetText();;
+            var symbolText = context.CURR_SYMBOL()?.GetText();
+            var content = symbolText + valueText;
+
+            currentStep.AddArgument(PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.Int,
+                    UnescapedArgument = content,
+                    Value = int.Parse(valueText, NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
+                    Symbol = symbolText,
+                }, context));
+
+            return file;
         }
 
         private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
@@ -412,6 +570,16 @@ namespace AutoStep.Compiler
                 symbol.Column + 1 + (symbol.StopIndex - symbol.StartIndex));
 
             messages.Add(message);
+        }
+
+        private TElement PositionalLineInfo<TElement>(TElement element, ParserRuleContext ctxt)
+            where TElement : PositionalElement
+        {
+            element.SourceLine = ctxt.Start.Line;
+            element.SourceColumn = ctxt.Start.Column + 1;
+            element.EndColumn = ctxt.Stop.Column + 1;
+
+            return element;
         }
 
         private TElement LineInfo<TElement>(TElement element, ParserRuleContext ctxt)

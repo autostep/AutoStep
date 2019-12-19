@@ -44,7 +44,7 @@ scenarioTitle: SCENARIO WS? text;
 scenarioBody: scenarioBodyLine*;
 
 scenarioBodyLine: 
-      WS? statement NEWLINE |
+      WS? statement STATEMENT_NEWLINE |
       WS? statement WS? EOF |
       NEWLINE
       ;
@@ -55,7 +55,18 @@ statement: GIVEN statementBody #given
          | AND statementBody   #and
          ;
 
-statementBody: (WS? WORD)+;
+statementBody: statementSection+;
+            
+statementSection: STATEMENT_SECTION                               # statementSectionPart
+                | STATEMENT_WS                                    # statementWs
+                | OPEN_QUOTE CLOSE_QUOTE                          # argEmpty
+                | OPEN_QUOTE CURR_SYMBOL? FLOAT CLOSE_QUOTE       # argFloat
+                | OPEN_QUOTE CURR_SYMBOL? INT CLOSE_QUOTE         # argInt       
+                | OPEN_QUOTE COLON statementTextContentBlock CLOSE_QUOTE      # argInterpolate
+                | OPEN_QUOTE statementTextContentBlock CLOSE_QUOTE            # argText
+                ;
+
+statementTextContentBlock: (TEXT_CONTENT | INT | FLOAT | CURR_SYMBOL | COLON | ESCAPE_QUOTE)+;
 
 text: (WS? WORD)+;
 line: WS? text? NEWLINE;

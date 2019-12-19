@@ -1,4 +1,5 @@
 ﻿using AutoStep.Compiler.Tests.Utils;
+using AutoStep.Core;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,6 +29,33 @@ namespace AutoStep.Compiler.Tests
                     .Scenario("My Scenario", 4, 17)
                 )
             );
+        }
+
+        [Fact]
+        public async Task ScenarioEachStepType()
+        {
+            const string TestFile =
+            @"                
+              Feature: My Feature
+                
+                Scenario: My Scenario
+
+                    Given I have 
+                    Then I have
+                    When I have
+                    And I have
+
+            ";
+
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 15, feat => feat
+                    .Scenario("My Scenario", 4, 17, scen => scen
+                        .Given("I have", 6, 21)
+                        .Then("I have", 7, 21)
+                        .When("I have", 8, 21)
+                        .And("I have", StepType.When, 9, 21)
+                )
+            ));
         }
 
         [Fact]
