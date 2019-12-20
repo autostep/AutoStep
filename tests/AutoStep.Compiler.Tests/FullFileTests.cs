@@ -27,7 +27,7 @@ namespace AutoStep.Compiler.Tests
                         .Option("Option1", "Setting 2", 3, 1)
                         .Tag("Tag1", 6, 1)
                         .Tag("Tag2", 7, 1)
-                        .Description("This is a description only\r\npartly this is part of the description")
+                        .Description($"This is a description only{NewLine}partly this is part of the description")
                         .Scenario("Setup", 16, 3, scen => scen
                             .Tag("scenariotag", 14, 3)
                             .Option("scenarioinstruction", 15, 3)

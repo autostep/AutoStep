@@ -41,7 +41,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                     .Feature("My Feature", 2, 15, feat => feat
-                        .Description("Description words\r\nLine 2\r\nLine 3")
+                        .Description($"Description words{NewLine}Line 2{NewLine}Line 3")
             ));
         }
 
@@ -60,7 +60,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
-                    .Description("Line 1\r\n    Line 2\r\n        Line 3\r\n    Line 4\r\nLine 5")
+                    .Description($"Line 1{NewLine}    Line 2{NewLine}        Line 3{NewLine}    Line 4{NewLine}Line 5")
             ));
         }
 
@@ -83,7 +83,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                     .Feature("My Feature", 2, 15, feat => feat
-                        .Description("Line 1\r\n\r\n    Line 2\r\n\r\n        Line 3\r\n\r\n    Line 4\r\n\r\nLine 5")
+                        .Description($"Line 1{NewLine}{NewLine}    Line 2{NewLine}{NewLine}        Line 3{NewLine}{NewLine}    Line 4{NewLine}{NewLine}Line 5")
             ));
         }
 
@@ -107,7 +107,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                     .Feature("My Feature", 2, 15, feat => feat
-                        .Description("Line 1\r\n\r\n    Line 2\r\n\r\n        Line 3\r\n\r\n    Line 4\r\n\r\nLine 5")
+                        .Description($"Line 1{NewLine}{NewLine}    Line 2{NewLine}{NewLine}        Line 3{NewLine}{NewLine}    Line 4{NewLine}{NewLine}Line 5")
             ));
         }
 
@@ -128,7 +128,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                     .Feature("My Feature", 2, 15, feat => feat
-                        .Description("Line 1\r\n    Line 2")
+                        .Description($"Line 1{NewLine}    Line 2")
             ));
         }
 
@@ -151,7 +151,7 @@ namespace AutoStep.Compiler.Tests
 
             await CompileAndAssert(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
-                    .Description("Line 1\r\n    Line 2")
+                    .Description($"Line 1{NewLine}    Line 2")
             ));
         }
 
@@ -192,7 +192,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
-                        .Description("Line 1\r\nLine 2\r\nLine 3")
+                        .Description($"Line 1{NewLine}Line 2{NewLine}Line 3")
             )));
         }
 
@@ -214,7 +214,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
-                        .Description("Line 1\r\nLine 2\r\nLine 3")
+                        .Description($"Line 1{NewLine}Line 2{NewLine}Line 3")
                         .Given("I have", 9, 21)
             )));
         }
@@ -239,7 +239,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
-                        .Description("Line 1\r\n    Line 2\r\n        Line 3\r\n    Line 4\r\nLine 5")
+                        .Description($"Line 1{NewLine}    Line 2{NewLine}        Line 3{NewLine}    Line 4{NewLine}Line 5")
                         .Given("I have", 11, 21)
             )));
         }
@@ -266,7 +266,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
-                        .Description("Line 1\r\n\r\n    Line 2\r\n\r\n        Line 3\r\n\r\n    Line 4\r\n\r\nLine 5")
+                        .Description($"Line 1{NewLine}{NewLine}    Line 2{NewLine}{NewLine}        Line 3{NewLine}{NewLine}    Line 4{NewLine}{NewLine}Line 5")
             )));
         }
 
@@ -295,7 +295,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
-                        .Description("Line 1\r\n\r\n    Line 2\r\n\r\n        Line 3\r\n\r\n    Line 4\r\n\r\nLine 5")
+                        .Description($"Line 1{NewLine}{NewLine}    Line 2{NewLine}{NewLine}        Line 3{NewLine}{NewLine}    Line 4{NewLine}{NewLine}Line 5")
                         .Given("I have", 16, 17)
             )));
         }
@@ -321,7 +321,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                         .Scenario("My Scenario", 4, 17, scen => scen
-                            .Description("Line 1\r\n    Line 2")
+                            .Description($"Line 1{NewLine}    Line 2")
             )));
         }
 
@@ -346,7 +346,7 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssert(TestFile, file =>
                 file.Feature("My Feature", 2, 15, feat => feat
                         .Scenario("My Scenario", 5, 17, scen => scen
-                            .Description("Line 1\r\n    Line 2")
+                            .Description($"Line 1{NewLine}    Line 2")
             )));
         }
     }
