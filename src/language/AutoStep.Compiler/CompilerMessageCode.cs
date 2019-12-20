@@ -50,5 +50,10 @@ namespace AutoStep.Compiler
         /// The scenario keyword is not valid.
         /// </summary>
         InvalidScenarioKeyword =  00008,
+
+        /// <summary>
+        /// The feature keyword is not valid.
+        /// </summary>
+        InvalidFeatureKeyword = 00009,
     }
 }

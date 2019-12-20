@@ -120,6 +120,9 @@
   <data name="AndMustFollowNormalStep" xml:space="preserve">
     <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
   </data>
+  <data name="InvalidFeatureKeyword" xml:space="preserve">
+    <value>The 'Feature' keyword is case-sensitive, so '{0}' should be 'Feature:'</value>
+  </data>
   <data name="InvalidScenarioKeyword" xml:space="preserve">
     <value>The 'Scenario' keyword is case-sensitive, so '{0}' should be 'Scenario:'</value>
   </data>

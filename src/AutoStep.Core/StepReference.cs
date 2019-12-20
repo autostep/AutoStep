@@ -34,6 +34,11 @@ namespace AutoStep.Core
         public List<StepArgument> Arguments { get; private set; }
 
         /// <summary>
+        /// Gets or sets the associated table for this step.
+        /// </summary>
+        public BuiltTable Table { get; set; }
+
+        /// <summary>
         /// Adds an argument to the step reference.
         /// </summary>
         /// <param name="argument">The argument to add.</param>

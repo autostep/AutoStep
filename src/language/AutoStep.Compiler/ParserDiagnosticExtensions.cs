@@ -63,6 +63,7 @@ namespace AutoStep.Compiler
                     AutoStepParser.RULE_statement => context.GetText(),
                     AutoStepParser.RULE_statementSection => GetStatementSectionType(context) + " : " + context.GetText(),
                     AutoStepParser.RULE_statementTextContentBlock => context.GetText(),
+                    AutoStepParser.RULE_tableCellTextBlock => context.GetText(),
                     _ => context.ToString()
                 };
 

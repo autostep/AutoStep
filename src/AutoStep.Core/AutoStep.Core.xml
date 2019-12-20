@@ -255,6 +255,11 @@
             Gets the set of arguments presented by the Step Reference.
             </summary>
         </member>
+        <member name="P:AutoStep.Core.StepReference.Table">
+            <summary>
+            Gets or sets the associated table for this step.
+            </summary>
+        </member>
         <member name="M:AutoStep.Core.StepReference.AddArgument(AutoStep.Core.StepArgument)">
             <summary>
             Adds an argument to the step reference.

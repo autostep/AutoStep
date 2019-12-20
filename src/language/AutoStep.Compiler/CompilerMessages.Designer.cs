@@ -70,6 +70,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;Feature&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Feature:&apos;.
+        /// </summary>
+        internal static string InvalidFeatureKeyword {
+            get {
+                return ResourceManager.GetString("InvalidFeatureKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;Scenario&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Scenario:&apos;.
         /// </summary>
         internal static string InvalidScenarioKeyword {
