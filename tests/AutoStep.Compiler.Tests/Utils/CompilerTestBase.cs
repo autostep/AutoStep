@@ -16,6 +16,8 @@ namespace AutoStep.Compiler.Tests.Utils
     {
         protected ITestOutputHelper TestOutput { get; }
 
+        protected string NewLine => Environment.NewLine;
+
         protected CompilerTestBase(ITestOutputHelper output)
         {
             TestOutput = output;
