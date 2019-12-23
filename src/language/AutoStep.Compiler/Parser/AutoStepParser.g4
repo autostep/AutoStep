@@ -48,7 +48,7 @@ stepCollectionBodyLine: statementBlock
                       | NEWLINE
                       ;
 
-statementBlock: WS? statement STATEMENT_NEWLINE tableBlock #statementWithTable
+statementBlock: WS? statement STATEMENT_NEWLINE NEWLINE* tableBlock #statementWithTable
               | WS? statement STATEMENT_NEWLINE            #statementLineTerminated
               | WS? statement WS? EOF                      #statementEofTerminated
               ;
@@ -81,21 +81,20 @@ statementTextContentBlock: (
                            )+;
 
 tableBlock: WS? tableHeader
-            (WS? tableRow)*;
+            (WS? tableRow | NEWLINE)*;
 
-tableHeader: tableHeaderCell+ ROW_END;
+tableHeader: tableHeaderCell+ CELL_DELIMITER ROW_NL;
 
 tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableCellTextBlock CELL_WS?;
 
-tableRow: tableRowCell+ ROW_END;
+tableRow: tableRowCell+ CELL_DELIMITER ROW_NL;
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_WS?;
 
 tableRowCellContent: CELL_CURR_SYMBOL? CELL_FLOAT          # cellFloat
                    | CELL_CURR_SYMBOL? CELL_INT            # cellInt       
                    | CELL_COLON tableCellTextBlock  # cellInterpolate
-                   | tableCellTextBlock             # cellText
-                   ;
+                   | tableCellTextBlock             # cellText;
 
 tableCellTextBlock: (
                         CELL_WS              |

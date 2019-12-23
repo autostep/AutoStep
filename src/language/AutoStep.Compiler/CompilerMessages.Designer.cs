@@ -133,6 +133,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The row contains {0} cell(s), but we are expecting {1}, because of the number of headers..
+        /// </summary>
+        internal static string TableColumnsMismatch {
+            get {
+                return ResourceManager.GetString("TableColumnsMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not expecting an annotation at this position..
         /// </summary>
         internal static string UnexpectedAnnotation {

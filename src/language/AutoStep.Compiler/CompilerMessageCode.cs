@@ -55,5 +55,6 @@ namespace AutoStep.Compiler
         /// The feature keyword is not valid.
         /// </summary>
         InvalidFeatureKeyword = 00009,
+        TableColumnsMismatch = 10,
     }
 }

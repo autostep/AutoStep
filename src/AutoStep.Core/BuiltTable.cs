@@ -9,6 +9,8 @@ namespace AutoStep.Core
 
         public TableHeader Header { get; set; }
 
+        public int ColumnCount => Header?.Headers.Count ?? 0;
+
         public IReadOnlyList<TableRow> Rows => rows;
 
         public void AddRow(TableRow row)

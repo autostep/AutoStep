@@ -272,6 +272,11 @@
               Looks up a localized string similar to Syntax Error: {0}.
             </summary>
         </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.TableColumnsMismatch">
+            <summary>
+              Looks up a localized string similar to The row contains {0} cell(s), but we are expecting {1}, because of the number of headers..
+            </summary>
+        </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.UnexpectedAnnotation">
             <summary>
               Looks up a localized string similar to Not expecting an annotation at this position..
@@ -509,14 +514,6 @@
         </member>
         <member name="M:AutoStep.Compiler.ParserErrorListener.SyntaxError(System.IO.TextWriter,Antlr4.Runtime.IRecognizer,Antlr4.Runtime.IToken,System.Int32,System.Int32,System.String,Antlr4.Runtime.RecognitionException)">
             <inheritdoc/>
-        </member>
-        <member name="M:AutoStep.Compiler.ParserErrorListener.GetPrecedingToken(Antlr4.Runtime.IToken,System.Int32)">
-            <summary>
-            Get the first token of specified type that comes before the specified token in the stream.
-            </summary>
-            <param name="currentToken">The token to seek back from.</param>
-            <param name="tokenType">The token type to look for.</param>
-            <returns>The found token, or currentToken if we couldn't find anything.</returns>
         </member>
         <member name="T:AutoStep.Compiler.Parser.AutoStepParserBaseListener">
             <summary>
@@ -2690,6 +2687,23 @@
         </member>
         <member name="M:AutoStep.Compiler.StringContentSource.DisposeAsync">
             <inheritdoc/>
+        </member>
+        <member name="M:AutoStep.Compiler.TokenStreamExtensions.GetPrecedingToken(Antlr4.Runtime.ITokenStream,Antlr4.Runtime.IToken,System.Int32[])">
+            <summary>
+            Get the first token of one of the specified types that comes before the specified token in the stream.
+            </summary>
+            <param name="tokenStream">The current token stream to search.</param>
+            <param name="currentToken">The token to seek back from.</param>
+            <param name="tokenTypes">The token type to look for.</param>
+            <returns>The found token, or currentToken if we couldn't find anything.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.TokenStreamExtensions.GetPrecedingToken(Antlr4.Runtime.ITokenStream,Antlr4.Runtime.IToken)">
+            <summary>
+            Gets the immediately previous token in the token stream, relative to the provided token.
+            </summary>
+            <param name="tokenStream">The current token stream to search.</param>
+            <param name="currentToken">The token to seek back from.</param>
+            <returns>The found token.</returns>
         </member>
     </members>
 </doc>

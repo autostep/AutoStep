@@ -141,6 +141,9 @@
   <data name="SyntaxError" xml:space="preserve">
     <value>Syntax Error: {0}</value>
   </data>
+  <data name="TableColumnsMismatch" xml:space="preserve">
+    <value>The row contains {0} cell(s), but we are expecting {1}, because of the number of headers.</value>
+  </data>
   <data name="UnexpectedAnnotation" xml:space="preserve">
     <value>Not expecting an annotation at this position.</value>
   </data>

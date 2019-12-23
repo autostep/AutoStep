@@ -96,7 +96,7 @@ namespace AutoStep.Compiler.Tests
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.SyntaxError,
-                "Syntax Error: Bad tag format. Tag must have the format '@tagName'",
+                "Syntax Error: Bad tag format. Tag must have the format '@tagName'.",
                 2, 15, 2, 15)
             );
         }
@@ -119,7 +119,7 @@ namespace AutoStep.Compiler.Tests
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.SyntaxError,
                 "Syntax Error: Bad option format. Option must the format '$optionName', " +
-                "optionally with a value separated by ':', e.g. '$optionName:value'",
+                "optionally with a value separated by ':', e.g. '$optionName:value'.",
                 2, 15, 2, 15)
             );
         }

@@ -18,6 +18,7 @@ namespace AutoStep.Compiler
     internal class CompilerTreeWalker : AutoStepParserBaseVisitor<BuiltFile?>
     {
         private readonly string? sourceName;
+        private readonly ITokenStream tokenStream;
         private readonly List<CompilerMessage> messages = new List<CompilerMessage>();
         private readonly TokenStreamRewriter currentRewriter;
 
@@ -38,6 +39,7 @@ namespace AutoStep.Compiler
         public CompilerTreeWalker(string? sourceName, ITokenStream tokens)
         {
             this.sourceName = sourceName;
+            tokenStream = tokens;
             currentRewriter = new TokenStreamRewriter(tokens);
         }
 
@@ -545,7 +547,59 @@ namespace AutoStep.Compiler
 
             base.VisitTableRow(context);
 
+            // Check if the number of cells in the row doesn't match the headings.
+            if (currentRow.Cells.Count != currentTable.ColumnCount)
+            {
+                AddMessageStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, currentTable.ColumnCount);
+            }
+
             currentTable.AddRow(currentRow);
+
+            return file;
+        }
+
+        public override BuiltFile VisitTableRowCell([NotNull] AutoStepParser.TableRowCellContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cellContent = context.tableRowCellContent();
+
+            if (cellContent == null)
+            {
+                // Empty cell, add a cell with an empty argument.
+                var cell = new TableCell();
+
+                var cellWs = context.CELL_WS(0);
+
+                var arg = new StepArgument
+                {
+                    RawArgument = null,
+                    Type = ArgumentType.Empty,
+                    EscapedArgument = null,
+                    Value = null,
+                };
+
+                if (cellWs == null)
+                {
+                    // If there's no whitespace, we'll just have to use the start of the table delimiter.
+                    PositionalLineInfo(cell, context);
+                    PositionalLineInfo(arg, context);
+                }
+                else
+                {
+                    PositionalLineInfo(cell, cellWs);
+                    PositionalLineInfo(arg, cellWs);
+                }
+
+                cell.Value = arg;
+
+                currentRow.AddCell(cell);
+            }
+            else
+            {
+                Visit(cellContent);
+            }
 
             return file;
         }
@@ -749,42 +803,35 @@ namespace AutoStep.Compiler
 
         private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
-            if (level == CompilerMessageLevel.Error)
-            {
-                Success = false;
-            }
+            AddMessage(level, code, context.Start, context.Stop, args);
+        }
 
-            var message = new CompilerMessage(
-                sourceName,
-                level,
-                code,
-                string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
-                context.Start.Line,
-                context.Start.Column + 1,
-                context.Stop.Line,
-                context.Stop.Column + 1 + (context.Stop.StopIndex - context.Stop.StartIndex));
-
-            messages.Add(message);
+        private void AddMessageStoppingAtPrecedingToken(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            AddMessage(level, code, context.Start, tokenStream.GetPrecedingToken(context.Stop), args);
         }
 
         private void AddMessage(ITerminalNode context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            AddMessage(level, code, context.Symbol, context.Symbol, args);
+        }
+
+        private void AddMessage(CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
         {
             if (level == CompilerMessageLevel.Error)
             {
                 Success = false;
             }
 
-            var symbol = context.Symbol;
-
             var message = new CompilerMessage(
                 sourceName,
                 level,
                 code,
                 string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
-                symbol.Line,
-                symbol.Column + 1,
-                symbol.Line,
-                symbol.Column + 1 + (symbol.StopIndex - symbol.StartIndex));
+                start.Line,
+                start.Column + 1,
+                stop.Line,
+                stop.Column + 1 + (stop.StopIndex - stop.StartIndex));
 
             messages.Add(message);
         }
@@ -794,7 +841,17 @@ namespace AutoStep.Compiler
         {
             element.SourceLine = ctxt.Start.Line;
             element.SourceColumn = ctxt.Start.Column + 1;
-            element.EndColumn = ctxt.Stop.Column + 1;
+            element.EndColumn = ctxt.Stop.Column + (ctxt.Stop.StopIndex - ctxt.Stop.StartIndex) + 1;
+
+            return element;
+        }
+
+        private TElement PositionalLineInfo<TElement>(TElement element, ITerminalNode ctxt)
+            where TElement : PositionalElement
+        {
+            element.SourceLine = ctxt.Symbol.Line;
+            element.SourceColumn = ctxt.Symbol.Column + 1;
+            element.EndColumn = ctxt.Symbol.Column + (ctxt.Symbol.StopIndex - ctxt.Symbol.StartIndex) + 1;
 
             return element;
         }
