@@ -480,6 +480,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a statement that contains a table.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitStatementWithTable([NotNull] AutoStepParser.StatementWithTableContext context)
         {
             Debug.Assert(file is object);
@@ -495,6 +500,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a table block (prepares the table).
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitTableBlock([NotNull] AutoStepParser.TableBlockContext context)
         {
             Debug.Assert(file is object);
@@ -507,18 +517,28 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a table header.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitTableHeader([NotNull] AutoStepParser.TableHeaderContext context)
         {
             Debug.Assert(file is object);
             Debug.Assert(currentTable is object);
 
-            currentTable.Header = LineInfo(new TableHeader(), context);
+            LineInfo(currentTable.Header, context);
 
             base.VisitTableHeader(context);
 
             return file;
         }
 
+        /// <summary>
+        /// Vists a table header cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitTableHeaderCell([NotNull] AutoStepParser.TableHeaderCellContext context)
         {
             Debug.Assert(file is object);
@@ -538,6 +558,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a table data row.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitTableRow([NotNull] AutoStepParser.TableRowContext context)
         {
             Debug.Assert(file is object);
@@ -558,6 +583,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists the cell of a table data row.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitTableRowCell([NotNull] AutoStepParser.TableRowCellContext context)
         {
             Debug.Assert(file is object);
@@ -604,6 +634,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a float value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
         {
             Debug.Assert(file is object);
@@ -634,6 +669,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists an int value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
         {
             Debug.Assert(file is object);
@@ -664,6 +704,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists an interpolated value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
         {
             Debug.Assert(file is object);
@@ -698,6 +743,11 @@ namespace AutoStep.Compiler
             return file;
         }
 
+        /// <summary>
+        /// Vists a text value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
         public override BuiltFile VisitCellText([NotNull] AutoStepParser.CellTextContext context)
         {
             Debug.Assert(file is object);
@@ -874,6 +924,12 @@ namespace AutoStep.Compiler
             return element;
         }
 
+        /// <summary>
+        /// Generates the description text from a parsed description context.
+        /// Handles indentation of the overall description, and indentation inside it.
+        /// </summary>
+        /// <param name="descriptionContext">The context.</param>
+        /// <returns>The complete description string.</returns>
         private string? ExtractDescription(AutoStepParser.DescriptionContext descriptionContext)
         {
             if (descriptionContext is null)

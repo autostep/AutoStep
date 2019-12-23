@@ -196,6 +196,11 @@
             The feature keyword is not valid.
             </summary>
         </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.TableColumnsMismatch">
+            <summary>
+            The number of columns in a row does not match the number of columns in the header.
+            </summary>
+        </member>
         <member name="T:AutoStep.Compiler.CompilerMessageLevel">
             <summary>
             Defines the possible compiler message levels.
@@ -456,6 +461,84 @@
             </summary>
             <param name="context">The parse context.</param>
             <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitStatementWithTable(AutoStep.Compiler.Parser.AutoStepParser.StatementWithTableContext)">
+            <summary>
+            Vists a statement that contains a table.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTableBlock(AutoStep.Compiler.Parser.AutoStepParser.TableBlockContext)">
+            <summary>
+            Vists a table block (prepares the table).
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTableHeader(AutoStep.Compiler.Parser.AutoStepParser.TableHeaderContext)">
+            <summary>
+            Vists a table header.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTableHeaderCell(AutoStep.Compiler.Parser.AutoStepParser.TableHeaderCellContext)">
+            <summary>
+            Vists a table header cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTableRow(AutoStep.Compiler.Parser.AutoStepParser.TableRowContext)">
+            <summary>
+            Vists a table data row.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTableRowCell(AutoStep.Compiler.Parser.AutoStepParser.TableRowCellContext)">
+            <summary>
+            Vists the cell of a table data row.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitCellFloat(AutoStep.Compiler.Parser.AutoStepParser.CellFloatContext)">
+            <summary>
+            Vists a float value in a table data cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitCellInt(AutoStep.Compiler.Parser.AutoStepParser.CellIntContext)">
+            <summary>
+            Vists an int value in a table data cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitCellInterpolate(AutoStep.Compiler.Parser.AutoStepParser.CellInterpolateContext)">
+            <summary>
+            Vists an interpolated value in a table data cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitCellText(AutoStep.Compiler.Parser.AutoStepParser.CellTextContext)">
+            <summary>
+            Vists a text value in a table data cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.ExtractDescription(AutoStep.Compiler.Parser.AutoStepParser.DescriptionContext)">
+            <summary>
+            Generates the description text from a parsed description context.
+            Handles indentation of the overall description, and indentation inside it.
+            </summary>
+            <param name="descriptionContext">The context.</param>
+            <returns>The complete description string.</returns>
         </member>
         <member name="T:AutoStep.Compiler.IContentSource">
             <summary>
@@ -2688,6 +2771,11 @@
         <member name="M:AutoStep.Compiler.StringContentSource.DisposeAsync">
             <inheritdoc/>
         </member>
+        <member name="T:AutoStep.Compiler.TokenStreamExtensions">
+            <summary>
+            Provides extensions for the token stream to assist in searching it.
+            </summary>
+        </member>
         <member name="M:AutoStep.Compiler.TokenStreamExtensions.GetPrecedingToken(Antlr4.Runtime.ITokenStream,Antlr4.Runtime.IToken,System.Int32[])">
             <summary>
             Get the first token of one of the specified types that comes before the specified token in the stream.
@@ -2704,6 +2792,27 @@
             <param name="tokenStream">The current token stream to search.</param>
             <param name="currentToken">The token to seek back from.</param>
             <returns>The found token.</returns>
+        </member>
+        <member name="T:AutoStep.Compiler.TokenStreamExtensionsMessages">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.TokenStreamExtensionsMessages.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.TokenStreamExtensionsMessages.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.TokenStreamExtensionsMessages.AtLeastOneTokenMustBeSpecified">
+            <summary>
+              Looks up a localized string similar to At least one token type must be specified.
+            </summary>
         </member>
     </members>
 </doc>

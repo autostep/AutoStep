@@ -16,11 +16,8 @@ namespace AutoStep.Compiler.Tests.Builders
 
         public TableBuilder Headers(int lineNo, int column, params (string headerName, int startColumn, int endColumn)[] headers)
         {
-            Built.Header = new TableHeader
-            {
-                SourceLine = lineNo,
-                SourceColumn = column,
-            };
+            Built.Header.SourceLine = lineNo;
+            Built.Header.SourceColumn = column;
 
             foreach(var item in headers)
             {

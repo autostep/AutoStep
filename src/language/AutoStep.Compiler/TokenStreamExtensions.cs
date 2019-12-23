@@ -6,6 +6,9 @@ using Antlr4.Runtime;
 
 namespace AutoStep.Compiler
 {
+    /// <summary>
+    /// Provides extensions for the token stream to assist in searching it.
+    /// </summary>
     internal static class TokenStreamExtensions
     {
         /// <summary>
@@ -19,7 +22,7 @@ namespace AutoStep.Compiler
         {
             if (tokenTypes.Length == 0)
             {
-                throw new ArgumentException("At least one token type must be specified", nameof(tokenTypes));
+                throw new ArgumentException(TokenStreamExtensionsMessages.AtLeastOneTokenMustBeSpecified, nameof(tokenTypes));
             }
 
             IToken? foundToken = null;

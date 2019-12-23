@@ -149,6 +149,32 @@
             Represents a step definition.
             </summary>
         </member>
+        <member name="T:AutoStep.Core.BuiltTable">
+            <summary>
+            Represents a table built from autostep source.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltTable.Header">
+            <summary>
+            Gets the header row.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltTable.ColumnCount">
+            <summary>
+            Gets the number of columns expected in the table (based on the number of headers).
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltTable.Rows">
+            <summary>
+            Gets the non-header rows in the table.
+            </summary>
+        </member>
+        <member name="M:AutoStep.Core.BuiltTable.AddRow(AutoStep.Core.TableRow)">
+            <summary>
+            Adds a row to the table.
+            </summary>
+            <param name="row">The row.</param>
+        </member>
         <member name="T:AutoStep.Core.CompiledStepReference">
             <summary>
             Represents a reference to a compiled step.
@@ -290,6 +316,58 @@
             <summary>
             And step; bound to one of the other types.
             </summary>
+        </member>
+        <member name="T:AutoStep.Core.TableCell">
+            <summary>
+            Represents a table cell. A cell's value is treated as a statement argument.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.TableCell.Value">
+            <summary>
+            Gets or sets the cell's value.
+            </summary>
+        </member>
+        <member name="T:AutoStep.Core.TableHeader">
+            <summary>
+            Represents the header of a table.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.TableHeader.Headers">
+            <summary>
+            Gets the list of headers.
+            </summary>
+        </member>
+        <member name="M:AutoStep.Core.TableHeader.AddHeader(AutoStep.Core.TableHeaderCell)">
+            <summary>
+            Add a header.
+            </summary>
+            <param name="header">The header.</param>
+        </member>
+        <member name="T:AutoStep.Core.TableHeaderCell">
+            <summary>
+            Represents a table header cell.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.TableHeaderCell.HeaderName">
+            <summary>
+            Gets or sets the name of the header.
+            </summary>
+        </member>
+        <member name="T:AutoStep.Core.TableRow">
+            <summary>
+            Represents a data-holding row in a table.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.TableRow.Cells">
+            <summary>
+            Gets the set of cells in the row.
+            </summary>
+        </member>
+        <member name="M:AutoStep.Core.TableRow.AddCell(AutoStep.Core.TableCell)">
+            <summary>
+            Add a cell to the row.
+            </summary>
+            <param name="cell">The table cell to add.</param>
         </member>
         <member name="T:AutoStep.Core.TagElement">
             <summary>
