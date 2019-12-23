@@ -95,8 +95,8 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssertErrors(TestFile, new CompilerMessage(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.SyntaxError,
-                "Syntax Error: Bad tag format. Tag must have the format '@tagName'.",
+                CompilerMessageCode.BadTagFormat,
+                "Bad tag format. Tag must have the format '@tagName'.",
                 2, 15, 2, 15)
             );
         }
@@ -117,8 +117,8 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssertErrors(TestFile, new CompilerMessage(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.SyntaxError,
-                "Syntax Error: Bad option format. Option must the format '$optionName', " +
+                CompilerMessageCode.BadOptionFormat,
+                "Bad option format. Option must the format '$optionName', " +
                 "optionally with a value separated by ':', e.g. '$optionName:value'.",
                 2, 15, 2, 15)
             );

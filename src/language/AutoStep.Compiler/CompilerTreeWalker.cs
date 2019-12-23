@@ -24,6 +24,7 @@ namespace AutoStep.Compiler
 
         private BuiltFile? file;
         private IAnnotatable? currentAnnotatable;
+        private BuiltScenario? currentScenario;
         private List<StepReference>? currentStepSet = null;
 
         private StepReference? currentStep = null;
@@ -249,7 +250,52 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            var scenario = new BuiltScenario();
+            BuiltScenario scenario;
+
+            var definition = context.scenarioDefinition();
+            var title = definition.scenarioTitle();
+
+            string titleText;
+
+            if (title is AutoStepParser.NormalScenarioTitleContext scenarioTitle)
+            {
+                var scenarioToken = scenarioTitle.SCENARIO();
+                var scenarioKeyWordText = scenarioToken.GetText();
+
+                // We want the parser to allow case-insensitive keywords through, so we can assert on them
+                // here and give more useful errors.
+                if (scenarioKeyWordText != "Scenario:")
+                {
+                    AddMessage(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
+                    return file;
+                }
+
+                scenario = new BuiltScenario();
+                titleText = scenarioTitle.text().GetText();
+            }
+            else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
+            {
+                var scenarioOutlineToken = scenariOutlineTitle.SCENARIO_OUTLINE();
+                var scenarioOutlineKeyWordText = scenarioOutlineToken.GetText();
+
+                // We want the parser to allow case-insensitive keywords through, so we can assert on them
+                // here and give more useful errors.
+                if (scenarioOutlineKeyWordText != "Scenario Outline:")
+                {
+                    AddMessage(scenarioOutlineToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioOutlineKeyword, scenarioOutlineKeyWordText);
+                    return file;
+                }
+
+                scenario = new BuiltScenarioOutline();
+                titleText = scenariOutlineTitle.text().GetText();
+            }
+            else
+            {
+                const string assertFailure = "Cannot reach here if the parser rules are valid; parser will not enter the " +
+                                             "scenario block if neither SCENARIO or SCENARIO_OUTLINE tokens are present.";
+                Debug.Assert(false, assertFailure);
+                return file;
+            }
 
             currentAnnotatable = scenario;
 
@@ -259,33 +305,26 @@ namespace AutoStep.Compiler
                 Visit(annotations);
             }
 
-            var definition = context.scenarioDefinition();
-
             var description = ExtractDescription(definition.description());
-            var title = definition.scenarioTitle();
-
-            var scenarioToken = title.SCENARIO();
-            var scenarioKeyWordText = scenarioToken.GetText();
-
-            // We want the parser to allow case-insensitive keywords through, so we can assert on them
-            // here and give more useful errors.
-            if (scenarioKeyWordText != "Scenario:")
-            {
-                AddMessage(title.SCENARIO(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
-                return file;
-            }
 
             LineInfo(scenario, title);
 
-            scenario.Name = title.text().GetText();
+            scenario.Name = titleText;
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
+            currentScenario = scenario;
             currentStepSet = scenario.Steps;
             currentStepSetLastConcrete = null;
 
             currentAnnotatable = null;
 
             Visit(context.scenarioBody());
+
+            currentStepSet = null;
+
+            Visit(context.examples());
+
+            currentScenario = null;
 
             file.Feature.Scenarios.Add(scenario);
 
@@ -496,6 +535,41 @@ namespace AutoStep.Compiler
             currentStep.Table = currentTable;
 
             currentTable = null;
+
+            return file;
+        }
+
+        public override BuiltFile VisitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentScenario is object);
+
+            var outline = currentScenario as BuiltScenarioOutline;
+            var exampleTokenText = context.EXAMPLES().GetText();
+
+            if (exampleTokenText != "Examples:")
+            {
+                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
+                return file;
+            }
+
+            if (outline == null)
+            {
+                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario.Name);
+                return file;
+            }
+
+            var example = new BuiltExample();
+
+            currentAnnotatable = example;
+
+            LineInfo(example, context.EXAMPLES());
+
+            Visit(context.annotations());
+
+            currentAnnotatable = null;
+
+            Visit(context.tableBlock());
 
             return file;
         }

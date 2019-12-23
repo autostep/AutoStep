@@ -12,53 +12,79 @@ namespace AutoStep.Compiler
     public enum CompilerMessageCode
     {
         /// <summary>
-        /// Syntax error found while parsing the token stream.
-        /// </summary>
-        SyntaxError =             00001,
-
-        /// <summary>
         /// An annotation is not valid at this position.
         /// </summary>
-        UnexpectedAnnotation =    00002,
+        UnexpectedAnnotation =    00001,
 
         /// <summary>
         /// Only one feature is permitted per file.
         /// </summary>
-        OnlyOneFeatureAllowed =   00003,
+        OnlyOneFeatureAllowed =   00002,
 
         /// <summary>
         /// The feature has no scenarios.
         /// </summary>
-        NoScenarios =             00004,
+        NoScenarios =             00003,
 
         /// <summary>
         /// A step reference is not expected at this point.
         /// </summary>
-        StepNotExpected =         00005,
+        StepNotExpected =         00004,
 
         /// <summary>
         /// An 'And' step reference must be preceded by a Given, When or Then.
         /// </summary>
-        AndMustFollowNormalStep = 00006,
+        AndMustFollowNormalStep = 00005,
 
         /// <summary>
         /// An option has been specified with a blank setting value.
         /// </summary>
-        OptionWithNoSetting =     00007,
+        OptionWithNoSetting =     00006,
 
         /// <summary>
         /// The scenario keyword is not valid.
         /// </summary>
-        InvalidScenarioKeyword =  00008,
+        InvalidScenarioKeyword =  00007,
 
         /// <summary>
         /// The feature keyword is not valid.
         /// </summary>
-        InvalidFeatureKeyword = 00009,
+        InvalidFeatureKeyword = 00008,
 
         /// <summary>
         /// The number of columns in a row does not match the number of columns in the header.
         /// </summary>
-        TableColumnsMismatch = 000010,
+        TableColumnsMismatch = 0009,
+
+        /// <summary>
+        /// The scenario outline keyword is not valid.
+        /// </summary>
+        InvalidScenarioOutlineKeyword = 00010,
+
+        /// <summary>
+        /// Not expecting an example, because we are not in a scenario outline.
+        /// </summary>
+        NotExpectingExample = 00011,
+
+        /// <summary>
+        /// The examples keyword is not valid.
+        /// </summary>
+        InvalidExamplesKeyword = 00012,
+
+        //// Syntax Errors ////
+
+        /// <summary>
+        /// Generic Syntax error found while parsing the token stream.
+        /// </summary>
+        SyntaxError = 10000,
+        NoScenarioTitleProvided = 10001,
+        NoScenarioOutlineTitleProvided = 10002,
+        UnexpectedEndOfFile = 10003,
+        BadTagFormat = 10004,
+        BadOptionFormat = 10005,
+        ArgumentHasNotBeenClosed = 10006,
+        TableRowHasNotBeenTerminated = 10007,
+        ExamplesBlockRequiresTable = 10008,
+        NoFeatureTitleProvided = 10009,
     }
 }

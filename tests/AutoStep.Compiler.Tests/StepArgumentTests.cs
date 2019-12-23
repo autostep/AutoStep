@@ -53,8 +53,8 @@ namespace AutoStep.Compiler.Tests
                 new CompilerMessage(
                     null, 
                     CompilerMessageLevel.Error, 
-                    CompilerMessageCode.SyntaxError,
-                    "Syntax Error: Quoted argument has not been closed.", 
+                    CompilerMessageCode.ArgumentHasNotBeenClosed,
+                    "Quoted argument has not been closed.", 
                     6, 41, 6, 63
                 )
             );

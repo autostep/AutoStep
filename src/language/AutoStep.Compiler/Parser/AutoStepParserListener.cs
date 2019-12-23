@@ -168,15 +168,29 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitScenarioDefinition([NotNull] AutoStepParser.ScenarioDefinitionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// Enter a parse tree produced by the <c>normalScenarioTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	void EnterNormalScenarioTitle([NotNull] AutoStepParser.NormalScenarioTitleContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// Exit a parse tree produced by the <c>normalScenarioTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	void ExitNormalScenarioTitle([NotNull] AutoStepParser.NormalScenarioTitleContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>scenarioOutlineTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterScenarioOutlineTitle([NotNull] AutoStepParser.ScenarioOutlineTitleContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>scenarioOutlineTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitScenarioOutlineTitle([NotNull] AutoStepParser.ScenarioOutlineTitleContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.scenarioBody"/>.
 	/// </summary>
@@ -385,6 +399,26 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStatementTextContentBlock([NotNull] AutoStepParser.StatementTextContentBlockContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.examples"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExamples([NotNull] AutoStepParser.ExamplesContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.examples"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExamples([NotNull] AutoStepParser.ExamplesContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.exampleBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.exampleBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.tableBlock"/>.
 	/// </summary>

@@ -114,11 +114,19 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitScenarioDefinition([NotNull] AutoStepParser.ScenarioDefinitionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioTitle"/>.
+	/// Visit a parse tree produced by the <c>normalScenarioTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitScenarioTitle([NotNull] AutoStepParser.ScenarioTitleContext context);
+	Result VisitNormalScenarioTitle([NotNull] AutoStepParser.NormalScenarioTitleContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>scenarioOutlineTitle</c>
+	/// labeled alternative in <see cref="AutoStepParser.scenarioTitle"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitScenarioOutlineTitle([NotNull] AutoStepParser.ScenarioOutlineTitleContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.scenarioBody"/>.
 	/// </summary>
@@ -241,6 +249,18 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStatementTextContentBlock([NotNull] AutoStepParser.StatementTextContentBlockContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.examples"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExamples([NotNull] AutoStepParser.ExamplesContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.exampleBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.tableBlock"/>.
 	/// </summary>

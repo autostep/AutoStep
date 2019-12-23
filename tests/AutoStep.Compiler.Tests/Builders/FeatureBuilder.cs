@@ -15,43 +15,6 @@ namespace AutoStep.Compiler.Tests.Builders
             };
         }
 
-        public FeatureBuilder Tag(string tagName, int line, int column)
-        {
-            Built.Annotations.Add(new TagElement 
-            { 
-                SourceLine = line,
-                SourceColumn = column,
-                Tag = tagName
-            });
-
-            return this;
-        }
-
-        public FeatureBuilder Option(string optionName, int line, int column)
-        {
-            Built.Annotations.Add(new OptionElement 
-            { 
-                SourceLine = line,
-                SourceColumn = column,
-                Name = optionName 
-            });
-
-            return this;
-        }
-
-        public FeatureBuilder Option(string optionName, string setting, int line, int column)
-        {
-            Built.Annotations.Add(new OptionElement
-            {
-                SourceLine = line,
-                SourceColumn = column,
-                Name = optionName,
-                Setting = setting
-            });
-
-            return this;
-        }
-
         public FeatureBuilder Description(string description)
         {
             Built.Description = description;
@@ -85,6 +48,20 @@ namespace AutoStep.Compiler.Tests.Builders
             }
 
             Built.Scenarios.Add(scenarioBuilder.Built);
+
+            return this;
+        }
+
+        public FeatureBuilder ScenarioOutline(string name, int line, int column, Action<ScenarioOutlineBuilder> cfg = null)
+        {
+            var scenarioOutlineBuilder = new ScenarioOutlineBuilder(name, line, column);
+
+            if(cfg is object)
+            {
+                cfg(scenarioOutlineBuilder);
+            }
+
+            Built.Scenarios.Add(scenarioOutlineBuilder.Built);
 
             return this;
         }

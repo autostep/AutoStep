@@ -43,6 +43,8 @@ fragment Z : [zZ];
 
 FEATURE: F E A T U R E ':';
 SCENARIO: S C E N A R I O ':';
+SCENARIO_OUTLINE: S C E N A R I O ' ' O U T L I N E ':';
+EXAMPLES: E X A M P L E S ':';
 BACKGROUND: 'Background:';
 TAG: '@' ~[ \t\r\n] ~[#\r\n]*;
 OPTION: '$' ~[ \t\r\n] ~[#\r\n]*;

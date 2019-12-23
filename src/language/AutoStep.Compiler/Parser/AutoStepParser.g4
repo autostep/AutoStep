@@ -34,15 +34,17 @@ backgroundBody: stepCollectionBodyLine*;
 
 scenarioBlock: annotations
                scenarioDefinition
-               scenarioBody;
+               scenarioBody
+               examples;
 
 scenarioDefinition: WS? scenarioTitle NEWLINE
                     description?;
 
-scenarioTitle: SCENARIO WS? text;
+scenarioTitle: SCENARIO WS? text            #normalScenarioTitle
+             | SCENARIO_OUTLINE WS? text    #scenarioOutlineTitle
+             ;
 
 scenarioBody: stepCollectionBodyLine*;
-
 
 stepCollectionBodyLine: statementBlock 
                       | NEWLINE
@@ -79,6 +81,12 @@ statementTextContentBlock: (
                             ARG_COLON           |
                             ESCAPE_QUOTE
                            )+;
+
+examples: exampleBlock*;
+
+exampleBlock: annotations
+              WS? EXAMPLES NEWLINE+
+              tableBlock;
 
 tableBlock: WS? tableHeader
             (WS? tableRow | NEWLINE)*;

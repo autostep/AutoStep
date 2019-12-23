@@ -151,11 +151,6 @@
             Defines the compiler message codes.
             </summary>
         </member>
-        <member name="F:AutoStep.Compiler.CompilerMessageCode.SyntaxError">
-            <summary>
-            Syntax error found while parsing the token stream.
-            </summary>
-        </member>
         <member name="F:AutoStep.Compiler.CompilerMessageCode.UnexpectedAnnotation">
             <summary>
             An annotation is not valid at this position.
@@ -201,6 +196,26 @@
             The number of columns in a row does not match the number of columns in the header.
             </summary>
         </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.InvalidScenarioOutlineKeyword">
+            <summary>
+            The scenario outline keyword is not valid.
+            </summary>
+        </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.NotExpectingExample">
+            <summary>
+            Not expecting an example, because we are not in a scenario outline.
+            </summary>
+        </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.InvalidExamplesKeyword">
+            <summary>
+            The examples keyword is not valid.
+            </summary>
+        </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.SyntaxError">
+            <summary>
+            Generic Syntax error found while parsing the token stream.
+            </summary>
+        </member>
         <member name="T:AutoStep.Compiler.CompilerMessageLevel">
             <summary>
             Defines the possible compiler message levels.
@@ -242,6 +257,31 @@
               Looks up a localized string similar to An &apos;And&apos; statement must be preceded by a &apos;Given&apos;, &apos;When&apos; or &apos;Then&apos;..
             </summary>
         </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.ArgumentHasNotBeenClosed">
+            <summary>
+              Looks up a localized string similar to Quoted argument has not been closed..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.BadOptionFormat">
+            <summary>
+              Looks up a localized string similar to Bad option format. Option must the format &apos;$optionName&apos;, optionally with a value separated by &apos;:&apos;, e.g. &apos;$optionName:value&apos;..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.BadTagFormat">
+            <summary>
+              Looks up a localized string similar to Bad tag format. Tag must have the format &apos;@tagName&apos;..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.ExamplesBlockRequiresTable">
+            <summary>
+              Looks up a localized string similar to Examples blocks must contain a table..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.InvalidExamplesKeyword">
+            <summary>
+              Looks up a localized string similar to The &apos;Examples&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Examples:&apos;.
+            </summary>
+        </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.InvalidFeatureKeyword">
             <summary>
               Looks up a localized string similar to The &apos;Feature&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Feature:&apos;.
@@ -252,9 +292,34 @@
               Looks up a localized string similar to The &apos;Scenario&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Scenario:&apos;.
             </summary>
         </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.InvalidScenarioOutlineKeyword">
+            <summary>
+              Looks up a localized string similar to The &apos;Scenario Outline&apos; phrase is case-sensitive, so &apos;{0}&apos; should be &apos;Scenario Outline:&apos;.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.NoFeatureTitleProvided">
+            <summary>
+              Looks up a localized string similar to Features must have a title..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.NoScenarioOutlineTitleProvided">
+            <summary>
+              Looks up a localized string similar to Scenario Outlines must have a title..
+            </summary>
+        </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.NoScenarios">
             <summary>
               Looks up a localized string similar to Your Feature &apos;{0}&apos; has no Scenarios, so will not run any tests..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.NoScenarioTitleProvided">
+            <summary>
+              Looks up a localized string similar to Scenarios must have a title..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.NotExpectingExample">
+            <summary>
+              Looks up a localized string similar to Not expecting an Examples block here; did you mean to define &apos;{0}&apos; as a Scenario Outline rather than a Scenario?.
             </summary>
         </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.OnlyOneFeatureAllowed">
@@ -282,9 +347,19 @@
               Looks up a localized string similar to The row contains {0} cell(s), but we are expecting {1}, because of the number of headers..
             </summary>
         </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.TableRowHasNotBeenTerminated">
+            <summary>
+              Looks up a localized string similar to Table cell has not been terminated. Expecting a table delimiter character &apos;|&apos;..
+            </summary>
+        </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.UnexpectedAnnotation">
             <summary>
               Looks up a localized string similar to Not expecting an annotation at this position..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.UnexpectedEndOfFile">
+            <summary>
+              Looks up a localized string similar to Unexpected end of file..
             </summary>
         </member>
         <member name="T:AutoStep.Compiler.CompilerResult">
@@ -793,16 +868,34 @@
             </summary>
             <param name="context">The parse tree.</param>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Enter a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             <para>The default implementation does nothing.</para>
             </summary>
             <param name="context">The parse tree.</param>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Exit a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Enter a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Exit a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             <para>The default implementation does nothing.</para>
             </summary>
             <param name="context">The parse tree.</param>
@@ -1083,6 +1176,34 @@
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitStatementTextContentBlock(AutoStep.Compiler.Parser.AutoStepParser.StatementTextContentBlockContext)">
             <summary>
             Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.statementTextContentBlock"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
             <para>The default implementation does nothing.</para>
             </summary>
             <param name="context">The parse tree.</param>
@@ -1447,9 +1568,22 @@
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Visit a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Visit a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             <para>
             The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
             on <paramref name="context"/>.
@@ -1662,6 +1796,28 @@
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitStatementTextContentBlock(AutoStep.Compiler.Parser.AutoStepParser.StatementTextContentBlockContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.statementTextContentBlock"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
             <para>
             The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
             on <paramref name="context"/>.
@@ -1985,15 +2141,31 @@
             </summary>
             <param name="context">The parse tree.</param>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Enter a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             </summary>
             <param name="context">The parse tree.</param>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Exit a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Enter a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Exit a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             </summary>
             <param name="context">The parse tree.</param>
         </member>
@@ -2238,6 +2410,30 @@
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitStatementTextContentBlock(AutoStep.Compiler.Parser.AutoStepParser.StatementTextContentBlockContext)">
             <summary>
             Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.statementTextContentBlock"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
             </summary>
             <param name="context">The parse tree.</param>
         </member>
@@ -2506,9 +2702,18 @@
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
         </member>
-        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioTitleContext)">
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitNormalScenarioTitle(AutoStep.Compiler.Parser.AutoStepParser.NormalScenarioTitleContext)">
             <summary>
-            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            Visit a parse tree produced by the <c>normalScenarioTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitScenarioOutlineTitle(AutoStep.Compiler.Parser.AutoStepParser.ScenarioOutlineTitleContext)">
+            <summary>
+            Visit a parse tree produced by the <c>scenarioOutlineTitle</c>
+            labeled alternative in <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.scenarioTitle"/>.
             </summary>
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
@@ -2649,6 +2854,20 @@
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitStatementTextContentBlock(AutoStep.Compiler.Parser.AutoStepParser.StatementTextContentBlockContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.statementTextContentBlock"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitExamples(AutoStep.Compiler.Parser.AutoStepParser.ExamplesContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.examples"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.exampleBlock"/>.
             </summary>
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
