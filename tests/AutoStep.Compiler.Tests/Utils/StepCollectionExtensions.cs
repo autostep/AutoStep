@@ -1,7 +1,8 @@
 ﻿using System;
+using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
 
-namespace AutoStep.Compiler.Tests.Builders
+namespace AutoStep.Compiler.Tests.Utils
 {
     public static class StepCollectionExtensions        
     {

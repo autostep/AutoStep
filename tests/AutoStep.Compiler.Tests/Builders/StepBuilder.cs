@@ -30,7 +30,16 @@ namespace AutoStep.Compiler.Tests.Builders
 
             return this;
         }
+
+        public StepBuilder Table(int line, int column, Action<TableBuilder> cfg)
+        {
+            var tableBuilder = new TableBuilder(line, column);
+
+            cfg(tableBuilder);
+
+            Built.Table = tableBuilder.Built;
+
+            return this;
+        }
     }
-
-
 }

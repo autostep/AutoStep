@@ -117,34 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AndMustFollowNormalStep" xml:space="preserve">
-    <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
-  </data>
-  <data name="InvalidFeatureKeyword" xml:space="preserve">
-    <value>The 'Feature' keyword is case-sensitive, so '{0}' should be 'Feature:'</value>
-  </data>
-  <data name="InvalidScenarioKeyword" xml:space="preserve">
-    <value>The 'Scenario' keyword is case-sensitive, so '{0}' should be 'Scenario:'</value>
-  </data>
-  <data name="NoScenarios" xml:space="preserve">
-    <value>Your Feature '{0}' has no Scenarios, so will not run any tests.</value>
-  </data>
-  <data name="OnlyOneFeatureAllowed" xml:space="preserve">
-    <value>You can only have one Feature per file. Create a new file for this Feature.</value>
-  </data>
-  <data name="OptionWithNoSetting" xml:space="preserve">
-    <value>Provided Option '{0}' has a setting value marker ':', but no value has been provided.</value>
-  </data>
-  <data name="StepNotExpected" xml:space="preserve">
-    <value>A Step is not expected here.</value>
-  </data>
-  <data name="SyntaxError" xml:space="preserve">
-    <value>Syntax Error: {0}</value>
-  </data>
-  <data name="TableColumnsMismatch" xml:space="preserve">
-    <value>The row contains {0} cell(s), but we are expecting {1}, because of the number of headers.</value>
-  </data>
-  <data name="UnexpectedAnnotation" xml:space="preserve">
-    <value>Not expecting an annotation at this position.</value>
+  <data name="AtLeastOneTokenMustBeSpecified" xml:space="preserve">
+    <value>At least one token type must be specified</value>
   </data>
 </root>

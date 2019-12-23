@@ -18,6 +18,7 @@ namespace AutoStep.Compiler
     internal class CompilerTreeWalker : AutoStepParserBaseVisitor<BuiltFile?>
     {
         private readonly string? sourceName;
+        private readonly ITokenStream tokenStream;
         private readonly List<CompilerMessage> messages = new List<CompilerMessage>();
         private readonly TokenStreamRewriter currentRewriter;
 
@@ -27,6 +28,8 @@ namespace AutoStep.Compiler
 
         private StepReference? currentStep = null;
         private StepReference? currentStepSetLastConcrete = null;
+        private BuiltTable? currentTable;
+        private TableRow? currentRow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerTreeWalker"/> class.
@@ -36,6 +39,7 @@ namespace AutoStep.Compiler
         public CompilerTreeWalker(string? sourceName, ITokenStream tokens)
         {
             this.sourceName = sourceName;
+            tokenStream = tokens;
             currentRewriter = new TokenStreamRewriter(tokens);
         }
 
@@ -190,6 +194,16 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
 
             var titleTree = context.featureTitle();
+
+            var featureToken = titleTree.FEATURE();
+            var featureKeyWordText = featureToken.GetText();
+
+            // We want the parser to allow case-insensitive keywords through, so we can assert on them
+            // here and give more useful errors.
+            if (featureKeyWordText != "Feature:")
+            {
+                AddMessage(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
+            }
 
             var title = titleTree.text().GetText();
             var description = ExtractDescription(context.description());
@@ -362,10 +376,10 @@ namespace AutoStep.Compiler
 
             var content = contentBlock.GetText();
 
-            if (!TryGetUnescapedArgumentText(contentBlock, out var unescaped))
+            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_QUOTE(), "'", out var escaped))
             {
                 // Nothing to escape, so just use the original value.
-                unescaped = content;
+                escaped = content;
             }
 
             currentStep.AddArgument(PositionalLineInfo(
@@ -373,7 +387,7 @@ namespace AutoStep.Compiler
                 {
                     RawArgument = content,
                     Type = ArgumentType.Interpolated,
-                    EscapedArgument = unescaped,
+                    EscapedArgument = escaped,
                     Value = null,
                 }, context));
 
@@ -394,10 +408,10 @@ namespace AutoStep.Compiler
 
             string content = contentBlock.GetText();
 
-            if (!TryGetUnescapedArgumentText(contentBlock, out var unescaped))
+            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_QUOTE(), "'", out var escaped))
             {
                 // Nothing to escape, so just use the original value.
-                unescaped = content;
+                escaped = content;
             }
 
             currentStep.AddArgument(PositionalLineInfo(
@@ -405,8 +419,8 @@ namespace AutoStep.Compiler
                 {
                     RawArgument = content,
                     Type = ArgumentType.Text,
-                    EscapedArgument = unescaped,
-                    Value = unescaped,
+                    EscapedArgument = escaped,
+                    Value = escaped,
                 }, context));
 
             return file;
@@ -422,8 +436,8 @@ namespace AutoStep.Compiler
             Debug.Assert(currentStep is object);
             Debug.Assert(file is object);
 
-            var valueText = context.FLOAT().GetText();
-            var symbolText = context.CURR_SYMBOL()?.GetText();
+            var valueText = context.ARG_FLOAT().GetText();
+            var symbolText = context.ARG_CURR_SYMBOL()?.GetText();
             var content = symbolText + valueText;
 
             currentStep.AddArgument(PositionalLineInfo(
@@ -449,8 +463,8 @@ namespace AutoStep.Compiler
             Debug.Assert(currentStep is object);
             Debug.Assert(file is object);
 
-            var valueText = context.INT().GetText();
-            var symbolText = context.CURR_SYMBOL()?.GetText();
+            var valueText = context.ARG_INT().GetText();
+            var symbolText = context.ARG_CURR_SYMBOL()?.GetText();
             var content = symbolText + valueText;
 
             currentStep.AddArgument(PositionalLineInfo(
@@ -462,6 +476,308 @@ namespace AutoStep.Compiler
                     Value = int.Parse(valueText, NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
                     Symbol = symbolText,
                 }, context));
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a statement that contains a table.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitStatementWithTable([NotNull] AutoStepParser.StatementWithTableContext context)
+        {
+            Debug.Assert(file is object);
+
+            base.VisitStatementWithTable(context);
+
+            Debug.Assert(currentStep is object);
+
+            currentStep.Table = currentTable;
+
+            currentTable = null;
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a table block (prepares the table).
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTableBlock([NotNull] AutoStepParser.TableBlockContext context)
+        {
+            Debug.Assert(file is object);
+            currentTable = new BuiltTable();
+
+            LineInfo(currentTable, context.tableHeader());
+
+            base.VisitTableBlock(context);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a table header.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTableHeader([NotNull] AutoStepParser.TableHeaderContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentTable is object);
+
+            LineInfo(currentTable.Header, context);
+
+            base.VisitTableHeader(context);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a table header cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTableHeaderCell([NotNull] AutoStepParser.TableHeaderCellContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentTable is object);
+
+            var headerTextBlock = context.tableCellTextBlock();
+
+            var header = new TableHeaderCell
+            {
+                HeaderName = headerTextBlock.GetText(),
+            };
+
+            PositionalLineInfo(header, headerTextBlock);
+
+            currentTable.Header.AddHeader(header);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a table data row.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTableRow([NotNull] AutoStepParser.TableRowContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentTable is object);
+
+            currentRow = LineInfo(new TableRow(), context);
+
+            base.VisitTableRow(context);
+
+            // Check if the number of cells in the row doesn't match the headings.
+            if (currentRow.Cells.Count != currentTable.ColumnCount)
+            {
+                AddMessageStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, currentTable.ColumnCount);
+            }
+
+            currentTable.AddRow(currentRow);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists the cell of a table data row.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTableRowCell([NotNull] AutoStepParser.TableRowCellContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cellContent = context.tableRowCellContent();
+
+            if (cellContent == null)
+            {
+                // Empty cell, add a cell with an empty argument.
+                var cell = new TableCell();
+
+                var cellWs = context.CELL_WS(0);
+
+                var arg = new StepArgument
+                {
+                    RawArgument = null,
+                    Type = ArgumentType.Empty,
+                    EscapedArgument = null,
+                    Value = null,
+                };
+
+                if (cellWs == null)
+                {
+                    // If there's no whitespace, we'll just have to use the start of the table delimiter.
+                    PositionalLineInfo(cell, context);
+                    PositionalLineInfo(arg, context);
+                }
+                else
+                {
+                    PositionalLineInfo(cell, cellWs);
+                    PositionalLineInfo(arg, cellWs);
+                }
+
+                cell.Value = arg;
+
+                currentRow.AddCell(cell);
+            }
+            else
+            {
+                Visit(cellContent);
+            }
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a float value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cell = new TableCell();
+
+            PositionalLineInfo(cell, context);
+
+            var valueText = context.CELL_FLOAT().GetText();
+            var symbolText = context.CELL_CURR_SYMBOL()?.GetText();
+            var content = symbolText + valueText;
+
+            var arg = PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.NumericDecimal,
+                    EscapedArgument = content,
+                    Value = decimal.Parse(valueText, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
+                    Symbol = symbolText,
+                }, context);
+
+            cell.Value = arg;
+
+            currentRow.AddCell(cell);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists an int value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cell = new TableCell();
+
+            PositionalLineInfo(cell, context);
+
+            var valueText = context.CELL_INT().GetText();
+            var symbolText = context.CELL_CURR_SYMBOL()?.GetText();
+            var content = symbolText + valueText;
+
+            var arg = PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.NumericInteger,
+                    EscapedArgument = content,
+                    Value = int.Parse(valueText, NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
+                    Symbol = symbolText,
+                }, context);
+
+            cell.Value = arg;
+
+            currentRow.AddCell(cell);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists an interpolated value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cell = new TableCell();
+
+            PositionalLineInfo(cell, context);
+            var contentBlock = context.tableCellTextBlock();
+
+            var content = contentBlock.GetText();
+
+            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_CELL_DELIMITER(), "|", out var escaped))
+            {
+                // Nothing to escape, so just use the original value.
+                escaped = content;
+            }
+
+            var arg = PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.Interpolated,
+                    EscapedArgument = escaped,
+                    Value = null,
+                }, context);
+
+            cell.Value = arg;
+
+            currentRow.AddCell(cell);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Vists a text value in a table data cell.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitCellText([NotNull] AutoStepParser.CellTextContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentRow is object);
+
+            var cell = new TableCell();
+
+            PositionalLineInfo(cell, context);
+            var contentBlock = context.tableCellTextBlock();
+
+            var content = contentBlock.GetText();
+
+            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_CELL_DELIMITER(), "|", out var escaped))
+            {
+                // Nothing to escape, so just use the original value.
+                escaped = content;
+            }
+
+            var arg = PositionalLineInfo(
+                new StepArgument
+                {
+                    RawArgument = content,
+                    Type = ArgumentType.Text,
+                    EscapedArgument = escaped,
+                    Value = escaped,
+                }, context);
+
+            cell.Value = arg;
+
+            currentRow.AddCell(cell);
 
             return file;
         }
@@ -510,68 +826,62 @@ namespace AutoStep.Compiler
             currentStepSet.Add(step);
         }
 
-        private bool TryGetUnescapedArgumentText(AutoStepParser.StatementTextContentBlockContext context, out string? unescaped)
+        private bool TryEscapeText<TContext>(TContext context, Func<TContext, ITerminalNode[]> escapeTokens, string replacement, out string? escaped)
+            where TContext : ParserRuleContext
         {
-            var escapedQuotes = context.ESCAPE_QUOTE();
-            bool anyQuotes = false;
+            var escapeSymbols = escapeTokens(context);
+            bool anyEscapes = false;
 
-            foreach (var quoteSymbol in escapedQuotes)
+            foreach (var symbol in escapeSymbols)
             {
-                anyQuotes = true;
-                currentRewriter.Replace(quoteSymbol.Symbol, "'");
+                anyEscapes = true;
+                currentRewriter.Replace(symbol.Symbol, replacement);
             }
 
-            if (anyQuotes)
+            if (anyEscapes)
             {
                 // Get the rewritten text as a way to 'unescape'.
-                unescaped = currentRewriter.GetText(context.SourceInterval);
+                escaped = currentRewriter.GetText(context.SourceInterval);
             }
             else
             {
-                unescaped = null;
+                escaped = null;
             }
 
-            return anyQuotes;
+            return anyEscapes;
         }
 
         private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
-            if (level == CompilerMessageLevel.Error)
-            {
-                Success = false;
-            }
+            AddMessage(level, code, context.Start, context.Stop, args);
+        }
 
-            var message = new CompilerMessage(
-                sourceName,
-                level,
-                code,
-                string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
-                context.Start.Line,
-                context.Start.Column + 1,
-                context.Stop.Line,
-                context.Stop.Column + 1 + (context.Stop.StopIndex - context.Stop.StartIndex));
-
-            messages.Add(message);
+        private void AddMessageStoppingAtPrecedingToken(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            AddMessage(level, code, context.Start, tokenStream.GetPrecedingToken(context.Stop), args);
         }
 
         private void AddMessage(ITerminalNode context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            AddMessage(level, code, context.Symbol, context.Symbol, args);
+        }
+
+        private void AddMessage(CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
         {
             if (level == CompilerMessageLevel.Error)
             {
                 Success = false;
             }
 
-            var symbol = context.Symbol;
-
             var message = new CompilerMessage(
                 sourceName,
                 level,
                 code,
                 string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
-                symbol.Line,
-                symbol.Column + 1,
-                symbol.Line,
-                symbol.Column + 1 + (symbol.StopIndex - symbol.StartIndex));
+                start.Line,
+                start.Column + 1,
+                stop.Line,
+                stop.Column + 1 + (stop.StopIndex - stop.StartIndex));
 
             messages.Add(message);
         }
@@ -581,7 +891,17 @@ namespace AutoStep.Compiler
         {
             element.SourceLine = ctxt.Start.Line;
             element.SourceColumn = ctxt.Start.Column + 1;
-            element.EndColumn = ctxt.Stop.Column + 1;
+            element.EndColumn = ctxt.Stop.Column + (ctxt.Stop.StopIndex - ctxt.Stop.StartIndex) + 1;
+
+            return element;
+        }
+
+        private TElement PositionalLineInfo<TElement>(TElement element, ITerminalNode ctxt)
+            where TElement : PositionalElement
+        {
+            element.SourceLine = ctxt.Symbol.Line;
+            element.SourceColumn = ctxt.Symbol.Column + 1;
+            element.EndColumn = ctxt.Symbol.Column + (ctxt.Symbol.StopIndex - ctxt.Symbol.StartIndex) + 1;
 
             return element;
         }
@@ -604,6 +924,12 @@ namespace AutoStep.Compiler
             return element;
         }
 
+        /// <summary>
+        /// Generates the description text from a parsed description context.
+        /// Handles indentation of the overall description, and indentation inside it.
+        /// </summary>
+        /// <param name="descriptionContext">The context.</param>
+        /// <returns>The complete description string.</returns>
         private string? ExtractDescription(AutoStepParser.DescriptionContext descriptionContext)
         {
             if (descriptionContext is null)

@@ -70,6 +70,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;Feature&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Feature:&apos;.
+        /// </summary>
+        internal static string InvalidFeatureKeyword {
+            get {
+                return ResourceManager.GetString("InvalidFeatureKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;Scenario&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Scenario:&apos;.
         /// </summary>
         internal static string InvalidScenarioKeyword {
@@ -120,6 +129,15 @@ namespace AutoStep.Compiler {
         internal static string SyntaxError {
             get {
                 return ResourceManager.GetString("SyntaxError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The row contains {0} cell(s), but we are expecting {1}, because of the number of headers..
+        /// </summary>
+        internal static string TableColumnsMismatch {
+            get {
+                return ResourceManager.GetString("TableColumnsMismatch", resourceCulture);
             }
         }
         

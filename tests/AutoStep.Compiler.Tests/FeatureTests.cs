@@ -52,12 +52,22 @@ namespace AutoStep.Compiler.Tests
                 new CompilerMessage(
                     null,
                     CompilerMessageLevel.Error,
-                    CompilerMessageCode.SyntaxError,
-                    "Syntax Error: missing 'Feature:' at 'FeaturE:'",
+                    CompilerMessageCode.InvalidFeatureKeyword,
+                    "The 'Feature' keyword is case-sensitive, so 'FeaturE:' should be 'Feature:'",
                     startLineNo: 2,
                     startColumn: 15,
                     endLineNo: 2,
                     endColumn: 22
+                ),
+                new CompilerMessage(
+                    null,
+                    CompilerMessageLevel.Warning,
+                    CompilerMessageCode.NoScenarios,
+                    "Your Feature 'My Feature' has no Scenarios, so will not run any tests.",
+                    startLineNo: 2,
+                    startColumn: 15,
+                    endLineNo: 2,
+                    endColumn: 33
                 )
             );
         }

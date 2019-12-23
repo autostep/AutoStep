@@ -20,6 +20,20 @@ namespace AutoStep.Compiler.Tests.Builders
             };
         }
 
+        public ArgumentBuilder(TableCell containingCell, string rawValue, ArgumentType type, int start, int end)
+        {
+            Built = new StepArgument
+            {
+                SourceLine = containingCell.SourceLine,
+                Type = type,
+                RawArgument = rawValue,
+                EscapedArgument = rawValue,
+                Value = rawValue,
+                SourceColumn = start,
+                EndColumn = end
+            };
+        }
+
         public ArgumentBuilder Unescaped(string value)
         {
             Built.EscapedArgument = value;

@@ -50,5 +50,15 @@ namespace AutoStep.Compiler
         /// The scenario keyword is not valid.
         /// </summary>
         InvalidScenarioKeyword =  00008,
+
+        /// <summary>
+        /// The feature keyword is not valid.
+        /// </summary>
+        InvalidFeatureKeyword = 00009,
+
+        /// <summary>
+        /// The number of columns in a row does not match the number of columns in the header.
+        /// </summary>
+        TableColumnsMismatch = 000010,
     }
 }
