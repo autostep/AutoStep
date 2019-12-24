@@ -237,7 +237,7 @@
         </member>
         <member name="P:AutoStep.Core.StepArgument.Value">
             <summary>
-            Gets or sets the parsed value of the argument. Null for interpolated arguments.
+            Gets or sets the parsed value of the argument. Null for interpolated arguments and arguments that contain example replacements.
             </summary>
         </member>
         <member name="P:AutoStep.Core.StepArgument.Type">

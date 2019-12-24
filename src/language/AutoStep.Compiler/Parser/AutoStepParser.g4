@@ -63,24 +63,33 @@ statement: GIVEN statementBody #given
 
 statementBody: statementSection+;
             
-statementSection: STATEMENT_SECTION                               # statementSectionPart
-                | STATEMENT_WS                                    # statementWs
-                | OPEN_QUOTE CLOSE_QUOTE                          # argEmpty
-                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_FLOAT CLOSE_QUOTE       # argFloat
-                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_INT CLOSE_QUOTE         # argInt       
-                | OPEN_QUOTE ARG_COLON statementTextContentBlock CLOSE_QUOTE      # argInterpolate
-                | OPEN_QUOTE statementTextContentBlock CLOSE_QUOTE            # argText
+statementSection: STATEMENT_SECTION                                   # statementSectionPart
+                | STATEMENT_WS                                        # statementWs
+                | OPEN_QUOTE CLOSE_QUOTE                              # argEmpty
+                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_FLOAT CLOSE_QUOTE   # argFloat
+                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_INT CLOSE_QUOTE     # argInt
+                | OPEN_QUOTE ARG_COLON statementArgument CLOSE_QUOTE  # argInterpolate
+                | OPEN_QUOTE statementArgument CLOSE_QUOTE            # argText
                 ;
 
-statementTextContentBlock: (
-                            ARG_WS              |
-                            ARG_TEXT_CONTENT    |
-                            ARG_INT             |
-                            ARG_FLOAT           |
-                            ARG_CURR_SYMBOL     |
-                            ARG_COLON           |
-                            ESCAPE_QUOTE
-                           )+;
+statementArgument: statementArgumentBlock+;
+
+statementArgumentBlock:  ARG_EXAMPLE_START argumentBody+? ARG_EXAMPLE_END #exampleArgBlock
+                      |  argumentBody+?                                 #textArgBlock
+                      ;
+
+argumentBody: ARG_WS              
+            | ARG_TEXT_CONTENT    
+            | ARG_INT             
+            | ARG_FLOAT           
+            | ARG_CURR_SYMBOL     
+            | ARG_COLON           
+            | ARG_ESCAPE_QUOTE
+            | ARG_EXAMPLE_START_ESCAPE
+            | ARG_EXAMPLE_END_ESCAPE
+            | ARG_EXAMPLE_START
+            | ARG_EXAMPLE_END
+            ;
 
 examples: exampleBlock*;
 
@@ -93,26 +102,46 @@ tableBlock: WS? tableHeader
 
 tableHeader: tableHeaderCell+ CELL_DELIMITER ROW_NL;
 
-tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableCellTextBlock CELL_WS?;
+tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? headerCell CELL_WS?;
 
 tableRow: tableRowCell+ CELL_DELIMITER ROW_NL;
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_WS?;
 
-tableRowCellContent: CELL_CURR_SYMBOL? CELL_FLOAT          # cellFloat
-                   | CELL_CURR_SYMBOL? CELL_INT            # cellInt       
-                   | CELL_COLON tableCellTextBlock  # cellInterpolate
-                   | tableCellTextBlock             # cellText;
+tableRowCellContent: CELL_CURR_SYMBOL? CELL_FLOAT  # cellFloat
+                   | CELL_CURR_SYMBOL? CELL_INT    # cellInt       
+                   | CELL_COLON cellArgument       # cellInterpolate
+                   | cellArgument                  # cellText;
 
-tableCellTextBlock: (
-                        CELL_WS              |
-                        CELL_TEXT_CONTENT    |
-                        CELL_INT             |
-                        CELL_FLOAT           |
-                        CELL_CURR_SYMBOL     |
-                        CELL_COLON           |
-                        ESCAPE_CELL_DELIMITER
-                    )+?;
+headerCell: headerCellBody+?;
+
+cellArgument: cellArgumentBlock+?;
+
+cellArgumentBlock: CELL_EXAMPLE_START generalCellBody+? CELL_EXAMPLE_END #exampleCellBlock
+                 | generalCellBody+?                                     #textCellBlock
+                 ;
+
+headerCellBody: CELL_WS
+              | CELL_TEXT_CONTENT
+              | CELL_INT
+              | CELL_FLOAT
+              | CELL_CURR_SYMBOL
+              | CELL_COLON
+              | ESCAPE_CELL_DELIMITER
+              ;
+
+generalCellBody: CELL_WS              
+               | CELL_TEXT_CONTENT    
+               | CELL_INT             
+               | CELL_FLOAT           
+               | CELL_CURR_SYMBOL     
+               | CELL_COLON           
+               | ESCAPE_CELL_DELIMITER
+               | CELL_EXAMPLE_START_ESCAPE
+               | CELL_EXAMPLE_END_ESCAPE
+               | CELL_EXAMPLE_START
+               | CELL_EXAMPLE_END
+               ;
 
 text: (WS? WORD)+;
 line: WS? text? NEWLINE;

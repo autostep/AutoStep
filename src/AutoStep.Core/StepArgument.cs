@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace AutoStep.Core
 {
+    public class ArgumentSection : PositionalElement
+    {
+        public string RawText { get; set; }
+
+        public string EscapedText { get; set; }
+
+        public string ExampleInsertionName { get; set; }
+    }
+
     /// <summary>
     /// Represents a provided argument to a Step Reference.
     /// </summary>
@@ -19,7 +28,7 @@ namespace AutoStep.Core
         public string EscapedArgument { get; set; }
 
         /// <summary>
-        /// Gets or sets the parsed value of the argument. Null for interpolated arguments.
+        /// Gets or sets the parsed value of the argument. Null for interpolated arguments and arguments that contain example replacements.
         /// </summary>
         public object Value { get; set; }
 
@@ -32,5 +41,7 @@ namespace AutoStep.Core
         /// Gets or sets an optional leading symbol from the original value ($, £, etc).
         /// </summary>
         public string Symbol { get; set; }
+
+        public ArgumentSection[] Sections { get; set; }
     }
 }

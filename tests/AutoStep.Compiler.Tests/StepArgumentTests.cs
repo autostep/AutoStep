@@ -101,8 +101,8 @@ namespace AutoStep.Compiler.Tests
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument \\' quoted' to something", 6, 21, step => step
                             .Argument(ArgumentType.Text, "argument \\' quoted", 41, 60, arg => arg
-                                .Unescaped("argument ' quoted")
-            ))))) ;
+                                .Escaped("argument ' quoted")
+            )))));
         }
         
         [Fact]
@@ -126,6 +126,28 @@ namespace AutoStep.Compiler.Tests
                                 .NullValue()
             )))));
         }
+
+        //[Fact]
+        //public async Task StepCanHaveArgumentWithSingleAngleBracket()
+        //{
+        //    const string TestFile =
+        //    @"                
+        //      Feature: My Feature
+
+        //        Scenario: My Scenario
+
+        //            Given I have passed 'this > that' to something
+
+        //    ";
+
+        //    await CompileAndAssertSuccess(TestFile, file => file
+        //        .Feature("My Feature", 2, 15, feat => feat
+        //            .Scenario("My Scenario", 4, 17, scen => scen
+        //                .Given("I have passed 'this > that' to something", 6, 21, step => step
+        //                    .Argument(ArgumentType.Text, "this > that", 41, 52,)
+
+        //    ))));
+        //}
 
         [Fact]
         public async Task IntegerArgument()
