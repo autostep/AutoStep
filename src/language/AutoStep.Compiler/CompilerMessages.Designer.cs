@@ -106,6 +106,24 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have specified an Example variable to insert, &apos;{0}&apos;, but the step is in a Scenario; did you mean to use a Scenario Outline instead?.
+        /// </summary>
+        internal static string ExampleVariableInScenario {
+            get {
+                return ResourceManager.GetString("ExampleVariableInScenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have specified an Example variable to insert, &apos;{0}&apos;, but you have not declared the variable in any of your Examples. This value will always be blank when the test runs..
+        /// </summary>
+        internal static string ExampleVariableNotDeclared {
+            get {
+                return ResourceManager.GetString("ExampleVariableNotDeclared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;Examples&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Examples:&apos;.
         /// </summary>
         internal static string InvalidExamplesKeyword {

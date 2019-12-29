@@ -211,6 +211,16 @@
             The examples keyword is not valid.
             </summary>
         </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.ExampleVariableInScenario">
+            <summary>
+            An examples variable insertion has been specified in a regular scenario.
+            </summary>
+        </member>
+        <member name="F:AutoStep.Compiler.CompilerMessageCode.ExampleVariableNotDeclared">
+            <summary>
+            Example variable has been referenced, but not declared.
+            </summary>
+        </member>
         <member name="F:AutoStep.Compiler.CompilerMessageCode.SyntaxError">
             <summary>
             Generic Syntax error found while parsing the token stream.
@@ -275,6 +285,16 @@
         <member name="P:AutoStep.Compiler.CompilerMessages.ExamplesBlockRequiresTable">
             <summary>
               Looks up a localized string similar to Examples blocks must contain a table..
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.ExampleVariableInScenario">
+            <summary>
+              Looks up a localized string similar to You have specified an Example variable to insert, &apos;{0}&apos;, but the step is in a Scenario; did you mean to use a Scenario Outline instead?.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Compiler.CompilerMessages.ExampleVariableNotDeclared">
+            <summary>
+              Looks up a localized string similar to You have specified an Example variable to insert, &apos;{0}&apos;, but you have not declared the variable in any of your Examples. This value will always be blank when the test runs..
             </summary>
         </member>
         <member name="P:AutoStep.Compiler.CompilerMessages.InvalidExamplesKeyword">
@@ -523,6 +543,20 @@
             <param name="context">The parse context.</param>
             <returns>The file.</returns>
         </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitExampleArgBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleArgBlockContext)">
+            <summary>
+            Visit the example block for example reference variables inside an argument.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTextArgBlock(AutoStep.Compiler.Parser.AutoStepParser.TextArgBlockContext)">
+            <summary>
+            Visit the argument block for text.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
         <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitArgFloat(AutoStep.Compiler.Parser.AutoStepParser.ArgFloatContext)">
             <summary>
             Visits a float statement argument.
@@ -540,6 +574,13 @@
         <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitStatementWithTable(AutoStep.Compiler.Parser.AutoStepParser.StatementWithTableContext)">
             <summary>
             Vists a statement that contains a table.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitExampleBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleBlockContext)">
+            <summary>
+            Visit an examples block.
             </summary>
             <param name="context">The parse context.</param>
             <returns>The file.</returns>
@@ -603,6 +644,20 @@
         <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitCellText(AutoStep.Compiler.Parser.AutoStepParser.CellTextContext)">
             <summary>
             Vists a text value in a table data cell.
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitExampleCellBlock(AutoStep.Compiler.Parser.AutoStepParser.ExampleCellBlockContext)">
+            <summary>
+            Visit the example cell block (which is the part of the cell that contains an example reference).
+            </summary>
+            <param name="context">The parse context.</param>
+            <returns>The file.</returns>
+        </member>
+        <member name="M:AutoStep.Compiler.CompilerTreeWalker.VisitTextCellBlock(AutoStep.Compiler.Parser.AutoStepParser.TextCellBlockContext)">
+            <summary>
+            Visit a block within the cell that contains text.
             </summary>
             <param name="context">The parse context.</param>
             <returns>The file.</returns>
@@ -1212,6 +1267,34 @@
             </summary>
             <param name="context">The parse tree.</param>
         </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterArgumentBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentBodyContext)">
             <summary>
             Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentBody"/>.
@@ -1458,6 +1541,34 @@
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitHeaderCellBody(AutoStep.Compiler.Parser.AutoStepParser.HeaderCellBodyContext)">
             <summary>
             Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.headerCellBody"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.EnterCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
+            <para>The default implementation does nothing.</para>
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseListener.ExitCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
             <para>The default implementation does nothing.</para>
             </summary>
             <param name="context">The parse tree.</param>
@@ -1948,6 +2059,28 @@
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
         </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitArgumentBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentBodyContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentBody"/>.
@@ -2133,6 +2266,28 @@
         <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitHeaderCellBody(AutoStep.Compiler.Parser.AutoStepParser.HeaderCellBodyContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.headerCellBody"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            <para>
+            The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
+            on <paramref name="context"/>.
+            </para>
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.AutoStepParserBaseVisitor`1.VisitCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
             <para>
             The default implementation returns the result of calling <see cref="M:Antlr4.Runtime.Tree.AbstractParseTreeVisitor`1.VisitChildren(Antlr4.Runtime.Tree.IRuleNode)"/>
             on <paramref name="context"/>.
@@ -2653,6 +2808,30 @@
             </summary>
             <param name="context">The parse tree.</param>
         </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterArgumentBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentBodyContext)">
             <summary>
             Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentBody"/>.
@@ -2866,6 +3045,30 @@
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitHeaderCellBody(AutoStep.Compiler.Parser.AutoStepParser.HeaderCellBodyContext)">
             <summary>
             Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.headerCellBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.EnterCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Enter a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserListener.ExitCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Exit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
             </summary>
             <param name="context">The parse tree.</param>
         </member>
@@ -3190,6 +3393,20 @@
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>
         </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitArgumentExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitArgumentExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.ArgumentExampleNameBodyContentContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentExampleNameBodyContent"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitArgumentBody(AutoStep.Compiler.Parser.AutoStepParser.ArgumentBodyContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.argumentBody"/>.
@@ -3311,6 +3528,20 @@
         <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitHeaderCellBody(AutoStep.Compiler.Parser.AutoStepParser.HeaderCellBodyContext)">
             <summary>
             Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.headerCellBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitCellExampleNameBody(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBody"/>.
+            </summary>
+            <param name="context">The parse tree.</param>
+            <return>The visitor result.</return>
+        </member>
+        <member name="M:AutoStep.Compiler.Parser.IAutoStepParserVisitor`1.VisitCellExampleNameBodyContent(AutoStep.Compiler.Parser.AutoStepParser.CellExampleNameBodyContentContext)">
+            <summary>
+            Visit a parse tree produced by <see cref="M:AutoStep.Compiler.Parser.AutoStepParser.cellExampleNameBodyContent"/>.
             </summary>
             <param name="context">The parse tree.</param>
             <return>The visitor result.</return>

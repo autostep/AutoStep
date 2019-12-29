@@ -214,6 +214,41 @@ namespace AutoStep.Compiler.Tests
 
 
         [Fact]
+        public async Task EmptyHeadingAllowed()
+        {
+            const string TestFile =
+                        @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+
+                        Given this step has a table:
+                            | heading1 |          |
+                            | r1.c1    | r1.c2    |
+            ";
+
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("this step has a table:", 6, 25, step => step
+                            .Table(7, 29, table => table
+                                .Headers(7, 29,
+                                    ("heading1", 31, 38),
+                                    (null, 41, 50)
+                                )
+                                .Row(8, 29,
+                                    (ArgumentType.Text, "r1.c1", 31, 35, null),
+                                    (ArgumentType.Text, "r1.c2", 42, 46, null)
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+
+        [Fact]
         public async Task MultipleUnterminatedRows()
         {
             const string TestFile =

@@ -264,6 +264,18 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitTextArgBlock([NotNull] AutoStepParser.TextArgBlockContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArgumentExampleNameBody([NotNull] AutoStepParser.ArgumentExampleNameBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBodyContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArgumentExampleNameBodyContent([NotNull] AutoStepParser.ArgumentExampleNameBodyContentContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentBody"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -371,6 +383,18 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitHeaderCellBody([NotNull] AutoStepParser.HeaderCellBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCellExampleNameBody([NotNull] AutoStepParser.CellExampleNameBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBodyContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCellExampleNameBodyContent([NotNull] AutoStepParser.CellExampleNameBodyContentContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.generalCellBody"/>.
 	/// </summary>

@@ -74,9 +74,22 @@ statementSection: STATEMENT_SECTION                                   # statemen
 
 statementArgument: statementArgumentBlock+;
 
-statementArgumentBlock:  ARG_EXAMPLE_START argumentBody+? ARG_EXAMPLE_END #exampleArgBlock
-                      |  argumentBody+?                                 #textArgBlock
+statementArgumentBlock:  ARG_EXAMPLE_START argumentExampleNameBody ARG_EXAMPLE_END #exampleArgBlock
+                      |  argumentBody+?                                            #textArgBlock
                       ;
+
+argumentExampleNameBody: argumentExampleNameBodyContent (ARG_WS? argumentExampleNameBodyContent)*;
+
+argumentExampleNameBodyContent: ARG_TEXT_CONTENT
+                              | ARG_INT
+                              | ARG_FLOAT
+                              | ARG_COLON
+                              | ARG_CURR_SYMBOL
+                              | ARG_ESCAPE_QUOTE
+                              | ARG_EXAMPLE_START
+                              | ARG_EXAMPLE_START_ESCAPE
+                              | ARG_EXAMPLE_END_ESCAPE
+                              ;
 
 argumentBody: ARG_WS              
             | ARG_TEXT_CONTENT    
@@ -102,7 +115,7 @@ tableBlock: WS? tableHeader
 
 tableHeader: tableHeaderCell+ CELL_DELIMITER ROW_NL;
 
-tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? headerCell CELL_WS?;
+tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? headerCell? CELL_WS?;
 
 tableRow: tableRowCell+ CELL_DELIMITER ROW_NL;
 
@@ -117,7 +130,7 @@ headerCell: headerCellBody+?;
 
 cellArgument: cellArgumentBlock+?;
 
-cellArgumentBlock: CELL_EXAMPLE_START generalCellBody+? CELL_EXAMPLE_END #exampleCellBlock
+cellArgumentBlock: CELL_EXAMPLE_START cellExampleNameBody CELL_EXAMPLE_END #exampleCellBlock
                  | generalCellBody+?                                     #textCellBlock
                  ;
 
@@ -129,6 +142,19 @@ headerCellBody: CELL_WS
               | CELL_COLON
               | ESCAPE_CELL_DELIMITER
               ;
+
+cellExampleNameBody: cellExampleNameBodyContent (CELL_WS? cellExampleNameBodyContent)*;
+
+cellExampleNameBodyContent: CELL_TEXT_CONTENT
+                          | CELL_INT
+                          | CELL_FLOAT
+                          | CELL_COLON
+                          | CELL_CURR_SYMBOL
+                          | ESCAPE_CELL_DELIMITER
+                          | CELL_EXAMPLE_START
+                          | CELL_EXAMPLE_START_ESCAPE
+                          | CELL_EXAMPLE_END_ESCAPE
+                          ;
 
 generalCellBody: CELL_WS              
                | CELL_TEXT_CONTENT    

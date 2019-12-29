@@ -30,7 +30,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
             cfg(newExample);
 
-            Built.Examples.Add(newExample.Built);
+            Built.AddExample(newExample.Built);
 
             return this;
         }

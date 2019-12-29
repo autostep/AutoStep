@@ -132,6 +132,12 @@
   <data name="ExamplesBlockRequiresTable" xml:space="preserve">
     <value>Examples blocks must contain a table.</value>
   </data>
+  <data name="ExampleVariableInScenario" xml:space="preserve">
+    <value>You have specified an Example variable to insert, '{0}', but the step is in a Scenario; did you mean to use a Scenario Outline instead?</value>
+  </data>
+  <data name="ExampleVariableNotDeclared" xml:space="preserve">
+    <value>You have specified an Example variable to insert, '{0}', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.</value>
+  </data>
   <data name="InvalidExamplesKeyword" xml:space="preserve">
     <value>The 'Examples' keyword is case-sensitive, so '{0}' should be 'Examples:'</value>
   </data>

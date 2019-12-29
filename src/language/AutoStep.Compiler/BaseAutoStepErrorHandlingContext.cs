@@ -6,9 +6,21 @@ using AutoStep.Compiler.Parser;
 
 namespace AutoStep.Compiler
 {
-
-    internal class BaseAutoStepErrorHandlingContext
+    /// <summary>
+    /// Represents a base syntax error handling context, that allows for managed
+    /// error matching based on the state of the parser and the position in the token stream.
+    /// </summary>
+    internal abstract class BaseAutoStepErrorHandlingContext
     {
+        private Func<bool>[] handlers;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseAutoStepErrorHandlingContext"/> class.
+        /// </summary>
+        /// <param name="tokenStream">The token stream for the file being parsed.</param>
+        /// <param name="recognizer">The Antlr recogniser.</param>
+        /// <param name="offendingSymbol">The offending symbol from the syntax error.</param>
+        /// <param name="ex">The syntax parse exception (if there is one).</param>
         public BaseAutoStepErrorHandlingContext(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException ex)
         {
             TokenStream = tokenStream;
@@ -18,11 +30,6 @@ namespace AutoStep.Compiler
             StartingSymbol = OffendingSymbol;
             EndingSymbol = OffendingSymbol;
             Code = CompilerMessageCode.SyntaxError;
-        }
-
-        protected void SetErrorHandlers(params Func<bool>[] handlers)
-        {
-            Handlers = handlers;
         }
 
         public void DoErrorMatching()
@@ -116,7 +123,10 @@ namespace AutoStep.Compiler
             IgnoreFollowingEndOfFileMessages = true;
         }
 
-        private Func<bool>[] Handlers { get; set; }
+        protected void SetErrorHandlers(params Func<bool>[] handlers)
+        {
+            Handlers = handlers;
+        }
 
     }
 }

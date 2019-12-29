@@ -71,6 +71,16 @@ namespace AutoStep.Compiler
         /// </summary>
         InvalidExamplesKeyword = 00012,
 
+        /// <summary>
+        /// An examples variable insertion has been specified in a regular scenario.
+        /// </summary>
+        ExampleVariableInScenario = 00013,
+
+        /// <summary>
+        /// Example variable has been referenced, but not declared.
+        /// </summary>
+        ExampleVariableNotDeclared = 00014,
+
         //// Syntax Errors ////
 
         /// <summary>

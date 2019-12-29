@@ -22,16 +22,4 @@ namespace AutoStep.Core
         /// </summary>
         public string Description { get; set; }
     }
-
-    public class BuiltExample : BuiltElement, IAnnotatable
-    {
-        public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
-
-        public BuiltTable Table { get; set; }
-    }
-
-    public class BuiltScenarioOutline : BuiltScenario
-    {
-        public List<BuiltExample> Examples { get; } = new List<BuiltExample>();
-    }
 }

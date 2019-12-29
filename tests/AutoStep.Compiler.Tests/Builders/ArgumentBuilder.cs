@@ -1,4 +1,5 @@
-﻿using AutoStep.Core;
+﻿using System.Collections.Generic;
+using AutoStep.Core;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
@@ -6,6 +7,7 @@ namespace AutoStep.Compiler.Tests.Builders
     {
         private bool moddedValue = false;
         private bool customSections = false;
+        private List<ArgumentSection> addedSections = new List<ArgumentSection>();
 
         public ArgumentBuilder(StepReference containingStep, string rawValue, ArgumentType type, int start, int end)
         {
@@ -61,6 +63,59 @@ namespace AutoStep.Compiler.Tests.Builders
             };
 
             AddDefaultSection();
+        }
+
+        public ArgumentBuilder Section(string sectionText, int start, int end)
+        {
+            customSections = true;
+
+            addedSections.Add(new ArgumentSection
+            {
+                SourceLine = Built.SourceLine,
+                SourceColumn = start,
+                EndColumn = end,
+                RawText = sectionText,
+                EscapedText = sectionText
+            });
+
+            Built.Sections = addedSections.ToArray();
+
+            return this;
+        }
+        public ArgumentBuilder Section(string sectionText, string escapedText, int start, int end)
+        {
+            customSections = true;
+
+            addedSections.Add(new ArgumentSection
+            {
+                SourceLine = Built.SourceLine,
+                SourceColumn = start,
+                EndColumn = end,
+                RawText = sectionText,
+                EscapedText = escapedText
+            });
+
+            Built.Sections = addedSections.ToArray();
+
+            return this;
+        }
+        public ArgumentBuilder ExampleVariable(string variableName, int start, int end)
+        {
+            customSections = true;
+
+            addedSections.Add(new ArgumentSection
+            {
+                SourceLine = Built.SourceLine,
+                SourceColumn = start,
+                EndColumn = end,
+                RawText = "<" + variableName + ">",
+                EscapedText = "<" + variableName + ">",
+                ExampleInsertionName = variableName
+            });
+
+            Built.Sections = addedSections.ToArray();
+
+            return this;
         }
 
         public ArgumentBuilder Escaped(string value)

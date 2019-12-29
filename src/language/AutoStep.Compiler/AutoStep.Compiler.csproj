@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Subversion\autostep\autostep\src\language\AutoStep.Compiler\AutoStep.Compiler.xml</DocumentationFile>
+    <DocumentationFile>.\AutoStep.Compiler.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>D:\Subversion\autostep\autostep\src\language\AutoStep.Compiler\AutoStep.Compiler.xml</DocumentationFile>
+    <DocumentationFile>.\AutoStep.Compiler.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
