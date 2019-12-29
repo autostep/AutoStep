@@ -5,9 +5,19 @@ using AutoStep.Compiler.Parser;
 
 namespace AutoStep.Compiler
 {
+    /// <summary>
+    /// Provides the default syntax error handling.
+    /// </summary>
     internal class DefaultAutoStepErrorHandling : BaseAutoStepErrorHandlingContext
     {
-        public DefaultAutoStepErrorHandling(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException ex)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultAutoStepErrorHandling"/> class.
+        /// </summary>
+        /// <param name="tokenStream">The token stream for the file being parsed.</param>
+        /// <param name="recognizer">The Antlr recogniser.</param>
+        /// <param name="offendingSymbol">The offending symbol from the syntax error.</param>
+        /// <param name="ex">The syntax parse exception (if there is one).</param>
+        public DefaultAutoStepErrorHandling(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
             : base(tokenStream, recognizer, offendingSymbol, ex)
         {
             SetErrorHandlers(
@@ -19,15 +29,14 @@ namespace AutoStep.Compiler
                 ExpectingArgumentClosingQuote,
                 ExpectingTableRowTerminator,
                 ExampleBlockInputMismatchExpectingTable,
-                UnexpectedEndOfFile
-            );
+                UnexpectedEndOfFile);
         }
 
         private bool FeatureTitleInputMismatchMissingTitle()
         {
-            if (ContextIs<AutoStepParser.FeatureTitleContext>() &&
+            if (Context is AutoStepParser.FeatureTitleContext &&
                 ExpectingTokens(AutoStepParser.WORD) &&
-                (OffendingSymbolIsNot(AutoStepParser.Eof) || ExceptionIs<InputMismatchException>()))
+                (OffendingSymbolIsNot(AutoStepParser.Eof) || Exception is InputMismatchException))
             {
                 ChangeError(CompilerMessageCode.NoFeatureTitleProvided);
 
@@ -44,8 +53,8 @@ namespace AutoStep.Compiler
 
         private bool ScenarioTitleInputMismatchMissingTitle()
         {
-            if (ExceptionIs<InputMismatchException>() &&
-                ContextIs<AutoStepParser.NormalScenarioTitleContext>() &&
+            if (Exception is InputMismatchException &&
+                Context is AutoStepParser.NormalScenarioTitleContext &&
                 ExpectingTokens(AutoStepParser.WORD))
             {
                 // Title should have been provided, but it has not.
@@ -62,8 +71,8 @@ namespace AutoStep.Compiler
 
         private bool ScenarioOutlineTitleInputMismatchMissingTitle()
         {
-            if (ExceptionIs<InputMismatchException>() &&
-                ContextIs<AutoStepParser.ScenarioOutlineTitleContext>() &&
+            if (Exception is InputMismatchException &&
+                Context is AutoStepParser.ScenarioOutlineTitleContext &&
                 ExpectingTokens(AutoStepParser.WORD))
             {
                 // Title should have been provided, but it has not.
@@ -145,8 +154,8 @@ namespace AutoStep.Compiler
 
         private bool ExampleBlockInputMismatchExpectingTable()
         {
-            if (ExceptionIs<InputMismatchException>() &&
-                ContextIs<AutoStepParser.TableHeaderContext>())
+            if (Exception is InputMismatchException &&
+                Context is AutoStepParser.TableHeaderContext)
             {
                 ChangeError(CompilerMessageCode.ExamplesBlockRequiresTable);
 

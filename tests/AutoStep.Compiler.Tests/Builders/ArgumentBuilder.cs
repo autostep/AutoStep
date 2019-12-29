@@ -35,7 +35,7 @@ namespace AutoStep.Compiler.Tests.Builders
                     startOffset++;
                 }
 
-                Built.Sections = new[]
+                Built.ReplaceSections(new[]
                 {
                     new ArgumentSection
                     {
@@ -45,7 +45,7 @@ namespace AutoStep.Compiler.Tests.Builders
                         RawText = Built.RawArgument,
                         EscapedText = Built.EscapedArgument
                     }
-                };
+                });
             }
         }
 
@@ -78,7 +78,7 @@ namespace AutoStep.Compiler.Tests.Builders
                 EscapedText = sectionText
             });
 
-            Built.Sections = addedSections.ToArray();
+            Built.ReplaceSections(addedSections);
 
             return this;
         }
@@ -95,7 +95,7 @@ namespace AutoStep.Compiler.Tests.Builders
                 EscapedText = escapedText
             });
 
-            Built.Sections = addedSections.ToArray();
+            Built.ReplaceSections(addedSections);
 
             return this;
         }
@@ -113,7 +113,7 @@ namespace AutoStep.Compiler.Tests.Builders
                 ExampleInsertionName = variableName
             });
 
-            Built.Sections = addedSections.ToArray();
+            Built.ReplaceSections(addedSections);
 
             return this;
         }

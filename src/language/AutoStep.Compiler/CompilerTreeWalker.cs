@@ -17,11 +17,25 @@ namespace AutoStep.Compiler
     /// and builts a <see cref="BuiltFile"/> from that tree.
     /// </summary>
     internal class CompilerTreeWalker : AutoStepParserBaseVisitor<BuiltFile?>
-    {   
+    {
         private readonly string? sourceName;
         private readonly ITokenStream tokenStream;
         private readonly List<CompilerMessage> messages = new List<CompilerMessage>();
         private readonly TokenStreamRewriter currentRewriter;
+
+        private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]
+        {
+            (AutoStepParser.ESCAPED_TABLE_DELIMITER, "|"),
+            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
+            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+        };
+
+        private readonly (int TokenType, string Replace)[] argReplacements = new[]
+        {
+            (AutoStepParser.ARG_ESCAPE_QUOTE, "'"),
+            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
+            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+        };
 
         private BuiltFile? file;
         private IAnnotatable? currentAnnotatable;
@@ -39,20 +53,6 @@ namespace AutoStep.Compiler
 
         private IToken? textSectionTokenStart;
         private IToken? textSectionTokenEnd;
-
-        private readonly (int tokenType, string replace)[] tableCellReplacements = new[]
-        {
-            (AutoStepParser.ESCAPED_TABLE_DELIMITER, "|"),
-            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
-            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
-        };
-
-        private readonly (int tokenType, string replace)[] argReplacements = new[]
-        {
-            (AutoStepParser.ARG_ESCAPE_QUOTE, "'"),
-            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
-            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
-        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerTreeWalker"/> class.
@@ -449,8 +449,9 @@ namespace AutoStep.Compiler
 
                 // The rewriter will contain any modifications that replace the escaped characters.
                 EscapedArgument = escaped,
-                Sections = currentArgumentSections.ToArray(),
             };
+
+            arg.ReplaceSections(currentArgumentSections);
 
             currentArgumentSections.Clear();
             canArgumentValueBeDetermined = true;
@@ -485,8 +486,9 @@ namespace AutoStep.Compiler
 
                 // The rewriter will contain any modifications that replace the escaped characters.
                 EscapedArgument = escaped,
-                Sections = currentArgumentSections.ToArray(),
             };
+
+            arg.ReplaceSections(currentArgumentSections);
 
             if (canArgumentValueBeDetermined)
             {
@@ -930,8 +932,9 @@ namespace AutoStep.Compiler
 
                 // The rewriter will contain any modifications that replace the escaped characters.
                 EscapedArgument = escaped,
-                Sections = currentArgumentSections.ToArray(),
             };
+
+            arg.ReplaceSections(currentArgumentSections);
 
             PositionalLineInfo(arg, context);
 
@@ -974,8 +977,9 @@ namespace AutoStep.Compiler
 
                 // The rewriter will contain any modifications that replace the escaped characters.
                 EscapedArgument = escaped,
-                Sections = currentArgumentSections.ToArray(),
             };
+
+            arg.ReplaceSections(currentArgumentSections);
 
             PositionalLineInfo(arg, context);
 
@@ -1071,7 +1075,7 @@ namespace AutoStep.Compiler
             }
         }
 
-        private void PersistWorkingTextSection(params (int token, string replacement)[] replacements)
+        private void PersistWorkingTextSection(params (int Token, string Replacement)[] replacements)
         {
             if (textSectionTokenStart is object)
             {
@@ -1139,7 +1143,7 @@ namespace AutoStep.Compiler
             currentStepSet.Add(step);
         }
 
-        private string EscapeText(IToken start, IToken stop, params (int token, string replacement)[] replacements)
+        private string EscapeText(IToken start, IToken stop, params (int Token, string Replacement)[] replacements)
         {
             for (var idx = start.TokenIndex; idx <= stop.TokenIndex; idx++)
             {
@@ -1147,10 +1151,10 @@ namespace AutoStep.Compiler
                 {
                     var token = tokenStream.Get(idx);
 
-                    if (token.Type == rep.token)
+                    if (token.Type == rep.Token)
                     {
                         // Replace
-                        currentRewriter.Replace(token, rep.replacement);
+                        currentRewriter.Replace(token, rep.Replacement);
                     }
                 }
             }
@@ -1158,7 +1162,7 @@ namespace AutoStep.Compiler
             return currentRewriter.GetText(new Interval(start.TokenIndex, stop.TokenIndex));
         }
 
-        private string EscapeText(ParserRuleContext context, params (int token, string replacement)[] replacements)
+        private string EscapeText(ParserRuleContext context, params (int Token, string Replacement)[] replacements)
         {
             return EscapeText(context.Start, context.Stop, replacements);
         }

@@ -9,6 +9,26 @@
             Represents an annotation (tag or option).
             </summary>
         </member>
+        <member name="T:AutoStep.Core.ArgumentSection">
+            <summary>
+            Defines a single part of a statement argument.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.ArgumentSection.RawText">
+            <summary>
+            Gets or sets the raw text of the section.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.ArgumentSection.EscapedText">
+            <summary>
+            Gets or sets the escaped text for the section.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.ArgumentSection.ExampleInsertionName">
+            <summary>
+            Gets or sets the name of the example variable (if one is specified).
+            </summary>
+        </member>
         <member name="T:AutoStep.Core.ArgumentType">
             <summary>
             Defines the various types of step arguments.
@@ -74,6 +94,21 @@
             Gets or sets the column position on the line.
             </summary>
         </member>
+        <member name="T:AutoStep.Core.BuiltExample">
+            <summary>
+            A built example with contained table.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltExample.Annotations">
+            <summary>
+            Gets any annotations attached to the example.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltExample.Table">
+            <summary>
+            Gets or sets the table associated to the Example block.
+            </summary>
+        </member>
         <member name="T:AutoStep.Core.BuiltFeature">
             <summary>
             Defines a built Feature block, that can contain Background and Scenarios.
@@ -133,6 +168,30 @@
             <summary>
             Gets or sets the scenario description.
             </summary>
+        </member>
+        <member name="T:AutoStep.Core.BuiltScenarioOutline">
+            <summary>
+            A built scenario outline.
+            </summary>
+        </member>
+        <member name="P:AutoStep.Core.BuiltScenarioOutline.Examples">
+            <summary>
+            Gets the contained example blocks.
+            </summary>
+        </member>
+        <member name="M:AutoStep.Core.BuiltScenarioOutline.AddExample(AutoStep.Core.BuiltExample)">
+            <summary>
+            Adds an example to the scenario outline.
+            </summary>
+            <param name="example">The example to add.</param>
+        </member>
+        <member name="M:AutoStep.Core.BuiltScenarioOutline.ContainsVariable(System.String)">
+            <summary>
+            Checks whether any of the example tables in the scenario outline contains
+            the specified insertion variable name.
+            </summary>
+            <param name="variableName">The name of the variable.</param>
+            <returns>True if the variable is available, false otherwise.</returns>
         </member>
         <member name="T:AutoStep.Core.BuiltStepCollection">
             <summary>
@@ -249,6 +308,23 @@
             <summary>
             Gets or sets an optional leading symbol from the original value ($, £, etc).
             </summary>
+        </member>
+        <member name="P:AutoStep.Core.StepArgument.Sections">
+            <summary>
+            Gets or the parsed sections within the argument.
+            </summary>
+        </member>
+        <member name="M:AutoStep.Core.StepArgument.AddSection(AutoStep.Core.ArgumentSection)">
+            <summary>
+            Add a section to the argument.
+            </summary>
+            <param name="section">The section.</param>
+        </member>
+        <member name="M:AutoStep.Core.StepArgument.ReplaceSections(System.Collections.Generic.IEnumerable{AutoStep.Core.ArgumentSection})">
+            <summary>
+            Adds multiple sections to the argument.
+            </summary>
+            <param name="newSections">The new sections.</param>
         </member>
         <member name="T:AutoStep.Core.StepReference">
             <summary>

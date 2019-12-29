@@ -87,14 +87,50 @@ namespace AutoStep.Compiler
         /// Generic Syntax error found while parsing the token stream.
         /// </summary>
         SyntaxError = 10000,
+
+        /// <summary>
+        /// A scenario has been defined, without a title.
+        /// </summary>
         NoScenarioTitleProvided = 10001,
+
+        /// <summary>
+        /// A scenario outline has been defined, without a title.
+        /// </summary>
         NoScenarioOutlineTitleProvided = 10002,
+
+        /// <summary>
+        /// The end-of-file was reached, but we were expecting more content.
+        /// </summary>
         UnexpectedEndOfFile = 10003,
+
+        /// <summary>
+        /// Tag format (@tag) was invalid.
+        /// </summary>
         BadTagFormat = 10004,
+
+        /// <summary>
+        /// Option format ($opt) was invalid.
+        /// </summary>
         BadOptionFormat = 10005,
+
+        /// <summary>
+        /// A statement argument has not been closed.
+        /// </summary>
         ArgumentHasNotBeenClosed = 10006,
+
+        /// <summary>
+        /// A table row has not been terminated.
+        /// </summary>
         TableRowHasNotBeenTerminated = 10007,
+
+        /// <summary>
+        /// An examples block has been specified, but with no table.
+        /// </summary>
         ExamplesBlockRequiresTable = 10008,
+
+        /// <summary>
+        /// A feature has been defined, but no title has been provided.
+        /// </summary>
         NoFeatureTitleProvided = 10009,
     }
 }
