@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\language\AutoStep.Compiler\AutoStep.Compiler.csproj" />
+    <ProjectReference Include="..\..\src\AutoStep.Compiler\AutoStep.Compiler.csproj" />
   </ItemGroup>
 
   <ItemGroup>
