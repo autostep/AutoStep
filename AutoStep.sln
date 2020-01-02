@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoStep.Core.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Language", "Language", "{7DC5E486-A179-4E71-A84A-69F4AE08D57B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoStep.Compiler", "src\language\AutoStep.Compiler\AutoStep.Compiler.csproj", "{84C1FA95-86AC-4F62-AA4B-43CAE1E8872A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoStep.Compiler", "src\AutoStep.Compiler\AutoStep.Compiler.csproj", "{84C1FA95-86AC-4F62-AA4B-43CAE1E8872A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{379393AA-F9FE-4FC3-A078-9FC3086A948B}"
 EndProject
