@@ -1,13 +1,14 @@
 ﻿using System;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class StepBuilder : BaseBuilder<UnknownStepReference>
+    public class StepBuilder : BaseBuilder<StepReferenceElement>
     {
         public StepBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {
-            Built = new UnknownStepReference
+            Built = new StepReferenceElement
             {
                 Type = type,
                 BindingType = bindingType,

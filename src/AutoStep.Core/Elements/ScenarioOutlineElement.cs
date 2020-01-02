@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// A built scenario outline.
     /// </summary>
-    public class BuiltScenarioOutline : BuiltScenario
+    public class ScenarioOutlineElement : ScenarioElement
     {
-        private readonly List<BuiltExample> examples = new List<BuiltExample>();
+        private readonly List<ExampleElement> examples = new List<ExampleElement>();
         private HashSet<string> allExampleVariables = new HashSet<string>();
 
         /// <summary>
         /// Gets the contained example blocks.
         /// </summary>
-        public IReadOnlyList<BuiltExample> Examples => examples;
+        public IReadOnlyList<ExampleElement> Examples => examples;
 
         /// <summary>
         /// Adds an example to the scenario outline.
         /// </summary>
         /// <param name="example">The example to add.</param>
-        public void AddExample(BuiltExample example)
+        public void AddExample(ExampleElement example)
         {
             if (example is null)
             {

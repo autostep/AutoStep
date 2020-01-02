@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AutoStep.Core
+﻿namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a built element that understands it ends before line terminates (e.g. an argument).

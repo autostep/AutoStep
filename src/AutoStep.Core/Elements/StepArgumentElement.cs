@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a provided argument to a Step Reference.
     /// </summary>
-    public class StepArgument : PositionalElement
+    public class StepArgumentElement : PositionalElement
     {
-        private List<ArgumentSection> sections = new List<ArgumentSection>();
+        private List<ArgumentSectionElement> sections = new List<ArgumentSectionElement>();
 
         /// <summary>
         /// Gets or sets the raw argument text.
@@ -38,13 +38,13 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets or the parsed sections within the argument.
         /// </summary>
-        public IReadOnlyList<ArgumentSection> Sections { get => sections; }
+        public IReadOnlyList<ArgumentSectionElement> Sections { get => sections; }
 
         /// <summary>
         /// Add a section to the argument.
         /// </summary>
         /// <param name="section">The section.</param>
-        public void AddSection(ArgumentSection section)
+        public void AddSection(ArgumentSectionElement section)
         {
             if (section is null)
             {
@@ -58,7 +58,7 @@ namespace AutoStep.Core
         /// Adds multiple sections to the argument.
         /// </summary>
         /// <param name="newSections">The new sections.</param>
-        public void ReplaceSections(IEnumerable<ArgumentSection> newSections)
+        public void ReplaceSections(IEnumerable<ArgumentSectionElement> newSections)
         {
             if (newSections is null)
             {

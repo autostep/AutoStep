@@ -9,6 +9,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler
 {
@@ -38,18 +39,18 @@ namespace AutoStep.Compiler
         };
 
         private BuiltFile? file;
-        private IAnnotatable? currentAnnotatable;
-        private BuiltScenario? currentScenario;
-        private List<StepReference>? currentStepSet = null;
+        private IAnnotatableElement? currentAnnotatable;
+        private ScenarioElement? currentScenario;
+        private List<StepReferenceElement>? currentStepSet = null;
 
-        private StepReference? currentStep = null;
-        private StepReference? currentStepSetLastConcrete = null;
+        private StepReferenceElement? currentStep = null;
+        private StepReferenceElement? currentStepSetLastConcrete = null;
 
-        private BuiltTable? currentTable;
-        private TableRow? currentRow;
+        private TableElement? currentTable;
+        private TableRowElement? currentRow;
 
         private bool canArgumentValueBeDetermined = true;
-        private List<ArgumentSection> currentArgumentSections = new List<ArgumentSection>();
+        private List<ArgumentSectionElement> currentArgumentSections = new List<ArgumentSectionElement>();
 
         private IToken? textSectionTokenStart;
         private IToken? textSectionTokenEnd;
@@ -97,7 +98,7 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Visits the Feature block (Feature:) and generates a <see cref="BuiltFeature"/> that is added to the file.
+        /// Visits the Feature block (Feature:) and generates a <see cref="FeatureElement"/> that is added to the file.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -112,7 +113,7 @@ namespace AutoStep.Compiler
                 return file;
             }
 
-            file.Feature = new BuiltFeature();
+            file.Feature = new FeatureElement();
 
             currentAnnotatable = file.Feature;
 
@@ -128,7 +129,7 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Visits a feature or scenario tag '@tag' and adds it to the current <see cref="IAnnotatable"/> feature or scenario object.
+        /// Visits a feature or scenario tag '@tag' and adds it to the current <see cref="IAnnotatableElement"/> feature or scenario object.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -152,7 +153,7 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Visits a feature or scenario option '$tag' and adds it to the current <see cref="IAnnotatable"/> feature or scenario object.
+        /// Visits a feature or scenario option '$tag' and adds it to the current <see cref="IAnnotatableElement"/> feature or scenario object.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -251,7 +252,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            var background = new BuiltBackground();
+            var background = new BackgroundElement();
 
             LineInfo(background, context.BACKGROUND());
 
@@ -272,7 +273,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            BuiltScenario scenario;
+            ScenarioElement scenario;
 
             var definition = context.scenarioDefinition();
             var title = definition.scenarioTitle();
@@ -292,7 +293,7 @@ namespace AutoStep.Compiler
                     return file;
                 }
 
-                scenario = new BuiltScenario();
+                scenario = new ScenarioElement();
                 titleText = scenarioTitle.text().GetText();
             }
             else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
@@ -308,7 +309,7 @@ namespace AutoStep.Compiler
                     return file;
                 }
 
-                scenario = new BuiltScenarioOutline();
+                scenario = new ScenarioOutlineElement();
                 titleText = scenariOutlineTitle.text().GetText();
             }
             else
@@ -413,7 +414,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
 
             currentStep.AddArgument(PositionalLineInfo(
-                new StepArgument
+                new StepArgumentElement
                 {
                     RawArgument = string.Empty,
                     Type = ArgumentType.Empty,
@@ -442,7 +443,7 @@ namespace AutoStep.Compiler
 
             var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
 
-            var arg = new StepArgument
+            var arg = new StepArgumentElement
             {
                 RawArgument = contentBlock.GetText(),
                 Type = ArgumentType.Interpolated,
@@ -479,7 +480,7 @@ namespace AutoStep.Compiler
 
             var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
 
-            var arg = new StepArgument
+            var arg = new StepArgumentElement
             {
                 RawArgument = contentBlock.GetText(),
                 Type = ArgumentType.Text,
@@ -524,7 +525,7 @@ namespace AutoStep.Compiler
 
             var insertionName = currentRewriter.GetText(allBodyInterval);
 
-            var arg = new ArgumentSection
+            var arg = new ArgumentSectionElement
             {
                 RawText = content,
                 EscapedText = escaped,
@@ -578,7 +579,7 @@ namespace AutoStep.Compiler
             var content = symbolText + valueText;
 
             currentStep.AddArgument(PositionalLineInfo(
-                new StepArgument
+                new StepArgumentElement
                 {
                     RawArgument = content,
                     Type = ArgumentType.NumericDecimal,
@@ -605,7 +606,7 @@ namespace AutoStep.Compiler
             var content = symbolText + valueText;
 
             currentStep.AddArgument(PositionalLineInfo(
-                new StepArgument
+                new StepArgumentElement
                 {
                     RawArgument = content,
                     Type = ArgumentType.NumericInteger,
@@ -647,7 +648,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
             Debug.Assert(currentScenario is object);
 
-            var outline = currentScenario as BuiltScenarioOutline;
+            var outline = currentScenario as ScenarioOutlineElement;
             var exampleTokenText = context.EXAMPLES().GetText();
 
             if (exampleTokenText != "Examples:")
@@ -662,7 +663,7 @@ namespace AutoStep.Compiler
                 return file;
             }
 
-            var example = new BuiltExample();
+            var example = new ExampleElement();
 
             currentAnnotatable = example;
 
@@ -691,7 +692,7 @@ namespace AutoStep.Compiler
         public override BuiltFile VisitTableBlock([NotNull] AutoStepParser.TableBlockContext context)
         {
             Debug.Assert(file is object);
-            currentTable = new BuiltTable();
+            currentTable = new TableElement();
 
             LineInfo(currentTable, context.tableHeader());
 
@@ -729,7 +730,7 @@ namespace AutoStep.Compiler
 
             var headerTextBlock = context.headerCell();
 
-            var header = new TableHeaderCell
+            var header = new TableHeaderCellElement
             {
                 HeaderName = headerTextBlock?.GetText(),
             };
@@ -767,7 +768,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
             Debug.Assert(currentTable is object);
 
-            currentRow = LineInfo(new TableRow(), context);
+            currentRow = LineInfo(new TableRowElement(), context);
 
             base.VisitTableRow(context);
 
@@ -797,11 +798,11 @@ namespace AutoStep.Compiler
             if (cellContent == null)
             {
                 // Empty cell, add a cell with an empty argument.
-                var cell = new TableCell();
+                var cell = new TableCellElement();
 
                 var cellWs = context.CELL_WS(0);
 
-                var arg = new StepArgument
+                var arg = new StepArgumentElement
                 {
                     RawArgument = null,
                     Type = ArgumentType.Empty,
@@ -843,7 +844,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
             Debug.Assert(currentRow is object);
 
-            var cell = new TableCell();
+            var cell = new TableCellElement();
 
             PositionalLineInfo(cell, context);
 
@@ -852,7 +853,7 @@ namespace AutoStep.Compiler
             var content = symbolText + valueText;
 
             var arg = PositionalLineInfo(
-                new StepArgument
+                new StepArgumentElement
                 {
                     RawArgument = content,
                     Type = ArgumentType.NumericDecimal,
@@ -878,7 +879,7 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
             Debug.Assert(currentRow is object);
 
-            var cell = new TableCell();
+            var cell = new TableCellElement();
 
             PositionalLineInfo(cell, context);
 
@@ -887,7 +888,7 @@ namespace AutoStep.Compiler
             var content = symbolText + valueText;
 
             var arg = PositionalLineInfo(
-                new StepArgument
+                new StepArgumentElement
                 {
                     RawArgument = content,
                     Type = ArgumentType.NumericInteger,
@@ -913,7 +914,7 @@ namespace AutoStep.Compiler
             Debug.Assert(currentRow is object);
             Debug.Assert(file is object);
 
-            var cell = new TableCell();
+            var cell = new TableCellElement();
 
             PositionalLineInfo(cell, context);
 
@@ -925,7 +926,7 @@ namespace AutoStep.Compiler
 
             var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
 
-            var arg = new StepArgument
+            var arg = new StepArgumentElement
             {
                 RawArgument = contentBlock.GetText(),
                 Type = ArgumentType.Interpolated,
@@ -958,7 +959,7 @@ namespace AutoStep.Compiler
             Debug.Assert(currentRow is object);
             Debug.Assert(file is object);
 
-            var cell = new TableCell();
+            var cell = new TableCellElement();
 
             PositionalLineInfo(cell, context);
 
@@ -970,7 +971,7 @@ namespace AutoStep.Compiler
 
             var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
 
-            var arg = new StepArgument
+            var arg = new StepArgumentElement
             {
                 RawArgument = contentBlock.GetText(),
                 Type = ArgumentType.Text,
@@ -1019,7 +1020,7 @@ namespace AutoStep.Compiler
 
             var insertionName = currentRewriter.GetText(allBodyInterval);
 
-            var arg = new ArgumentSection
+            var arg = new ArgumentSectionElement
             {
                 RawText = content,
                 EscapedText = escaped,
@@ -1060,7 +1061,7 @@ namespace AutoStep.Compiler
 
         private void ValidateExamplesInsertionName(ParserRuleContext context, string insertionName)
         {
-            if (currentScenario is BuiltScenarioOutline outline)
+            if (currentScenario is ScenarioOutlineElement outline)
             {
                 if (!outline.ContainsVariable(insertionName))
                 {
@@ -1086,7 +1087,7 @@ namespace AutoStep.Compiler
                     textSectionTokenEnd!,
                     replacements);
 
-                var arg = new ArgumentSection
+                var arg = new ArgumentSectionElement
                 {
                     RawText = content,
                     EscapedText = escaped,
@@ -1109,7 +1110,7 @@ namespace AutoStep.Compiler
 
             // All step references are currently added as 'unknown', until they are linked.
             StepType? bindingType = null;
-            var step = new UnknownStepReference
+            var step = new StepReferenceElement
             {
                 Type = type,
                 RawText = bodyContext.GetText(),

@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a data-holding row in a table.
     /// </summary>
-    public class TableRow : BuiltElement
+    public class TableRowElement : BuiltElement
     {
-        private List<TableCell> cells = new List<TableCell>();
+        private List<TableCellElement> cells = new List<TableCellElement>();
 
         /// <summary>
         /// Gets the set of cells in the row.
         /// </summary>
-        public IReadOnlyList<TableCell> Cells => cells;
+        public IReadOnlyList<TableCellElement> Cells => cells;
 
         /// <summary>
         /// Add a cell to the row.
         /// </summary>
         /// <param name="cell">The table cell to add.</param>
-        public void AddCell(TableCell cell)
+        public void AddCell(TableCellElement cell)
         {
             cells.Add(cell);
         }

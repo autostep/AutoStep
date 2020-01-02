@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AutoStep.Core
+﻿namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Defines a single part of a statement argument.
     /// </summary>
-    public class ArgumentSection : PositionalElement
+    public class ArgumentSectionElement : PositionalElement
     {
         /// <summary>
         /// Gets or sets the raw text of the section.

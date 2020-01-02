@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// A built example with contained table.
     /// </summary>
-    public class BuiltExample : BuiltElement, IAnnotatable
+    public class ExampleElement : BuiltElement, IAnnotatableElement
     {
         /// <summary>
         /// Gets any annotations attached to the example.
@@ -15,6 +15,6 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets or sets the table associated to the Example block.
         /// </summary>
-        public BuiltTable Table { get; set; }
+        public TableElement Table { get; set; }
     }
 }

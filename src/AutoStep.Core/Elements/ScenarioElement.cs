@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a built 'Scenario', that can have a name, annotations, a description and a set of steps.
     /// </summary>
-    public class BuiltScenario : BuiltStepCollection, IAnnotatable
+    public class ScenarioElement : StepCollectionElement, IAnnotatableElement
     {
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.

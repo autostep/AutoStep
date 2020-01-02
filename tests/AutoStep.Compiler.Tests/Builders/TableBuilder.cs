@@ -1,13 +1,14 @@
 ﻿using System;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class TableBuilder : BaseBuilder<BuiltTable>
+    public class TableBuilder : BaseBuilder<TableElement>
     {
         public TableBuilder(int line, int column)
         {
-            Built = new BuiltTable
+            Built = new TableElement
             {
                 SourceLine = line,
                 SourceColumn = column
@@ -21,7 +22,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
             foreach(var item in headers)
             {
-                Built.Header.AddHeader(new TableHeaderCell
+                Built.Header.AddHeader(new TableHeaderCellElement
                 {
                     HeaderName = item.headerName,
                     SourceLine = lineNo,
@@ -35,7 +36,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
         public TableBuilder Row(int lineNo, int column, params (ArgumentType argType, string rawValue, int startColumn, int endColumn, Action<ArgumentBuilder> cfg)[] cells)
         {
-            var row = new TableRow
+            var row = new TableRowElement
             {
                 SourceLine = lineNo,
                 SourceColumn = column  
@@ -43,7 +44,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
             foreach(var item in cells)
             {
-                var cell = new TableCell
+                var cell = new TableCellElement
                 {
                     SourceLine = lineNo,
                     SourceColumn = item.startColumn,

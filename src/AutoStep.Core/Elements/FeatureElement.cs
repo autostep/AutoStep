@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Defines a built Feature block, that can contain Background and Scenarios.
     /// </summary>
-    public class BuiltFeature : BuiltElement, IAnnotatable
+    public class FeatureElement : BuiltElement, IAnnotatableElement
     {
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.
@@ -25,11 +25,11 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets or sets the background set, or null if none is specified.
         /// </summary>
-        public BuiltBackground Background { get; set; }
+        public BackgroundElement Background { get; set; }
 
         /// <summary>
         /// Gets the list of scenarios.
         /// </summary>
-        public List<BuiltScenario> Scenarios { get; } = new List<BuiltScenario>();
+        public List<ScenarioElement> Scenarios { get; } = new List<ScenarioElement>();
     }
 }
