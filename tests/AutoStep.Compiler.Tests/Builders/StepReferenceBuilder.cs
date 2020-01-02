@@ -4,9 +4,9 @@ using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class StepBuilder : BaseBuilder<StepReferenceElement>
+    public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
-        public StepBuilder(string body, StepType type, StepType? bindingType, int line, int column)
+        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {
             Built = new StepReferenceElement
             {
@@ -18,7 +18,7 @@ namespace AutoStep.Compiler.Tests.Builders
             };
         }
 
-        public StepBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
+        public StepReferenceBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
         {
             var argumentBuilder = new ArgumentBuilder(Built, rawValue, type, start, end);
 
@@ -32,7 +32,7 @@ namespace AutoStep.Compiler.Tests.Builders
             return this;
         }
 
-        public StepBuilder Table(int line, int column, Action<TableBuilder> cfg)
+        public StepReferenceBuilder Table(int line, int column, Action<TableBuilder> cfg)
         {
             var tableBuilder = new TableBuilder(line, column);
 

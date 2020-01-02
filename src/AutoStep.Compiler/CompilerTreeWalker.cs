@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -42,6 +41,7 @@ namespace AutoStep.Compiler
         private IAnnotatableElement? currentAnnotatable;
         private ScenarioElement? currentScenario;
         private List<StepReferenceElement>? currentStepSet = null;
+        private StepDefinitionElement? currentStepDefinition;
 
         private StepReferenceElement? currentStep = null;
         private StepReferenceElement? currentStepSetLastConcrete = null;
@@ -262,6 +262,69 @@ namespace AutoStep.Compiler
             currentStepSetLastConcrete = null;
 
             return base.VisitBackgroundBlock(context);
+        }
+
+        public override BuiltFile VisitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context)
+        {
+            Debug.Assert(file is object);
+
+            var stepDefinition = new StepDefinitionElement();
+
+            var definition = context.stepDefinition();
+
+            var declaration = definition.stepDeclaration();
+
+            LineInfo(stepDefinition, definition.STEP_DEFINE());
+
+            currentAnnotatable = stepDefinition;
+
+            var annotations = context.annotations();
+            if (annotations is object)
+            {
+                Visit(annotations);
+            }
+
+            currentAnnotatable = null;
+
+            var description = ExtractDescription(definition.description());
+            stepDefinition.Description = string.IsNullOrWhiteSpace(description) ? null : description;
+
+            currentStepDefinition = stepDefinition;
+
+            // Visit the declaration to built the 'signature' of the method.
+            Visit(declaration);
+
+            if (stepDefinition.Arguments is object)
+            {
+                // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
+                foreach (var declaredArgument in stepDefinition.Arguments)
+                {
+                    // If the value cannot be immediately determined, it means there is some dynamic component (e.g. insertion variables or example inserts).
+                    // Everything else is allowed.
+                    if (declaredArgument.Value is null)
+                    {
+                        var argumentName = declaredArgument.RawArgument;
+
+                        if (declaredArgument.Type == ArgumentType.Interpolated)
+                        {
+                            argumentName = ":" + argumentName;
+                        }
+
+                        AddMessage(declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition, argumentName);
+                    }
+                }
+            }
+
+            currentStepSet = stepDefinition.Steps;
+
+            Visit(context.stepDefinitionBody());
+
+            file.AddStepDefinition(stepDefinition);
+
+            currentStepSet = null;
+            currentStepDefinition = null;
+
+            return file;
         }
 
         /// <summary>
@@ -539,7 +602,7 @@ namespace AutoStep.Compiler
 
             currentArgumentSections.Add(PositionalLineInfo(arg, context));
 
-            ValidateExamplesInsertionName(context, insertionName);
+            ValidateVariableInsertionName(context, insertionName);
 
             return file;
         }
@@ -1032,7 +1095,7 @@ namespace AutoStep.Compiler
             // If we've got an insertion, then the value of an argument cannot be determined at compile time.
             canArgumentValueBeDetermined = false;
 
-            ValidateExamplesInsertionName(context, insertionName);
+            ValidateVariableInsertionName(context, insertionName);
 
             currentArgumentSections.Add(PositionalLineInfo(arg, context));
 
@@ -1059,9 +1122,17 @@ namespace AutoStep.Compiler
             return file;
         }
 
-        private void ValidateExamplesInsertionName(ParserRuleContext context, string insertionName)
+        private void ValidateVariableInsertionName(ParserRuleContext context, string insertionName)
         {
-            if (currentScenario is ScenarioOutlineElement outline)
+            if (currentStepDefinition is object && currentStepSet is object)
+            {
+                // We are inside a step definition body, so insertions will be references to step parameters defined on the step definition.
+                if (!currentStepDefinition.ContainsArgument(insertionName))
+                {
+                    AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared, insertionName);
+                }
+            }
+            else if (currentScenario is ScenarioOutlineElement outline)
             {
                 if (!outline.ContainsVariable(insertionName))
                 {
@@ -1069,7 +1140,7 @@ namespace AutoStep.Compiler
                     AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared, insertionName);
                 }
             }
-            else
+            else if (currentScenario is object)
             {
                 // Example variable in a regular scenario
                 AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario, insertionName);
@@ -1102,7 +1173,7 @@ namespace AutoStep.Compiler
 
         private void AddStep(StepType type, ParserRuleContext context, AutoStepParser.StatementBodyContext bodyContext)
         {
-            if (currentStepSet == null)
+            if (currentStepSet is null && currentStepDefinition is null)
             {
                 AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.StepNotExpected);
                 return;
@@ -1118,7 +1189,12 @@ namespace AutoStep.Compiler
 
             if (type == StepType.And)
             {
-                if (currentStepSetLastConcrete is null)
+                if (currentStepDefinition is object)
+                {
+                    // We are in the step declaration, which does not permit 'And'.
+                    AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.CannotDefineAStepWithAnd);
+                }
+                else if (currentStepSetLastConcrete is null)
                 {
                     AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep);
                 }
@@ -1130,7 +1206,11 @@ namespace AutoStep.Compiler
             else
             {
                 bindingType = type;
-                currentStepSetLastConcrete = step;
+
+                if (currentStepDefinition is null)
+                {
+                    currentStepSetLastConcrete = step;
+                }
             }
 
             step.BindingType = bindingType;
@@ -1141,7 +1221,22 @@ namespace AutoStep.Compiler
 
             VisitChildren(bodyContext);
 
-            currentStepSet.Add(step);
+            if (currentStepSet is object)
+            {
+                currentStepSet.Add(step);
+            }
+            else if (currentStepDefinition is object)
+            {
+                // We're inside the step declaration.
+                // Use the built step to populate the currentStepDefinition.
+                if (step.Arguments != null)
+                {
+                    currentStepDefinition.AddArguments(step.Arguments);
+                }
+
+                currentStepDefinition.Type = step.Type;
+                currentStepDefinition.Declaration = step.RawText;
+            }
         }
 
         private string EscapeText(IToken start, IToken stop, params (int Token, string Replacement)[] replacements)
@@ -1173,6 +1268,11 @@ namespace AutoStep.Compiler
             AddMessage(level, code, context.Start, context.Stop, args);
         }
 
+        private void AddMessage(PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        {
+            AddMessage(level, code, element.SourceLine, element.SourceColumn, element.SourceLine, element.EndColumn, args);
+        }
+
         private void AddMessageStoppingAtPrecedingToken(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
             AddMessage(level, code, context.Start, tokenStream.GetPrecedingToken(context.Stop), args);
@@ -1185,6 +1285,11 @@ namespace AutoStep.Compiler
 
         private void AddMessage(CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
         {
+            AddMessage(level, code, start.Line, start.Column + 1, stop.Line, stop.Column + 1 + (stop.StopIndex - stop.StartIndex), args);          
+        }
+
+        private void AddMessage(CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, int lineEnd, int colEnd, params object[] args)
+        {
             if (level == CompilerMessageLevel.Error)
             {
                 Success = false;
@@ -1195,10 +1300,10 @@ namespace AutoStep.Compiler
                 level,
                 code,
                 string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args),
-                start.Line,
-                start.Column + 1,
-                stop.Line,
-                stop.Column + 1 + (stop.StopIndex - stop.StartIndex));
+                lineStart,
+                colStart,
+                lineEnd,
+                colEnd);
 
             messages.Add(message);
         }

@@ -48,6 +48,54 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFile([NotNull] AutoStepParser.FileContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinition"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStepDefinition([NotNull] AutoStepParser.StepDefinitionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinition"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStepDefinition([NotNull] AutoStepParser.StepDefinitionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

@@ -8,14 +8,31 @@ namespace AutoStep.Core
     /// </summary>
     public class BuiltContent
     {
+        private List<StepDefinitionElement> stepDefinitions;
+
         /// <summary>
         /// Gets or sets any general step definitions defined in the file.
         /// </summary>
-        public IEnumerable<BuiltStepDefinition> Steps { get; set; }
+        public IReadOnlyList<StepDefinitionElement> StepDefinitions => stepDefinitions;
 
         /// <summary>
         /// Gets or sets the (optional feature) found in the file.
         /// </summary>
         public FeatureElement Feature { get; set; }
+
+        public void AddStepDefinition(StepDefinitionElement definition)
+        {
+            if (definition is null)
+            {
+                throw new System.ArgumentNullException(nameof(definition));
+            }
+
+            if (stepDefinitions is null)
+            {
+                stepDefinitions = new List<StepDefinitionElement>();
+            }
+
+            stepDefinitions.Add(definition);
+        }
     }
 }

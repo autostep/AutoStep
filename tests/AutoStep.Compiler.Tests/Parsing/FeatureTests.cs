@@ -1,12 +1,10 @@
-﻿using AutoStep.Compiler.Tests.Builders;
-using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class FeatureTests : CompilerTestBase
     {
@@ -17,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task FeatureWithNoScenariosProducesWarning()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature
                 Description words
@@ -25,7 +23,7 @@ namespace AutoStep.Compiler.Tests
             ";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage (
+                new CompilerMessage(
                     null,
                     CompilerMessageLevel.Warning,
                     CompilerMessageCode.NoScenarios,
@@ -163,10 +161,10 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssertSuccess(TestFile, file => file
                 .Feature("My Feature", 3, 17, feat => feat
                    .Description("Feature Description")
-                   .Scenario("My Scenario", 6, 21,  scen => scen
-                       .Description("Scenario Description")
-                       .Given("I have clicked on", 9, 25)
-                       .And("I have gone to", StepType.Given, 11, 25)
+                   .Scenario("My Scenario", 6, 21, scen => scen
+                      .Description("Scenario Description")
+                      .Given("I have clicked on", 9, 25)
+                      .And("I have gone to", StepType.Given, 11, 25)
                    )
                 )
             );

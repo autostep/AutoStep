@@ -97,6 +97,24 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A custom step cannot be defined using the &apos;And&apos; keyword. You must use Given, When or Then..
+        /// </summary>
+        internal static string CannotDefineAStepWithAnd {
+            get {
+                return ResourceManager.GetString("CannotDefineAStepWithAnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot use &apos;{0}&apos; as a Step Parameter. Step Parameter variables must be literal names, e.g. &apos;variable1&apos; or &apos;total&apos;. You cannot specify dynamic values..
+        /// </summary>
+        internal static string CannotSpecifyDynamicValueInStepDefinition {
+            get {
+                return ResourceManager.GetString("CannotSpecifyDynamicValueInStepDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Examples blocks must contain a table..
         /// </summary>
         internal static string ExamplesBlockRequiresTable {
@@ -228,6 +246,15 @@ namespace AutoStep.Compiler {
         internal static string StepNotExpected {
             get {
                 return ResourceManager.GetString("StepNotExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have specified a Step parameter variable to insert, &apos;{0}&apos;, but you have not declared the variable in the step declaration. This value will always be blank when the test runs..
+        /// </summary>
+        internal static string StepVariableNotDeclared {
+            get {
+                return ResourceManager.GetString("StepVariableNotDeclared", resourceCulture);
             }
         }
         

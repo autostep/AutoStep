@@ -39,6 +39,30 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFile([NotNull] AutoStepParser.FileContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDefinition([NotNull] AutoStepParser.StepDefinitionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.featureBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

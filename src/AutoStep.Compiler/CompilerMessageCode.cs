@@ -81,6 +81,21 @@ namespace AutoStep.Compiler
         /// </summary>
         ExampleVariableNotDeclared = 00014,
 
+        /// <summary>
+        /// Step variable has been reference, but not declared.
+        /// </summary>
+        StepVariableNotDeclared = 00015,
+
+        /// <summary>
+        /// Cannot specify a dynamic value in a step definition.
+        /// </summary>
+        CannotSpecifyDynamicValueInStepDefinition = 00016,
+
+        /// <summary>
+        /// Cannot use the 'And' keyword for step definition statements.
+        /// </summary>
+        CannotDefineAStepWithAnd = 00017,
+
         //// Syntax Errors ////
 
         /// <summary>

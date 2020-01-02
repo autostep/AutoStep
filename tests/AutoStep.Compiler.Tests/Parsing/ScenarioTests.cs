@@ -1,12 +1,10 @@
-﻿using AutoStep.Compiler.Tests.Builders;
-using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class ScenarioTests : CompilerTestBase
     {
@@ -17,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task ScenarioCanHaveNoSteps()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature
                 
@@ -44,7 +42,7 @@ namespace AutoStep.Compiler.Tests
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioTitleProvided, 
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioTitleProvided,
                                     "Scenarios must have a title.",
                                     4, 17, 4, 25));
         }
