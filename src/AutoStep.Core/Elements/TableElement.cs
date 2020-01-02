@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a table built from autostep source.
     /// </summary>
-    public class BuiltTable : BuiltElement
+    public class TableElement : BuiltElement
     {
-        private List<TableRow> rows = new List<TableRow>();
+        private List<TableRowElement> rows = new List<TableRowElement>();
 
         /// <summary>
         /// Gets the header row.
         /// </summary>
-        public TableHeader Header { get; } = new TableHeader();
+        public TableHeaderElement Header { get; } = new TableHeaderElement();
 
         /// <summary>
         /// Gets the number of columns expected in the table (based on the number of headers).
@@ -22,13 +22,13 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets the non-header rows in the table.
         /// </summary>
-        public IReadOnlyList<TableRow> Rows => rows;
+        public IReadOnlyList<TableRowElement> Rows => rows;
 
         /// <summary>
         /// Adds a row to the table.
         /// </summary>
         /// <param name="row">The row.</param>
-        public void AddRow(TableRow row)
+        public void AddRow(TableRowElement row)
         {
             rows.Add(row);
         }

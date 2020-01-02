@@ -1,4 +1,4 @@
-﻿namespace AutoStep.Core
+﻿namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents an annotation (tag or option).

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Indicates that a built element can have annotations applied to it.
     /// </summary>
-    public interface IAnnotatable
+    public interface IAnnotatableElement
     {
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.

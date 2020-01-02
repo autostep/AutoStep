@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AutoStep.Core
+﻿namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Defines an option annotation.

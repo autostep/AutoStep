@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
 
-    public class ScenarioBuilder : BaseBuilder<BuiltScenario>, IStepCollectionBuilder<BuiltScenario>
+    public class ScenarioBuilder : BaseBuilder<ScenarioElement>, IStepCollectionBuilder<ScenarioElement>
     {
         public ScenarioBuilder(string name, int line, int column)
         {
-            Built = new BuiltScenario
+            Built = new ScenarioElement
             {
                 SourceLine = line,
                 SourceColumn = column,

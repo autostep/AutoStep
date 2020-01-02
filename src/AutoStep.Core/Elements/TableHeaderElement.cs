@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents the header of a table.
     /// </summary>
-    public class TableHeader : BuiltElement
+    public class TableHeaderElement : BuiltElement
     {
-        private List<TableHeaderCell> headers = new List<TableHeaderCell>();
+        private List<TableHeaderCellElement> headers = new List<TableHeaderCellElement>();
 
         /// <summary>
         /// Gets the list of headers.
         /// </summary>
-        public IReadOnlyList<TableHeaderCell> Headers => headers;
+        public IReadOnlyList<TableHeaderCellElement> Headers => headers;
 
         /// <summary>
         /// Add a header.
         /// </summary>
         /// <param name="header">The header.</param>
-        public void AddHeader(TableHeaderCell header)
+        public void AddHeader(TableHeaderCellElement header)
         {
             headers.Add(header);
         }

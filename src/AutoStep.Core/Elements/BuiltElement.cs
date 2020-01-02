@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AutoStep.Core
+﻿namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a generic built element that has a position in a file.

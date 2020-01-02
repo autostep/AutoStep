@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Core
 {
@@ -15,6 +16,6 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets or sets the (optional feature) found in the file.
         /// </summary>
-        public BuiltFeature Feature { get; set; }
+        public FeatureElement Feature { get; set; }
     }
 }

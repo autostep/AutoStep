@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class ArgumentBuilder : BaseBuilder<StepArgument>
+    public class ArgumentBuilder : BaseBuilder<StepArgumentElement>
     {
         private bool moddedValue = false;
         private bool customSections = false;
-        private List<ArgumentSection> addedSections = new List<ArgumentSection>();
+        private List<ArgumentSectionElement> addedSections = new List<ArgumentSectionElement>();
 
-        public ArgumentBuilder(StepReference containingStep, string rawValue, ArgumentType type, int start, int end)
+        public ArgumentBuilder(StepReferenceElement containingStep, string rawValue, ArgumentType type, int start, int end)
         {
-            Built = new StepArgument
+            Built = new StepArgumentElement
             {
                 SourceLine = containingStep.SourceLine,
                 Type = type,
@@ -37,7 +38,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
                 Built.ReplaceSections(new[]
                 {
-                    new ArgumentSection
+                    new ArgumentSectionElement
                     {
                         SourceColumn = Built.SourceColumn + startOffset,
                         EndColumn = Built.EndColumn - delimiterOffset,
@@ -49,9 +50,9 @@ namespace AutoStep.Compiler.Tests.Builders
             }
         }
 
-        public ArgumentBuilder(TableCell containingCell, string rawValue, ArgumentType type, int start, int end)
+        public ArgumentBuilder(TableCellElement containingCell, string rawValue, ArgumentType type, int start, int end)
         {
-            Built = new StepArgument
+            Built = new StepArgumentElement
             {
                 SourceLine = containingCell.SourceLine,
                 Type = type,
@@ -69,7 +70,7 @@ namespace AutoStep.Compiler.Tests.Builders
         {
             customSections = true;
 
-            addedSections.Add(new ArgumentSection
+            addedSections.Add(new ArgumentSectionElement
             {
                 SourceLine = Built.SourceLine,
                 SourceColumn = start,
@@ -86,7 +87,7 @@ namespace AutoStep.Compiler.Tests.Builders
         {
             customSections = true;
 
-            addedSections.Add(new ArgumentSection
+            addedSections.Add(new ArgumentSectionElement
             {
                 SourceLine = Built.SourceLine,
                 SourceColumn = start,
@@ -103,7 +104,7 @@ namespace AutoStep.Compiler.Tests.Builders
         {
             customSections = true;
 
-            addedSections.Add(new ArgumentSection
+            addedSections.Add(new ArgumentSectionElement
             {
                 SourceLine = Built.SourceLine,
                 SourceColumn = start,

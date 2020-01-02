@@ -1,13 +1,13 @@
 ﻿using System;
-using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class FeatureBuilder : BaseBuilder<BuiltFeature>
+    public class FeatureBuilder : BaseBuilder<FeatureElement>
     {
         public FeatureBuilder(string name, int line, int column)
         {
-            Built = new BuiltFeature
+            Built = new FeatureElement
             {
                 SourceLine = line,
                 SourceColumn = column,

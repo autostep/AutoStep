@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
 
-    public class ScenarioOutlineBuilder : BaseBuilder<BuiltScenarioOutline>, IStepCollectionBuilder<BuiltScenarioOutline>
+    public class ScenarioOutlineBuilder : BaseBuilder<ScenarioOutlineElement>, IStepCollectionBuilder<ScenarioOutlineElement>
     {
         public ScenarioOutlineBuilder(string name, int line, int column)
         {
-            Built = new BuiltScenarioOutline
+            Built = new ScenarioOutlineElement
             {
                 SourceLine = line,
                 SourceColumn = column,

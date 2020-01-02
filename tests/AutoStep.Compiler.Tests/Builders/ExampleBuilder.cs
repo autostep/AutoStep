@@ -1,13 +1,13 @@
 ﻿using System;
-using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
-    public class ExampleBuilder : BaseBuilder<BuiltExample>
+    public class ExampleBuilder : BaseBuilder<ExampleElement>
     {
         public ExampleBuilder(int line, int column)
         {
-            Built = new BuiltExample
+            Built = new ExampleElement
             {
                 SourceLine = line,
                 SourceColumn = column

@@ -1,9 +1,9 @@
-﻿using AutoStep.Core;
+﻿using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Builders
 {
     public interface IStepCollectionBuilder<out TBuilt>
-        where TBuilt : BuiltStepCollection
+        where TBuilt : StepCollectionElement
     {
         TBuilt Built { get; }
     }

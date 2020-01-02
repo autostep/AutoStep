@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using Xunit;
@@ -125,7 +126,7 @@ namespace AutoStep.Compiler.Tests.Utils
                 };
 
                 options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<AnnotationElement>());
-                options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<BuiltScenario>());
+                options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<ScenarioElement>());
 
                 var resultAsJson = JsonSerializer.Serialize(actual, options);
                 var expectedAsJson = JsonSerializer.Serialize(expected, options);

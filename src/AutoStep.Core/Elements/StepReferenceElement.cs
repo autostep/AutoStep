@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core
+namespace AutoStep.Core.Elements
 {
     /// <summary>
     /// Represents a reference to a Step inside a written test.
     /// </summary>
     /// <remarks>
-    /// The base <see cref="StepReference"/> class
+    /// The base <see cref="StepReferenceElement"/> class
     /// does not understand binding or what can run, it just defines the information about the written line in the test.
     /// </remarks>
-    public class StepReference : BuiltElement
+    public class StepReferenceElement : BuiltElement
     {
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -31,22 +31,22 @@ namespace AutoStep.Core
         /// <summary>
         /// Gets the set of arguments presented by the Step Reference.
         /// </summary>
-        public List<StepArgument> Arguments { get; private set; }
+        public List<StepArgumentElement> Arguments { get; private set; }
 
         /// <summary>
         /// Gets or sets the associated table for this step.
         /// </summary>
-        public BuiltTable Table { get; set; }
+        public TableElement Table { get; set; }
 
         /// <summary>
         /// Adds an argument to the step reference.
         /// </summary>
         /// <param name="argument">The argument to add.</param>
-        public void AddArgument(StepArgument argument)
+        public void AddArgument(StepArgumentElement argument)
         {
             if (Arguments == null)
             {
-                Arguments = new List<StepArgument>();
+                Arguments = new List<StepArgumentElement>();
             }
 
             Arguments.Add(argument);

@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
+using AutoStep.Core.Elements;
 
 namespace AutoStep.Compiler.Tests.Utils
 {
@@ -8,7 +9,7 @@ namespace AutoStep.Compiler.Tests.Utils
     public static class StepCollectionExtensions        
     {
         public static TBuilder Given<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepBuilder> cfg = null)
-            where TBuilder : IStepCollectionBuilder<BuiltStepCollection>
+            where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
             var stepBuilder = new StepBuilder(body, StepType.Given, StepType.Given, line, column);
 
@@ -23,7 +24,7 @@ namespace AutoStep.Compiler.Tests.Utils
         }
 
         public static TBuilder When<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepBuilder> cfg = null)
-            where TBuilder : IStepCollectionBuilder<BuiltStepCollection>
+            where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
             var stepBuilder = new StepBuilder(body, StepType.When, StepType.When, line, column);
 
@@ -38,7 +39,7 @@ namespace AutoStep.Compiler.Tests.Utils
         }
 
         public static TBuilder Then<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepBuilder> cfg = null)
-            where TBuilder : IStepCollectionBuilder<BuiltStepCollection>
+            where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
             var stepBuilder = new StepBuilder(body, StepType.Then, StepType.Then, line, column);
 
@@ -53,7 +54,7 @@ namespace AutoStep.Compiler.Tests.Utils
         }
 
         public static TBuilder And<TBuilder>(this TBuilder builder, string body, StepType? actualType, int line, int column, Action<StepBuilder> cfg = null)
-            where TBuilder : IStepCollectionBuilder<BuiltStepCollection>
+            where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
             var stepBuilder = new StepBuilder(body, StepType.And, actualType, line, column);
 
