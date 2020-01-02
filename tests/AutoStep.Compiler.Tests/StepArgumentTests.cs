@@ -221,28 +221,6 @@ namespace AutoStep.Compiler.Tests
             )))));
         }
 
-        //[Fact]
-        //public async Task StepCanHaveArgumentWithSingleAngleBracket()
-        //{
-        //    const string TestFile =
-        //    @"                
-        //      Feature: My Feature
-
-        //        Scenario: My Scenario
-
-        //            Given I have passed 'this > that' to something
-
-        //    ";
-
-        //    await CompileAndAssertSuccess(TestFile, file => file
-        //        .Feature("My Feature", 2, 15, feat => feat
-        //            .Scenario("My Scenario", 4, 17, scen => scen
-        //                .Given("I have passed 'this > that' to something", 6, 21, step => step
-        //                    .Argument(ArgumentType.Text, "this > that", 41, 52,)
-
-        //    ))));
-        //}
-
         [Fact]
         public async Task IntegerArgument()
         {
