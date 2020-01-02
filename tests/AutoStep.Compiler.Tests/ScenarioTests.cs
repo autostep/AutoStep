@@ -33,6 +33,23 @@ namespace AutoStep.Compiler.Tests
         }
 
         [Fact]
+        public async Task ScenarioBlankTitle()
+        {
+            const string TestFile =
+            @"                
+              Feature: My Feature
+                
+                Scenario:
+
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioTitleProvided, 
+                                    "Scenarios must have a title.",
+                                    4, 17, 4, 25));
+        }
+
+        [Fact]
         public async Task ScenarioEachStepType()
         {
             const string TestFile =
@@ -94,5 +111,30 @@ namespace AutoStep.Compiler.Tests
                 )
             );
         }
+
+        [Fact]
+        public async Task UnexpectedExampleGivesError()
+        {
+            const string TestFile =
+            @"                
+              Feature: My Feature
+                
+                Scenario: My Scenario
+    
+                    Given I have done something
+
+                Examples:
+                    | header1 |
+                    | value1  |
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample,
+                    "Not expecting an Examples block here; did you mean to define 'My Scenario' as a Scenario Outline rather than a Scenario?",
+                    8, 17, 8, 25
+                )
+            );
+        }
+
     }
 }

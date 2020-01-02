@@ -62,8 +62,8 @@ namespace AutoStep.Compiler
                     AutoStepParser.RULE_text => context.GetText(),
                     AutoStepParser.RULE_statement => context.GetText(),
                     AutoStepParser.RULE_statementSection => GetStatementSectionType(context) + " : " + context.GetText(),
-                    AutoStepParser.RULE_statementTextContentBlock => context.GetText(),
-                    AutoStepParser.RULE_tableCellTextBlock => context.GetText(),
+                    AutoStepParser.RULE_statementArgument => context.GetText(),
+                    AutoStepParser.RULE_cellArgumentBlock => context.GetText(),
                     _ => context.ToString()
                 };
 

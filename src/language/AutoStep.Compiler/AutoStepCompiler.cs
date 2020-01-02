@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Core.Tracing;
@@ -96,11 +98,33 @@ namespace AutoStep.Compiler
             // Create a parser and register our error listener.
             var parser = new AutoStepParser(tokenStream);
 
+            // First we will do the simpler/faster SLL strategy.
             parser.RemoveErrorListeners();
-            var errorListener = new ParserErrorListener(source.SourceName, tokenStream);
-            parser.AddErrorListener(errorListener);
 
-            var fileContext = parser.file();
+            parser.Interpreter.PredictionMode = PredictionMode.SLL;
+            parser.ErrorHandler = new BailErrorStrategy();
+
+            AutoStepParser.FileContext fileContext;
+
+            var errorListener = new ParserErrorListener(source.SourceName, tokenStream);
+
+            try
+            {
+                fileContext = parser.file();
+            }
+            catch (ParseCanceledException)
+            {
+                tokenStream.Reset();
+                parser.Reset();
+
+                parser.AddErrorListener(errorListener);
+                parser.ErrorHandler = new DefaultErrorStrategy();
+
+                // Now we will do the full LL mode.
+                parser.Interpreter.PredictionMode = PredictionMode.LL;
+
+                fileContext = parser.file();
+            }
 
             // Write to the tracer if diagnostics are on.
             if (options.HasFlag(CompilerOptions.EnableDiagnostics) && tracer is object)

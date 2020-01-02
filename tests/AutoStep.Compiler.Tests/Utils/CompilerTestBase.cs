@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -7,6 +8,8 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,6 +28,8 @@ namespace AutoStep.Compiler.Tests.Utils
 
         protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
         {
+            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
+
             var tracer = new TestTracer(TestOutput);
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
@@ -38,6 +43,8 @@ namespace AutoStep.Compiler.Tests.Utils
 
         protected async Task CompileAndAssertWarnings(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
         {
+            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
+
             var tracer = new TestTracer(TestOutput);
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
@@ -56,6 +63,8 @@ namespace AutoStep.Compiler.Tests.Utils
 
         protected async Task CompileAndAssertWarnings(string content, params CompilerMessage[] expectedMessages)
         {
+            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
+
             var tracer = new TestTracer(TestOutput);
             var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
             var source = new StringContentSource(content);
@@ -102,34 +111,50 @@ namespace AutoStep.Compiler.Tests.Utils
         {
             Assert.NotNull(actual);
 
-            var options = new JsonSerializerOptions
+            try
             {
-                WriteIndented = true
-            };
+                actual.Should().BeEquivalentTo(expected, opt => opt
+                    .WithStrictOrdering()
+                    .IncludingAllRuntimeProperties());
+            }
+            catch
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
 
-            options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<AnnotationElement>());
+                options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<AnnotationElement>());
+                options.Converters.Add(new PolymorphicWriteOnlyJsonConverter<BuiltScenario>());
 
-            var resultAsJson = JsonSerializer.Serialize(actual, options);
-            var expectedAsJson = JsonSerializer.Serialize(expected, options);
+                var resultAsJson = JsonSerializer.Serialize(actual, options);
+                var expectedAsJson = JsonSerializer.Serialize(expected, options);
 
-            TestOutput.WriteLine("Full Expected Tree");
-            TestOutput.WriteLine(expectedAsJson);
-            TestOutput.WriteLine("Full Actual Tree");
-            TestOutput.WriteLine(resultAsJson);
+                TestOutput.WriteLine("Full Expected Tree");
+                TestOutput.WriteLine(expectedAsJson);
+                TestOutput.WriteLine("Full Actual Tree");
+                TestOutput.WriteLine(resultAsJson);
 
-            Assert.Equal(expectedAsJson, resultAsJson);
+                throw;
+            }
         }
 
         private class PolymorphicWriteOnlyJsonConverter<T> : JsonConverter<T>
         {
-            public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            JsonSerializerOptions myOptions = new JsonSerializerOptions { WriteIndented = true };
+
+            public PolymorphicWriteOnlyJsonConverter()
+            {   
+            }
+
+            public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions myOptions)
             {
                 throw new NotImplementedException($"Deserializing not supported. Type={typeToConvert}.");
             }
 
             public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
             {
-                JsonSerializer.Serialize(writer, value, value.GetType(), options);
+                JsonSerializer.Serialize(writer, value, value.GetType(), myOptions);
             }
         }
     }

@@ -56,6 +56,46 @@ namespace AutoStep.Compiler.Tests
         }
 
         [Fact]
+        public async Task TableCanHaveCollapsedWhitespace()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+
+                        Given this step has a table:
+                            |heading1|heading2|
+                            |r1.c1|r1.c2|
+                            |r2.c1|r2.c2|
+
+            ";
+
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("this step has a table:", 6, 25, step => step
+                            .Table(7, 29, table => table
+                                .Headers(7, 29,
+                                    ("heading1", 30, 37),
+                                    ("heading2", 39, 46)
+                                )
+                                .Row(8, 29,
+                                    (ArgumentType.Text, "r1.c1", 30, 34, null),
+                                    (ArgumentType.Text, "r1.c2", 36, 40, null)
+                                )
+                                .Row(9, 29,
+                                    (ArgumentType.Text, "r2.c1", 30, 34, null),
+                                    (ArgumentType.Text, "r2.c2", 36, 40, null)
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        [Fact]
         public async Task TableCanHaveBlankValues()
         {
             const string TestFile =
@@ -167,9 +207,44 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssertErrors(TestFile, new CompilerMessage (
                 null, 
                 CompilerMessageLevel.Error, 
-                CompilerMessageCode.SyntaxError, 
-                "Syntax Error: Table cell has not been terminated. Expecting a table delimiter character '|'.", 
+                CompilerMessageCode.TableRowHasNotBeenTerminated, 
+                "Table cell has not been terminated. Expecting a table delimiter character '|'.", 
                 9, 29, 9, 36));
+        }
+
+
+        [Fact]
+        public async Task EmptyHeadingAllowed()
+        {
+            const string TestFile =
+                        @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+
+                        Given this step has a table:
+                            | heading1 |          |
+                            | r1.c1    | r1.c2    |
+            ";
+
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("this step has a table:", 6, 25, step => step
+                            .Table(7, 29, table => table
+                                .Headers(7, 29,
+                                    ("heading1", 31, 38),
+                                    (null, 41, 50)
+                                )
+                                .Row(8, 29,
+                                    (ArgumentType.Text, "r1.c1", 31, 35, null),
+                                    (ArgumentType.Text, "r1.c2", 42, 46, null)
+                                )
+                            )
+                        )
+                    )
+                )
+            );
         }
 
 
@@ -195,15 +270,15 @@ namespace AutoStep.Compiler.Tests
             await CompileAndAssertErrors(TestFile, new CompilerMessage(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.SyntaxError,
-                "Syntax Error: Table cell has not been terminated. Expecting a table delimiter character '|'.",
+                CompilerMessageCode.TableRowHasNotBeenTerminated,
+                "Table cell has not been terminated. Expecting a table delimiter character '|'.",
                 9, 29, 9, 36),
 
                 new CompilerMessage(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.SyntaxError,
-                "Syntax Error: Table cell has not been terminated. Expecting a table delimiter character '|'.",
+                CompilerMessageCode.TableRowHasNotBeenTerminated,
+                "Table cell has not been terminated. Expecting a table delimiter character '|'.",
                 10, 29, 10, 37));
         }
 

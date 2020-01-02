@@ -39,6 +39,49 @@ namespace AutoStep.Compiler.Tests
         }
 
         [Fact]
+        public async Task FeatureWithNoTitleError()
+        {
+            const string TestFile =
+            @"                
+              Feature: 
+            ";
+
+            await CompileAndAssertWarnings(TestFile,
+                new CompilerMessage(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.NoFeatureTitleProvided,
+                    "Features must have a title.",
+                    startLineNo: 2,
+                    startColumn: 15,
+                    endLineNo: 2,
+                    endColumn: 22
+                )
+            );
+        }
+
+        [Fact]
+        public async Task FeatureWithNoTitleImmediateEofError()
+        {
+            const string TestFile =
+            @"                
+              Feature:";
+
+            await CompileAndAssertWarnings(TestFile,
+                new CompilerMessage(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.NoFeatureTitleProvided,
+                    "Features must have a title.",
+                    startLineNo: 2,
+                    startColumn: 15,
+                    endLineNo: 2,
+                    endColumn: 22
+                )
+            );
+        }
+
+        [Fact]
         public async Task BadFeatureTokenSyntaxError()
         {
             const string TestFile =

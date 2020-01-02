@@ -120,14 +120,50 @@
   <data name="AndMustFollowNormalStep" xml:space="preserve">
     <value>An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.</value>
   </data>
+  <data name="ArgumentHasNotBeenClosed" xml:space="preserve">
+    <value>Quoted argument has not been closed.</value>
+  </data>
+  <data name="BadOptionFormat" xml:space="preserve">
+    <value>Bad option format. Option must the format '$optionName', optionally with a value separated by ':', e.g. '$optionName:value'.</value>
+  </data>
+  <data name="BadTagFormat" xml:space="preserve">
+    <value>Bad tag format. Tag must have the format '@tagName'.</value>
+  </data>
+  <data name="ExamplesBlockRequiresTable" xml:space="preserve">
+    <value>Examples blocks must contain a table.</value>
+  </data>
+  <data name="ExampleVariableInScenario" xml:space="preserve">
+    <value>You have specified an Example variable to insert, '{0}', but the step is in a Scenario; did you mean to use a Scenario Outline instead?</value>
+  </data>
+  <data name="ExampleVariableNotDeclared" xml:space="preserve">
+    <value>You have specified an Example variable to insert, '{0}', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.</value>
+  </data>
+  <data name="InvalidExamplesKeyword" xml:space="preserve">
+    <value>The 'Examples' keyword is case-sensitive, so '{0}' should be 'Examples:'</value>
+  </data>
   <data name="InvalidFeatureKeyword" xml:space="preserve">
     <value>The 'Feature' keyword is case-sensitive, so '{0}' should be 'Feature:'</value>
   </data>
   <data name="InvalidScenarioKeyword" xml:space="preserve">
     <value>The 'Scenario' keyword is case-sensitive, so '{0}' should be 'Scenario:'</value>
   </data>
+  <data name="InvalidScenarioOutlineKeyword" xml:space="preserve">
+    <value>The 'Scenario Outline' phrase is case-sensitive, so '{0}' should be 'Scenario Outline:'</value>
+  </data>
+  <data name="NoFeatureTitleProvided" xml:space="preserve">
+    <value>Features must have a title.</value>
+  </data>
+  <data name="NoScenarioOutlineTitleProvided" xml:space="preserve">
+    <value>Scenario Outlines must have a title.</value>
+  </data>
   <data name="NoScenarios" xml:space="preserve">
     <value>Your Feature '{0}' has no Scenarios, so will not run any tests.</value>
+  </data>
+  <data name="NoScenarioTitleProvided" xml:space="preserve">
+    <value>Scenarios must have a title.</value>
+  </data>
+  <data name="NotExpectingExample" xml:space="preserve">
+    <value>Not expecting an Examples block here; did you mean to define '{0}' as a Scenario Outline rather than a Scenario?</value>
   </data>
   <data name="OnlyOneFeatureAllowed" xml:space="preserve">
     <value>You can only have one Feature per file. Create a new file for this Feature.</value>
@@ -144,7 +180,13 @@
   <data name="TableColumnsMismatch" xml:space="preserve">
     <value>The row contains {0} cell(s), but we are expecting {1}, because of the number of headers.</value>
   </data>
+  <data name="TableRowHasNotBeenTerminated" xml:space="preserve">
+    <value>Table cell has not been terminated. Expecting a table delimiter character '|'.</value>
+  </data>
   <data name="UnexpectedAnnotation" xml:space="preserve">
     <value>Not expecting an annotation at this position.</value>
+  </data>
+  <data name="UnexpectedEndOfFile" xml:space="preserve">
+    <value>Unexpected end of file.</value>
   </data>
 </root>

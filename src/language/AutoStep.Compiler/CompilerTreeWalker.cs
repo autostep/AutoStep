@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -22,14 +23,36 @@ namespace AutoStep.Compiler
         private readonly List<CompilerMessage> messages = new List<CompilerMessage>();
         private readonly TokenStreamRewriter currentRewriter;
 
+        private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]
+        {
+            (AutoStepParser.ESCAPED_TABLE_DELIMITER, "|"),
+            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
+            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+        };
+
+        private readonly (int TokenType, string Replace)[] argReplacements = new[]
+        {
+            (AutoStepParser.ARG_ESCAPE_QUOTE, "'"),
+            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
+            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+        };
+
         private BuiltFile? file;
         private IAnnotatable? currentAnnotatable;
+        private BuiltScenario? currentScenario;
         private List<StepReference>? currentStepSet = null;
 
         private StepReference? currentStep = null;
         private StepReference? currentStepSetLastConcrete = null;
+
         private BuiltTable? currentTable;
         private TableRow? currentRow;
+
+        private bool canArgumentValueBeDetermined = true;
+        private List<ArgumentSection> currentArgumentSections = new List<ArgumentSection>();
+
+        private IToken? textSectionTokenStart;
+        private IToken? textSectionTokenEnd;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerTreeWalker"/> class.
@@ -249,7 +272,52 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(file is object);
 
-            var scenario = new BuiltScenario();
+            BuiltScenario scenario;
+
+            var definition = context.scenarioDefinition();
+            var title = definition.scenarioTitle();
+
+            string titleText;
+
+            if (title is AutoStepParser.NormalScenarioTitleContext scenarioTitle)
+            {
+                var scenarioToken = scenarioTitle.SCENARIO();
+                var scenarioKeyWordText = scenarioToken.GetText();
+
+                // We want the parser to allow case-insensitive keywords through, so we can assert on them
+                // here and give more useful errors.
+                if (scenarioKeyWordText != "Scenario:")
+                {
+                    AddMessage(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
+                    return file;
+                }
+
+                scenario = new BuiltScenario();
+                titleText = scenarioTitle.text().GetText();
+            }
+            else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
+            {
+                var scenarioOutlineToken = scenariOutlineTitle.SCENARIO_OUTLINE();
+                var scenarioOutlineKeyWordText = scenarioOutlineToken.GetText();
+
+                // We want the parser to allow case-insensitive keywords through, so we can assert on them
+                // here and give more useful errors.
+                if (scenarioOutlineKeyWordText != "Scenario Outline:")
+                {
+                    AddMessage(scenarioOutlineToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioOutlineKeyword, scenarioOutlineKeyWordText);
+                    return file;
+                }
+
+                scenario = new BuiltScenarioOutline();
+                titleText = scenariOutlineTitle.text().GetText();
+            }
+            else
+            {
+                const string assertFailure = "Cannot reach here if the parser rules are valid; parser will not enter the " +
+                                             "scenario block if neither SCENARIO or SCENARIO_OUTLINE tokens are present.";
+                Debug.Assert(false, assertFailure);
+                return file;
+            }
 
             currentAnnotatable = scenario;
 
@@ -259,33 +327,27 @@ namespace AutoStep.Compiler
                 Visit(annotations);
             }
 
-            var definition = context.scenarioDefinition();
-
             var description = ExtractDescription(definition.description());
-            var title = definition.scenarioTitle();
-
-            var scenarioToken = title.SCENARIO();
-            var scenarioKeyWordText = scenarioToken.GetText();
-
-            // We want the parser to allow case-insensitive keywords through, so we can assert on them
-            // here and give more useful errors.
-            if (scenarioKeyWordText != "Scenario:")
-            {
-                AddMessage(title.SCENARIO(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
-                return file;
-            }
 
             LineInfo(scenario, title);
 
-            scenario.Name = title.text().GetText();
+            scenario.Name = titleText;
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
+
+            currentAnnotatable = null;
+            currentScenario = scenario;
+
+            // Visit the examples first, it will let us validate any insertion variables
+            // when we process the steps.
+            Visit(context.examples());
 
             currentStepSet = scenario.Steps;
             currentStepSetLastConcrete = null;
 
-            currentAnnotatable = null;
-
             Visit(context.scenarioBody());
+
+            currentStepSet = null;
+            currentScenario = null;
 
             file.Feature.Scenarios.Add(scenario);
 
@@ -372,24 +434,29 @@ namespace AutoStep.Compiler
             Debug.Assert(currentStep is object);
             Debug.Assert(file is object);
 
-            var contentBlock = context.statementTextContentBlock();
+            var contentBlock = context.statementArgument();
 
-            var content = contentBlock.GetText();
+            Visit(contentBlock);
 
-            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_QUOTE(), "'", out var escaped))
+            PersistWorkingTextSection(argReplacements);
+
+            var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
+
+            var arg = new StepArgument
             {
-                // Nothing to escape, so just use the original value.
-                escaped = content;
-            }
+                RawArgument = contentBlock.GetText(),
+                Type = ArgumentType.Interpolated,
 
-            currentStep.AddArgument(PositionalLineInfo(
-                new StepArgument
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.Interpolated,
-                    EscapedArgument = escaped,
-                    Value = null,
-                }, context));
+                // The rewriter will contain any modifications that replace the escaped characters.
+                EscapedArgument = escaped,
+            };
+
+            arg.ReplaceSections(currentArgumentSections);
+
+            currentArgumentSections.Clear();
+            canArgumentValueBeDetermined = true;
+
+            currentStep.AddArgument(PositionalLineInfo(arg, context));
 
             return file;
         }
@@ -404,24 +471,94 @@ namespace AutoStep.Compiler
             Debug.Assert(currentStep is object);
             Debug.Assert(file is object);
 
-            var contentBlock = context.statementTextContentBlock();
+            var contentBlock = context.statementArgument();
 
-            string content = contentBlock.GetText();
+            Visit(contentBlock);
 
-            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_QUOTE(), "'", out var escaped))
+            PersistWorkingTextSection(argReplacements);
+
+            var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
+
+            var arg = new StepArgument
             {
-                // Nothing to escape, so just use the original value.
-                escaped = content;
+                RawArgument = contentBlock.GetText(),
+                Type = ArgumentType.Text,
+
+                // The rewriter will contain any modifications that replace the escaped characters.
+                EscapedArgument = escaped,
+            };
+
+            arg.ReplaceSections(currentArgumentSections);
+
+            if (canArgumentValueBeDetermined)
+            {
+                arg.Value = escaped;
             }
 
-            currentStep.AddArgument(PositionalLineInfo(
-                new StepArgument
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.Text,
-                    EscapedArgument = escaped,
-                    Value = escaped,
-                }, context));
+            currentArgumentSections.Clear();
+            canArgumentValueBeDetermined = true;
+
+            currentStep.AddArgument(PositionalLineInfo(arg, context));
+
+            return file;
+        }
+
+        /// <summary>
+        /// Visit the example block for example reference variables inside an argument.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitExampleArgBlock([NotNull] AutoStepParser.ExampleArgBlockContext context)
+        {
+            Debug.Assert(file != null);
+
+            PersistWorkingTextSection(argReplacements);
+
+            var content = context.GetText();
+
+            var escaped = EscapeText(
+                context,
+                argReplacements);
+
+            var allBodyInterval = context.argumentExampleNameBody().SourceInterval;
+
+            var insertionName = currentRewriter.GetText(allBodyInterval);
+
+            var arg = new ArgumentSection
+            {
+                RawText = content,
+                EscapedText = escaped,
+
+                // The insertion name is the escaped name inside the angle brackets
+                ExampleInsertionName = insertionName,
+            };
+
+            // If we've got an insertion, then the value of an argument cannot be determined at compile time.
+            canArgumentValueBeDetermined = false;
+
+            currentArgumentSections.Add(PositionalLineInfo(arg, context));
+
+            ValidateExamplesInsertionName(context, insertionName);
+
+            return file;
+        }
+
+        /// <summary>
+        /// Visit the argument block for text.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTextArgBlock([NotNull] AutoStepParser.TextArgBlockContext context)
+        {
+            Debug.Assert(file != null);
+
+            if (textSectionTokenStart is null)
+            {
+                textSectionTokenStart = context.Start;
+            }
+
+            // Move the end
+            textSectionTokenEnd = context.Stop;
 
             return file;
         }
@@ -501,6 +638,52 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
+        /// Visit an examples block.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context)
+        {
+            Debug.Assert(file is object);
+            Debug.Assert(currentScenario is object);
+
+            var outline = currentScenario as BuiltScenarioOutline;
+            var exampleTokenText = context.EXAMPLES().GetText();
+
+            if (exampleTokenText != "Examples:")
+            {
+                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
+                return file;
+            }
+
+            if (outline == null)
+            {
+                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario.Name);
+                return file;
+            }
+
+            var example = new BuiltExample();
+
+            currentAnnotatable = example;
+
+            LineInfo(example, context.EXAMPLES());
+
+            Visit(context.annotations());
+
+            currentAnnotatable = null;
+
+            Visit(context.tableBlock());
+
+            example.Table = currentTable;
+
+            currentTable = null;
+
+            outline.AddExample(example);
+
+            return file;
+        }
+
+        /// <summary>
         /// Vists a table block (prepares the table).
         /// </summary>
         /// <param name="context">The parse context.</param>
@@ -544,14 +727,30 @@ namespace AutoStep.Compiler
             Debug.Assert(file is object);
             Debug.Assert(currentTable is object);
 
-            var headerTextBlock = context.tableCellTextBlock();
+            var headerTextBlock = context.headerCell();
 
             var header = new TableHeaderCell
             {
-                HeaderName = headerTextBlock.GetText(),
+                HeaderName = headerTextBlock?.GetText(),
             };
 
-            PositionalLineInfo(header, headerTextBlock);
+            if (headerTextBlock is null)
+            {
+                var cellWs = context.CELL_WS(0);
+
+                if (cellWs is object)
+                {
+                    PositionalLineInfo(header, cellWs);
+                }
+                else
+                {
+                    PositionalLineInfo(header, context);
+                }
+            }
+            else
+            {
+                PositionalLineInfo(header, headerTextBlock);
+            }
 
             currentTable.Header.AddHeader(header);
 
@@ -711,30 +910,36 @@ namespace AutoStep.Compiler
         /// <returns>The file.</returns>
         public override BuiltFile VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
         {
-            Debug.Assert(file is object);
             Debug.Assert(currentRow is object);
+            Debug.Assert(file is object);
 
             var cell = new TableCell();
 
             PositionalLineInfo(cell, context);
-            var contentBlock = context.tableCellTextBlock();
 
-            var content = contentBlock.GetText();
+            var contentBlock = context.cellArgument();
 
-            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_CELL_DELIMITER(), "|", out var escaped))
+            Visit(contentBlock);
+
+            PersistWorkingTextSection(tableCellReplacements);
+
+            var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
+
+            var arg = new StepArgument
             {
-                // Nothing to escape, so just use the original value.
-                escaped = content;
-            }
+                RawArgument = contentBlock.GetText(),
+                Type = ArgumentType.Interpolated,
 
-            var arg = PositionalLineInfo(
-                new StepArgument
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.Interpolated,
-                    EscapedArgument = escaped,
-                    Value = null,
-                }, context);
+                // The rewriter will contain any modifications that replace the escaped characters.
+                EscapedArgument = escaped,
+            };
+
+            arg.ReplaceSections(currentArgumentSections);
+
+            PositionalLineInfo(arg, context);
+
+            currentArgumentSections.Clear();
+            canArgumentValueBeDetermined = true;
 
             cell.Value = arg;
 
@@ -750,36 +955,148 @@ namespace AutoStep.Compiler
         /// <returns>The file.</returns>
         public override BuiltFile VisitCellText([NotNull] AutoStepParser.CellTextContext context)
         {
-            Debug.Assert(file is object);
             Debug.Assert(currentRow is object);
+            Debug.Assert(file is object);
 
             var cell = new TableCell();
 
             PositionalLineInfo(cell, context);
-            var contentBlock = context.tableCellTextBlock();
 
-            var content = contentBlock.GetText();
+            var contentBlock = context.cellArgument();
 
-            if (!TryEscapeText(contentBlock, ctxt => ctxt.ESCAPE_CELL_DELIMITER(), "|", out var escaped))
+            Visit(contentBlock);
+
+            PersistWorkingTextSection(tableCellReplacements);
+
+            var escaped = currentRewriter.GetText(contentBlock.SourceInterval);
+
+            var arg = new StepArgument
             {
-                // Nothing to escape, so just use the original value.
-                escaped = content;
+                RawArgument = contentBlock.GetText(),
+                Type = ArgumentType.Text,
+
+                // The rewriter will contain any modifications that replace the escaped characters.
+                EscapedArgument = escaped,
+            };
+
+            arg.ReplaceSections(currentArgumentSections);
+
+            PositionalLineInfo(arg, context);
+
+            if (canArgumentValueBeDetermined)
+            {
+                arg.Value = escaped;
             }
 
-            var arg = PositionalLineInfo(
-                new StepArgument
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.Text,
-                    EscapedArgument = escaped,
-                    Value = escaped,
-                }, context);
+            currentArgumentSections.Clear();
+            canArgumentValueBeDetermined = true;
 
             cell.Value = arg;
 
             currentRow.AddCell(cell);
 
             return file;
+        }
+
+        /// <summary>
+        /// Visit the example cell block (which is the part of the cell that contains an example reference).
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitExampleCellBlock([NotNull] AutoStepParser.ExampleCellBlockContext context)
+        {
+            Debug.Assert(file != null);
+
+            PersistWorkingTextSection(tableCellReplacements);
+
+            var content = context.GetText();
+
+            var escaped = EscapeText(
+                context,
+                tableCellReplacements);
+
+            var allBodyInterval = context.cellExampleNameBody().SourceInterval;
+
+            var insertionName = currentRewriter.GetText(allBodyInterval);
+
+            var arg = new ArgumentSection
+            {
+                RawText = content,
+                EscapedText = escaped,
+
+                // The insertion name is the escaped name inside the angle brackets
+                ExampleInsertionName = currentRewriter.GetText(allBodyInterval),
+            };
+
+            // If we've got an insertion, then the value of an argument cannot be determined at compile time.
+            canArgumentValueBeDetermined = false;
+
+            ValidateExamplesInsertionName(context, insertionName);
+
+            currentArgumentSections.Add(PositionalLineInfo(arg, context));
+
+            return file;
+        }
+
+        /// <summary>
+        /// Visit a block within the cell that contains text.
+        /// </summary>
+        /// <param name="context">The parse context.</param>
+        /// <returns>The file.</returns>
+        public override BuiltFile VisitTextCellBlock([NotNull] AutoStepParser.TextCellBlockContext context)
+        {
+            Debug.Assert(file != null);
+
+            if (textSectionTokenStart is null)
+            {
+                textSectionTokenStart = context.Start;
+            }
+
+            // Move the end of the text section to the stop token.
+            textSectionTokenEnd = context.Stop;
+
+            return file;
+        }
+
+        private void ValidateExamplesInsertionName(ParserRuleContext context, string insertionName)
+        {
+            if (currentScenario is BuiltScenarioOutline outline)
+            {
+                if (!outline.ContainsVariable(insertionName))
+                {
+                    // Referencing an undeclared examples variable
+                    AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared, insertionName);
+                }
+            }
+            else
+            {
+                // Example variable in a regular scenario
+                AddMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario, insertionName);
+            }
+        }
+
+        private void PersistWorkingTextSection(params (int Token, string Replacement)[] replacements)
+        {
+            if (textSectionTokenStart is object)
+            {
+                var content = tokenStream.GetText(textSectionTokenStart, textSectionTokenEnd!);
+
+                var escaped = EscapeText(
+                    textSectionTokenStart,
+                    textSectionTokenEnd!,
+                    replacements);
+
+                var arg = new ArgumentSection
+                {
+                    RawText = content,
+                    EscapedText = escaped,
+                };
+
+                currentArgumentSections.Add(PositionalLineInfo(arg, textSectionTokenStart, textSectionTokenEnd!));
+            }
+
+            textSectionTokenStart = null;
+            textSectionTokenEnd = null;
         }
 
         private void AddStep(StepType type, ParserRuleContext context, AutoStepParser.StatementBodyContext bodyContext)
@@ -826,29 +1143,28 @@ namespace AutoStep.Compiler
             currentStepSet.Add(step);
         }
 
-        private bool TryEscapeText<TContext>(TContext context, Func<TContext, ITerminalNode[]> escapeTokens, string replacement, out string? escaped)
-            where TContext : ParserRuleContext
+        private string EscapeText(IToken start, IToken stop, params (int Token, string Replacement)[] replacements)
         {
-            var escapeSymbols = escapeTokens(context);
-            bool anyEscapes = false;
-
-            foreach (var symbol in escapeSymbols)
+            for (var idx = start.TokenIndex; idx <= stop.TokenIndex; idx++)
             {
-                anyEscapes = true;
-                currentRewriter.Replace(symbol.Symbol, replacement);
+                foreach (var rep in replacements)
+                {
+                    var token = tokenStream.Get(idx);
+
+                    if (token.Type == rep.Token)
+                    {
+                        // Replace
+                        currentRewriter.Replace(token, rep.Replacement);
+                    }
+                }
             }
 
-            if (anyEscapes)
-            {
-                // Get the rewritten text as a way to 'unescape'.
-                escaped = currentRewriter.GetText(context.SourceInterval);
-            }
-            else
-            {
-                escaped = null;
-            }
+            return currentRewriter.GetText(new Interval(start.TokenIndex, stop.TokenIndex));
+        }
 
-            return anyEscapes;
+        private string EscapeText(ParserRuleContext context, params (int Token, string Replacement)[] replacements)
+        {
+            return EscapeText(context.Start, context.Stop, replacements);
         }
 
         private void AddMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
@@ -889,19 +1205,21 @@ namespace AutoStep.Compiler
         private TElement PositionalLineInfo<TElement>(TElement element, ParserRuleContext ctxt)
             where TElement : PositionalElement
         {
-            element.SourceLine = ctxt.Start.Line;
-            element.SourceColumn = ctxt.Start.Column + 1;
-            element.EndColumn = ctxt.Stop.Column + (ctxt.Stop.StopIndex - ctxt.Stop.StartIndex) + 1;
-
-            return element;
+            return PositionalLineInfo(element, ctxt.Start, ctxt.Stop);
         }
 
         private TElement PositionalLineInfo<TElement>(TElement element, ITerminalNode ctxt)
             where TElement : PositionalElement
         {
-            element.SourceLine = ctxt.Symbol.Line;
-            element.SourceColumn = ctxt.Symbol.Column + 1;
-            element.EndColumn = ctxt.Symbol.Column + (ctxt.Symbol.StopIndex - ctxt.Symbol.StartIndex) + 1;
+            return PositionalLineInfo(element, ctxt.Symbol, ctxt.Symbol);
+        }
+
+        private TElement PositionalLineInfo<TElement>(TElement element, IToken start, IToken stop)
+            where TElement : PositionalElement
+        {
+            element.SourceLine = start.Line;
+            element.SourceColumn = start.Column + 1;
+            element.EndColumn = stop.Column + (stop.StopIndex - stop.StartIndex) + 1;
 
             return element;
         }
