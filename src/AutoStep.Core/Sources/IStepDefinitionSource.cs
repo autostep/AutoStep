@@ -7,22 +7,20 @@ namespace AutoStep.Core.Sources
 {
     public interface IStepDefinitionSource
     {
-        string SourceName { get; }
+        string Uid { get; }
+
+        string Name { get; }
 
         DateTime GetLastModifyTime();
 
         IEnumerable<StepDefinition> GetStepDefinitions();
     }
 
-    public class StepDefinition
+    public abstract class StepDefinition
     {
-        private readonly List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
-
         public StepType Type { get; }
 
         public string Declaration { get; }
-
-        public IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
 
         protected StepDefinition(StepType type, string declaration)
         {
@@ -30,11 +28,7 @@ namespace AutoStep.Core.Sources
             Declaration = declaration;
         }
 
-        public void UpdateMatchingParts(IEnumerable<StepMatchingPart> newMatchingParts)
-        {
-            matchingParts.Clear();
-            matchingParts.AddRange(newMatchingParts);
-        }
+        public StepDefinitionElement Definition { get; set; }
 
         public void InvokeStep()
         {
@@ -42,13 +36,14 @@ namespace AutoStep.Core.Sources
         }
     }
 
-#nullable enable
-
     public class BuiltStepDefinition : StepDefinition
     {
+        private readonly MethodInfo method;
+
         public BuiltStepDefinition(MethodInfo method, StepDefinitionAttribute declaringAttribute)
             : base(declaringAttribute?.Type ?? throw new ArgumentNullException(nameof(declaringAttribute)), declaringAttribute.Declaration)
         {
+            this.method = method;
         }
     }
 }

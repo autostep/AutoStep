@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Core.Elements
+namespace AutoStep.Core.Matching
 {
     public class StepMatchingPart
     {
@@ -15,6 +15,10 @@ namespace AutoStep.Core.Elements
         }
 
         public string TextContent { get; }
+
+        public bool IsText => TextContent is string;
+
+        public bool IsArgument => ArgumentType.HasValue;
 
         public ArgumentType? ArgumentType { get; set; }
     }

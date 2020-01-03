@@ -6,6 +6,7 @@ using AutoStep.Compiler.Parser;
 using AutoStep.Core;
 using AutoStep.Core.Elements;
 using AutoStep.Core.Sources;
+using AutoStep.Core.Tracing;
 
 namespace AutoStep.Compiler
 {
@@ -18,11 +19,23 @@ namespace AutoStep.Compiler
     /// </remarks>
     public class AutoStepLinker
     {
-        private IAutoStepCompiler compiler;
+        private readonly IAutoStepCompiler compiler;
+        private readonly ITracer tracer;
+
+        /// <summary>
+        /// Contains the lookup of UID -> Source.
+        /// </summary>
+        private Dictionary<string, IStepDefinitionSource> stepDefinitionSources = new Dictionary<string, IStepDefinitionSource>();
 
         public AutoStepLinker(IAutoStepCompiler compiler)
         {
             this.compiler = compiler;
+        }
+
+        public AutoStepLinker(IAutoStepCompiler compiler, ITracer tracer)
+            : this(compiler)
+        {
+            this.tracer = tracer;
         }
 
         public StepDefinitionFromBodyResult GetStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
@@ -95,7 +108,29 @@ namespace AutoStep.Compiler
 
         public void AddStepDefinitionSource(IStepDefinitionSource source)
         {
+            // Add/Replace the source.
+            stepDefinitionSources[source.Uid] = source;
 
+            // Load all the step definitions we have.
+            RefreshStepDefinitions(source);
+        }
+
+        private void RefreshStepDefinitions(IStepDefinitionSource source)
+        {
+            var definitions = source.GetStepDefinitions();
+
+            foreach (var stepDef in definitions)
+            {
+                if (stepDef.Definition is null)
+                {
+                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+
+                    if (definitionResult.Success)
+                    {
+                        stepDef.Definition = definitionResult.StepDefinition;
+                    }
+                }
+            }
         }
 
         public void Link(BuiltFile file)

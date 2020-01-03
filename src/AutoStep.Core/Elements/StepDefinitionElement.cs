@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoStep.Core.Matching;
 
 namespace AutoStep.Core.Elements
 {
@@ -35,6 +36,8 @@ namespace AutoStep.Core.Elements
         /// Gets or sets the scenario description.
         /// </summary>
         public string Description { get; set; }
+
+        public IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
 
         public bool ContainsArgument(string argumentName)
         {
@@ -85,6 +88,16 @@ namespace AutoStep.Core.Elements
             Type = step.Type;
             Declaration = step.RawText;
             matchingParts.AddRange(step.MatchingParts);
+        }
+
+        public void AddMatchingPart(string text)
+        {
+            matchingParts.Add(new StepMatchingPart(text));
+        }
+
+        public void AddMatchingPart(ArgumentType argType)
+        {
+            matchingParts.Add(new StepMatchingPart(argType));
         }
     }
 }

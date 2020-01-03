@@ -26,7 +26,9 @@ namespace AutoStep.Core.Sources
             this.tracer = tracer;
         }
 
-        public string SourceName => assembly.Location;
+        public string Uid => assembly.Location;
+
+        public string Name => assembly.Location;
 
         public DateTime GetLastModifyTime()
         {
@@ -36,7 +38,7 @@ namespace AutoStep.Core.Sources
 
         public IEnumerable<StepDefinition> GetStepDefinitions()
         {
-            // If we've already loaded them, just do so again.
+            // If we've already loaded them, just return the existing set.
             if (definitions.Count == 0)
             {
                 // Search for public types that are decorated with a Steps attribute.
