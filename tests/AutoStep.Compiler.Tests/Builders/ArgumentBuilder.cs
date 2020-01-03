@@ -116,6 +116,7 @@ namespace AutoStep.Compiler.Tests.Builders
 
             return this;
         }
+
         public ArgumentBuilder VariableInsertion(string variableName, int start, int end)
         {
             customSections = true;

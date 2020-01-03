@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,7 +10,9 @@ using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
 using AutoStep.Core.Elements;
+using AutoStep.Core.Tracing;
 using FluentAssertions;
+using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
@@ -20,19 +23,22 @@ namespace AutoStep.Compiler.Tests.Utils
     {
         protected ITestOutputHelper TestOutput { get; }
 
+        protected ITracer TestTracer { get; }
+
         protected string NewLine => Environment.NewLine;
 
         protected CompilerTestBase(ITestOutputHelper output)
         {
             TestOutput = output;
+
+            TestTracer = new TestTracer(output);
         }
 
         protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var tracer = new TestTracer(TestOutput);
-            var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -46,8 +52,7 @@ namespace AutoStep.Compiler.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var tracer = new TestTracer(TestOutput);
-            var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -58,7 +63,7 @@ namespace AutoStep.Compiler.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            AssertFileComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output);
         }
 
 
@@ -66,8 +71,7 @@ namespace AutoStep.Compiler.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var tracer = new TestTracer(TestOutput);
-            var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -78,8 +82,7 @@ namespace AutoStep.Compiler.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
         {
-            var tracer = new TestTracer(TestOutput);
-            var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -87,16 +90,15 @@ namespace AutoStep.Compiler.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            AssertFileComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output);
         }
 
         protected async Task CompileAndAssertSuccess(string content, Action<FileBuilder> cfg)
         {
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
-
-            var tracer = new TestTracer(TestOutput);
-            var compiler = new AutoStepCompiler(AutoStepCompiler.CompilerOptions.EnableDiagnostics, tracer);
+            
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -105,10 +107,10 @@ namespace AutoStep.Compiler.Tests.Utils
             Assert.Empty(result.Messages);
             Assert.True(result.Success);
 
-            AssertFileComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output);
         }
-
-        private void AssertFileComparison(BuiltFile expected, BuiltFile actual)
+                
+        protected void AssertElementComparison(BuiltElement expected, BuiltElement actual)
         {
             Assert.NotNull(actual);
 
@@ -116,7 +118,11 @@ namespace AutoStep.Compiler.Tests.Utils
             {
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
-                    .IncludingAllRuntimeProperties());
+                    .IncludingAllRuntimeProperties()
+                    // Don't compare internal properties, since they are usually an implementation detail
+                    // (like matching parts).
+                    .Using(new AllExceptInternalPropertiesSelectionRule())
+                );
             }
             catch
             {
@@ -137,6 +143,22 @@ namespace AutoStep.Compiler.Tests.Utils
                 TestOutput.WriteLine(resultAsJson);
 
                 throw;
+            }
+        }
+
+        private class AllExceptInternalPropertiesSelectionRule : IMemberSelectionRule
+        {
+            public bool IncludesMembers
+            {
+                get { return false; }
+            }
+            
+            public IEnumerable<SelectedMemberInfo> SelectMembers(
+                IEnumerable<SelectedMemberInfo> selectedMembers, 
+                IMemberInfo context, 
+                IEquivalencyAssertionOptions config)
+            {
+                return selectedMembers.Except(context.RuntimeType.GetNonPrivateProperties().Where(p => p.GetMethod.IsAssembly).Select(SelectedMemberInfo.Create));
             }
         }
 

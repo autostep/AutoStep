@@ -100,6 +100,24 @@ namespace AutoStep.Compiler.Tests.Parsing
                                     4, 50, 4, 61)
             );
         }
+        
+        [Fact]
+        public async Task DefineStepUsingEmptyVariableGivesError()
+        {
+            const string TestFile =
+            @"                
+              Step: Given I have passed ''
+                
+                Given this is just a step
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired,
+                                    "You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'.",
+                                    2, 41, 2, 42)
+            );
+
+        }
 
         [Fact]
         public async Task DefineStepUsingInsertionVariableGivesError()

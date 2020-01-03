@@ -96,6 +96,11 @@ namespace AutoStep.Compiler
         /// </summary>
         CannotDefineAStepWithAnd = 00017,
 
+        /// <summary>
+        /// Cannot use an empty parameter as a variable name for a step definition.
+        /// </summary>
+        StepVariableNameRequired = 00018,
+
         //// Syntax Errors ////
 
         /// <summary>

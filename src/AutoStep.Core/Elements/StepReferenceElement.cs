@@ -2,6 +2,7 @@
 
 namespace AutoStep.Core.Elements
 {
+
     /// <summary>
     /// Represents a reference to a Step inside a written test.
     /// </summary>
@@ -11,6 +12,9 @@ namespace AutoStep.Core.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
+        private List<StepArgumentElement> arguments;
+        private List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
+
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
         /// from <see cref="Type"/> when the step is of the <see cref="StepType.And"/> type, and the binding is determined by a preceding step.
@@ -31,7 +35,9 @@ namespace AutoStep.Core.Elements
         /// <summary>
         /// Gets the set of arguments presented by the Step Reference.
         /// </summary>
-        public List<StepArgumentElement> Arguments { get; private set; }
+        public IReadOnlyCollection<StepArgumentElement> Arguments => arguments;
+
+        internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -44,12 +50,29 @@ namespace AutoStep.Core.Elements
         /// <param name="argument">The argument to add.</param>
         public void AddArgument(StepArgumentElement argument)
         {
-            if (Arguments == null)
+            if (argument is null)
             {
-                Arguments = new List<StepArgumentElement>();
+                throw new System.ArgumentNullException(nameof(argument));
             }
 
-            Arguments.Add(argument);
+            if (arguments == null)
+            {
+                arguments = new List<StepArgumentElement>();
+            }
+
+            matchingParts.Add(new StepMatchingPart(argument.Type));
+
+            arguments.Add(argument);
+        }
+
+        public void AddMatchingText(string textContent)
+        {
+            if (textContent is null)
+            {
+                throw new System.ArgumentNullException(nameof(textContent));
+            }
+
+            matchingParts.Add(new StepMatchingPart(textContent));
         }
     }
 }

@@ -24,7 +24,7 @@ namespace AutoStep.Compiler
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    public class AutoStepCompiler
+    public partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
         private readonly ITracer? tracer;
@@ -57,21 +57,87 @@ namespace AutoStep.Compiler
             this.tracer = tracer;
         }
 
-        /// <summary>
-        /// The available Compiler Options.
-        /// </summary>
-        [Flags]
-        public enum CompilerOptions
+        public TContext CompileEntryPoint<TContext>(
+            string content,
+            string? sourceName,
+            Func<AutoStepParser, TContext> entryPoint,
+            out ITokenStream tokenStream,
+            out IEnumerable<CompilerMessage> parserErrors,
+            int? customLexerStartMode = null)
+            where TContext : ParserRuleContext
         {
-            /// <summary>
-            /// Default compiler behaviour.
-            /// </summary>
-            Default,
+            if (content is null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
 
-            /// <summary>
-            /// Enable diagnostics, which causes full lexer and parser data to be written to the tracer.
-            /// </summary>
-            EnableDiagnostics,
+            if (entryPoint is null)
+            {
+                throw new ArgumentNullException(nameof(entryPoint));
+            }
+
+            // Create the source stream, the lexer itself, and the resulting token stream.
+            var inputStream = new AntlrInputStream(content);
+            var lexer = new AutoStepLexer(inputStream);
+
+            if (customLexerStartMode.HasValue)
+            {
+                lexer.PushMode(customLexerStartMode.Value);
+            }
+
+            var commonTokenStream = new CommonTokenStream(lexer);
+
+            // Create a parser and register our error listener.
+            var parser = new AutoStepParser(commonTokenStream);
+
+            // First we will do the simpler/faster SLL strategy.
+            parser.RemoveErrorListeners();
+
+            parser.Interpreter.PredictionMode = PredictionMode.SLL;
+            parser.ErrorHandler = new BailErrorStrategy();
+
+            TContext context;
+
+            var errorListener = new ParserErrorListener(sourceName, commonTokenStream);
+
+            try
+            {
+                context = entryPoint(parser);
+            }
+            catch (ParseCanceledException)
+            {
+                commonTokenStream.Reset();
+                parser.Reset();
+
+                parser.AddErrorListener(errorListener);
+                parser.ErrorHandler = new DefaultErrorStrategy();
+
+                // Now we will do the full LL mode.
+                parser.Interpreter.PredictionMode = PredictionMode.LL;
+
+                context = entryPoint(parser);
+            }
+
+            // Write to the tracer if diagnostics are on.
+            if (options.HasFlag(CompilerOptions.EnableDiagnostics) && tracer is object)
+            {
+                tracer.TraceInfo("Token Stream for source {sourceName}: \n{tokenStream}", new
+                {
+                    sourceName,
+                    tokenStream = commonTokenStream.GetTokenDebugText(lexer.Vocabulary),
+                });
+
+                tracer.TraceInfo("Compiled Parse Tree for source {sourceName}: \n{parseTree}", new
+                {
+                    sourceName,
+                    parseTree = context.GetParseTreeDebugText(parser),
+                });
+            }
+
+            parserErrors = errorListener.ParserErrors;
+            tokenStream = commonTokenStream;
+
+            return context;
         }
 
         /// <summary>
@@ -90,57 +156,7 @@ namespace AutoStep.Compiler
             // Read from the content source.
             var sourceContent = await source.GetContentAsync(cancelToken);
 
-            // Create the soruce stream, the lexer itself, and the resulting token stream.
-            var inputStream = new AntlrInputStream(sourceContent);
-            var lexer = new AutoStepLexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-
-            // Create a parser and register our error listener.
-            var parser = new AutoStepParser(tokenStream);
-
-            // First we will do the simpler/faster SLL strategy.
-            parser.RemoveErrorListeners();
-
-            parser.Interpreter.PredictionMode = PredictionMode.SLL;
-            parser.ErrorHandler = new BailErrorStrategy();
-
-            AutoStepParser.FileContext fileContext;
-
-            var errorListener = new ParserErrorListener(source.SourceName, tokenStream);
-
-            try
-            {
-                fileContext = parser.file();
-            }
-            catch (ParseCanceledException)
-            {
-                tokenStream.Reset();
-                parser.Reset();
-
-                parser.AddErrorListener(errorListener);
-                parser.ErrorHandler = new DefaultErrorStrategy();
-
-                // Now we will do the full LL mode.
-                parser.Interpreter.PredictionMode = PredictionMode.LL;
-
-                fileContext = parser.file();
-            }
-
-            // Write to the tracer if diagnostics are on.
-            if (options.HasFlag(CompilerOptions.EnableDiagnostics) && tracer is object)
-            {
-                tracer.TraceInfo("Token Stream for source {sourceName}: \n{tokenStream}", new
-                {
-                    sourceName = source.SourceName,
-                    tokenStream = tokenStream.GetTokenDebugText(lexer.Vocabulary),
-                });
-
-                tracer.TraceInfo("Compiled Parse Tree for source {sourceName}: \n{parseTree}", new
-                {
-                    sourceName = source.SourceName,
-                    parseTree = fileContext.GetParseTreeDebugText(parser),
-                });
-            }
+            var fileContext = CompileEntryPoint(sourceContent, source.SourceName, p => p.file(), out var tokenStream, out var parserMessages);
 
             // Allow the op to be cancelled before we jump into the tree walker.
             if (cancelToken.IsCancellationRequested)
@@ -149,14 +165,14 @@ namespace AutoStep.Compiler
             }
 
             // Inspect the errors.
-            if (errorListener.ParserErrors.Any())
+            if (parserMessages.Any())
             {
                 // Parser failed.
-                return new CompilerResult(false, errorListener.ParserErrors);
+                return new CompilerResult(false, parserMessages);
             }
 
             // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
-            var compilerVisitor = new CompilerTreeWalker(source.SourceName, tokenStream);
+            var compilerVisitor = new FileVisitor(source.SourceName, tokenStream);
 
             var builtFile = compilerVisitor.Visit(fileContext);
 

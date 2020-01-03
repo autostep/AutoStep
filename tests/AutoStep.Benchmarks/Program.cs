@@ -13,7 +13,8 @@ namespace AutoStep.Benchmarks
 
         private static readonly Type[] AllBenchmarks =
         {
-            typeof(FullFileBenchmark)
+            typeof(FullFileBenchmark),
+            typeof(DefinitionParsingBenchmark)
         };
     }
 }

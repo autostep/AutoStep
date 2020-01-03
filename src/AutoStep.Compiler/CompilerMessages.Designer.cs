@@ -250,6 +250,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. &apos;variable1&apos; or &apos;total&apos;..
+        /// </summary>
+        internal static string StepVariableNameRequired {
+            get {
+                return ResourceManager.GetString("StepVariableNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have specified a Step parameter variable to insert, &apos;{0}&apos;, but you have not declared the variable in the step declaration. This value will always be blank when the test runs..
         /// </summary>
         internal static string StepVariableNotDeclared {

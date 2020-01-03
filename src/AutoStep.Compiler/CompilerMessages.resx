@@ -180,6 +180,9 @@
   <data name="StepNotExpected" xml:space="preserve">
     <value>A Step is not expected here.</value>
   </data>
+  <data name="StepVariableNameRequired" xml:space="preserve">
+    <value>You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'.</value>
+  </data>
   <data name="StepVariableNotDeclared" xml:space="preserve">
     <value>You have specified a Step parameter variable to insert, '{0}', but you have not declared the variable in the step declaration. This value will always be blank when the test runs.</value>
   </data>

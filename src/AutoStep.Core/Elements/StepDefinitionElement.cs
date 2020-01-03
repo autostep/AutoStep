@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoStep.Core.Elements
@@ -8,6 +9,8 @@ namespace AutoStep.Core.Elements
     /// </summary>
     public class StepDefinitionElement : StepCollectionElement, IAnnotatableElement
     {
+        private List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
+
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.
         /// </summary>
@@ -62,23 +65,26 @@ namespace AutoStep.Core.Elements
             Arguments.Add(argument);
         }
 
-        /// <summary>
-        /// Adds multiple arguments to the step definition.
-        /// </summary>
-        /// <param name="arguments">The arguments to add.</param>
-        public void AddArguments(IEnumerable<StepArgumentElement> arguments)
+        public void UpdateFromStepReference(StepReferenceElement step)
         {
-            if (arguments is null)
+            if (step is null)
             {
-                throw new System.ArgumentNullException(nameof(arguments));
+                throw new ArgumentNullException(nameof(step));
             }
 
-            if (Arguments == null)
+            if (step.Arguments != null)
             {
-                Arguments = new List<StepArgumentElement>();
+                if (Arguments == null)
+                {
+                    Arguments = new List<StepArgumentElement>();
+                }
+
+                Arguments.AddRange(step.Arguments);
             }
 
-            Arguments.AddRange(arguments);
+            Type = step.Type;
+            Declaration = step.RawText;
+            matchingParts.AddRange(step.MatchingParts);
         }
     }
 }

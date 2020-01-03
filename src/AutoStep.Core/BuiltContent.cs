@@ -6,12 +6,12 @@ namespace AutoStep.Core
     /// <summary>
     /// Defines the built content of an AutoStep content source (i.e. a raw file becomes a set of built content).
     /// </summary>
-    public class BuiltContent
+    public class BuiltContent : BuiltElement
     {
         private List<StepDefinitionElement> stepDefinitions;
 
         /// <summary>
-        /// Gets or sets any general step definitions defined in the file.
+        /// Gets any general step definitions defined in the file.
         /// </summary>
         public IReadOnlyList<StepDefinitionElement> StepDefinitions => stepDefinitions;
 
