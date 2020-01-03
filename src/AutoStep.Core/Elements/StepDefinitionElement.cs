@@ -37,7 +37,7 @@ namespace AutoStep.Core.Elements
         /// </summary>
         public string Description { get; set; }
 
-        public IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
+        internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
 
         public bool ContainsArgument(string argumentName)
         {
