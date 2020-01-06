@@ -50,7 +50,7 @@ namespace AutoStep.Core.Matching
                     else
                     {
                         // Argument match.
-                        return (diff, true);
+                        return (diff + 1, true);
                     }
                 }
                 else

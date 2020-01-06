@@ -18,7 +18,7 @@ namespace AutoStep.Core.Elements
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
         /// <summary>
-        /// Gets or sets the name of the scenario.
+        /// Gets or sets the type of step.
         /// </summary>
         public StepType Type { get; set; }
 
