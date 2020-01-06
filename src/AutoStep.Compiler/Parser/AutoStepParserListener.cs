@@ -42,6 +42,46 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitFile([NotNull] AutoStepParser.FileContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDefinition([NotNull] AutoStepParser.StepDefinitionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDefinition([NotNull] AutoStepParser.StepDefinitionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

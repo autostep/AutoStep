@@ -129,6 +129,12 @@
   <data name="BadTagFormat" xml:space="preserve">
     <value>Bad tag format. Tag must have the format '@tagName'.</value>
   </data>
+  <data name="CannotDefineAStepWithAnd" xml:space="preserve">
+    <value>A custom step cannot be defined using the 'And' keyword. You must use Given, When or Then.</value>
+  </data>
+  <data name="CannotSpecifyDynamicValueInStepDefinition" xml:space="preserve">
+    <value>You cannot use '{0}' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.</value>
+  </data>
   <data name="ExamplesBlockRequiresTable" xml:space="preserve">
     <value>Examples blocks must contain a table.</value>
   </data>
@@ -173,6 +179,12 @@
   </data>
   <data name="StepNotExpected" xml:space="preserve">
     <value>A Step is not expected here.</value>
+  </data>
+  <data name="StepVariableNameRequired" xml:space="preserve">
+    <value>You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'.</value>
+  </data>
+  <data name="StepVariableNotDeclared" xml:space="preserve">
+    <value>You have specified a Step parameter variable to insert, '{0}', but you have not declared the variable in the step declaration. This value will always be blank when the test runs.</value>
   </data>
   <data name="SyntaxError" xml:space="preserve">
     <value>Syntax Error: {0}</value>

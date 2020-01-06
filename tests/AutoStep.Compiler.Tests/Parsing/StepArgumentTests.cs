@@ -1,12 +1,10 @@
-﻿using AutoStep.Compiler.Tests.Builders;
-using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class StepArgumentTests : CompilerTestBase
     {
@@ -17,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task StepCanHaveSingleArgument()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature
 
@@ -120,7 +118,7 @@ namespace AutoStep.Compiler.Tests
                         .Given("I have passed 'this <variable name>' to something", 6, 21, step => step
                             .Argument(ArgumentType.Text, "this <variable name>", 41, 62, arg => arg
                                 .Section("this ", 42, 46)
-                                .ExampleVariable("variable name", 47, 61)
+                                .VariableInsertion("variable name", 47, 61)
                                 .NullValue()
                             )
             ))),
@@ -143,12 +141,12 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAndAssertErrors(TestFile, 
+            await CompileAndAssertErrors(TestFile,
                 new CompilerMessage(
-                    null, 
-                    CompilerMessageLevel.Error, 
+                    null,
+                    CompilerMessageLevel.Error,
                     CompilerMessageCode.ArgumentHasNotBeenClosed,
-                    "Quoted argument has not been closed.", 
+                    "Quoted argument has not been closed.",
                     6, 41, 6, 63
                 )
             );
@@ -198,7 +196,7 @@ namespace AutoStep.Compiler.Tests
                                 .Escaped("argument ' quoted")
             )))));
         }
-        
+
         [Fact]
         public async Task InterpolatedArgument()
         {
@@ -239,7 +237,7 @@ namespace AutoStep.Compiler.Tests
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123' to something", 6, 21, step => step
                             .Argument(ArgumentType.NumericInteger, "123", 41, 45, arg => arg
-                                .Value(123)                                
+                                .Value(123)
             )))));
         }
 
@@ -260,7 +258,7 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123.5' to something", 6, 21, step => step
-                            .Argument(ArgumentType.NumericDecimal, "123.5", 41, 47, arg => arg 
+                            .Argument(ArgumentType.NumericDecimal, "123.5", 41, 47, arg => arg
                                 .Value(123.5M)
                             )
                         )

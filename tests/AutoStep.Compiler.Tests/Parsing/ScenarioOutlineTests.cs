@@ -1,12 +1,10 @@
-﻿using AutoStep.Compiler.Tests.Builders;
-using AutoStep.Compiler.Tests.Utils;
+﻿using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class ScenarioOutlineTests : CompilerTestBase
     {
@@ -17,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task ScenarioOutlineCanBeDefined()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature
                 
@@ -43,18 +41,18 @@ namespace AutoStep.Compiler.Tests
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I am in a scenario outline", 6, 21)
-                        .Examples(10, 17, example => example 
+                        .Examples(10, 17, example => example
                             .Option("opt1", 8, 17)
                             .Tag("tag1", 9, 17)
                             .Table(11, 21, tab => tab
-                                .Headers(11, 21, 
+                                .Headers(11, 21,
                                     ("heading1", 23, 30),
                                     ("heading2", 36, 43)
                                 )
-                                .Row(12, 21, 
+                                .Row(12, 21,
                                     (ArgumentType.Text, "something1", 23, 32, null),
                                     (ArgumentType.Text, "something2", 36, 45, null)
-                                )                                
+                                )
                             )
                         )
                         .Examples(16, 17, example => example
@@ -98,7 +96,7 @@ namespace AutoStep.Compiler.Tests
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1>'", 6, 21, step => step
                             .Argument(ArgumentType.Text, "<variable1>", 46, 58, arg => arg
-                                .ExampleVariable("variable1", 47, 57)
+                                .VariableInsertion("variable1", 47, 57)
                                 .NullValue()
                             )
                         )
@@ -146,7 +144,7 @@ namespace AutoStep.Compiler.Tests
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, (ArgumentType.Text, "<variable1>", 28, 38, arg => arg
-                                    .ExampleVariable("variable1", 28, 38)
+                                    .VariableInsertion("variable1", 28, 38)
                                     .NullValue()
                                 ))
                             )
@@ -195,9 +193,9 @@ namespace AutoStep.Compiler.Tests
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, (ArgumentType.Text, "<variable1> and <variable2>", 28, 54, arg => arg
-                                    .ExampleVariable("variable1", 28, 38)
+                                    .VariableInsertion("variable1", 28, 38)
                                     .Section(" and ", 39, 43)
-                                    .ExampleVariable("variable2", 44, 54)
+                                    .VariableInsertion("variable2", 44, 54)
                                     .NullValue()
                                 ))
                             )
@@ -246,7 +244,7 @@ namespace AutoStep.Compiler.Tests
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, (ArgumentType.Text, "<not a variable>", 28, 43, arg => arg
-                                    .ExampleVariable("not a variable", 28, 43)
+                                    .VariableInsertion("not a variable", 28, 43)
                                     .NullValue()
                                 ))
                             )
@@ -266,7 +264,7 @@ namespace AutoStep.Compiler.Tests
                     )
                 ),
                 new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared,
-                                    "You have specified an Example variable to insert, 'not a variable', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.", 
+                                    "You have specified an Example variable to insert, 'not a variable', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.",
                                     8, 28, 8, 43)
             );
         }
@@ -293,9 +291,9 @@ namespace AutoStep.Compiler.Tests
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
                             .Argument(ArgumentType.Text, "<variable1> something <variable2>", 46, 80, arg => arg
-                                .ExampleVariable("variable1", 47, 57)
+                                .VariableInsertion("variable1", 47, 57)
                                 .Section(" something ", 58, 68)
-                                .ExampleVariable("variable2", 69, 79)
+                                .VariableInsertion("variable2", 69, 79)
                                 .NullValue()
                             )
                         )
@@ -343,9 +341,9 @@ namespace AutoStep.Compiler.Tests
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
                             .Argument(ArgumentType.Text, "<variable1> something <variable2>", 46, 80, arg => arg
-                                .ExampleVariable("variable1", 47, 57)
+                                .VariableInsertion("variable1", 47, 57)
                                 .Section(" something ", 58, 68)
-                                .ExampleVariable("variable2", 69, 79)
+                                .VariableInsertion("variable2", 69, 79)
                                 .NullValue()
                             )
                         )
@@ -396,7 +394,7 @@ namespace AutoStep.Compiler.Tests
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<not a variable>'", 6, 21, step => step
                             .Argument(ArgumentType.Text, "<not a variable>", 46, 63, arg => arg
-                                .ExampleVariable("not a variable", 47, 62)
+                                .VariableInsertion("not a variable", 47, 62)
                                 .NullValue()
                             )
                         )
@@ -435,8 +433,8 @@ namespace AutoStep.Compiler.Tests
                     | something1 | something2 |
             ";
 
-            await CompileAndAssertErrors(TestFile, 
-                new CompilerMessage(null, 
+            await CompileAndAssertErrors(TestFile,
+                new CompilerMessage(null,
                 CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword,
                 "The 'Examples' keyword is case-sensitive, so 'ExampLes:' should be 'Examples:'",
                 8, 17, 8, 25
@@ -467,7 +465,7 @@ namespace AutoStep.Compiler.Tests
                 )
             );
         }
-        
+
         [Fact]
         public async Task ScenarioOutlineBlankTitle()
         {

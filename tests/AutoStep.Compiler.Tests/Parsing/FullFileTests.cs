@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using AutoStep.Compiler.Tests.Builders;
+﻿using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.FullFiles;
 using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class FullFileTests : CompilerTestBase
     {
@@ -43,15 +39,15 @@ namespace AutoStep.Compiler.Tests
                                 )
                             .Given("I have selected 'Client Management' -> 'Client Location' in the menu", 23, 5, step => step
                                 .Argument(ArgumentType.Text, "Client Management", 27, 45)
-                                .Argument(ArgumentType.Text, "Client Location", 50, 66)                                
+                                .Argument(ArgumentType.Text, "Client Location", 50, 66)
                             )
                             .Then("the 'Client Management - Client Location' page should be displayed", 24, 5, step => step
                                 .Argument(ArgumentType.Text, "Client Management - Client Location", 14, 50)
                             )
                             .When("I press 'Add'", 26, 5, step => step
-                                .Argument(ArgumentType.Text, "Add", 18, 22)                                
+                                .Argument(ArgumentType.Text, "Add", 18, 22)
                             )
-                            .Then("the 'Client Management - Client Location - Add' page should be displayed", 27, 5, step => step 
+                            .Then("the 'Client Management - Client Location - Add' page should be displayed", 27, 5, step => step
                                 .Argument(ArgumentType.Text, "Client Management - Client Location - Add", 14, 56)
                             )
                             .Given("I have entered 'My Name' into 'Name'", 29, 5, step => step

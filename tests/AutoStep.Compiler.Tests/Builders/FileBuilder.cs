@@ -25,6 +25,20 @@ namespace AutoStep.Compiler.Tests.Builders
 
             return this;
         }
+
+        public FileBuilder StepDefinition(StepType type, string declaration, int line, int column, Action<StepDefinitionBuilder> cfg = null)
+        {
+            var stepDefinitionBuilder = new StepDefinitionBuilder(type, declaration, line, column);
+
+            if(cfg is object)
+            {
+                cfg(stepDefinitionBuilder);
+            }
+
+            Built.AddStepDefinition(stepDefinitionBuilder.Built);
+
+            return this;
+        }
     }
 
 

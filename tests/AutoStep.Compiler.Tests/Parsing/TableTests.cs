@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Utils;
 using AutoStep.Core;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class TableTests : CompilerTestBase
     {
@@ -18,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task StepCanHaveATable()
         {
-            const string TestFile = 
+            const string TestFile =
             @"
                 Feature: My Feature
 
@@ -204,11 +201,11 @@ namespace AutoStep.Compiler.Tests
 
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage (
-                null, 
-                CompilerMessageLevel.Error, 
-                CompilerMessageCode.TableRowHasNotBeenTerminated, 
-                "Table cell has not been terminated. Expecting a table delimiter character '|'.", 
+            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+                null,
+                CompilerMessageLevel.Error,
+                CompilerMessageCode.TableRowHasNotBeenTerminated,
+                "Table cell has not been terminated. Expecting a table delimiter character '|'.",
                 9, 29, 9, 36));
         }
 

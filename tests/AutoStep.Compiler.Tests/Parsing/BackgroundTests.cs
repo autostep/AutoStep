@@ -1,12 +1,10 @@
 ﻿using AutoStep.Compiler.Tests.Utils;
-using AutoStep.Compiler.Tests.Builders;
 using AutoStep.Core;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class BackgroundTests : CompilerTestBase
     {
@@ -17,7 +15,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task FeatureCanHaveBackground()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature 
                 Description               

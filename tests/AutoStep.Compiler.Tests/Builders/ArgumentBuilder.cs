@@ -10,6 +10,22 @@ namespace AutoStep.Compiler.Tests.Builders
         private bool customSections = false;
         private List<ArgumentSectionElement> addedSections = new List<ArgumentSectionElement>();
 
+        public ArgumentBuilder(StepDefinitionElement stepDefinition, string rawValue, ArgumentType type, int start, int end)
+        {
+            Built = new StepArgumentElement
+            {
+                SourceLine = stepDefinition.SourceLine,
+                Type = type,
+                RawArgument = rawValue,
+                EscapedArgument = rawValue,
+                Value = rawValue,
+                SourceColumn = start,
+                EndColumn = end
+            };
+
+            AddDefaultSection(delimiterOffset: 1);
+        }
+
         public ArgumentBuilder(StepReferenceElement containingStep, string rawValue, ArgumentType type, int start, int end)
         {
             Built = new StepArgumentElement
@@ -100,7 +116,8 @@ namespace AutoStep.Compiler.Tests.Builders
 
             return this;
         }
-        public ArgumentBuilder ExampleVariable(string variableName, int start, int end)
+
+        public ArgumentBuilder VariableInsertion(string variableName, int start, int end)
         {
             customSections = true;
 

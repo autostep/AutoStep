@@ -3,10 +3,22 @@ parser grammar AutoStepParser;
 options { tokenVocab=AutoStepLexer; }
 
 file: NEWLINE*
-      featureBlock+ // Multiple feature blocks aren't valid, 
-                    // but we want to give an error later instead of failing
-                    // the parse stage.
+      (featureBlock|stepDefinitionBlock)+ // Multiple feature blocks aren't valid, 
+                                          // but we want to give an error later instead of failing
+                                          // the parse stage.
       WS? EOF;
+
+
+stepDefinitionBlock: annotations
+                     stepDefinition
+                     stepDefinitionBody;
+
+stepDefinition: WS? STEP_DEFINE WS? stepDeclaration STATEMENT_NEWLINE
+                    description?;
+
+stepDefinitionBody: stepCollectionBodyLine*;
+
+stepDeclaration: statement;
 
 featureBlock: annotations 
               featureDefinition

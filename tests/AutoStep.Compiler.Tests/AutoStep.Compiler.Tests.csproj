@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AutoStep.Compiler\AutoStep.Compiler.csproj" />
     <ProjectReference Include="..\..\src\AutoStep.Core\AutoStep.Core.csproj" />
+    <ProjectReference Include="..\AutoStep.Compiler.Tests.DefinedSteps\AutoStep.Compiler.Tests.DefinedSteps.csproj" />
   </ItemGroup>
 
   <ItemGroup>

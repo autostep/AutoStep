@@ -1,11 +1,9 @@
-﻿using AutoStep.Compiler.Tests.Builders;
-using AutoStep.Compiler.Tests.Utils;
-using System;
+﻿using AutoStep.Compiler.Tests.Utils;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class DescriptionTests : CompilerTestBase
     {
@@ -16,7 +14,7 @@ namespace AutoStep.Compiler.Tests
         [Fact]
         public async Task FeatureSingleLineDescription()
         {
-            const string TestFile = 
+            const string TestFile =
             @"                
               Feature: My Feature
                 Description words
@@ -172,7 +170,7 @@ namespace AutoStep.Compiler.Tests
                     .Feature("My Feature", 2, 15, feat => feat
                         .Scenario("My Scenario", 4, 17, scen => scen
                         .Description("Line 1")
-                        .Given("I have", 7, 21)                        
+                        .Given("I have", 7, 21)
             )));
         }
 

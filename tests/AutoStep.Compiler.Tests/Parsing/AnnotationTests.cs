@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using AutoStep.Compiler.Tests.Builders;
+﻿using System.Threading.Tasks;
 using AutoStep.Compiler.Tests.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Compiler.Tests
+namespace AutoStep.Compiler.Tests.Parsing
 {
     public class AnnotationTests : CompilerTestBase
     {
@@ -235,7 +231,7 @@ namespace AutoStep.Compiler.Tests
             ";
 
             await CompileAndAssertSuccess(TestFile, file => file
-                .Feature("My Feature", 2, 15, feat => feat                    
+                .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 13, 17, scen => scen
                         .Tag("tag1", 4, 17)
                         .Option("opt1", 5, 17)
