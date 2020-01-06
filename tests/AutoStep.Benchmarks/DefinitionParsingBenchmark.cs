@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Compiler;
-using AutoStep.Core;
-using AutoStep.Core.Matching;
+using AutoStep.Matching;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks

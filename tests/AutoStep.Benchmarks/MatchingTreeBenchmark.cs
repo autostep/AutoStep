@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Core;
-using AutoStep.Core.Elements;
-using AutoStep.Core.Matching;
-using AutoStep.Core.Sources;
+using AutoStep;
+using AutoStep.Elements;
+using AutoStep.Matching;
+using AutoStep.Sources;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks

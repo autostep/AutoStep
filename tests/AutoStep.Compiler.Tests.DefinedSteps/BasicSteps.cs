@@ -1,6 +1,4 @@
-﻿using System;
-using AutoStep.Core;
-
+﻿
 namespace AutoStep.Compiler.Tests.DefinedSteps
 {
     [Steps]
