@@ -60,7 +60,7 @@ namespace AutoStep.Core.Matching
             root.AddDefinition(defNode, allParts, 0);
         }
 
-        public LinkedList<(int confidence, StepDefinition def)> Match(StepReferenceElement stepReference, out int partsMatched)
+        public LinkedList<MatchResult> Match(StepReferenceElement stepReference, bool exactOnly, out int partsMatched)
         {
             if (stepReference is null)
             {
@@ -72,7 +72,7 @@ namespace AutoStep.Core.Matching
                 throw new ArgumentException("Step reference must have a known binding type.", nameof(stepReference));
             }
 
-            var list = new LinkedList<(int confidence, StepDefinition def)>();
+            var list = new LinkedList<MatchResult>();
             partsMatched = 0;
 
             var root = stepReference.BindingType.Value switch
@@ -83,7 +83,7 @@ namespace AutoStep.Core.Matching
                 _ => throw new ArgumentException("Invalid step definition binding type.")
             };
 
-            root.SearchRoot(list, stepReference.MatchingParts, 0, ref partsMatched);
+            root.SearchRoot(list, stepReference.MatchingParts, 0, exactOnly, ref partsMatched);
 
             return list;
         }

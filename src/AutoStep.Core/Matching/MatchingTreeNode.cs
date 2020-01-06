@@ -80,21 +80,49 @@ namespace AutoStep.Core.Matching
                 if (rightDefinition is null)
                 {
                     AllDefinitions.AddLast(definitionNode);
+
+                    // This is the last position in the list, so it must be an exact match.
+                    // TODO: Go through and check for duplicates/replacements?
+                    exactMatchNodes.AddLast(definitionNode);
                 }
                 else
                 {
-                    AllDefinitions.AddAfter(rightDefinition, definitionNode);
-                }
+                    // Check if this definition already exists (and should just be replaced).
+                    var currentNode = leftDefinition;
+                    while (currentNode != null)
+                    {
+                        // This is the same definition (but possibly a new version).
+                        // Replace it.
+                        if (currentNode.Value.IsSameDefinition(definitionNode.Value))
+                        {
+                            // Just replace the node in-place.
+                            currentNode.Value = definitionNode.Value;
+                            break;
+                        }
 
-                // This is the last position in the list, so it must be an exact match.
-                // TODO: Go through and check for duplicates/replacements?
-                exactMatchNodes.AddLast(definitionNode);
+                        if (currentNode == rightDefinition)
+                        {
+                            currentNode = null;
+                        }
+                        else
+                        {
+                            currentNode = currentNode.Next;
+                        }
+                    }
+
+                    // No existing node found, just add the new definition.
+                    if (currentNode is null)
+                    {
+                        AllDefinitions.AddAfter(rightDefinition, definitionNode);
+                        exactMatchNodes.AddLast(definitionNode);
+                    }
+                }
             }
 
             rightDefinition = definitionNode;
         }
 
-        public bool SearchRoot(LinkedList<(int confidence, StepDefinition def)> results, IReadOnlyList<StepMatchingPart> allSearchParts, int nextSearchPartPosition, ref int partsMatched)
+        public bool SearchRoot(LinkedList<MatchResult> results, IReadOnlyList<StepMatchingPart> allSearchParts, int nextSearchPartPosition, bool exactOnly, ref int partsMatched)
         {
             if (children is null)
             {
@@ -106,7 +134,7 @@ namespace AutoStep.Core.Matching
                 var anyChildMatched = false;
                 do
                 {
-                    var childMatched = currentChild.Value.SearchMatches(results, allSearchParts, nextSearchPartPosition, ref partsMatched);
+                    var childMatched = currentChild.Value.SearchMatches(results, allSearchParts, nextSearchPartPosition, exactOnly, ref partsMatched);
 
                     if (childMatched)
                     {
@@ -121,7 +149,7 @@ namespace AutoStep.Core.Matching
             }
         }
 
-        public bool SearchMatches(LinkedList<(int confidence, StepDefinition def)> results, IReadOnlyList<StepMatchingPart> allSearchParts, int nextSearchPartPosition, ref int partsMatched)
+        public bool SearchMatches(LinkedList<MatchResult> results, IReadOnlyList<StepMatchingPart> allSearchParts, int nextSearchPartPosition, bool exactOnly, ref int partsMatched)
         {
             // Returns true if this child (or one of it's children) has added one or more results to the list.
             var currentPart = allSearchParts[nextSearchPartPosition];
@@ -150,7 +178,7 @@ namespace AutoStep.Core.Matching
 
                         foreach (var exact in exactMatchNodes)
                         {
-                            results.AddFirst((int.MaxValue, exact.Value));
+                            results.AddFirst(new MatchResult(true, int.MaxValue, exact.Value));
                         }
 
                         addedSomething = true;
@@ -162,7 +190,7 @@ namespace AutoStep.Core.Matching
 
                     do
                     {
-                        var childMatched = currentChild.Value.SearchMatches(results, allSearchParts, nextSearchPartPosition, ref partsMatched);
+                        var childMatched = currentChild.Value.SearchMatches(results, allSearchParts, nextSearchPartPosition, exactOnly, ref partsMatched);
 
                         if (childMatched)
                         {
@@ -182,22 +210,25 @@ namespace AutoStep.Core.Matching
                     // Add whatever we have.
                     var currentNode = leftDefinition;
 
-                    // Add every node up until the right-hand side.
-                    while (currentNode != null)
+                    if (!exactOnly)
                     {
-                        if (!ignoreExact || !exactMatchNodes.Contains(currentNode))
+                        // Add every node up until the right-hand side.
+                        while (currentNode != null)
                         {
-                            addedSomething = true;
-                            results.AddLast((match.length, currentNode.Value));
-                        }
+                            if (!ignoreExact || !exactMatchNodes.Contains(currentNode))
+                            {
+                                addedSomething = true;
+                                results.AddLast(new MatchResult(false, match.length, currentNode.Value));
+                            }
 
-                        if (currentNode == rightDefinition)
-                        {
-                            currentNode = null;
-                        }
-                        else
-                        {
-                            currentNode = currentNode.Next;
+                            if (currentNode == rightDefinition)
+                            {
+                                currentNode = null;
+                            }
+                            else
+                            {
+                                currentNode = currentNode.Next;
+                            }
                         }
                     }
 

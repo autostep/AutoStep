@@ -152,5 +152,13 @@ namespace AutoStep.Compiler
         /// A feature has been defined, but no title has been provided.
         /// </summary>
         NoFeatureTitleProvided = 10009,
+
+        //// Linker Messages ////
+
+        /// <summary>
+        /// A step could not be bound.
+        /// </summary>
+        LinkerNoMatchingStepDefinition = 20001,
+        LinkerMultipleMatchingDefinitions = 20002,
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AutoStep.Core;
 
 namespace AutoStep.Compiler.Tests.Builders
@@ -23,6 +24,20 @@ namespace AutoStep.Compiler.Tests.Builders
 
             Built.Feature = featureBuilder.Built;
 
+            if(Built.Feature.Background is object)
+            {
+                foreach (var step in Built.Feature.Background.Steps)
+                {
+                    Built.AllStepReferences.AddLast(step);
+                }
+            }
+
+            // Go through all the scenarios and steps and add them.
+            foreach (var step in Built.Feature.Scenarios.SelectMany(x => x.Steps))
+            {
+                Built.AllStepReferences.AddLast(step);
+            }
+
             return this;
         }
 
@@ -36,6 +51,12 @@ namespace AutoStep.Compiler.Tests.Builders
             }
 
             Built.AddStepDefinition(stepDefinitionBuilder.Built);
+
+            // Go through all the scenarios and steps and add them.
+            foreach (var step in stepDefinitionBuilder.Built.Steps)
+            {
+                Built.AllStepReferences.AddLast(step);
+            }
 
             return this;
         }

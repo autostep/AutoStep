@@ -156,6 +156,12 @@
   <data name="InvalidScenarioOutlineKeyword" xml:space="preserve">
     <value>The 'Scenario Outline' phrase is case-sensitive, so '{0}' should be 'Scenario Outline:'</value>
   </data>
+  <data name="LinkerMultipleMatchingDefinitions" xml:space="preserve">
+    <value>There are multiple matching step definitions that match this step.</value>
+  </data>
+  <data name="LinkerNoMatchingStepDefinition" xml:space="preserve">
+    <value>No step definitions could be found that match this step.</value>
+  </data>
   <data name="NoFeatureTitleProvided" xml:space="preserve">
     <value>Features must have a title.</value>
   </data>

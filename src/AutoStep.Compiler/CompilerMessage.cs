@@ -36,8 +36,6 @@ namespace AutoStep.Compiler
         {
             StartLineNo = startLineNo;
             StartColumn = startColumn;
-            EndLineNo = startLineNo;
-            EndColumn = startColumn;
         }
 
         /// <summary>
@@ -91,17 +89,24 @@ namespace AutoStep.Compiler
         /// <summary>
         /// Gets the ending line number of the element that the message applies to.
         /// </summary>
-        public int EndLineNo { get; }
+        public int? EndLineNo { get; }
 
         /// <summary>
         /// Gets the end column number of the element that the message applies to.
         /// </summary>
-        public int EndColumn { get; }
+        public int? EndColumn { get; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{SourceName}({StartLineNo},{StartColumn},{EndLineNo},{EndColumn}): {Level} ASC{(int)Code:D5}: {Message}";
+            if (EndColumn == null)
+            {
+                return $"{SourceName}({StartLineNo},{StartColumn}): {Level} ASC{(int)Code:D5}: {Message}";
+            }
+            else
+            {
+                return $"{SourceName}({StartLineNo},{StartColumn},{EndLineNo},{EndColumn}): {Level} ASC{(int)Code:D5}: {Message}";
+            }
         }
 
         /// <inheritdoc/>

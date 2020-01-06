@@ -34,5 +34,10 @@ namespace AutoStep.Core
 
             stepDefinitions.Add(definition);
         }
+
+        /// <summary>
+        /// Used for faster linking, by adding all step references at the top level.
+        /// </summary>
+        public LinkedList<StepReferenceElement> AllStepReferences { get; } = new LinkedList<StepReferenceElement>();
     }
 }

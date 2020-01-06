@@ -59,7 +59,7 @@ namespace AutoStep.Core.Sources
                             {
                                 tracer.TraceInfo("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
 
-                                definitions.Add(new BuiltStepDefinition(method, definition));
+                                definitions.Add(new BuiltStepDefinition(this, method, definition));
                             }
                         }
                     }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AutoStep.Compiler;
 using AutoStep.Core;
 using AutoStep.Core.Elements;
 using AutoStep.Core.Matching;
@@ -111,19 +108,41 @@ namespace AutoStep.Benchmarks
         [Benchmark]
         public void LookupKnownStep()
         {
-            var matches = tree.Match(knownStepRef, out var partsMatched);
+            var matches = tree.Match(knownStepRef, true, out var partsMatched);
 
-            if(matches.First.Value.confidence != int.MaxValue)
+            if(!matches.First.Value.IsExact)
             {
                 throw new Exception("That's not right.");
             }
         }
 
+        private class TestSource : IStepDefinitionSource
+        {
+            public string Uid => throw new NotImplementedException();
+
+            public string Name => throw new NotImplementedException();
+
+            public DateTime GetLastModifyTime()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<StepDefinition> GetStepDefinitions()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         private class TestStepDef : StepDefinition
         {
-            public TestStepDef(StepDefinitionElement definition) : base(definition.Type, definition.Declaration)
+            public TestStepDef(StepDefinitionElement definition) : base(new TestSource(), definition.Type, definition.Declaration)
             {
                 Definition = definition;
+            }
+
+            public override bool IsSameDefinition(StepDefinition def)
+            {
+                return ReferenceEquals(this, def);
             }
         }
 

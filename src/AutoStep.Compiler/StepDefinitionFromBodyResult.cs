@@ -19,4 +19,17 @@ namespace AutoStep.Compiler
 
         public StepDefinitionElement? StepDefinition { get; }
     }
+
+    public class LinkResult : CompilerResult
+    {
+        public LinkResult(bool success, BuiltFile? output = null)
+            : base(success, output)
+        {
+        }
+
+        public LinkResult(bool success, IEnumerable<CompilerMessage> messages, BuiltFile? output = null)
+            : base(success, messages, output)
+        {
+        }
+    }
 }

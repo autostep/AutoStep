@@ -536,6 +536,8 @@ namespace AutoStep.Compiler
 
         private void AddStep(StepType type, ParserRuleContext context, AutoStepParser.StatementBodyContext bodyContext)
         {
+            Debug.Assert(Result is object);
+
             if (currentStepSet is null && currentStepDefinition is null)
             {
                 AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.StepNotExpected);
@@ -582,6 +584,9 @@ namespace AutoStep.Compiler
                 if (currentStepSet is object)
                 {
                     currentStepSet.Add(step);
+
+                    // Update the global step list.
+                    Result.AllStepReferences.AddLast(step);
                 }
                 else if (currentStepDefinition is object)
                 {

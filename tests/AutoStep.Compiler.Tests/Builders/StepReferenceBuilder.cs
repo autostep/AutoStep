@@ -42,5 +42,15 @@ namespace AutoStep.Compiler.Tests.Builders
 
             return this;
         }
+
+        public StepReferenceBuilder MatchingText(params string[] parts)
+        {
+            foreach (var part in parts)
+            {
+                Built.AddMatchingText(part);
+            }
+
+            return this;
+        }
     }
 }

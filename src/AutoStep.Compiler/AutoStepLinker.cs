@@ -5,6 +5,7 @@ using System.Text;
 using AutoStep.Compiler.Parser;
 using AutoStep.Core;
 using AutoStep.Core.Elements;
+using AutoStep.Core.Matching;
 using AutoStep.Core.Sources;
 using AutoStep.Core.Tracing;
 
@@ -20,6 +21,7 @@ namespace AutoStep.Compiler
     public class AutoStepLinker
     {
         private readonly IAutoStepCompiler compiler;
+        private readonly IMatchingTree linkerTree;
         private readonly ITracer tracer;
 
         /// <summary>
@@ -28,12 +30,18 @@ namespace AutoStep.Compiler
         private Dictionary<string, IStepDefinitionSource> stepDefinitionSources = new Dictionary<string, IStepDefinitionSource>();
 
         public AutoStepLinker(IAutoStepCompiler compiler)
+            : this(compiler, new MatchingTree())
         {
-            this.compiler = compiler;
         }
 
-        public AutoStepLinker(IAutoStepCompiler compiler, ITracer tracer)
-            : this(compiler)
+        public AutoStepLinker(IAutoStepCompiler compiler, IMatchingTree linkerTree)
+        {
+            this.compiler = compiler;
+            this.linkerTree = linkerTree;
+        }
+
+        public AutoStepLinker(IAutoStepCompiler compiler, IMatchingTree linkerTree, ITracer tracer)
+            : this(compiler, linkerTree)
         {
             this.tracer = tracer;
         }
@@ -130,12 +138,51 @@ namespace AutoStep.Compiler
                         stepDef.Definition = definitionResult.StepDefinition;
                     }
                 }
+
+                if (stepDef.Definition is object)
+                {
+                    // Add to the internal matching tree.
+                    linkerTree.AddDefinition(stepDef);
+                }
             }
         }
 
-        public void Link(BuiltFile file)
+        public LinkResult Link(BuiltFile file)
         {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
 
+            var messages = new List<CompilerMessage>();
+            bool success = true;
+
+            // Go through all the steps and link them.
+            foreach (var stepRef in file.AllStepReferences)
+            {
+                var matches = linkerTree.Match(stepRef, true, out var _);
+
+                if (matches.Count == 0)
+                {
+                    // No matches.
+                    messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
+                    stepRef.Unbind();
+                    success = false;
+                }
+                else if (matches.Count > 1)
+                {
+                    messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
+                    stepRef.Unbind();
+                    success = false;
+                }
+                else
+                {
+                    // Link successful, bind the reference.
+                    stepRef.Bind(matches.First.Value.Definition);
+                }
+            }
+
+            return new LinkResult(success, messages, file);
         }
     }
 }

@@ -178,6 +178,24 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are multiple matching step definitions that match this step..
+        /// </summary>
+        internal static string LinkerMultipleMatchingDefinitions {
+            get {
+                return ResourceManager.GetString("LinkerMultipleMatchingDefinitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No step definitions could be found that match this step..
+        /// </summary>
+        internal static string LinkerNoMatchingStepDefinition {
+            get {
+                return ResourceManager.GetString("LinkerNoMatchingStepDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Features must have a title..
         /// </summary>
         internal static string NoFeatureTitleProvided {

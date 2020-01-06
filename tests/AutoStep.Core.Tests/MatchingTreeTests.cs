@@ -43,7 +43,6 @@ namespace AutoStep.Core.Tests
             "previous",
         };
 
-
         [Fact]
         public void CanAddSingleStepDefinition()
         {
@@ -56,13 +55,32 @@ namespace AutoStep.Core.Tests
 
             var stepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "matched");
 
-            var list = tree.Match(stepRef, out var partsMatched);
+            var list = tree.Match(stepRef, true, out var partsMatched);
 
             list.Should().HaveCount(1);
             partsMatched.Should().Be(5);
             list.First.Should().NotBeNull();
-            list.First.Value.confidence.Should().Be(int.MaxValue);
-            list.First.Value.def.Should().Be(stepDef);
+            list.First.Value.IsExact.Should().BeTrue();
+            list.First.Value.Confidence.Should().Be(int.MaxValue);
+            list.First.Value.Definition.Should().Be(stepDef);
+        }
+
+
+        [Fact]
+        public void NoResultsReturnedForNoMatches()
+        {
+            var stepDef = new TestDef(StepType.Given, "I have matched",
+                                      "I", " ", "have", " ", "matched");
+
+            var tree = new MatchingTree();
+
+            tree.AddDefinition(stepDef);
+
+            var stepRef = FakeStepReference.Make(StepType.Given, "Not", " ", "going", " ", "to", " ", "match");
+
+            var list = tree.Match(stepRef, false, out var partsMatched);
+
+            list.Should().HaveCount(0);
         }
 
         [Fact]
@@ -81,14 +99,16 @@ namespace AutoStep.Core.Tests
 
             var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have");
 
-            var list = tree.Match(stepRef1, out var partsMatched).ToList();
+            var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
             partsMatched.Should().Be(3);
-            list[0].confidence.Should().Be(4);
-            list[0].def.Should().Be(stepDef1);
-            list[1].confidence.Should().Be(4);
-            list[1].def.Should().Be(stepDef2);
+            list[0].IsExact.Should().BeFalse();
+            list[0].Confidence.Should().Be(4);
+            list[0].Definition.Should().Be(stepDef1);
+            list[0].IsExact.Should().BeFalse();
+            list[1].Confidence.Should().Be(4);
+            list[1].Definition.Should().Be(stepDef2);
         }
         
         [Fact]
@@ -107,12 +127,13 @@ namespace AutoStep.Core.Tests
 
             var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", "matched");
 
-            var list = tree.Match(stepRef1, out var partsMatched).ToList();
+            var list = tree.Match(stepRef1, true, out var partsMatched).ToList();
 
             list.Should().HaveCount(1);
             partsMatched.Should().Be(7);
-            list[0].confidence.Should().Be(int.MaxValue);
-            list[0].def.Should().Be(stepDef2);
+            list[0].IsExact.Should().BeTrue();
+            list[0].Confidence.Should().Be(int.MaxValue);
+            list[0].Definition.Should().Be(stepDef2);
         }
 
         [Fact]
@@ -131,14 +152,42 @@ namespace AutoStep.Core.Tests
 
             var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "ha");
 
-            var list = tree.Match(stepRef1, out var partsMatched).ToList();
+            var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
             partsMatched.Should().Be(3);
-            list[0].confidence.Should().Be(2);
-            list[0].def.Should().Be(stepDef1);
-            list[1].confidence.Should().Be(2);
-            list[1].def.Should().Be(stepDef2);
+            list[0].IsExact.Should().BeFalse();
+            list[0].Confidence.Should().Be(2);
+            list[0].Definition.Should().Be(stepDef1);
+            list[1].IsExact.Should().BeFalse();
+            list[1].Confidence.Should().Be(2);
+            list[1].Definition.Should().Be(stepDef2);
+        }
+        
+        [Fact]
+        public void CanReplaceExistingStepDefinition()
+        {
+            var stepDef1 = new TestDef("1", StepType.Given, "I have matched",
+                                       "I", " ", "have", " ", "matched");
+
+            var stepDef2 = new TestDef("2", StepType.Given, "I have not matched",
+                                       "I", " ", "have", " ", "not", " ", "matched");
+
+            var stepDefReplace = new TestDef("1", StepType.Given, "I have matched",
+                                             "I", " ", "have", " ", "matched");
+
+            var tree = new MatchingTree();
+
+            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "matched");
+
+            tree.AddDefinition(stepDef1);
+            tree.AddDefinition(stepDef2);
+
+            tree.Match(stepRef1, true, out var partsMatched).First.Value.Definition.Should().Be(stepDef1);
+
+            tree.AddDefinition(stepDefReplace);
+
+            tree.Match(stepRef1, true, out partsMatched).First.Value.Definition.Should().Be(stepDefReplace);
         }
 
         [Fact]
@@ -161,14 +210,16 @@ namespace AutoStep.Core.Tests
 
             var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", "matched");
 
-            var list = tree.Match(stepRef1, out var partsMatched).ToList();
+            var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
             partsMatched.Should().Be(7);
-            list[0].confidence.Should().Be(int.MaxValue);
-            list[0].def.Should().Be(stepDef2);
-            list[1].confidence.Should().Be(7);
-            list[1].def.Should().Be(stepDef3);
+            list[0].IsExact.Should().BeTrue();
+            list[0].Confidence.Should().Be(int.MaxValue);
+            list[0].Definition.Should().Be(stepDef2);
+            list[1].IsExact.Should().BeFalse();
+            list[1].Confidence.Should().Be(7);
+            list[1].Definition.Should().Be(stepDef3);
         }
 
         [Fact]
@@ -224,26 +275,51 @@ namespace AutoStep.Core.Tests
 
             tree.AddDefinition(manualDef);
 
-            var matches = tree.Match(knownStepRef, out var partsMatched).ToArray();
+            var matches = tree.Match(knownStepRef, false, out var partsMatched).ToArray();
 
             matches.Should().HaveCount(1);
-            matches[0].confidence.Should().Be(int.MaxValue);
-            matches[0].def.Should().Be(manualDef);
+            matches[0].Confidence.Should().Be(int.MaxValue);
+            matches[0].IsExact.Should().BeTrue();
+            matches[0].Definition.Should().Be(manualDef);
             partsMatched.Should().Be(16);
         }
-
-
+        
         private class TestDef : StepDefinition
         {
-            public TestDef(StepDefinitionElement definition) : base(definition.Type, definition.Declaration)
+            private string stepId;
+
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
             {
                 Definition = definition;
             }
 
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            {
+                this.stepId = stepId;
+                Definition = definition;
+            }
+
             public TestDef(StepType type, string declaration, params object[] parts)
-                : base(type, declaration)
+                : base(TestStepDefinitionSource.Blank, type, declaration)
             {
                 Definition = FakeDefElement.Make(type, parts);
+            }
+
+            public TestDef(string stepId, StepType type, string declaration, params object[] parts)
+                : base(TestStepDefinitionSource.Blank, type, declaration)
+            {
+                this.stepId = stepId;
+                Definition = FakeDefElement.Make(type, parts);
+            }
+
+            public override bool IsSameDefinition(StepDefinition def)
+            {
+                if(def is TestDef testDef)
+                {
+                    return testDef.stepId == stepId;
+                }
+
+                return false;
             }
         }
 

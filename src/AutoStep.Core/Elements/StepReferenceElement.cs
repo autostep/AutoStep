@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoStep.Core.Matching;
+using AutoStep.Core.Sources;
 
 namespace AutoStep.Core.Elements
 {
@@ -18,7 +20,7 @@ namespace AutoStep.Core.Elements
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
-        /// from <see cref="Type"/> when the step is of the <see cref="StepType.And"/> type, and the binding is determined by a preceding step.
+        /// from <see cref="StepReferenceElement.Type"/> when the step is of the <see cref="StepType.And"/> type, and the binding is determined by a preceding step.
         /// A null value indicates there was no preceding step, so a compilation error probably occurred anyway.
         /// </summary>
         public StepType? BindingType { get; set; }
@@ -37,6 +39,8 @@ namespace AutoStep.Core.Elements
         /// Gets the set of arguments presented by the Step Reference.
         /// </summary>
         public IReadOnlyCollection<StepArgumentElement> Arguments => arguments;
+
+        public StepDefinition BoundDefinition { get; private set; }
 
         internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
 
@@ -74,6 +78,16 @@ namespace AutoStep.Core.Elements
             }
 
             matchingParts.Add(new StepMatchingPart(textContent));
+        }
+
+        public void Bind(StepDefinition definition)
+        {
+            BoundDefinition = definition;
+        }
+
+        public void Unbind()
+        {
+            BoundDefinition = null;
         }
     }
 }
