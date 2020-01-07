@@ -1,3 +1,5 @@
+![](https://github.com/autostep/autostep/workflows/AutoStep%20Build/badge.svg)
+
 # AutoStep
 
 AutoStep is a new way of writing Gherkin-style tests, that reduces the requirement on programmers to be heavily involved in writing tests.
