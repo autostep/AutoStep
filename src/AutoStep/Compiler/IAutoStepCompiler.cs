@@ -18,7 +18,7 @@ namespace AutoStep.Compiler
         /// <param name="source">The source of the content to load.</param>
         /// <param name="cancelToken">A cancellation token to allow source loading or compilation to be cancelled.</param>
         /// <returns>A compilation result that indicates success or failure, and contains the built content.</returns>
-        Task<CompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default);
+        Task<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Compile a set of textual content into a resulting Antlr parse context, specifying the start point in the parse tree.

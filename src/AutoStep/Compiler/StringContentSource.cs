@@ -12,6 +12,7 @@ namespace AutoStep.Compiler
     public sealed class StringContentSource : IContentSource
     {
         private readonly string content;
+        private readonly DateTime creationTime;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringContentSource"/> class.
@@ -20,6 +21,7 @@ namespace AutoStep.Compiler
         public StringContentSource(string content)
         {
             this.content = content;
+            creationTime = DateTime.UtcNow;
         }
 
         /// <inheritdoc/>
@@ -31,15 +33,9 @@ namespace AutoStep.Compiler
             return new ValueTask<string>(content);
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
+        public DateTime GetLastContentModifyTime()
         {
-        }
-
-        /// <inheritdoc/>
-        public ValueTask DisposeAsync()
-        {
-            return default;
+            return creationTime;
         }
     }
 }

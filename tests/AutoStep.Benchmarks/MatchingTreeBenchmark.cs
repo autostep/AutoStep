@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep;
+using AutoStep.Compiler.Matching;
+using AutoStep.Definitions;
 using AutoStep.Elements;
-using AutoStep.Matching;
-using AutoStep.Sources;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks
@@ -93,7 +92,7 @@ namespace AutoStep.Benchmarks
 
                 var def = new TestStepDef(stepDef);
 
-                tree.AddDefinition(def);
+                tree.AddOrUpdateDefinition(def);
             }
 
             knownStepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", ArgumentType.Text,
@@ -102,7 +101,7 @@ namespace AutoStep.Benchmarks
             // Add a 'known' definition.
             var manualDef = FakeDefElement.Make(knownStepRef);
 
-            tree.AddDefinition(new TestStepDef(manualDef));
+            tree.AddOrUpdateDefinition(new TestStepDef(manualDef));
         }
 
         [Benchmark]

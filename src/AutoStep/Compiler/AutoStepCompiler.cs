@@ -142,7 +142,7 @@ namespace AutoStep.Compiler
         }
 
         /// <inheritdoc/>
-        public async Task<CompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
+        public async Task<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
         {
             if (source == null)
             {
@@ -164,7 +164,7 @@ namespace AutoStep.Compiler
             if (parserMessages.Any())
             {
                 // Parser failed.
-                return new CompilerResult(false, parserMessages);
+                return new FileCompilerResult(false, parserMessages);
             }
 
             // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
@@ -173,7 +173,7 @@ namespace AutoStep.Compiler
             var builtFile = compilerVisitor.Visit(fileContext);
 
             // Compile the file.
-            return new CompilerResult(compilerVisitor.Success, compilerVisitor.Messages, compilerVisitor.Success ? builtFile : null);
+            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.Messages, compilerVisitor.Success ? builtFile : null);
         }
     }
 }

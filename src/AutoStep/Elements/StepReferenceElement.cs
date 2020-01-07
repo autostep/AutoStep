@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Matching;
-using AutoStep.Sources;
+using AutoStep.Compiler.Matching;
+using AutoStep.Definitions;
 
 namespace AutoStep.Elements
 {

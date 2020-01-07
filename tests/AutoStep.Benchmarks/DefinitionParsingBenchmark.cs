@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoStep.Compiler;
-using AutoStep.Matching;
+using AutoStep.Compiler.Matching;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks
@@ -16,7 +14,7 @@ namespace AutoStep.Benchmarks
         public void Setup()
         {
             compiler = new AutoStepCompiler();
-            linker = new AutoStepLinker(compiler, new MatchingTree());
+            linker = new AutoStepLinker(compiler);
         }
         
         [Benchmark]

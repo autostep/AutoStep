@@ -19,6 +19,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.113">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,7 +34,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Matching\MatchingTreeMessages.Designer.cs">
+    <Compile Update="Compiler\Matching\MatchingTreeMessages.Designer.cs">
       <DependentUpon>MatchingTreeMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -48,7 +51,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Matching\MatchingTreeMessages.resx">
+    <EmbeddedResource Update="Compiler\Matching\MatchingTreeMessages.resx">
       <LastGenOutput>MatchingTreeMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>

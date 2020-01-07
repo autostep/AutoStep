@@ -7,7 +7,7 @@ namespace AutoStep.Compiler
     /// Defines the result of a step definition compilation, returned from
     /// <see cref="AutoStepLinker.GetStepDefinitionElementFromStatementBody(StepType, string)"/>.
     /// </summary>
-    public class StepDefinitionFromBodyResult : CompilerResult
+    public class StepDefinitionFromBodyResult : CompilerResult<StepDefinitionElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StepDefinitionFromBodyResult"/> class.
@@ -16,14 +16,8 @@ namespace AutoStep.Compiler
         /// <param name="messages">Any messages.</param>
         /// <param name="element">The resulting element.</param>
         public StepDefinitionFromBodyResult(bool success, IEnumerable<CompilerMessage> messages, StepDefinitionElement? element)
-            : base(success, messages)
+            : base(success, messages, element)
         {
-            StepDefinition = element;
         }
-
-        /// <summary>
-        /// Gets the generated <see cref="StepDefinitionElement"/>.
-        /// </summary>
-        public StepDefinitionElement? StepDefinition { get; }
     }
 }
