@@ -9,7 +9,7 @@ using AutoStep.Elements;
 using AutoStep.Tracing;
 
 namespace AutoStep.Compiler
-{ 
+{
     /// <summary>
     /// Links compiled autostep content.
     /// </summary>
@@ -145,27 +145,10 @@ namespace AutoStep.Compiler
             RefreshStepDefinitions(trackedSource);
         }
 
-        private void RefreshStepDefinitions(StepSourceWithTracking trackedSource)
-        {
-            var definitions = trackedSource.Source.GetStepDefinitions();
-
-            // Make sure we have definitions.
-            foreach (var stepDef in definitions)
-            {
-                if (stepDef.Definition is null)
-                {
-                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
-
-                    if (definitionResult.Success)
-                    {
-                        stepDef.Definition = definitionResult.Output;
-                    }
-                }
-            }
-
-            trackedSource.UpdateSteps(linkerTree, definitions);
-        }
-
+        /// <summary>
+        /// Add/Update an updatable step definition source. All step definitions in the source will be refreshed.
+        /// </summary>
+        /// <param name="stepDefinitionSource">The step definition source.</param>
         public void AddOrUpdateStepDefinitionSource(IUpdatableStepDefinitionSource stepDefinitionSource)
         {
             if (stepDefinitionSource is null)
@@ -182,6 +165,10 @@ namespace AutoStep.Compiler
             tracked.UpdateSteps(linkerTree, stepDefinitionSource.GetStepDefinitions());
         }
 
+        /// <summary>
+        /// Remove a step definition source.
+        /// </summary>
+        /// <param name="stepDefinitionSource">The step definition source to remove.</param>
         public void RemoveStepDefinitionSource(IStepDefinitionSource stepDefinitionSource)
         {
             if (stepDefinitionSource is null)
@@ -195,7 +182,7 @@ namespace AutoStep.Compiler
             }
             else
             {
-                throw new InvalidOperationException("Cannot remove step definition source, it has not already been registered with the linker.");
+                throw new InvalidOperationException(AutoStepLinkerMessages.CannotRemoveDefinitionSource);
             }
         }
 
@@ -250,17 +237,38 @@ namespace AutoStep.Compiler
             return new LinkResult(success, messages, allFoundStepSources.Values, file);
         }
 
+        private void RefreshStepDefinitions(StepSourceWithTracking trackedSource)
+        {
+            var definitions = trackedSource.Source.GetStepDefinitions();
+
+            // Make sure we have definitions.
+            foreach (var stepDef in definitions)
+            {
+                if (stepDef.Definition is null)
+                {
+                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+
+                    if (definitionResult.Success)
+                    {
+                        stepDef.Definition = definitionResult.Output;
+                    }
+                }
+            }
+
+            trackedSource.UpdateSteps(linkerTree, definitions);
+        }
+
         private class StepSourceWithTracking
         {
             private readonly Dictionary<(StepType Type, string Declaration), StepDefinition> trackedSteps;
-
-            public IStepDefinitionSource Source { get; }
 
             public StepSourceWithTracking(IStepDefinitionSource source)
             {
                 Source = source;
                 trackedSteps = new Dictionary<(StepType Type, string Declaration), StepDefinition>();
             }
+
+            public IStepDefinitionSource Source { get; }
 
             public void DeleteAllSteps(IMatchingTree tree) => UpdateSteps(tree, Enumerable.Empty<StepDefinition>());
 

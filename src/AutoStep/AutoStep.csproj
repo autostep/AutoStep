@@ -29,10 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Compiler\CompilerMessages.Designer.cs">
+    <Compile Update="Compiler\AutoStepLinkerMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>CompilerMessages.resx</DependentUpon>
+      <DependentUpon>AutoStepLinkerMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Compiler\CompilerMessageCodeText.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CompilerMessageCodeText.resx</DependentUpon>
     </Compile>
     <Compile Update="Compiler\Matching\MatchingTreeMessages.Designer.cs">
       <DependentUpon>MatchingTreeMessages.resx</DependentUpon>
@@ -47,9 +52,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Compiler\CompilerMessages.resx">
+    <EmbeddedResource Update="Compiler\AutoStepLinkerMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CompilerMessages.Designer.cs</LastGenOutput>
+      <LastGenOutput>AutoStepLinkerMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Compiler\CompilerMessageCodeText.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CompilerMessageCodeText.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Compiler\Matching\MatchingTreeMessages.resx">
       <LastGenOutput>MatchingTreeMessages.Designer.cs</LastGenOutput>

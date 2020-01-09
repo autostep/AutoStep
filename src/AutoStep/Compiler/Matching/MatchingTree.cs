@@ -65,6 +65,10 @@ namespace AutoStep.Compiler.Matching
             root.AddDefinition(defNode, allParts, 0);
         }
 
+        /// <summary>
+        /// Remove a step definition from the tree.
+        /// </summary>
+        /// <param name="definition">The definition being removed.</param>
         public void RemoveDefinition(StepDefinition definition)
         {
             if (definition is null)

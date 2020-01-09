@@ -14,10 +14,21 @@ namespace AutoStep
     {
         private Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
 
+        /// <summary>
+        /// Gets the set of all files in the project.
+        /// </summary>
         public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
 
-        public ProjectConfiguration Configuration { get; }
+        /// <summary>
+        /// Gets the active project configuration.
+        /// </summary>
+        public ProjectConfiguration? Configuration { get; }
 
+        /// <summary>
+        /// Attempts to add a file to the project (will return false if it's already in the project).
+        /// </summary>
+        /// <param name="file">The file to add.</param>
+        /// <returns>True if the file was added.</returns>
         public bool TryAddFile(ProjectFile file)
         {
             if (file is null)
@@ -34,6 +45,11 @@ namespace AutoStep
             return false;
         }
 
+        /// <summary>
+        /// Attempts to remove a file from the project (will return false if it's not in the project).
+        /// </summary>
+        /// <param name="file">The file to remove.</param>
+        /// <returns>True if the file was removed.</returns>
         public bool TryRemoveFile(ProjectFile file)
         {
             if (file is null)
@@ -49,14 +65,5 @@ namespace AutoStep
 
             return false;
         }
-    }
-
-    /// <summary>
-    /// Represents the configuration for the project.
-    /// This + environment variables = run configuration.
-    /// </summary>
-    public class ProjectConfiguration
-    {
-
     }
 }

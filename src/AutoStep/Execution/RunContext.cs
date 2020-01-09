@@ -7,8 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution
 {
-
-    /// <summary>
+        /// <summary>
     /// Allows the RunContext to interact with a state manager that can control program flow (step over, step into, pause, etc).
     /// It's a bit like an attached debugger. There will be a 'default' execution state manager that just says 'continue' for everything,
     /// which is basically like just running a test.
@@ -65,7 +64,7 @@ namespace AutoStep.Execution
     {
         private IServiceProvider serviceProvider;
 
-        public RunContext(Project project, ProjectFilter filter, RunConfiguration configuration, IExecutionStateManager executionStateManager)
+        public RunContext(Project project, RunConfiguration configuration, IExecutionStateManager executionStateManager)
         {
 
         }

@@ -33,6 +33,7 @@ namespace AutoStep.Compiler
             return new ValueTask<string>(content);
         }
 
+        /// <inheritdoc />
         public DateTime GetLastContentModifyTime()
         {
             return creationTime;

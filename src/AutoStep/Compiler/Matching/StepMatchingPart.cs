@@ -56,7 +56,7 @@
                 throw new System.ArgumentNullException(nameof(other));
             }
 
-            return IsArgument && ArgumentType == other.ArgumentType ||
+            return (IsArgument && ArgumentType == other.ArgumentType) ||
                    TextContent == other.TextContent;
         }
 

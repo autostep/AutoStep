@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
-using AutoStep.Definitions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution
 {
+    /// <summary>
+    /// Provides the functionality to compile and link an entire project.
+    /// </summary>
     public class ProjectCompiler
     {
         private readonly Project project;
         private readonly IAutoStepCompiler compiler;
         private readonly IAutoStepLinker linker;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
+        /// </summary>
+        /// <param name="project">The project to work on.</param>
+        /// <param name="compiler">The compiler implementation to use.</param>
+        /// <param name="linker">The linker implementation to use.</param>
         public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker)
         {
             this.project = project ?? throw new ArgumentNullException(nameof(project));
@@ -24,6 +29,11 @@ namespace AutoStep.Execution
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
         }
 
+        /// <summary>
+        /// Compile the project. Goes through all the project files and compiles those that need compilation.
+        /// </summary>
+        /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
+        /// <returns>The overall project compilation result.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         public async Task<ProjectCompilerResult> Compile(CancellationToken cancelToken = default)
         {
@@ -66,7 +76,7 @@ namespace AutoStep.Execution
                 }
             }
 
-            // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file 
+            // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file
             // messages and report them at once.
             return new ProjectCompilerResult(true, allMessages, project);
         }
@@ -86,6 +96,11 @@ namespace AutoStep.Execution
             return compileResult;
         }
 
+        /// <summary>
+        /// Links the entire project. Files that need to be re-linked will be.
+        /// </summary>
+        /// <param name="cancelToken">A cancellation token for the linker process.</param>
+        /// <returns>The overall project link result.</returns>
         public ProjectCompilerResult Link(CancellationToken cancelToken = default)
         {
             var allMessages = new List<CompilerMessage>();
@@ -126,7 +141,7 @@ namespace AutoStep.Execution
             return new ProjectCompilerResult(true, allMessages, project);
         }
 
-        private bool AnyLinkerDependenciesUpdated(ProjectFile file)
+        private static bool AnyLinkerDependenciesUpdated(ProjectFile file)
         {
             if (file.LinkerDependencies is null)
             {

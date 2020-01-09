@@ -16,6 +16,11 @@ namespace AutoStep.Compiler
         /// </summary>
         string? SourceName { get; }
 
+        /// <summary>
+        /// Retrieve the last modification time of the file (should be in UTC time).
+        /// Sources will not be re-compiled if they have not changed.
+        /// </summary>
+        /// <returns>The moment at which the source was last modified.</returns>
         DateTime GetLastContentModifyTime();
 
         /// <summary>

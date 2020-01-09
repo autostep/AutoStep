@@ -25,6 +25,10 @@ namespace AutoStep.Compiler.Matching
         /// <returns>The match results.</returns>
         LinkedList<MatchResult> Match(StepReferenceElement stepReference, bool exactOnly, out int partsMatched);
 
+        /// <summary>
+        /// Remove a step definition from the tree.
+        /// </summary>
+        /// <param name="def">The definition being removed.</param>
         void RemoveDefinition(StepDefinition def);
     }
 }

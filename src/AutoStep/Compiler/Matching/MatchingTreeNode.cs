@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using AutoStep.Definitions;
 
@@ -40,8 +39,6 @@ namespace AutoStep.Compiler.Matching
         /// </summary>
         private StepMatchingPart? matchingPart;
 
-        private bool IsEmpty => leftDefinition == null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingTreeNode"/> class.
         /// </summary>
@@ -52,6 +49,8 @@ namespace AutoStep.Compiler.Matching
             allDefinitions = allStepDefinitions;
             matchingPart = part;
         }
+
+        private bool IsEmpty => leftDefinition == null;
 
         /// <summary>
         /// Add a definition to this node.
@@ -131,7 +130,7 @@ namespace AutoStep.Compiler.Matching
                 else
                 {
                     // Check if this definition already exists (and should just be replaced).
-                    var currentNode = leftDefinition;
+                    LinkedListNode<StepDefinition>? currentNode = leftDefinition;
                     while (currentNode != null)
                     {
                         // This is the same definition in the same source (but possibly a new version).
@@ -165,11 +164,18 @@ namespace AutoStep.Compiler.Matching
             rightDefinition = definitionNode;
         }
 
-        private bool DefinitionsAreTheSame(StepDefinition left, StepDefinition right)
+        private static bool DefinitionsAreTheSame(StepDefinition left, StepDefinition right)
         {
             return left.Source == right.Source && left.IsSameDefinition(right);
         }
 
+        /// <summary>
+        /// Remove a definition from the node.
+        /// </summary>
+        /// <param name="definition">The definition being removed.</param>
+        /// <param name="allDefinitionParts">The step matching parts.</param>
+        /// <param name="nextPartPosition">The next position in the matching parts.</param>
+        /// <returns>The linked list node containing the located step definition (if it's found in this node or one of its children).</returns>
         public LinkedListNode<StepDefinition>? RemoveDefinition(StepDefinition definition, IReadOnlyList<StepMatchingPart> allDefinitionParts, int nextPartPosition)
         {
             var removePosition = nextPartPosition;
@@ -370,7 +376,7 @@ namespace AutoStep.Compiler.Matching
                         // Add every node up until the right-hand side.
                         while (currentNode != null)
                         {
-                            if (!ignoreExact || exactMatchNodes is object && !exactMatchNodes.Contains(currentNode))
+                            if (!ignoreExact || (exactMatchNodes is object && !exactMatchNodes.Contains(currentNode)))
                             {
                                 addedSomething = true;
                                 results.AddLast(new MatchResult(false, match.Length, currentNode.Value));
