@@ -57,11 +57,11 @@ namespace AutoStep.Compiler
             if (ctxt.Code == CompilerMessageCode.SyntaxError)
             {
                 // Default form, build the complete message.
-                msg = string.Format(CultureInfo.CurrentCulture, CompilerMessages.SyntaxError, msg);
+                msg = string.Format(CultureInfo.CurrentCulture, CompilerMessageCodeText.SyntaxError, msg);
             }
             else
             {
-                msg = CompilerMessages.ResourceManager.GetString(ctxt.Code.ToString(), CultureInfo.CurrentCulture);
+                msg = CompilerMessageCodeText.ResourceManager.GetString(ctxt.Code.ToString(), CultureInfo.CurrentCulture);
             }
 
             if (ctxt.IgnoreFollowingEndOfFileMessages)
