@@ -178,6 +178,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File access error: {0}.
+        /// </summary>
+        internal static string IOException {
+            get {
+                return ResourceManager.GetString("IOException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are multiple matching step definitions that match this step..
         /// </summary>
         internal static string LinkerMultipleMatchingDefinitions {
@@ -309,6 +318,15 @@ namespace AutoStep.Compiler {
         internal static string TableRowHasNotBeenTerminated {
             get {
                 return ResourceManager.GetString("TableRowHasNotBeenTerminated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal Error: {0}.
+        /// </summary>
+        internal static string UncategorisedException {
+            get {
+                return ResourceManager.GetString("UncategorisedException", resourceCulture);
             }
         }
         

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,11 +19,12 @@ namespace AutoStep.Execution
 
         public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker)
         {
-            this.project = project;
-            this.compiler = compiler;
-            this.linker = linker;
+            this.project = project ?? throw new ArgumentNullException(nameof(project));
+            this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+            this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         public async Task<ProjectCompilerResult> Compile(CancellationToken cancelToken = default)
         {
             var allMessages = new List<CompilerMessage>();
@@ -34,20 +36,34 @@ namespace AutoStep.Execution
             //  - Each file in the project will have its 'last' FileCompilerResult stored against it.
             foreach (var projectFile in project.AllFiles)
             {
-                var file = projectFile.Value;
-
-                // For each file.
-                // Compile.
-                // Add the result of the compilation to the ProjectFile.
-                // Add as a new step definition source to the linker if the file defines any step definitions.
-                if (file.LastCompileTime < file.ContentSource.GetLastContentModifyTime())
-                {
-                    var fileResult = await DoProjectFileCompile(file, cancelToken).ConfigureAwait(false);
-
-                    allMessages.AddRange(fileResult.Messages);
-                }
-
                 cancelToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var file = projectFile.Value;
+
+                    // For each file.
+                    // Compile.
+                    // Add the result of the compilation to the ProjectFile.
+                    // Add as a new step definition source to the linker if the file defines any step definitions.
+                    if (file.LastCompileTime < file.ContentSource.GetLastContentModifyTime())
+                    {
+                        var fileResult = await DoProjectFileCompile(file, cancelToken).ConfigureAwait(false);
+
+                        allMessages.AddRange(fileResult.Messages);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
+                }
+                catch (Exception ex)
+                {
+                    // Severe enough error occurred inside the compilation process that we couldn't convert into
+                    // a compiler message internally, and wasn't a more specific Exception we can catch.
+                    // Add a catch all compilation error.
+                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
+                }
             }
 
             // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file 
@@ -80,6 +96,8 @@ namespace AutoStep.Execution
             //  - Each file in the project will have its 'last' LinkResult stored against it.
             foreach (var projectFile in project.AllFiles)
             {
+                cancelToken.ThrowIfCancellationRequested();
+
                 var file = projectFile.Value;
                 if (file.LastCompileResult?.Output is null)
                 {
@@ -99,24 +117,10 @@ namespace AutoStep.Execution
                 {
                     var linkResult = linker.Link(file.LastCompileResult.Output);
 
-                    var linkerDeps = new List<IUpdatableStepDefinitionSource>();
-
-                    // Check for any file sources.
-                    foreach (var refSource in linkResult.ReferencedSources)
-                    {
-                        if (refSource is IUpdatableStepDefinitionSource updatableSource)
-                        {
-                            // The source is another file in the project; add it as a referenced step.
-                            linkerDeps.Add(updatableSource);
-                        }
-                    }
-
-                    file.UpdateLinkerDependencies(linkerDeps);
+                    file.UpdateLastLinkResult(linkResult);
 
                     allMessages.AddRange(linkResult.Messages);
                 }
-
-                cancelToken.ThrowIfCancellationRequested();
             }
 
             return new ProjectCompilerResult(true, allMessages, project);

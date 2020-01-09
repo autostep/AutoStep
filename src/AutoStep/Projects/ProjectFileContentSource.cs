@@ -11,7 +11,6 @@ namespace AutoStep
 {
     public class ProjectFileContentSource : IContentSource
     {
-        private readonly string fullPath;
         private readonly IFileProvider fileProvider;
 
         /// <summary>
@@ -21,26 +20,21 @@ namespace AutoStep
         /// <param name="fileProvider">Provider of IO.</param>
         public ProjectFileContentSource(string fullPath, IFileProvider fileProvider)
         {
-            if (fullPath is null)
-            {
-                throw new ArgumentNullException(nameof(fullPath));
-            }
-
-            this.fullPath = fullPath;
-            this.fileProvider = fileProvider;
+            this.SourceName = fullPath;
+            this.fileProvider = fileProvider ?? throw new ArgumentNullException(nameof(fileProvider));
         }
 
         public DateTime GetLastContentModifyTime()
         {
-            return fileProvider.GetFileInfo(fullPath).LastModified.UtcDateTime;
+            return fileProvider.GetFileInfo(SourceName).LastModified.UtcDateTime;
         }
 
-        public string? SourceName => fullPath;
+        public string? SourceName { get; }
 
         public async ValueTask<string> GetContentAsync(CancellationToken cancelToken = default)
         {
             // Create a stream reader that doesn't close the file on dispose, so we can do an async dispose.
-            using (var stream = fileProvider.GetFileInfo(fullPath).CreateReadStream())
+            using (var stream = fileProvider.GetFileInfo(SourceName).CreateReadStream())
             using (var streamReader = new StreamReader(stream))
             {
                 return await streamReader.ReadToEndAsync().ConfigureAwait(false);

@@ -34,7 +34,7 @@ namespace AutoStep
             return false;
         }
 
-        public bool RemoveFile(ProjectFile file)
+        public bool TryRemoveFile(ProjectFile file)
         {
             if (file is null)
             {

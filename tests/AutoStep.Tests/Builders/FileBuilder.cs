@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Builders
             Built = new BuiltFile();
         }
 
-        public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder> cfg)
+        public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder> cfg = null)
         {
             if(Built.Feature != null)
             {
@@ -19,7 +19,11 @@ namespace AutoStep.Tests.Builders
             }
 
             var featureBuilder = new FeatureBuilder(featureName, line, column);
-            cfg(featureBuilder);
+
+            if (cfg != null)
+            {
+                cfg(featureBuilder);
+            }
 
             Built.Feature = featureBuilder.Built;
 

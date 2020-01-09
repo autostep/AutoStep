@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using AutoStep.Elements;
 
 namespace AutoStep
 {
@@ -15,8 +16,13 @@ namespace AutoStep
 
         public ProjectFile(string filePath, IContentSource contentSource)
         {
+            if (filePath is null)
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
             Path = filePath;
-            ContentSource = contentSource;
+            ContentSource = contentSource ?? throw new ArgumentNullException(nameof(contentSource));
             LastCompileTime = DateTime.MinValue;
             LastLinkTime = DateTime.MinValue;
         }
@@ -35,6 +41,8 @@ namespace AutoStep
 
         public bool IsAttachedToProject { get; set; }
 
+        public IReadOnlyList<IUpdatableStepDefinitionSource>? LinkerDependencies => dependencies;
+
         internal FileStepDefinitionSource? StepDefinitionSource { get; private set; }
 
         public void UpdateLastCompileResult(FileCompilerResult result)
@@ -43,7 +51,7 @@ namespace AutoStep
             LastCompileTime = DateTime.UtcNow;
 
             // If there are any step definitions in the file, update the associated source.
-            if (result.Output?.StepDefinitions is IReadOnlyList<StepDefinition> defs && defs.Count > 0)
+            if (result.Output?.StepDefinitions is IReadOnlyList<StepDefinitionElement> defs && defs.Count > 0)
             {
                 // There are some step definitions.
                 if (StepDefinitionSource is null)
@@ -53,17 +61,29 @@ namespace AutoStep
             }
         }
 
-        public void UpdateLinkerDependencies(IEnumerable<IUpdatableStepDefinitionSource> newDependencies)
+        public void UpdateLastLinkResult(LinkResult linkResult)
         {
+            LastLinkResult = linkResult ?? throw new ArgumentNullException(nameof(linkResult));
+            LastLinkTime = DateTime.UtcNow;
+
             if (dependencies is null)
             {
                 dependencies = new List<IUpdatableStepDefinitionSource>();
             }
+            else
+            {
+                dependencies.Clear();
+            }
 
-            dependencies.Clear();
-            dependencies.AddRange(newDependencies);
+            // Check for any file sources.
+            foreach (var refSource in linkResult.ReferencedSources)
+            {
+                if (refSource is IUpdatableStepDefinitionSource updatableSource)
+                {
+                    // The source is another file in the project; add it as a referenced step.
+                    dependencies.Add(updatableSource);
+                }
+            }
         }
-
-        public IReadOnlyList<IUpdatableStepDefinitionSource>? LinkerDependencies => dependencies;
     }
 }

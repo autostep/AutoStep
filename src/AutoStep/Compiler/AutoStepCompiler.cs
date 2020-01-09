@@ -142,7 +142,7 @@ namespace AutoStep.Compiler
         }
 
         /// <inheritdoc/>
-        public async Task<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
+        public async ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
         {
             if (source == null)
             {

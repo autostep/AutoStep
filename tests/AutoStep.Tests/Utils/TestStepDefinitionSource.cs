@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Definitions;
 
@@ -25,11 +24,6 @@ namespace AutoStep.Tests.Utils
         public string Uid { get; } = "test";
 
         public string Name => "Test";
-
-        public DateTime GetLastModifyTime()
-        {
-            return DateTime.MinValue;
-        }
 
         public void AddStepDefinition(StepType type, string declaration)
         {

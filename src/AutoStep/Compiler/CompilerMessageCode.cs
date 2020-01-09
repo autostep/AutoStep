@@ -164,5 +164,17 @@ namespace AutoStep.Compiler
         /// Multiple bindings were found for a step.
         /// </summary>
         LinkerMultipleMatchingDefinitions = 20002,
+
+        //// Errors from Exceptions ////
+
+        /// <summary>
+        /// IO Problem occurred while compiling.
+        /// </summary>
+        IOException = 30001,
+
+        /// <summary>
+        /// Unknown error category (the catch-all).
+        /// </summary>
+        UncategorisedException = 30002,
     }
 }
