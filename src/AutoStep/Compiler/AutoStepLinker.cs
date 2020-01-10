@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AutoStep.Compiler.Matching;
 using AutoStep.Compiler.Parser;
+using AutoStep.Definitions;
 using AutoStep.Elements;
-using AutoStep.Matching;
-using AutoStep.Sources;
 using AutoStep.Tracing;
 
 namespace AutoStep.Compiler
@@ -17,45 +17,30 @@ namespace AutoStep.Compiler
     /// Linker can hold state, to be able to know what has changed.
     /// The output of the compiler can be fed repeatedly into the linker, to update the references.
     /// </remarks>
-    public class AutoStepLinker
+    public class AutoStepLinker : IAutoStepLinker
     {
         private readonly IAutoStepCompiler compiler;
         private readonly IMatchingTree linkerTree;
+        private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
         private readonly ITracer? tracer;
-
-        /// <summary>
-        /// Contains the lookup of UID -> Source.
-        /// </summary>
-        private Dictionary<string, IStepDefinitionSource> stepDefinitionSources = new Dictionary<string, IStepDefinitionSource>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
         public AutoStepLinker(IAutoStepCompiler compiler)
-            : this(compiler, new MatchingTree())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLinker"/> class, providing a custom matcher tree.
-        /// </summary>
-        /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        /// <param name="linkerTree">A custom matcher tree used for linking.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler, IMatchingTree linkerTree)
         {
             this.compiler = compiler;
-            this.linkerTree = linkerTree;
+            linkerTree = new MatchingTree();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class, providing a custom matcher tree.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        /// <param name="linkerTree">A custom matcher tree used for linking.</param>
         /// <param name="tracer">A tracer for the operations of the linker.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler, IMatchingTree linkerTree, ITracer tracer)
-            : this(compiler, linkerTree)
+        public AutoStepLinker(IAutoStepCompiler compiler, ITracer tracer)
+            : this(compiler)
         {
             this.tracer = tracer;
         }
@@ -66,7 +51,7 @@ namespace AutoStep.Compiler
         /// <param name="stepType">The type of step.</param>
         /// <param name="statementBody">The body of the step.</param>
         /// <returns>The step definition parsing result (which may contain errors).</returns>
-        public StepDefinitionFromBodyResult GetStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
+        internal StepDefinitionFromBodyResult GetStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
         {
             if (statementBody is null)
             {
@@ -145,36 +130,59 @@ namespace AutoStep.Compiler
                 throw new ArgumentNullException(nameof(source));
             }
 
-            // TODO: unload an existing source with the same UID?
+            if (trackedSources.Remove(source.Uid, out var oldSource))
+            {
+                // Unload an existing source with the same UID.
+                oldSource.DeleteAllSteps(linkerTree);
+            }
+
+            var trackedSource = new StepSourceWithTracking(source);
 
             // Add/Replace the source.
-            stepDefinitionSources[source.Uid] = source;
+            trackedSources.Add(source.Uid, trackedSource);
 
             // Load all the step definitions we have.
-            RefreshStepDefinitions(source);
+            RefreshStepDefinitions(trackedSource);
         }
 
-        private void RefreshStepDefinitions(IStepDefinitionSource source)
+        /// <summary>
+        /// Add/Update an updatable step definition source. All step definitions in the source will be refreshed.
+        /// </summary>
+        /// <param name="stepDefinitionSource">The step definition source.</param>
+        public void AddOrUpdateStepDefinitionSource(IUpdatableStepDefinitionSource stepDefinitionSource)
         {
-            var definitions = source.GetStepDefinitions();
-
-            foreach (var stepDef in definitions)
+            if (stepDefinitionSource is null)
             {
-                if (stepDef.Definition is null)
-                {
-                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+                throw new ArgumentNullException(nameof(stepDefinitionSource));
+            }
 
-                    if (definitionResult.Success)
-                    {
-                        stepDef.Definition = definitionResult.StepDefinition;
-                    }
-                }
+            if (!trackedSources.TryGetValue(stepDefinitionSource.Uid, out var tracked))
+            {
+                tracked = new StepSourceWithTracking(stepDefinitionSource);
+                trackedSources.Add(stepDefinitionSource.Uid, tracked);
+            }
 
-                if (stepDef.Definition is object)
-                {
-                    // Add to the internal matching tree.
-                    linkerTree.AddDefinition(stepDef);
-                }
+            tracked.UpdateSteps(linkerTree, stepDefinitionSource.GetStepDefinitions());
+        }
+
+        /// <summary>
+        /// Remove a step definition source.
+        /// </summary>
+        /// <param name="stepDefinitionSource">The step definition source to remove.</param>
+        public void RemoveStepDefinitionSource(IStepDefinitionSource stepDefinitionSource)
+        {
+            if (stepDefinitionSource is null)
+            {
+                throw new ArgumentNullException(nameof(stepDefinitionSource));
+            }
+
+            if (trackedSources.Remove(stepDefinitionSource.Uid, out var trackedSource))
+            {
+                trackedSource.DeleteAllSteps(linkerTree);
+            }
+            else
+            {
+                throw new InvalidOperationException(AutoStepLinkerMessages.CannotRemoveDefinitionSource);
             }
         }
 
@@ -192,6 +200,8 @@ namespace AutoStep.Compiler
 
             var messages = new List<CompilerMessage>();
             bool success = true;
+
+            var allFoundStepSources = new Dictionary<string, IStepDefinitionSource>();
 
             // Go through all the steps and link them.
             foreach (var stepRef in file.AllStepReferences)
@@ -213,12 +223,103 @@ namespace AutoStep.Compiler
                 }
                 else
                 {
+                    var foundMatch = matches.First.Value;
+
                     // Link successful, bind the reference.
-                    stepRef.Bind(matches.First.Value.Definition);
+                    stepRef.Bind(foundMatch.Definition);
+
+                    var defSource = foundMatch.Definition.Source;
+
+                    allFoundStepSources.TryAdd(defSource.Uid, defSource);
                 }
             }
 
-            return new LinkResult(success, messages, file);
+            return new LinkResult(success, messages, allFoundStepSources.Values, file);
+        }
+
+        private void RefreshStepDefinitions(StepSourceWithTracking trackedSource)
+        {
+            var definitions = trackedSource.Source.GetStepDefinitions();
+
+            // Make sure we have definitions.
+            foreach (var stepDef in definitions)
+            {
+                if (stepDef.Definition is null)
+                {
+                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+
+                    if (definitionResult.Success)
+                    {
+                        stepDef.Definition = definitionResult.Output;
+                    }
+                }
+            }
+
+            trackedSource.UpdateSteps(linkerTree, definitions);
+        }
+
+        private class StepSourceWithTracking
+        {
+            private readonly Dictionary<(StepType Type, string Declaration), StepDefinition> trackedSteps;
+
+            public StepSourceWithTracking(IStepDefinitionSource source)
+            {
+                Source = source;
+                trackedSteps = new Dictionary<(StepType Type, string Declaration), StepDefinition>();
+            }
+
+            public IStepDefinitionSource Source { get; }
+
+            public void DeleteAllSteps(IMatchingTree tree) => UpdateSteps(tree, Enumerable.Empty<StepDefinition>());
+
+            public void UpdateSteps(IMatchingTree tree, IEnumerable<StepDefinition> replaceDefinitions)
+            {
+                if (replaceDefinitions is null)
+                {
+                    throw new ArgumentNullException(nameof(replaceDefinitions));
+                }
+
+                var keysToRemove = new List<(StepType Type, string Declaration)>(trackedSteps.Keys);
+
+                foreach (var compiledStepDef in replaceDefinitions)
+                {
+                    if (compiledStepDef.Declaration is null)
+                    {
+                        // We can't use the compiled step definition if it has no declaration.
+                        continue;
+                    }
+
+                    var key = (compiledStepDef.Type, compiledStepDef.Declaration);
+
+                    // There are some step definitions.
+                    // Look at the declaration and see if we need to update a definition.
+                    if (trackedSteps.TryGetValue(key, out var existingDef))
+                    {
+                        // There is already a definition with the same 'signature'. So we can just do an in-place swap.
+                        existingDef.Definition = compiledStepDef.Definition;
+
+                        // Don't remove this one, we've found it again.
+                        keysToRemove.Remove(key);
+                    }
+                    else
+                    {
+                        // Need to add a new one.
+                        trackedSteps.Add((compiledStepDef.Type, compiledStepDef.Declaration), compiledStepDef);
+
+                        // Update the matching tree.
+                        tree.AddOrUpdateDefinition(compiledStepDef);
+                    }
+                }
+
+                foreach (var item in keysToRemove)
+                {
+                    if (trackedSteps.Remove(item, out var existingDef))
+                    {
+                        // Remove from the matching tree.
+                        tree.RemoveDefinition(existingDef);
+                    }
+                }
+            }
         }
     }
 }

@@ -118,7 +118,7 @@ namespace AutoStep.Compiler
 
         private static string GetMessageText(CompilerMessageCode code, object[] args)
         {
-            return string.Format(CultureInfo.CurrentCulture, CompilerMessages.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args);
+            return string.Format(CultureInfo.CurrentCulture, CompilerMessageCodeText.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args);
         }
     }
 }

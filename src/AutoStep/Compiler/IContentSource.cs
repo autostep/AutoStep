@@ -9,12 +9,19 @@ namespace AutoStep.Compiler
     /// <summary>
     /// Defines an interface for anything that provides content for the autostep compiler.
     /// </summary>
-    public interface IContentSource : IDisposable, IAsyncDisposable
+    public interface IContentSource
     {
         /// <summary>
         /// Gets the name of the content source, if available.
         /// </summary>
         string? SourceName { get; }
+
+        /// <summary>
+        /// Retrieve the last modification time of the file (should be in UTC time).
+        /// Sources will not be re-compiled if they have not changed.
+        /// </summary>
+        /// <returns>The moment at which the source was last modified.</returns>
+        DateTime GetLastContentModifyTime();
 
         /// <summary>
         /// Reads the content of the source.
