@@ -15,18 +15,19 @@ namespace AutoStep.Compiler
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
     /// and builts a <see cref="BuiltFile"/> from that tree.
     /// </summary>
-    internal class FileVisitor : ArgumentHandlingVisitor<BuiltFile>
+    internal class FileVisitor : BaseAutoStepVisitor<BuiltFile>
     {
         private readonly StepReferenceVisitor stepVisitor;
         private readonly TableVisitor tableVisitor;
+        private readonly StepDefinitionVisitor stepDefinitionVisitor;
 
         private IAnnotatableElement? currentAnnotatable;
         private ScenarioElement? currentScenario;
 
         private List<StepReferenceElement>? currentStepSet = null;
-        private StepDefinitionElement? currentStepDefinition;
         private StepReferenceElement? lastStep = null;
         private StepReferenceElement? currentStepSetLastConcrete = null;
+        private StepDefinitionElement? currentStepDefinition = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileVisitor"/> class.
@@ -38,6 +39,7 @@ namespace AutoStep.Compiler
         {
             stepVisitor = new StepReferenceVisitor(sourceName, TokenStream, Rewriter, ValidateVariableInsertionName);
             tableVisitor = new TableVisitor(sourceName, TokenStream, Rewriter, ValidateVariableInsertionName);
+            stepDefinitionVisitor = new StepDefinitionVisitor(sourceName, TokenStream, Rewriter);
         }
 
         /// <summary>
@@ -229,13 +231,21 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            var stepDefinition = new StepDefinitionElement();
-
             var definition = context.stepDefinition();
 
             var declaration = definition.stepDeclaration();
 
-            LineInfo(stepDefinition, definition.STEP_DEFINE());
+            var type = declaration switch
+            {
+                AutoStepParser.DeclareGivenContext _ => StepType.Given,
+                AutoStepParser.DeclareWhenContext _ => StepType.When,
+                AutoStepParser.DeclareThenContext _ => StepType.Then,
+                _ => throw new LanguageEngineException("Cannot get here unless the Antlr rules have been updated with an additional alternate")
+            };
+
+            var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+
+            MergeVisitorAndReset(stepDefinitionVisitor);
 
             currentAnnotatable = stepDefinition;
 
@@ -250,37 +260,18 @@ namespace AutoStep.Compiler
             var description = ExtractDescription(definition.description());
             stepDefinition.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
-            currentStepDefinition = stepDefinition;
-
-            // Visit the declaration to built the 'signature' of the method.
-            Visit(declaration);
-
             if (stepDefinition.Arguments is object)
             {
                 // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
                 foreach (var declaredArgument in stepDefinition.Arguments)
                 {
-                    if (declaredArgument.Type == ArgumentType.Empty)
-                    {
-                        AddMessage(declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired);
-                    }
-                    else if (declaredArgument.Value is null)
-                    {
-                        // If the value cannot be immediately determined, it means there is some dynamic component (e.g. insertion variables or example inserts).
-                        // Everything else is allowed.
-                        var argumentName = declaredArgument.RawArgument ?? string.Empty;
-
-                        if (declaredArgument.Type == ArgumentType.Interpolated)
-                        {
-                            argumentName = ":" + argumentName;
-                        }
-
-                        AddMessage(declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition, argumentName);
-                    }
+                    // Validate type hints
+                    // TODO
                 }
             }
 
             currentStepSet = stepDefinition.Steps;
+            currentStepDefinition = stepDefinition;
 
             Visit(context.stepDefinitionBody());
 
@@ -392,7 +383,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.Given, context, context.statementBody());
+            AddStep(StepType.Given, context);
 
             return Result;
         }
@@ -406,7 +397,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.Then, context, context.statementBody());
+            AddStep(StepType.Then, context);
 
             return Result;
         }
@@ -420,7 +411,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.When, context, context.statementBody());
+            AddStep(StepType.When, context);
 
             return Result;
         }
@@ -434,7 +425,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.And, context, context.statementBody());
+            AddStep(StepType.And, context);
 
             return Result;
         }
@@ -537,7 +528,7 @@ namespace AutoStep.Compiler
             return null;
         }
 
-        private void AddStep(StepType type, ParserRuleContext context, AutoStepParser.StatementBodyContext bodyContext)
+        private void AddStep(StepType type, AutoStepParser.StatementContext context)
         {
             Debug.Assert(Result is object);
 
@@ -550,7 +541,7 @@ namespace AutoStep.Compiler
             // All step references are currently added as 'unknown', until they are linked.
             StepType? bindingType = null;
 
-            var step = stepVisitor.BuildStep(type, context, bodyContext);
+            var step = stepVisitor.BuildStep(type, context);
 
             MergeVisitorAndReset(stepVisitor);
 
@@ -591,118 +582,10 @@ namespace AutoStep.Compiler
                     // Update the global step list.
                     Result.AllStepReferences.AddLast(step);
                 }
-                else if (currentStepDefinition is object)
-                {
-                    currentStepDefinition.UpdateFromStepReference(step);
-                }
 
                 lastStep = step;
             }
         }
 
-        /// <summary>
-        /// Generates the description text from a parsed description context.
-        /// Handles indentation of the overall description, and indentation inside it.
-        /// </summary>
-        /// <param name="descriptionContext">The context.</param>
-        /// <returns>The complete description string.</returns>
-        private string? ExtractDescription(AutoStepParser.DescriptionContext descriptionContext)
-        {
-            if (descriptionContext is null)
-            {
-                return null;
-            }
-
-            var lines = descriptionContext.line();
-
-            if (lines.Length == 0)
-            {
-                return null;
-            }
-
-            var descriptionBuilder = new StringBuilder();
-
-            int? whitespaceRemovalCount = null;
-            int? firstTextIndex = null;
-            int lastTextIndex = 0;
-
-            // First pass to get our whitespace size and last text position.
-            for (var lineIdx = 0; lineIdx < lines.Length; lineIdx++)
-            {
-                var line = lines[lineIdx];
-                var text = line.text();
-
-                if (text is object)
-                {
-                    if (firstTextIndex == null)
-                    {
-                        firstTextIndex = lineIdx;
-                    }
-
-                    lastTextIndex = lineIdx;
-                    var whiteSpaceSymbol = line.WS()?.Symbol;
-                    var whiteSpaceSize = 0;
-
-                    if (whiteSpaceSymbol is object)
-                    {
-                        // This is the size of the whitespace.
-                        whiteSpaceSize = 1 + whiteSpaceSymbol.StopIndex - whiteSpaceSymbol.StartIndex;
-                    }
-
-                    if (whitespaceRemovalCount is null)
-                    {
-                        // This is the first item of non-whitespace text we have reached.
-                        // Base our initial minimum whitespace on this.
-                        whitespaceRemovalCount = whiteSpaceSize;
-                    }
-                    else if (whiteSpaceSize < whitespaceRemovalCount)
-                    {
-                        // Bring the whitespace in if the amount of whitespace has changed.
-                        // We'll ignore whitespace lengths for lines with no text.
-                        whitespaceRemovalCount = whiteSpaceSize;
-                    }
-                }
-            }
-
-            // No point rendering anything if there were no text lines.
-            if (firstTextIndex is object)
-            {
-                // Second pass to render our description, only go up to the last text position.
-                for (var lineIdx = firstTextIndex.Value; lineIdx <= lastTextIndex; lineIdx++)
-                {
-                    var line = lines[lineIdx];
-                    var text = line.text();
-
-                    if (text is null)
-                    {
-                        descriptionBuilder.AppendLine();
-                    }
-                    else
-                    {
-                        var wsText = line.WS()?.GetText();
-                        if (whitespaceRemovalCount is object && wsText is object)
-                        {
-                            wsText = wsText.Substring(whitespaceRemovalCount.Value);
-                        }
-
-                        // Append all whitespace after the removal amount, plus the text.
-                        descriptionBuilder.Append(wsText);
-                        descriptionBuilder.Append(text.GetText());
-
-                        if (lineIdx < lastTextIndex)
-                        {
-                            // Only add the line if we're not at the end.
-                            descriptionBuilder.AppendLine();
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return null;
-            }
-
-            return descriptionBuilder.ToString();
-        }
     }
 }

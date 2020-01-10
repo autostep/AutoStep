@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Elements
 {
@@ -14,8 +15,7 @@ namespace AutoStep.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
-        private List<StepArgumentElement>? arguments;
-        private List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
+        private List<ContentPart> parts = new List<ContentPart>();
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -35,11 +35,6 @@ namespace AutoStep.Elements
         public string? RawText { get; set; }
 
         /// <summary>
-        /// Gets the set of arguments presented by the Step Reference.
-        /// </summary>
-        public IReadOnlyCollection<StepArgumentElement>? Arguments => arguments;
-
-        /// <summary>
         /// Gets the bound step definition; will be null if the step cannot be bound, or the linker could not find a matching step definition.
         /// </summary>
         public StepDefinition? BoundDefinition { get; private set; }
@@ -47,7 +42,7 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
         /// </summary>
-        internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
+        public IReadOnlyList<ContentPart> Parts => parts;
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -55,38 +50,17 @@ namespace AutoStep.Elements
         public TableElement? Table { get; set; }
 
         /// <summary>
-        /// Adds an argument to the step reference.
+        /// Adds a part to the step reference.
         /// </summary>
-        /// <param name="argument">The argument to add.</param>
-        public void AddArgument(StepArgumentElement argument)
+        /// <param name="part">The part to add.</param>
+        public void AddPart(ContentPart part)
         {
-            if (argument is null)
+            if (part is null)
             {
-                throw new System.ArgumentNullException(nameof(argument));
+                throw new System.ArgumentNullException(nameof(part));
             }
 
-            if (arguments == null)
-            {
-                arguments = new List<StepArgumentElement>();
-            }
-
-            matchingParts.Add(new StepMatchingPart(argument.Type));
-
-            arguments.Add(argument);
-        }
-
-        /// <summary>
-        /// Adds a block of matching text to the step reference.
-        /// </summary>
-        /// <param name="textContent">The body of the matching text.</param>
-        public void AddMatchingText(string textContent)
-        {
-            if (textContent is null)
-            {
-                throw new System.ArgumentNullException(nameof(textContent));
-            }
-
-            matchingParts.Add(new StepMatchingPart(textContent));
+            parts.Add(part);
         }
 
         /// <summary>

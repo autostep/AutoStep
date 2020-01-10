@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Builders
 {
@@ -23,16 +24,28 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public StepDefinitionBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
+        public StepDefinitionBuilder WordPart(string word, int start, int end)
         {
-            var argumentBuilder = new ArgumentBuilder(Built, rawValue, type, start, end);
-
-            if (cfg is object)
+            Built.AddPart(new WordPart()
             {
-                cfg(argumentBuilder);
-            }
+                Text = word,
+                SourceLine = Built.SourceLine,
+                SourceColumn = start,
+                EndColumn = end
+            });
 
-            Built.AddArgument(argumentBuilder.Built);
+            return this;
+        }
+
+        public StepDefinitionBuilder WordPart(string word, string escaped, int start, int end)
+        {
+            Built.AddPart(new WordPart()
+            {
+                Text = word,
+                SourceLine = Built.SourceLine,
+                SourceColumn = start,
+                EndColumn = end
+            });
 
             return this;
         }

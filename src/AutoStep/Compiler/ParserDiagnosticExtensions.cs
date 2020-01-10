@@ -61,9 +61,10 @@ namespace AutoStep.Compiler
                     AutoStepParser.RULE_line => context.GetText(),
                     AutoStepParser.RULE_text => context.GetText(),
                     AutoStepParser.RULE_statement => context.GetText(),
-                    AutoStepParser.RULE_statementSection => GetStatementSectionType(context) + " : " + context.GetText(),
-                    AutoStepParser.RULE_statementArgument => context.GetText(),
-                    AutoStepParser.RULE_cellArgumentBlock => context.GetText(),
+                    AutoStepParser.RULE_statementSectionBlock => GetStatementSectionType(context) + " : " + context.GetText(),
+                    AutoStepParser.RULE_stepDeclaration => context.GetText(),
+                    AutoStepParser.RULE_stepDeclarationSection => context.GetText(),
+                    AutoStepParser.RULE_cellContentBlock => context.GetText(),
                     _ => context.ToString()
                 };
 
@@ -81,13 +82,13 @@ namespace AutoStep.Compiler
             {
                 return context switch
                 {
-                    AutoStepParser.StatementSectionPartContext _ => "statementSectionPart",
-                    AutoStepParser.StatementWsContext _ => "statementWs",
-                    AutoStepParser.ArgEmptyContext _ => "argEmpty",
-                    AutoStepParser.ArgInterpolateContext _ => "argInterpolate",
-                    AutoStepParser.ArgTextContext _ => "argText",
-                    AutoStepParser.ArgFloatContext _ => "argFloat",
-                    AutoStepParser.ArgIntContext _ => "argInt",
+                    AutoStepParser.StatementWordContext _ => "statementWord",
+                    AutoStepParser.StatementEscapedCharContext _ => "statementEscapedChar",
+                    AutoStepParser.StatementIntContext _ => "statementInt",
+                    AutoStepParser.StatementFloatContext _ => "statementFloat",
+                    AutoStepParser.StatementSymbolContext _ => "statementSymbol",
+                    AutoStepParser.StatementInterpolateContext _ => "statementInterpolate",
+                    AutoStepParser.StatementBlockWsContext _ => "statementWs",
                     _ => throw new ArgumentException($"Unexpected statement section alternate, context type {context.GetType().Name}", nameof(context))
                 };
             }

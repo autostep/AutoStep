@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Elements.Parts;
+using AutoStep.Compiler.Matching;
+using AutoStep.Definitions;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Parts
 {
-    /// <summary>
-    /// Represents a table cell. A cell's value is treated as a statement argument.
-    /// </summary>
-    public class TableCellElement : PositionalElement
+
+    public class CollectionPart : ContentPart
     {
         private List<ContentPart> parts = new List<ContentPart>();
 
@@ -23,4 +22,5 @@ namespace AutoStep.Elements
             parts.Add(nestedPart);
         }
     }
+
 }

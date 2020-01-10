@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoStep.Definitions;
 
 namespace AutoStep.Compiler.Matching
@@ -8,6 +9,8 @@ namespace AutoStep.Compiler.Matching
     /// </summary>
     public struct MatchResult : IEquatable<MatchResult>
     {
+        private List<CompilerMessage>? msgs;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchResult"/> struct.
         /// </summary>
@@ -19,6 +22,7 @@ namespace AutoStep.Compiler.Matching
             IsExact = isExact;
             Confidence = confidence;
             Definition = definition;
+            msgs = null;
         }
 
         /// <summary>
@@ -32,10 +36,17 @@ namespace AutoStep.Compiler.Matching
         /// </summary>
         public StepDefinition Definition { get; }
 
+        public IReadOnlyList<CompilerMessage> Messages => msgs;
+
         /// <summary>
         /// Gets a value indicating whether this is an exact one for the definition.
         /// </summary>
         public bool IsExact { get; }
+
+        public void AddMessage(CompilerMessage msg)
+        {
+            msgs.Add(msg);
+        }
 
         /// <summary>
         /// Equals comparison.

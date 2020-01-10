@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Compiler
 {
     /// <summary>
     /// Handles generating step references from the Antlr parse context.
     /// </summary>
-    internal class StepReferenceVisitor : ArgumentHandlingVisitor<StepReferenceElement>
+    internal class StepReferenceVisitor : BaseAutoStepVisitor<StepReferenceElement>
     {
-        private readonly (int TokenType, string Replace)[] argReplacements = new[]
+        private readonly (int TokenType, string Replace)[] escapeReplacements = new[]
         {
-            (AutoStepParser.ARG_ESCAPE_QUOTE, "'"),
-            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
-            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+            (AutoStepParser.STATEMENT_ESCAPED_QUOTE, "'"),
+            (AutoStepParser.STATEMENT_ESCAPED_DBLQUOTE, "\""),
+            (AutoStepParser.STATEMENT_ESCAPED_VARSTART, ">"),
+            (AutoStepParser.STATEMENT_ESCAPED_VAREND, "<"),
         };
 
         private readonly Func<ParserRuleContext, string, CompilerMessage?>? insertionNameValidator;
+
+        private QuotedStringPart? currentQuotedPart = null;
+        private InterpolatePart? currentInterpolatePart = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StepReferenceVisitor"/> class.
@@ -51,246 +53,71 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Builds a step, taking the Step Type, the statement line Antlr context, and the statement body context.
+        /// Builds a step, taking the Step Type, and the statement line Antlr context.
         /// </summary>
         /// <param name="type">The step type.</param>
-        /// <param name="statementLineContext">The entire line context (if available).</param>
-        /// <param name="bodyContext">The statement body context.</param>
+        /// <param name="statementLineContext">The entire line context .</param>
         /// <returns>A generated step reference.</returns>
-        public StepReferenceElement BuildStep(StepType type, ParserRuleContext? statementLineContext, AutoStepParser.StatementBodyContext bodyContext)
+        public StepReferenceElement BuildStep(StepType type, AutoStepParser.StatementContext statementContext)
         {
             var step = new StepReferenceElement
             {
                 Type = type,
-                RawText = bodyContext.GetText(),
+                RawText = statementContext.GetText(),
             };
 
             Result = step;
 
-            LineInfo(step, statementLineContext ?? bodyContext);
+            LineInfo(step, statementContext);
 
-            VisitChildren(bodyContext);
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits a float statement argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitArgFloat([NotNull] AutoStepParser.ArgFloatContext context)
-        {
-            Debug.Assert(Result is object);
-
-            var valueText = context.ARG_FLOAT().GetText();
-            var symbolText = context.ARG_CURR_SYMBOL()?.GetText();
-            var content = symbolText + valueText;
-
-            Result.AddArgument(PositionalLineInfo(
-                new StepArgumentElement
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.NumericDecimal,
-                    EscapedArgument = content,
-                    Value = decimal.Parse(valueText, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
-                    Symbol = symbolText,
-                }, context));
+            VisitChildren(statementContext);
 
             return Result;
         }
 
-        /// <summary>
-        /// Visits an integer statement argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitArgInt([NotNull] AutoStepParser.ArgIntContext context)
-        {
-            Debug.Assert(Result is object);
-
-            var valueText = context.ARG_INT().GetText();
-            var symbolText = context.ARG_CURR_SYMBOL()?.GetText();
-            var content = symbolText + valueText;
-
-            Result.AddArgument(PositionalLineInfo(
-                new StepArgumentElement
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.NumericInteger,
-                    EscapedArgument = content,
-                    Value = int.Parse(valueText, NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
-                    Symbol = symbolText,
-                }, context));
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits a text statement argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitArgText([NotNull] AutoStepParser.ArgTextContext context)
-        {
-            Debug.Assert(Result is object);
-
-            var contentBlock = context.statementArgument();
-
-            Visit(contentBlock);
-
-            PersistWorkingTextSection(argReplacements);
-
-            var escaped = Rewriter.GetText(contentBlock.SourceInterval);
-
-            var arg = new StepArgumentElement
-            {
-                RawArgument = contentBlock.GetText(),
-                Type = ArgumentType.Text,
-
-                // The rewriter will contain any modifications that replace the escaped characters.
-                EscapedArgument = escaped,
-            };
-
-            arg.ReplaceSections(CurrentArgumentSections);
-
-            if (CanArgumentValueBeDetermined)
-            {
-                arg.Value = escaped;
-            }
-
-            CurrentArgumentSections.Clear();
-            CanArgumentValueBeDetermined = true;
-
-            Result.AddArgument(PositionalLineInfo(arg, context));
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits an interpolated statement argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitArgInterpolate([NotNull] AutoStepParser.ArgInterpolateContext context)
-        {
-            Debug.Assert(Result is object);
-
-            var contentBlock = context.statementArgument();
-
-            Visit(contentBlock);
-
-            PersistWorkingTextSection(argReplacements);
-
-            var escaped = Rewriter.GetText(contentBlock.SourceInterval);
-
-            var arg = new StepArgumentElement
-            {
-                RawArgument = contentBlock.GetText(),
-                Type = ArgumentType.Interpolated,
-
-                // The rewriter will contain any modifications that replace the escaped characters.
-                EscapedArgument = escaped,
-            };
-
-            arg.ReplaceSections(CurrentArgumentSections);
-
-            CurrentArgumentSections.Clear();
-            CanArgumentValueBeDetermined = true;
-
-            Result.AddArgument(PositionalLineInfo(arg, context));
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits a statement text section.
-        /// </summary>
-        /// <param name="context">Antlr context.</param>
-        /// <returns>The step ref.</returns>
-        public override StepReferenceElement VisitStatementSectionPart([NotNull] AutoStepParser.StatementSectionPartContext context)
-        {
-            Debug.Assert(Result is object);
-
-            // This will contain literal text.
-            Result.AddMatchingText(context.GetText());
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits a statement whitespace section.
-        /// </summary>
-        /// <param name="context">Antlr context.</param>
-        /// <returns>The step ref.</returns>
-        public override StepReferenceElement VisitStatementWs([NotNull] AutoStepParser.StatementWsContext context)
-        {
-            Debug.Assert(Result is object);
-
-            Result.AddMatchingText(context.GetText());
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visits an empty statement argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitArgEmpty([NotNull] AutoStepParser.ArgEmptyContext context)
-        {
-            Debug.Assert(Result is object);
-
-            Result.AddArgument(PositionalLineInfo(
-                new StepArgumentElement
-                {
-                    RawArgument = string.Empty,
-                    Type = ArgumentType.Empty,
-                    EscapedArgument = string.Empty,
-                    Value = string.Empty,
-                }, context));
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Visit the example block for example reference variables inside an argument.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override StepReferenceElement VisitExampleArgBlock([NotNull] AutoStepParser.ExampleArgBlockContext context)
+        public override StepReferenceElement VisitStatementQuotedString([NotNull] AutoStepParser.StatementQuotedStringContext context)
         {
             Debug.Assert(Result != null);
 
-            PersistWorkingTextSection(argReplacements);
+            currentQuotedPart = CreatePart<QuotedStringPart>(context);
 
-            var content = context.GetText();
+            VisitChildren(context);
 
-            var escaped = EscapeText(
-                context,
-                argReplacements);
+            Result.AddPart(currentQuotedPart);
 
-            var allBodyInterval = context.argumentExampleNameBody().SourceInterval;
+            currentQuotedPart = null;
+            currentInterpolatePart = null;
 
-            var insertionName = Rewriter.GetText(allBodyInterval);
+            return Result;
+        }
 
-            var arg = new ArgumentSectionElement
-            {
-                RawText = content,
-                EscapedText = escaped,
+        public override StepReferenceElement VisitStatementWord([NotNull] AutoStepParser.StatementWordContext context)
+        {
+            AddPart(CreatePart<WordPart>(context));
 
-                // The insertion name is the escaped name inside the angle brackets
-                ExampleInsertionName = insertionName,
-            };
+            return Result!;
+        }
 
-            // If we've got an insertion, then the value of an argument cannot be determined at compile time.
-            CanArgumentValueBeDetermined = false;
+        public override StepReferenceElement VisitStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context)
+        {
+            var part = CreatePart<WordPart>(context);
 
-            CurrentArgumentSections.Add(PositionalLineInfo(arg, context));
+            part.EscapedText = EscapeText(context, escapeReplacements);
+
+            AddPart(part);
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context)
+        {
+            var variablePart = CreatePart<VariablePart>(context);
+
+            variablePart.VariableName = context.statementVariableName().GetText();
 
             if (insertionNameValidator is object)
             {
-                var additionalError = insertionNameValidator(context, insertionName);
+                var additionalError = insertionNameValidator(context, variablePart.VariableName);
 
                 if (additionalError is object)
                 {
@@ -298,7 +125,70 @@ namespace AutoStep.Compiler
                 }
             }
 
-            return Result;
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementInt([NotNull] AutoStepParser.StatementIntContext context)
+        {
+            var intPart = CreatePart<IntPart>(context);
+
+            intPart.Value = int.Parse(context.STATEMENT_INT().GetText(), NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+
+            intPart.Symbol = context.STATEMENT_SYMBOL()?.GetText();
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementFloat([NotNull] AutoStepParser.StatementFloatContext context)
+        {
+            var floatPart = CreatePart<FloatPart>(context);
+
+            floatPart.Value = decimal.Parse(
+                context.STATEMENT_FLOAT().GetText(),
+                NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
+                CultureInfo.CurrentCulture);
+
+            floatPart.Symbol = context.STATEMENT_SYMBOL()?.GetText();
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementSymbol([NotNull] AutoStepParser.StatementSymbolContext context)
+        {
+            AddPart(CreatePart<WordPart>(context));
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context)
+        {
+            AddPart(CreatePart<InterpolatePart>(context));
+
+            return Result!;
+        }
+
+        private void AddPart(ContentPart part)
+        {
+            if (currentQuotedPart is object)
+            {
+                if (currentInterpolatePart is null)
+                {
+                    currentQuotedPart.AddPart(part);
+                }
+                else
+                {
+                    currentInterpolatePart.AddPart(part);
+                }
+
+                if (part is InterpolatePart interpolated)
+                {
+                    currentInterpolatePart = interpolated;
+                }
+            }
+            else
+            {
+                Result!.AddPart(part);
+            }
         }
     }
 }

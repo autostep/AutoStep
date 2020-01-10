@@ -65,7 +65,7 @@ namespace AutoStep.Compiler
             var success = false;
 
             // Compile the text, specifying a starting lexical mode of 'statement'.
-            var parseContext = compiler.CompileEntryPoint(statementBody, null, p => p.statementBody(), out var tokenStream, out var parserErrors, AutoStepLexer.statement);
+            var parseContext = compiler.CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), out var tokenStream, out var parserErrors, AutoStepLexer.definition);
 
             if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
             {
@@ -73,50 +73,23 @@ namespace AutoStep.Compiler
             }
 
             // Now we need a visitor.
-            var stepReferenceVisitor = new StepReferenceVisitor(null, tokenStream);
+            var stepReferenceVisitor = new StepDefinitionVisitor(null, tokenStream);
 
             // Construct a 'reference' step.
-            var stepReference = stepReferenceVisitor.BuildStep(stepType, null, parseContext);
+            var stepDefinition = stepReferenceVisitor.BuildStepDefinition(stepType, parseContext);
 
-            StepDefinitionElement? definition = null;
+            success = true;
 
-            if (stepReference != null)
+            if (stepDefinition.Arguments is object)
             {
-                definition = new StepDefinitionElement { SourceLine = 1, SourceColumn = 1 };
-
-                definition.UpdateFromStepReference(stepReference);
-
-                success = true;
-
-                if (definition.Arguments is object)
+                // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
+                foreach (var declaredArgument in stepDefinition.Arguments)
                 {
-                    // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
-                    foreach (var declaredArgument in definition.Arguments)
-                    {
-                        if (declaredArgument.Type == ArgumentType.Empty)
-                        {
-                            errors.Add(CompilerMessageFactory.Create(null, declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired));
-                            success = false;
-                        }
-                        else if (declaredArgument.Value is null)
-                        {
-                            // If the value cannot be immediately determined, it means there is some dynamic component (e.g. insertion variables or example inserts).
-                            // Everything else is allowed.
-                            var argumentName = declaredArgument.RawArgument;
-
-                            if (declaredArgument.Type == ArgumentType.Interpolated)
-                            {
-                                argumentName = ":" + argumentName;
-                            }
-
-                            errors.Add(CompilerMessageFactory.Create(null, declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition, argumentName!));
-                            success = false;
-                        }
-                    }
+                    // TODO: Validate argument type hints.
                 }
             }
 
-            return new StepDefinitionFromBodyResult(success, errors, definition);
+            return new StepDefinitionFromBodyResult(success, errors, stepDefinition);
         }
 
         /// <summary>

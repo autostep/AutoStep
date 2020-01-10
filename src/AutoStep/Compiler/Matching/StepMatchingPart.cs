@@ -1,4 +1,6 @@
-﻿namespace AutoStep.Compiler.Matching
+﻿using AutoStep.Elements.Parts;
+
+namespace AutoStep.Compiler.Matching
 {
     /// <summary>
     /// Defines a single matching part, which is a phrase, word or argument that
@@ -66,7 +68,7 @@
         /// <param name="other">The type to check against.</param>
         /// <returns>The result of the match.</returns>
         /// <remarks>It's expected that the 'other' will be a reference part, and the current instance is a definition part.</remarks>
-        public ApproximateMatchResult ApproximateMatch(StepMatchingPart other)
+        public StepReferenceMatchResult ApproximateMatch(StepMatchingPart other)
         {
             if (other is null)
             {
@@ -83,17 +85,17 @@
                     // Everything can go into Text, which is 0.
                     if (diff < 0)
                     {
-                        return new ApproximateMatchResult(0, false);
+                        return new StepReferenceMatchResult(0, false);
                     }
                     else
                     {
                         // Argument match.
-                        return new ApproximateMatchResult(diff + 1, true);
+                        return new StepReferenceMatchResult(diff + 1, true);
                     }
                 }
                 else
                 {
-                    return new ApproximateMatchResult(0, false);
+                    return new StepReferenceMatchResult(0, false);
                 }
             }
             else
@@ -106,17 +108,17 @@
                         if (other.TextContent == TextContent)
                         {
                             // Exact match.
-                            return new ApproximateMatchResult(TextContent.Length, true);
+                            return new StepReferenceMatchResult(TextContent.Length, true);
                         }
                         else
                         {
-                            return new ApproximateMatchResult(0, false);
+                            return new StepReferenceMatchResult(0, false);
                         }
                     }
                     else if (other.TextContent.Length > TextContent.Length)
                     {
                         // Not possible to match, the search target contains more text than this part.
-                        return new ApproximateMatchResult(0, false);
+                        return new StepReferenceMatchResult(0, false);
                     }
                     else
                     {
@@ -129,12 +131,12 @@
                         }
 
                         // Number of character matches in a row equals confidence.
-                        return new ApproximateMatchResult(numberOfMatches, false);
+                        return new StepReferenceMatchResult(numberOfMatches, false);
                     }
                 }
                 else
                 {
-                    return new ApproximateMatchResult(0, false);
+                    return new StepReferenceMatchResult(0, false);
                 }
             }
         }

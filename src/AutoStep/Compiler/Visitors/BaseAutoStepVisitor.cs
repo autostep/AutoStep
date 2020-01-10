@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Compiler
 {
@@ -354,5 +356,129 @@ namespace AutoStep.Compiler
 
             other.Reset();
         }
+
+        protected TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            var part = new TStepPart();
+            part.Text = ctxt.GetText();
+            PositionalLineInfo(part, ctxt);
+            return part;
+        }
+
+        protected TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            var part = new TStepPart();
+            part.Text = ctxt.GetText();
+            PositionalLineInfo(part, ctxt);
+            return part;
+        }
+
+        /// <summary>
+        /// Generates the description text from a parsed description context.
+        /// Handles indentation of the overall description, and indentation inside it.
+        /// </summary>
+        /// <param name="descriptionContext">The context.</param>
+        /// <returns>The complete description string.</returns>
+        protected string? ExtractDescription(AutoStepParser.DescriptionContext descriptionContext)
+        {
+            if (descriptionContext is null)
+            {
+                return null;
+            }
+
+            var lines = descriptionContext.line();
+
+            if (lines.Length == 0)
+            {
+                return null;
+            }
+
+            var descriptionBuilder = new StringBuilder();
+
+            int? whitespaceRemovalCount = null;
+            int? firstTextIndex = null;
+            int lastTextIndex = 0;
+
+            // First pass to get our whitespace size and last text position.
+            for (var lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            {
+                var line = lines[lineIdx];
+                var text = line.text();
+
+                if (text is object)
+                {
+                    if (firstTextIndex == null)
+                    {
+                        firstTextIndex = lineIdx;
+                    }
+
+                    lastTextIndex = lineIdx;
+                    var whiteSpaceSymbol = line.WS()?.Symbol;
+                    var whiteSpaceSize = 0;
+
+                    if (whiteSpaceSymbol is object)
+                    {
+                        // This is the size of the whitespace.
+                        whiteSpaceSize = 1 + whiteSpaceSymbol.StopIndex - whiteSpaceSymbol.StartIndex;
+                    }
+
+                    if (whitespaceRemovalCount is null)
+                    {
+                        // This is the first item of non-whitespace text we have reached.
+                        // Base our initial minimum whitespace on this.
+                        whitespaceRemovalCount = whiteSpaceSize;
+                    }
+                    else if (whiteSpaceSize < whitespaceRemovalCount)
+                    {
+                        // Bring the whitespace in if the amount of whitespace has changed.
+                        // We'll ignore whitespace lengths for lines with no text.
+                        whitespaceRemovalCount = whiteSpaceSize;
+                    }
+                }
+            }
+
+            // No point rendering anything if there were no text lines.
+            if (firstTextIndex is object)
+            {
+                // Second pass to render our description, only go up to the last text position.
+                for (var lineIdx = firstTextIndex.Value; lineIdx <= lastTextIndex; lineIdx++)
+                {
+                    var line = lines[lineIdx];
+                    var text = line.text();
+
+                    if (text is null)
+                    {
+                        descriptionBuilder.AppendLine();
+                    }
+                    else
+                    {
+                        var wsText = line.WS()?.GetText();
+                        if (whitespaceRemovalCount is object && wsText is object)
+                        {
+                            wsText = wsText.Substring(whitespaceRemovalCount.Value);
+                        }
+
+                        // Append all whitespace after the removal amount, plus the text.
+                        descriptionBuilder.Append(wsText);
+                        descriptionBuilder.Append(text.GetText());
+
+                        if (lineIdx < lastTextIndex)
+                        {
+                            // Only add the line if we're not at the end.
+                            descriptionBuilder.AppendLine();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+            return descriptionBuilder.ToString();
+        }
+
     }
 }

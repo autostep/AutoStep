@@ -51,7 +51,7 @@ namespace AutoStep.Compiler.Matching
                 return;
             }
 
-            var allParts = definition.Definition.MatchingParts;
+            var allParts = definition.Definition.Parts;
 
             if (allParts.Count == 0)
             {
@@ -82,7 +82,7 @@ namespace AutoStep.Compiler.Matching
                 return;
             }
 
-            var allParts = definition.Definition.MatchingParts;
+            var allParts = definition.Definition.Parts;
 
             if (allParts.Count == 0)
             {
@@ -125,7 +125,7 @@ namespace AutoStep.Compiler.Matching
                 _ => throw new ArgumentException(MatchingTreeMessages.InvalidStepReferenceBindingType, nameof(stepReference))
             };
 
-            root.SearchRoot(list, stepReference.MatchingParts, exactOnly, ref partsMatched);
+            root.SearchRoot(list, stepReference.Parts, exactOnly, ref partsMatched);
 
             return list;
         }

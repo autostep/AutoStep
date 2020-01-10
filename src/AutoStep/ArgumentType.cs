@@ -19,15 +19,5 @@
         /// Decimal argument (optionally prefixed with a symbol).
         /// </summary>
         NumericDecimal,
-
-        /// <summary>
-        /// An interpolated argument (text based, but evaluation delayed until runtime).
-        /// </summary>
-        Interpolated,
-
-        /// <summary>
-        /// An empty argument.
-        /// </summary>
-        Empty,
     }
 }

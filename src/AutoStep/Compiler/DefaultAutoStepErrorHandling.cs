@@ -26,7 +26,6 @@ namespace AutoStep.Compiler
                 InvalidTagDefinitionExpectingWord,
                 InvalidOptionDefinitionExpectingWord,
                 FeatureTitleInputMismatchMissingTitle,
-                ExpectingArgumentClosingQuote,
                 ExpectingTableRowTerminator,
                 ExampleBlockInputMismatchExpectingTable,
                 UnexpectedEndOfFile);
@@ -117,21 +116,6 @@ namespace AutoStep.Compiler
                 OffendingSymbolTextIs("$"))
             {
                 ChangeError(CompilerMessageCode.BadOptionFormat);
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool ExpectingArgumentClosingQuote()
-        {
-            if (OffendingSymbolIs(AutoStepParser.ARG_ERR_UNEXPECTEDTERMINATOR))
-            {
-                ChangeError(CompilerMessageCode.ArgumentHasNotBeenClosed);
-
-                UseOpeningTokenAsStart(AutoStepParser.OPEN_QUOTE);
-                UsePrecedingTokenAsEnd();
-
                 return true;
             }
 

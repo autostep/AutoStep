@@ -13,12 +13,33 @@ stepDefinitionBlock: annotations
                      stepDefinition
                      stepDefinitionBody;
 
-stepDefinition: WS? STEP_DEFINE WS? stepDeclaration STATEMENT_NEWLINE
+stepDefinition: WS? STEP_DEFINE WS? stepDeclaration DEF_NEWLINE
                     description?;
 
 stepDefinitionBody: stepCollectionBodyLine*;
 
-stepDeclaration: statement;
+stepDeclaration: DEF_GIVEN stepDeclarationBody #declareGiven
+               | DEF_WHEN stepDeclarationBody  #declareWhen
+               | DEF_THEN stepDeclarationBody  #declareThen
+               ;
+
+stepDeclarationBody: stepDeclarationSection+;
+
+stepDeclarationSection: DEF_LCURLY stepDeclarationArgument DEF_RCURLY       # declarationArgument
+                      | stepDeclarationSectionContent                       # declarationSection;
+
+stepDeclarationArgument: stepDeclarationArgumentName (DEF_COLON stepDeclarationTypeHint)?
+                       ;
+
+stepDeclarationArgumentName: DEF_WORD;
+
+stepDeclarationTypeHint: DEF_WORD;
+
+stepDeclarationSectionContent: DEF_WORD   # declarationWord
+                             | (DEF_ESCAPED_LCURLY | DEF_ESCAPED_RCURLY) # declarationEscaped
+                             | DEF_WS                 # declarationWs
+                             | DEF_COLON              # declarationColon
+                             ;
 
 featureBlock: annotations 
               featureDefinition
@@ -63,8 +84,8 @@ stepCollectionBodyLine: statementBlock
                       ;
 
 statementBlock: WS? statement STATEMENT_NEWLINE NEWLINE* tableBlock #statementWithTable
-              | WS? statement STATEMENT_NEWLINE            #statementLineTerminated
-              | WS? statement WS? EOF                      #statementEofTerminated
+              | WS? statement STATEMENT_NEWLINE                     #statementLineTerminated
+              | WS? statement WS? EOF                               #statementEofTerminated
               ;
 
 statement: GIVEN statementBody #given
@@ -75,46 +96,28 @@ statement: GIVEN statementBody #given
 
 statementBody: statementSection+;
             
-statementSection: STATEMENT_SECTION                                   # statementSectionPart
-                | STATEMENT_WS                                        # statementWs
-                | OPEN_QUOTE CLOSE_QUOTE                              # argEmpty
-                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_FLOAT CLOSE_QUOTE   # argFloat
-                | OPEN_QUOTE ARG_CURR_SYMBOL? ARG_INT CLOSE_QUOTE     # argInt
-                | OPEN_QUOTE ARG_COLON statementArgument CLOSE_QUOTE  # argInterpolate
-                | OPEN_QUOTE statementArgument CLOSE_QUOTE            # argText
-                ;
+statementSection: (STATEMENT_QUOTE statementSectionBlock* STATEMENT_QUOTE |
+                   STATEMENT_DOUBLE_QUOTE statementSectionBlock* STATEMENT_DOUBLE_QUOTE
+                  )                         # statementQuotedString                
+                  | statementSectionBlock   # statementSingleBlock
+                  ;
 
-statementArgument: statementArgumentBlock+;
+statementSectionBlock: STATEMENT_WORD                                                # statementWord
+                     | (
+                             STATEMENT_ESCAPED_QUOTE
+                           | STATEMENT_ESCAPED_DBLQUOTE
+                           | STATEMENT_ESCAPED_VARSTART
+                           | STATEMENT_ESCAPED_VAREND
+                       )                                                             # statementEscapedChar
+                     | STATEMENT_VAR_START statementVariableName STATEMENT_VAR_STOP  # statementVariable
+                     | STATEMENT_SYMBOL? STATEMENT_INT                               # statementInt
+                     | STATEMENT_SYMBOL? STATEMENT_FLOAT                             # statementFloat
+                     | STATEMENT_SYMBOL                                              # statementSymbol
+                     | STATEMENT_COLON STATEMENT_WORD                                # statementInterpolate
+                     | STATEMENT_WS                                                  # statementBlockWs                     
+                     ;
 
-statementArgumentBlock:  ARG_EXAMPLE_START argumentExampleNameBody ARG_EXAMPLE_END #exampleArgBlock
-                      |  argumentBody+?                                            #textArgBlock
-                      ;
-
-argumentExampleNameBody: argumentExampleNameBodyContent (ARG_WS? argumentExampleNameBodyContent)*;
-
-argumentExampleNameBodyContent: ARG_TEXT_CONTENT
-                              | ARG_INT
-                              | ARG_FLOAT
-                              | ARG_COLON
-                              | ARG_CURR_SYMBOL
-                              | ARG_ESCAPE_QUOTE
-                              | ARG_EXAMPLE_START
-                              | ARG_EXAMPLE_START_ESCAPE
-                              | ARG_EXAMPLE_END_ESCAPE
-                              ;
-
-argumentBody: ARG_WS              
-            | ARG_TEXT_CONTENT    
-            | ARG_INT             
-            | ARG_FLOAT           
-            | ARG_CURR_SYMBOL     
-            | ARG_COLON           
-            | ARG_ESCAPE_QUOTE
-            | ARG_EXAMPLE_START_ESCAPE
-            | ARG_EXAMPLE_END_ESCAPE
-            | ARG_EXAMPLE_START
-            | ARG_EXAMPLE_END
-            ;
+statementVariableName: STATEMENT_WORD (STATEMENT_WS STATEMENT_WORD)*;
 
 examples: exampleBlock*;
 
@@ -127,59 +130,26 @@ tableBlock: WS? tableHeader
 
 tableHeader: tableHeaderCell+ CELL_DELIMITER ROW_NL;
 
-tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? headerCell? CELL_WS?;
+tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? cellVariableName? CELL_WS?;
 
 tableRow: tableRowCell+ CELL_DELIMITER ROW_NL;
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_WS?;
 
-tableRowCellContent: CELL_CURR_SYMBOL? CELL_FLOAT  # cellFloat
-                   | CELL_CURR_SYMBOL? CELL_INT    # cellInt       
-                   | CELL_COLON cellArgument       # cellInterpolate
-                   | cellArgument                  # cellText;
+tableRowCellContent: (CELL_WS? cellContentBlock)+;
 
-headerCell: headerCellBody+?;
+cellContentBlock: CELL_WORD                                         # cellWord
+                  | 
+                        (
+                          CELL_ESCAPED_DELIMITER
+                        | CELL_ESCAPED_VARSTART
+                        | CELL_ESCAPED_VAREND
+                        )                                           # cellEscapedChar
+                  | CELL_VAR_START cellVariableName CELL_VAR_STOP   # cellVariable
+                  | CELL_COLON CELL_WORD                            # cellInterpolate                  
+                  ;
 
-cellArgument: cellArgumentBlock+?;
-
-cellArgumentBlock: CELL_EXAMPLE_START cellExampleNameBody CELL_EXAMPLE_END #exampleCellBlock
-                 | generalCellBody+?                                     #textCellBlock
-                 ;
-
-headerCellBody: CELL_WS
-              | CELL_TEXT_CONTENT
-              | CELL_INT
-              | CELL_FLOAT
-              | CELL_CURR_SYMBOL
-              | CELL_COLON
-              | ESCAPE_CELL_DELIMITER
-              ;
-
-cellExampleNameBody: cellExampleNameBodyContent (CELL_WS? cellExampleNameBodyContent)*;
-
-cellExampleNameBodyContent: CELL_TEXT_CONTENT
-                          | CELL_INT
-                          | CELL_FLOAT
-                          | CELL_COLON
-                          | CELL_CURR_SYMBOL
-                          | ESCAPE_CELL_DELIMITER
-                          | CELL_EXAMPLE_START
-                          | CELL_EXAMPLE_START_ESCAPE
-                          | CELL_EXAMPLE_END_ESCAPE
-                          ;
-
-generalCellBody: CELL_WS              
-               | CELL_TEXT_CONTENT    
-               | CELL_INT             
-               | CELL_FLOAT           
-               | CELL_CURR_SYMBOL     
-               | CELL_COLON           
-               | ESCAPE_CELL_DELIMITER
-               | CELL_EXAMPLE_START_ESCAPE
-               | CELL_EXAMPLE_END_ESCAPE
-               | CELL_EXAMPLE_START
-               | CELL_EXAMPLE_END
-               ;
+cellVariableName: CELL_WORD (CELL_WS CELL_WORD)*;
 
 text: (WS? WORD)+;
 line: WS? text? NEWLINE;

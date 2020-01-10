@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using AutoStep.Definitions;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Compiler.Matching
 {
@@ -37,17 +38,17 @@ namespace AutoStep.Compiler.Matching
         /// <summary>
         /// Gets the part used for matching this node.
         /// </summary>
-        private StepMatchingPart? matchingPart;
+        private DefinitionContentPart? matchingPart;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingTreeNode"/> class.
         /// </summary>
         /// <param name="allStepDefinitions">The set of all definitions.</param>
-        /// <param name="part">The matching part used by this node.</param>
-        public MatchingTreeNode(LinkedList<StepDefinition> allStepDefinitions, StepMatchingPart? part)
+        /// <param name="matchingPart">The matching part used by this node.</param>
+        public MatchingTreeNode(LinkedList<StepDefinition> allStepDefinitions, DefinitionContentPart? matchingPart)
         {
             allDefinitions = allStepDefinitions;
-            matchingPart = part;
+            this.matchingPart = matchingPart;
         }
 
         private bool IsEmpty => leftDefinition == null;
@@ -60,7 +61,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="nextPartPosition">The position in allDefinitionParts that this node should look at for comparison.</param>
         public void AddDefinition(
             LinkedListNode<StepDefinition> definitionNode,
-            IReadOnlyList<StepMatchingPart> allDefinitionParts,
+            IReadOnlyList<DefinitionContentPart> allDefinitionParts,
             int nextPartPosition)
         {
             var addPosition = nextPartPosition;
@@ -92,7 +93,7 @@ namespace AutoStep.Compiler.Matching
                 {
                     var nodeValue = nextSearch.Value;
 
-                    if (nodeValue.matchingPart!.IsExactMatch(newPart))
+                    if (nodeValue.matchingPart!.IsDefinitionPartMatch(newPart))
                     {
                         // Found an exact match for the new part, this means that one of the children is a match.
                         nodeValue.AddDefinition(definitionNode, allDefinitionParts, nextPartPosition);
@@ -176,7 +177,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="allDefinitionParts">The step matching parts.</param>
         /// <param name="nextPartPosition">The next position in the matching parts.</param>
         /// <returns>The linked list node containing the located step definition (if it's found in this node or one of its children).</returns>
-        public LinkedListNode<StepDefinition>? RemoveDefinition(StepDefinition definition, IReadOnlyList<StepMatchingPart> allDefinitionParts, int nextPartPosition)
+        public LinkedListNode<StepDefinition>? RemoveDefinition(StepDefinition definition, IReadOnlyList<DefinitionContentPart> allDefinitionParts, int nextPartPosition)
         {
             var removePosition = nextPartPosition;
             nextPartPosition++;
@@ -197,7 +198,7 @@ namespace AutoStep.Compiler.Matching
                     {
                         var nodeValue = nextSearch.Value;
 
-                        if (nodeValue.matchingPart!.IsExactMatch(newPart))
+                        if (nodeValue.matchingPart!.IsDefinitionPartMatch(newPart))
                         {
                             // Found an exact match for the new part, this means that one of the children is a match.
                             removingNode = nodeValue.RemoveDefinition(definition, allDefinitionParts, nextPartPosition);
@@ -287,7 +288,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="allSearchParts">The set of parts to search for.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
-        public void SearchRoot(LinkedList<MatchResult> results, IReadOnlyList<StepMatchingPart> allSearchParts, bool exactOnly, ref int partsMatched)
+        public void SearchRoot(LinkedList<MatchResult> results, IReadOnlyList<ContentPart> allSearchParts, bool exactOnly, ref int partsMatched)
         {
             if (children is object)
             {
@@ -309,8 +310,27 @@ namespace AutoStep.Compiler.Matching
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
         /// <returns>true if this node (or any child) added results to the list.</returns>
-        public bool SearchMatches(LinkedList<MatchResult> results, IReadOnlyList<StepMatchingPart> allSearchParts, int nextSearchPartPosition, bool exactOnly, ref int partsMatched)
+        public bool SearchMatches(LinkedList<MatchResult> results, IReadOnlyList<ContentPart> allSearchParts, int nextSearchPartPosition, bool exactOnly, ref int partsMatched)
         {
+            //
+            // 
+            /// READ THIS ON MONDAY!!
+            // 
+            //    A single definition part, when matching, needs to state how many tokens from the set it has consumed.
+            //    In this way a single word definition token can consume the text from multiple non-word parts until it has matched completely.
+            // 
+            //    Consider: 
+            //                  three WordParts, with an apostrophe at start and end.
+            //      Def:   Given I have a 'some fixed text'
+            //      Ref:   Given I have a 'some fixed text'
+            //                       one QuotedStringPart, containing three WordParts
+            //
+            //    I think that the definition behaviour needs to understand quotes, and raise a QuotedStringPart
+            //    containing the word parts, so we get roughly the same token structure for ref and def.
+            //    
+            //    Otherwise things get weird.
+            //
+
             Debug.Assert(matchingPart is object);
 
             // Returns true if this child (or one of it's children) has added one or more results to the list.
@@ -318,7 +338,7 @@ namespace AutoStep.Compiler.Matching
             nextSearchPartPosition++;
 
             // Check for match quality between the part assigned to this node and the part we are looking for.
-            var match = matchingPart.ApproximateMatch(currentPart);
+            var match = matchingPart.DoStepReferenceMatch(currentPart);
 
             if (match.Length == 0)
             {
@@ -394,6 +414,27 @@ namespace AutoStep.Compiler.Matching
                     }
 
                     partsMatched = nextSearchPartPosition;
+                }
+
+                if (addedSomething && results.First.Value.IsExact && matchingPart is ArgumentPart arg)
+                {
+                    // When at least one exact match has been added, it means that this node's
+                    // argument binding resulted in a final match.
+                    // Now let's see if there are any additional checks we can make on the argument.
+                    var currentExact = results.First;
+
+                    // Only worry about exact matches (and all the exacts come at the start of the list.
+                    while (currentExact is object && currentExact.Value.IsExact)
+                    {
+                        var problem = arg.GetBindingMessage(currentPart);
+
+                        if (problem is object)
+                        {
+                            currentExact.Value.AddMessage(problem);
+                        }
+
+                        currentExact = currentExact.Next;
+                    }
                 }
 
                 return addedSomething;
