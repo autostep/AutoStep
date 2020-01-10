@@ -7,13 +7,11 @@ using AutoStep.Compiler;
 
 namespace AutoStep
 {
-
     /// <summary>
     /// Represents the configuration for the project.
     /// This + environment variables = run configuration.
     /// </summary>
     public class ProjectConfiguration
     {
-
     }
 }
