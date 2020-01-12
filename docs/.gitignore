@@ -7,4 +7,6 @@
 /**/bin/
 /**/obj/
 _site
-api
+api/*.yml
+api/*.manifest
+_exported_templates

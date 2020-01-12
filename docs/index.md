@@ -1,4 +1,9 @@
-# This is the **HOMEPAGE**.
-Refer to [Markdown](http://daringfireball.net/projects/markdown/) for how to write markdown files.
-## Quick Start Notes:
-1. Add images to the *images* folder if the file is referencing an image.
+# AutoStep Project Documentation
+
+Welcome to AutoStep! In this documentation you will find:
+
+- How to Write AutoStep Tests
+
+- How to Extend AutoStep to add Functionality
+
+- Internal API Documentation

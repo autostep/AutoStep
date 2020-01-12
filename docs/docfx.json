@@ -23,8 +23,8 @@
       },
       {
         "files": [
-          "articles/**.md",
-          "articles/**/toc.yml",
+          "writing-tests/**.md",
+          "writing-tests/**/toc.yml",
           "toc.yml",
           "*.md"
         ]
@@ -49,7 +49,7 @@
       }
     ],
     "dest": "_site",
-    "globalMetadataFiles": [],
+    "globalMetadataFiles": ["globalMetadata.json"],
     "fileMetadataFiles": [],
     "template": [
       "default"
