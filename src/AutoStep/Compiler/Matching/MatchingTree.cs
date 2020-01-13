@@ -125,7 +125,9 @@ namespace AutoStep.Compiler.Matching
                 _ => throw new ArgumentException(MatchingTreeMessages.InvalidStepReferenceBindingType, nameof(stepReference))
             };
 
-            root.SearchRoot(list, stepReference.Parts, exactOnly, ref partsMatched);
+            stepReference.PartSpan.ToArray();
+
+            root.SearchRoot(list, stepReference.RawText, stepReference.PartSpan, exactOnly, ref partsMatched);
 
             return list;
         }

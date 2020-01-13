@@ -15,7 +15,8 @@ namespace AutoStep.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
-        private List<ContentPart> parts = new List<ContentPart>();
+        private List<ContentPart> workingParts = new List<ContentPart>();
+        private ContentPart[] frozenParts = null;
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -42,7 +43,9 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
         /// </summary>
-        public IReadOnlyList<ContentPart> Parts => parts;
+        public ReadOnlySpan<ContentPart> PartSpan => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
+
+        public IEnumerable<ContentPart> Parts => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -60,7 +63,20 @@ namespace AutoStep.Elements
                 throw new System.ArgumentNullException(nameof(part));
             }
 
-            parts.Add(part);
+            if (frozenParts is object)
+            {
+                throw new InvalidOperationException("Step parts have been frozen.");
+            }
+
+            workingParts.Add(part);
+        }
+
+        public void FreezeParts()
+        {
+            frozenParts = workingParts.ToArray();
+
+            // Wipe the working parts, we aren't going to be using them anymore.
+            workingParts = null!;
         }
 
         /// <summary>

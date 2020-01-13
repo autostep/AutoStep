@@ -12,14 +12,15 @@ namespace AutoStep.Elements.Parts
     {
         public string EscapedText { get; set; }
 
-        public override StepReferenceMatchResult DoStepReferenceMatch(ContentPart referencePart)
+        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<ContentPart> currentPartSpan)
         {
             throw new NotImplementedException();
             var textForDefCompare = EscapedText ?? Text;
             var textForRefCompare = string.Empty;
+            var current = currentPartSpan[0];
 
             // If the other one is a word, then use the escaped text from that for matching.
-            if (referencePart is WordPart word && word.EscapedText != null)
+            if (current is WordPart word && word.EscapedText != null)
             {
                 textForRefCompare = word.EscapedText;
             }
@@ -35,17 +36,17 @@ namespace AutoStep.Elements.Parts
                 if (textForDefCompare == textForRefCompare)
                 {
                     // Exact match.
-                    return new StepReferenceMatchResult(textForRefCompare.Length, true);
+                    return new StepReferenceMatchResult(textForRefCompare.Length, true, currentPartSpan);
                 }
                 else
                 {
-                    return new StepReferenceMatchResult(0, false);
+                    return new StepReferenceMatchResult(0, false, currentPartSpan);
                 }
             }
             else if (textForRefCompare.Length > textForDefCompare.Length)
             {
                 // Not possible to match, the search target contains more text than this part.
-                return new StepReferenceMatchResult(0, false);
+                return new StepReferenceMatchResult(0, false, currentPartSpan);
             }
             else
             {
@@ -58,7 +59,7 @@ namespace AutoStep.Elements.Parts
                 }
 
                 // Number of character matches in a row equals confidence.
-                return new StepReferenceMatchResult(numberOfMatches, false);
+                return new StepReferenceMatchResult(numberOfMatches, false, currentPartSpan);
             }
         }
 

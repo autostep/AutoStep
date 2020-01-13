@@ -153,13 +153,18 @@ namespace AutoStep.Tests.Utils
 
             try
             {
+                var spanType = typeof(ReadOnlySpan<ContentPart>);
+
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
-                    .IncludingAllRuntimeProperties()
-                    .Excluding((IMemberInfo member) => !includeStatementParts && 
+                    .IncludingAllRuntimeProperties()                    
+                    .Excluding((IMemberInfo member) => spanType.IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
+                                                       (
+                                                       !includeStatementParts && 
                                                         member.SelectedMemberInfo != null &&
                                                         (typeof(ContentPart).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                        typeof(IEnumerable<ContentPart>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)))
+                                                        typeof(IEnumerable<ContentPart>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)
+                                                        )))
                 );
             }
             catch

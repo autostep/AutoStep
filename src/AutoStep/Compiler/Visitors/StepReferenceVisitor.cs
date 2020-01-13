@@ -71,6 +71,9 @@ namespace AutoStep.Compiler
 
             VisitChildren(statementContext);
 
+            // No more parts, convert to array for performance.
+            step.FreezeParts();
+
             return Result;
         }
 

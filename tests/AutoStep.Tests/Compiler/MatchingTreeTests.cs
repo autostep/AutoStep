@@ -222,17 +222,17 @@ namespace AutoStep.Tests.Compiler
         public void CanReplaceExistingStepDefinition()
         {
             var stepDef1 = new TestDef("1", StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+                                       "I", "have", "matched");
 
             var stepDef2 = new TestDef("2", StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+                                       "I", "have", "not", "matched");
 
             var stepDefReplace = new TestDef("1", StepType.Given, "I have matched",
-                                             "I", " ", "have", " ", "matched");
+                                             "I", "have", "matched");
 
             var tree = new MatchingTree();
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "matched");
+            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", "have", "matched");
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
@@ -248,13 +248,13 @@ namespace AutoStep.Tests.Compiler
         public void CanAddMultipleStepDefinitionsWithExactAndDepthBeyond()
         {
             var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+                                       "I", "have", "matched");
 
             var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+                                       "I", "have", "not", "matched");
 
             var stepDef3 = new TestDef(StepType.Given, "I have not matched properly",
-                                       "I", " ", "have", " ", "not", " ", "matched", " ", "properly");
+                                       "I", "have", "not", "matched", "properly");
 
             var tree = new MatchingTree();
 
@@ -262,8 +262,8 @@ namespace AutoStep.Tests.Compiler
             tree.AddOrUpdateDefinition(stepDef2);
             tree.AddOrUpdateDefinition(stepDef3);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", "matched");
-
+            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", "have", "not", "matched");
+            
             var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
@@ -397,6 +397,8 @@ namespace AutoStep.Tests.Compiler
                         throw new ArgumentException("Bad make argument");
                     }
                 }
+
+                refElement.FreezeParts();
 
                 return refElement;
             }

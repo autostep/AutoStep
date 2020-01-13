@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
@@ -288,14 +289,22 @@ namespace AutoStep.Compiler.Matching
         /// <param name="allSearchParts">The set of parts to search for.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
-        public void SearchRoot(LinkedList<MatchResult> results, IReadOnlyList<ContentPart> allSearchParts, bool exactOnly, ref int partsMatched)
+        public void SearchRoot(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<ContentPart> allSearchParts, bool exactOnly, ref int partsMatched)
         {
             if (children is object)
             {
                 var currentChild = children.First;
                 while (currentChild is object)
                 {
-                    currentChild.Value.SearchMatches(results, allSearchParts, 0, exactOnly, ref partsMatched);
+                    currentChild.Value.SearchMatches(results, referenceText, allSearchParts, exactOnly, out var finalSpan);
+
+                    var handledSize = allSearchParts.Length - finalSpan.Length;
+
+                    if (handledSize > partsMatched)
+                    {
+                        partsMatched = handledSize;
+                    }
+
                     currentChild = currentChild.Next;
                 }
             }
@@ -305,44 +314,21 @@ namespace AutoStep.Compiler.Matching
         /// Searches this node (and all children, if needed) for matches against the current search part.
         /// </summary>
         /// <param name="results">A set to add match results to.</param>
-        /// <param name="allSearchParts">The available search parts.</param>
-        /// <param name="nextSearchPartPosition">The current position in allSearchParts.</param>
+        /// <param name="currentPartSpan">The current slice of allSearchParts we are looking at.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
         /// <returns>true if this node (or any child) added results to the list.</returns>
-        public bool SearchMatches(LinkedList<MatchResult> results, IReadOnlyList<ContentPart> allSearchParts, int nextSearchPartPosition, bool exactOnly, ref int partsMatched)
+        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<ContentPart> currentPartSpan, bool exactOnly, out ReadOnlySpan<ContentPart> finalSpan)
         {
-            //
-            // 
-            /// READ THIS ON MONDAY!!
-            // 
-            //    A single definition part, when matching, needs to state how many tokens from the set it has consumed.
-            //    In this way a single word definition token can consume the text from multiple non-word parts until it has matched completely.
-            // 
-            //    Consider: 
-            //                  three WordParts, with an apostrophe at start and end.
-            //      Def:   Given I have a 'some fixed text'
-            //      Ref:   Given I have a 'some fixed text'
-            //                       one QuotedStringPart, containing three WordParts
-            //
-            //    I think that the definition behaviour needs to understand quotes, and raise a QuotedStringPart
-            //    containing the word parts, so we get roughly the same token structure for ref and def.
-            //    
-            //    Otherwise things get weird.
-            //
-
             Debug.Assert(matchingPart is object);
 
-            // Returns true if this child (or one of it's children) has added one or more results to the list.
-            var currentPart = allSearchParts[nextSearchPartPosition];
-            nextSearchPartPosition++;
-
             // Check for match quality between the part assigned to this node and the part we are looking for.
-            var match = matchingPart.DoStepReferenceMatch(currentPart);
+            var match = matchingPart.DoStepReferenceMatch(referenceText, currentPartSpan);
 
             if (match.Length == 0)
             {
                 // No match, nothing at this node or below.
+                finalSpan = match.NewSpan;
                 return false;
             }
             else
@@ -351,8 +337,8 @@ namespace AutoStep.Compiler.Matching
                 var ignoreExact = false;
                 var addedSomething = false;
 
-                // A match of some form.
-                if (nextSearchPartPosition == allSearchParts.Count)
+                // The current match has consumed the entirety of the rest of the reference.
+                if (match.NewSpan.IsEmpty)
                 {
                     // If this is an exact match, do we have an exact step def for it?
                     if (match.IsExact && exactMatchNodes is object && exactMatchNodes.Count > 0)
@@ -373,7 +359,7 @@ namespace AutoStep.Compiler.Matching
 
                     while (currentChild is object)
                     {
-                        var childMatched = currentChild.Value.SearchMatches(results, allSearchParts, nextSearchPartPosition, exactOnly, ref partsMatched);
+                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.NewSpan, exactOnly, out finalSpan);
 
                         if (childMatched)
                         {
@@ -412,8 +398,6 @@ namespace AutoStep.Compiler.Matching
                             }
                         }
                     }
-
-                    partsMatched = nextSearchPartPosition;
                 }
 
                 if (addedSomething && results.First.Value.IsExact && matchingPart is ArgumentPart arg)
@@ -426,7 +410,7 @@ namespace AutoStep.Compiler.Matching
                     // Only worry about exact matches (and all the exacts come at the start of the list.
                     while (currentExact is object && currentExact.Value.IsExact)
                     {
-                        var problem = arg.GetBindingMessage(currentPart);
+                        var problem = arg.GetBindingMessage(currentPartSpan);
 
                         if (problem is object)
                         {
@@ -437,6 +421,7 @@ namespace AutoStep.Compiler.Matching
                     }
                 }
 
+                finalSpan = match.NewSpan;
                 return addedSomething;
             }
         }

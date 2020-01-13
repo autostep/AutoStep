@@ -12,6 +12,6 @@ namespace AutoStep.Elements.Parts
 
         public abstract bool IsDefinitionPartMatch(DefinitionContentPart part);
 
-        public abstract StepReferenceMatchResult DoStepReferenceMatch(ContentPart referencePart);
+        public abstract StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<ContentPart> currentPartSpan);
     }
 }

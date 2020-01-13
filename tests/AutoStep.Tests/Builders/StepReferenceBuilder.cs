@@ -22,6 +22,7 @@ namespace AutoStep.Tests.Builders
         {
             return Part<WordPart>(text, start);
         }
+
         public StepReferenceBuilder Word(string text, string escapedText, int start)
         {
             return Part<WordPart>(text, start, p => p.EscapedText = escapedText);
