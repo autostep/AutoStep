@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
@@ -41,6 +42,29 @@ namespace AutoStep.Compiler
         public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
+        }
+
+        /// <summary>
+        /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
+        /// </summary>
+        /// <param name="type">The step type.</param>
+        /// <param name="bodyContext">The statement body context.</param>
+        /// <returns>A generated step reference.</returns>
+        public StepDefinitionElement BuildStepDefinition(StepType type, AutoStepParser.StepDeclarationContext declarationContext, AutoStepParser.StepDeclarationBodyContext bodyContext)
+        {
+            var step = new StepDefinitionElement
+            {
+                Type = type,
+                Declaration = bodyContext.GetText(),
+            };
+
+            Result = step;
+
+            LineInfo(step, declarationContext);
+
+            VisitChildren(bodyContext);
+
+            return Result;
         }
 
         /// <summary>
@@ -105,14 +129,14 @@ namespace AutoStep.Compiler
 
         public override StepDefinitionElement VisitDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart<WordDefinitionPart>(context));
 
             return Result!;
         }
 
         public override StepDefinitionElement VisitDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context)
         {
-            var part = CreatePart<WordPart>(context);
+            var part = CreatePart<WordDefinitionPart>(context);
 
             part.EscapedText = EscapeText(context, escapeReplacements);
 
@@ -123,7 +147,7 @@ namespace AutoStep.Compiler
 
         public override StepDefinitionElement VisitDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart<WordDefinitionPart>(context));
 
             return Result!;
         }
@@ -131,6 +155,24 @@ namespace AutoStep.Compiler
         private void AddPart(DefinitionContentPart part)
         {
             Result!.AddPart(part);
+        }
+
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
+            where TStepPart : DefinitionContentPart, new()
+        {
+            var part = new TStepPart();
+            part.Text = ctxt.GetText();
+            PositionalLineInfo(part, ctxt);
+            return part;
+        }
+
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
+            where TStepPart : DefinitionContentPart, new()
+        {
+            var part = new TStepPart();
+            part.Text = ctxt.GetText();
+            PositionalLineInfo(part, ctxt);
+            return part;
         }
     }
 }

@@ -6,8 +6,8 @@ using AutoStep.Definitions;
 namespace AutoStep.Elements.Parts
 {
 
-    public class QuotedStringPart : CollectionPart
+    public class QuotePart : ContentPart
     {
+        public bool IsDoubleQuote { get; set; }
     }
-
 }

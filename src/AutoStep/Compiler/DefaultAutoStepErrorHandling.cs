@@ -5,6 +5,8 @@ using AutoStep.Compiler.Parser;
 
 namespace AutoStep.Compiler
 {
+    using static AutoStepParser;
+
     /// <summary>
     /// Provides the default syntax error handling.
     /// </summary>
@@ -23,6 +25,9 @@ namespace AutoStep.Compiler
             SetErrorHandlers(
                 ScenarioTitleInputMismatchMissingTitle,
                 ScenarioOutlineTitleInputMismatchMissingTitle,
+                DefinitionInvalidStepType,
+                DefinitionEmptyArgument,
+                DefinitionArgumentWhitespace,
                 InvalidTagDefinitionExpectingWord,
                 InvalidOptionDefinitionExpectingWord,
                 FeatureTitleInputMismatchMissingTitle,
@@ -33,13 +38,13 @@ namespace AutoStep.Compiler
 
         private bool FeatureTitleInputMismatchMissingTitle()
         {
-            if (Context is AutoStepParser.FeatureTitleContext &&
-                ExpectingTokens(AutoStepParser.WORD) &&
+            if (Context is FeatureTitleContext &&
+                ExpectingTokens(WORD) &&
                 (OffendingSymbolIsNot(AutoStepParser.Eof) || Exception is InputMismatchException))
             {
                 ChangeError(CompilerMessageCode.NoFeatureTitleProvided);
 
-                UseOpeningTokenAsStart(AutoStepParser.FEATURE);
+                UseOpeningTokenAsStart(FEATURE);
                 UseStartSymbolAsEndSymbol();
 
                 SwallowEndOfFileErrorsAfterThis();
@@ -53,14 +58,56 @@ namespace AutoStep.Compiler
         private bool ScenarioTitleInputMismatchMissingTitle()
         {
             if (Exception is InputMismatchException &&
-                Context is AutoStepParser.NormalScenarioTitleContext &&
-                ExpectingTokens(AutoStepParser.WORD))
+                Context is NormalScenarioTitleContext &&
+                ExpectingTokens(WORD))
             {
                 // Title should have been provided, but it has not.
                 ChangeError(CompilerMessageCode.NoScenarioTitleProvided);
 
-                UseOpeningTokenAsStart(AutoStepParser.SCENARIO);
+                UseOpeningTokenAsStart(SCENARIO);
                 UseStartSymbolAsEndSymbol();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DefinitionInvalidStepType()
+        {
+            if (Exception is InputMismatchException &&
+                Context is StepDeclarationContext &&
+                ExpectingTokens(DEF_GIVEN, DEF_WHEN, DEF_THEN))
+            {
+                ChangeError(CompilerMessageCode.InvalidStepDefineKeyword, OffendingSymbol.Text);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DefinitionEmptyArgument()
+        {
+            if (Context is StepDeclarationArgumentNameContext &&
+                ExpectingTokens(DEF_WORD))
+            {
+                ChangeError(CompilerMessageCode.StepVariableNameRequired);
+
+                UseOpeningTokenAsStart(DEF_LCURLY);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DefinitionArgumentWhitespace()
+        {
+            if (Context is DeclarationArgumentContext &&
+                ExpectingTokens(DEF_RCURLY, DEF_WORD) && OffendingSymbolIs(DEF_WS))
+            {
+                ChangeError(CompilerMessageCode.StepVariableInvalidWhitespace);
 
                 return true;
             }
@@ -71,13 +118,13 @@ namespace AutoStep.Compiler
         private bool ScenarioOutlineTitleInputMismatchMissingTitle()
         {
             if (Exception is InputMismatchException &&
-                Context is AutoStepParser.ScenarioOutlineTitleContext &&
-                ExpectingTokens(AutoStepParser.WORD))
+                Context is ScenarioOutlineTitleContext &&
+                ExpectingTokens(WORD))
             {
                 // Title should have been provided, but it has not.
                 ChangeError(CompilerMessageCode.NoScenarioOutlineTitleProvided);
 
-                UseOpeningTokenAsStart(AutoStepParser.SCENARIO_OUTLINE);
+                UseOpeningTokenAsStart(SCENARIO_OUTLINE);
 
                 UseStartSymbolAsEndSymbol();
 
@@ -100,7 +147,7 @@ namespace AutoStep.Compiler
 
         private bool InvalidTagDefinitionExpectingWord()
         {
-            if (OffendingSymbolIs(AutoStepParser.WORD) &&
+            if (OffendingSymbolIs(WORD) &&
                 OffendingSymbolTextIs("@"))
             {
                 ChangeError(CompilerMessageCode.BadTagFormat);
@@ -112,7 +159,7 @@ namespace AutoStep.Compiler
 
         private bool InvalidOptionDefinitionExpectingWord()
         {
-            if (OffendingSymbolIs(AutoStepParser.WORD) &&
+            if (OffendingSymbolIs(WORD) &&
                 OffendingSymbolTextIs("$"))
             {
                 ChangeError(CompilerMessageCode.BadOptionFormat);
@@ -124,10 +171,10 @@ namespace AutoStep.Compiler
 
         private bool ExpectingTableRowTerminator()
         {
-            if (OffendingSymbolIs(AutoStepParser.ROW_NL))
+            if (OffendingSymbolIs(ROW_NL))
             {
                 ChangeError(CompilerMessageCode.TableRowHasNotBeenTerminated);
-                UseOpeningTokenAsStart(AutoStepParser.TABLE_START, AutoStepParser.CELL_DELIMITER);
+                UseOpeningTokenAsStart(TABLE_START, CELL_DELIMITER);
                 UsePrecedingTokenAsEnd();
 
                 return true;
@@ -139,11 +186,11 @@ namespace AutoStep.Compiler
         private bool ExampleBlockInputMismatchExpectingTable()
         {
             if (Exception is InputMismatchException &&
-                Context is AutoStepParser.TableHeaderContext)
+                Context is TableHeaderContext)
             {
                 ChangeError(CompilerMessageCode.ExamplesBlockRequiresTable);
 
-                UseOpeningTokenAsStart(AutoStepParser.EXAMPLES);
+                UseOpeningTokenAsStart(EXAMPLES);
                 UseStartSymbolAsEndSymbol();
 
                 return true;

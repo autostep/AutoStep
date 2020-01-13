@@ -92,14 +92,9 @@ namespace AutoStep.Compiler
         CannotSpecifyDynamicValueInStepDefinition = 00016,
 
         /// <summary>
-        /// Cannot use the 'And' keyword for step definition statements.
-        /// </summary>
-        CannotDefineAStepWithAnd = 00017,
-
-        /// <summary>
         /// Cannot use an empty parameter as a variable name for a step definition.
         /// </summary>
-        StepVariableNameRequired = 00018,
+        StepVariableNameRequired = 00017,
 
         //// Syntax Errors ////
 
@@ -152,6 +147,16 @@ namespace AutoStep.Compiler
         /// A feature has been defined, but no title has been provided.
         /// </summary>
         NoFeatureTitleProvided = 10009,
+
+        /// <summary>
+        /// Cannot use the 'And' keyword for step definition statements.
+        /// </summary>
+        InvalidStepDefineKeyword = 10010,
+
+        /// <summary>
+        /// Step variable contains invalid whitespace.
+        /// </summary>
+        StepVariableInvalidWhitespace = 10011,
 
         //// Linker Messages ////
 

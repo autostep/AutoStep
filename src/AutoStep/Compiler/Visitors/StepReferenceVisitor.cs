@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
@@ -24,8 +25,7 @@ namespace AutoStep.Compiler
 
         private readonly Func<ParserRuleContext, string, CompilerMessage?>? insertionNameValidator;
 
-        private QuotedStringPart? currentQuotedPart = null;
-        private InterpolatePart? currentInterpolatePart = null;
+        private int textColumnOffset = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StepReferenceVisitor"/> class.
@@ -63,7 +63,6 @@ namespace AutoStep.Compiler
             var step = new StepReferenceElement
             {
                 Type = type,
-                RawText = statementContext.GetText(),
             };
 
             Result = step;
@@ -75,20 +74,41 @@ namespace AutoStep.Compiler
             return Result;
         }
 
-        public override StepReferenceElement VisitStatementQuotedString([NotNull] AutoStepParser.StatementQuotedStringContext context)
+        public override StepReferenceElement VisitStatementBody([NotNull] AutoStepParser.StatementBodyContext context)
         {
-            Debug.Assert(Result != null);
+            Debug.Assert(Result is object);
 
-            currentQuotedPart = CreatePart<QuotedStringPart>(context);
+            Result.RawText = context.GetText();
+
+            textColumnOffset = context.Start.Column;
 
             VisitChildren(context);
 
-            Result.AddPart(currentQuotedPart);
-
-            currentQuotedPart = null;
-            currentInterpolatePart = null;
-
             return Result;
+        }
+
+        public override StepReferenceElement VisitStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context)
+        {
+            AddPart(CreatePart<QuotePart>(context));
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementColon([NotNull] AutoStepParser.StatementColonContext context)
+        {
+            AddPart(CreatePart<WordPart>(context));
+
+            return Result!;
+        }
+
+        public override StepReferenceElement VisitStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context)
+        {
+            var part = CreatePart<QuotePart>(context);
+            part.IsDoubleQuote = true;
+
+            AddPart(part);
+
+            return Result!;
         }
 
         public override StepReferenceElement VisitStatementWord([NotNull] AutoStepParser.StatementWordContext context)
@@ -109,6 +129,13 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        public override StepReferenceElement VisitStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context)
+        {
+            AddPart(CreatePart<WordPart>(context));
+
+            return Result!;
+        }
+
         public override StepReferenceElement VisitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context)
         {
             var variablePart = CreatePart<VariablePart>(context);
@@ -125,6 +152,8 @@ namespace AutoStep.Compiler
                 }
             }
 
+            AddPart(variablePart);
+
             return Result!;
         }
 
@@ -134,7 +163,7 @@ namespace AutoStep.Compiler
 
             intPart.Value = int.Parse(context.STATEMENT_INT().GetText(), NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
 
-            intPart.Symbol = context.STATEMENT_SYMBOL()?.GetText();
+            AddPart(intPart);
 
             return Result!;
         }
@@ -148,47 +177,53 @@ namespace AutoStep.Compiler
                 NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
                 CultureInfo.CurrentCulture);
 
-            floatPart.Symbol = context.STATEMENT_SYMBOL()?.GetText();
-
-            return Result!;
-        }
-
-        public override StepReferenceElement VisitStatementSymbol([NotNull] AutoStepParser.StatementSymbolContext context)
-        {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(floatPart);
 
             return Result!;
         }
 
         public override StepReferenceElement VisitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context)
         {
-            AddPart(CreatePart<InterpolatePart>(context));
+            // Interpolate part itself is just the colon.
+            AddPart(CreatePart<InterpolatePart>(context.STATEMENT_COLON()));
+
+            // Now add a part for the first word.
+            AddPart(CreatePart<WordPart>(context.STATEMENT_WORD()));
 
             return Result!;
         }
 
         private void AddPart(ContentPart part)
         {
-            if (currentQuotedPart is object)
-            {
-                if (currentInterpolatePart is null)
-                {
-                    currentQuotedPart.AddPart(part);
-                }
-                else
-                {
-                    currentInterpolatePart.AddPart(part);
-                }
+            Result!.AddPart(part);
+        }
 
-                if (part is InterpolatePart interpolated)
-                {
-                    currentInterpolatePart = interpolated;
-                }
-            }
-            else
-            {
-                Result!.AddPart(part);
-            }
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            var part = new TStepPart();
+
+            // 0-based offset.
+            var offset = textColumnOffset;
+            var start = ctxt.Start.Column - offset;
+            var startIndex = ctxt.Start.StartIndex;
+            part.TextRange = new Range(start, start + (ctxt.Stop.StopIndex - startIndex));
+            PositionalLineInfo(part, ctxt);
+            return part;
+        }
+
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            var part = new TStepPart();
+
+            // 0-based offset.
+            var offset = textColumnOffset;
+            var start = ctxt.Symbol.Column - offset;
+            var startIndex = ctxt.Symbol.StartIndex;
+            part.TextRange = new Range(start, start + (ctxt.Symbol.StopIndex - startIndex));
+            PositionalLineInfo(part, ctxt);
+            return part;
         }
     }
 }

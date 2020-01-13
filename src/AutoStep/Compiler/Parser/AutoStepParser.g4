@@ -13,7 +13,7 @@ stepDefinitionBlock: annotations
                      stepDefinition
                      stepDefinitionBody;
 
-stepDefinition: WS? STEP_DEFINE WS? stepDeclaration DEF_NEWLINE
+stepDefinition: WS? STEP_DEFINE DEF_WS? stepDeclaration DEF_NEWLINE
                     description?;
 
 stepDefinitionBody: stepCollectionBodyLine*;
@@ -96,28 +96,27 @@ statement: GIVEN statementBody #given
 
 statementBody: statementSection+;
             
-statementSection: (STATEMENT_QUOTE statementSectionBlock* STATEMENT_QUOTE |
-                   STATEMENT_DOUBLE_QUOTE statementSectionBlock* STATEMENT_DOUBLE_QUOTE
-                  )                         # statementQuotedString                
-                  | statementSectionBlock   # statementSingleBlock
+statementSection:   STATEMENT_QUOTE                                               # statementQuote
+                  | STATEMENT_DOUBLE_QUOTE                                        # statementDoubleQuote
+                  | STATEMENT_VAR_START statementVariableName STATEMENT_VAR_STOP  # statementVariable
+                  | (
+                        STATEMENT_ESCAPED_QUOTE
+                      | STATEMENT_ESCAPED_DBLQUOTE
+                      | STATEMENT_ESCAPED_VARSTART
+                      | STATEMENT_ESCAPED_VAREND
+                    )                                                             # statementEscapedChar
+                  | STATEMENT_INT                                                 # statementInt
+                  | STATEMENT_FLOAT                                               # statementFloat
+                  | STATEMENT_COLON STATEMENT_WORD                                # statementInterpolate
+                  | STATEMENT_COLON                                               # statementColon
+                  | STATEMENT_WORD                                                # statementWord
+                  | (STATEMENT_VAR_START | STATEMENT_VAR_STOP)                    # statementVarUnmatched  
+                  | STATEMENT_WS                                                  # statementBlockWs
                   ;
 
-statementSectionBlock: STATEMENT_WORD                                                # statementWord
-                     | (
-                             STATEMENT_ESCAPED_QUOTE
-                           | STATEMENT_ESCAPED_DBLQUOTE
-                           | STATEMENT_ESCAPED_VARSTART
-                           | STATEMENT_ESCAPED_VAREND
-                       )                                                             # statementEscapedChar
-                     | STATEMENT_VAR_START statementVariableName STATEMENT_VAR_STOP  # statementVariable
-                     | STATEMENT_SYMBOL? STATEMENT_INT                               # statementInt
-                     | STATEMENT_SYMBOL? STATEMENT_FLOAT                             # statementFloat
-                     | STATEMENT_SYMBOL                                              # statementSymbol
-                     | STATEMENT_COLON STATEMENT_WORD                                # statementInterpolate
-                     | STATEMENT_WS                                                  # statementBlockWs                     
-                     ;
+statementVariableName: statementVarPhrase (STATEMENT_WS statementVarPhrase)*;
 
-statementVariableName: STATEMENT_WORD (STATEMENT_WS STATEMENT_WORD)*;
+statementVarPhrase: (STATEMENT_WORD | STATEMENT_INT)+;
 
 examples: exampleBlock*;
 
@@ -138,18 +137,22 @@ tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_
 
 tableRowCellContent: (CELL_WS? cellContentBlock)+;
 
-cellContentBlock: CELL_WORD                                         # cellWord
-                  | 
-                        (
+cellContentBlock:       (
                           CELL_ESCAPED_DELIMITER
                         | CELL_ESCAPED_VARSTART
                         | CELL_ESCAPED_VAREND
                         )                                           # cellEscapedChar
                   | CELL_VAR_START cellVariableName CELL_VAR_STOP   # cellVariable
-                  | CELL_COLON CELL_WORD                            # cellInterpolate                  
+                  | CELL_INT                                        # cellInt
+                  | CELL_FLOAT                                      # cellFloat
+                  | CELL_COLON CELL_WORD                            # cellInterpolate
+                  | CELL_COLON                                      # cellColon
+                  | CELL_WORD                                       # cellWord
                   ;
 
-cellVariableName: CELL_WORD (CELL_WS CELL_WORD)*;
+cellVariableName: cellVarPhrase (CELL_WS cellVarPhrase)*;
+
+cellVarPhrase: (CELL_WORD | CELL_INT)+;
 
 text: (WS? WORD)+;
 line: WS? text? NEWLINE;

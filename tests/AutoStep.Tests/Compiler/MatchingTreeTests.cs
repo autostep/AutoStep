@@ -6,6 +6,7 @@ using FluentAssertions;
 using Xunit;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -296,20 +297,16 @@ namespace AutoStep.Tests.Compiler
 
                     if (isArgument)
                     {
-                        stepDef.AddMatchingPart(ArgumentType.Text);
+                        stepDef.AddPart(new ArgumentPart { Text = "n" });
                     }
                     else
                     {
                         // Probability of whitespace is approximately 50/50.
                         var whitespace = seededRandom.Next(0, 1) == 1;
 
-                        if (whitespace)
+                        if (!whitespace)
                         {
-                            stepDef.AddMatchingPart(" ");
-                        }
-                        else
-                        {
-                            stepDef.AddMatchingPart(words[seededRandom.Next(0, words.Length - 1)]);
+                            stepDef.AddPart(new WordDefinitionPart() { Text = words[seededRandom.Next(0, words.Length - 1)] });
                         }
 
                     }
@@ -320,13 +317,14 @@ namespace AutoStep.Tests.Compiler
                 tree.AddOrUpdateDefinition(def);
             }
 
-            var knownStepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", ArgumentType.Text,
-                                                     " ", "clicked", " ", "the", " ", "custom", " ", ArgumentType.Text, "control");
+            var knownStepRef = FakeStepReference.Make(StepType.Given, "I", "have", "not", "arg1",
+                                                  "clicked", "the", "arg2", "control");
 
             // Add a 'known' definition.
-            var manualDef = new TestDef(FakeDefElement.Make(knownStepRef));
+            var manualDef = FakeDefElement.Make(StepType.Given, "I", "have", "not", ArgumentType.Text,
+                                                "clicked", "the", ArgumentType.NumericInteger, "control");
 
-            tree.AddOrUpdateDefinition(manualDef);
+            tree.AddOrUpdateDefinition(new TestDef(manualDef));
 
             var matches = tree.Match(knownStepRef, false, out var partsMatched).ToArray();
 
@@ -376,59 +374,23 @@ namespace AutoStep.Tests.Compiler
             }
         }
 
-        private class FakeDefElement : StepDefinitionElement
-        {
-            public FakeDefElement(StepType type)
-            {
-                Type = type;
-            }
-
-            public static FakeDefElement Make(StepReferenceElement refElement)
-            {
-                var defElement = new FakeDefElement(refElement.BindingType.Value);
-                defElement.UpdateFromStepReference(refElement);
-                return defElement;
-            }
-
-            public static FakeDefElement Make(StepType type, params object[] parts)
-            {
-                var defElement = new FakeDefElement(type);
-
-                foreach (var part in parts)
-                {
-                    if (part is ArgumentType arg)
-                    {
-                        defElement.AddMatchingPart(arg);
-                    }
-                    else if (part is string str)
-                    {
-                        defElement.AddMatchingPart(str);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Bad make argument");
-                    }
-                }
-
-                return defElement;
-            }
-        }
-
         private class FakeStepReference : StepReferenceElement
         {
             public static FakeStepReference Make(StepType type, params object[] parts)
             {
-                var refElement = new FakeStepReference { BindingType = type };
+                var refElement = new FakeStepReference();
+                refElement.BindingType = type;
+                refElement.RawText = string.Join(' ', parts);
+                var currentIndex = 1;
 
                 foreach (var part in parts)
                 {
-                    if (part is ArgumentType arg)
+                    if (part is string str)
                     {
-                        refElement.AddArgument(new StepArgumentElement { Type = arg });
-                    }
-                    else if (part is string str)
-                    {
-                        refElement.AddMatchingText(str);
+                        var lastIndex = currentIndex + str.Length - 1;
+                        refElement.AddPart(new WordPart() { TextRange = new Range(currentIndex, lastIndex) });
+                        // Along 1 to move to the space, and another to move to the start of the next word.
+                        currentIndex += 2;
                     }
                     else
                     {
@@ -437,6 +399,37 @@ namespace AutoStep.Tests.Compiler
                 }
 
                 return refElement;
+            }
+        }
+
+        private class FakeDefElement : StepDefinitionElement
+        {
+            public FakeDefElement(StepType type)
+            {
+                Type = type;
+            }
+
+            public static FakeDefElement Make(StepType type, params object[] parts)
+            {
+                var defElement = new FakeDefElement(type);
+
+                foreach (var part in parts)
+                {
+                    if (part is string str)
+                    {
+                        defElement.AddPart(new WordDefinitionPart() { Text = str });
+                    }
+                    else if (part is ArgumentType argType)
+                    {
+                        defElement.AddPart(new ArgumentPart { Name = "n", TypeHint = argType });
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Bad make argument");
+                    }
+                }
+
+                return defElement;
             }
         }
     }

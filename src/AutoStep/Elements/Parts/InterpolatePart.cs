@@ -6,7 +6,7 @@ using AutoStep.Definitions;
 namespace AutoStep.Elements.Parts
 {
 
-    public class InterpolatePart : CollectionPart
+    public class InterpolatePart : ContentPart
     {
     }
 

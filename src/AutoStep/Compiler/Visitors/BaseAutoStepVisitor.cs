@@ -357,24 +357,6 @@ namespace AutoStep.Compiler
             other.Reset();
         }
 
-        protected TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
-            where TStepPart : ContentPart, new()
-        {
-            var part = new TStepPart();
-            part.Text = ctxt.GetText();
-            PositionalLineInfo(part, ctxt);
-            return part;
-        }
-
-        protected TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
-            where TStepPart : ContentPart, new()
-        {
-            var part = new TStepPart();
-            part.Text = ctxt.GetText();
-            PositionalLineInfo(part, ctxt);
-            return part;
-        }
-
         /// <summary>
         /// Generates the description text from a parsed description context.
         /// Handles indentation of the overall description, and indentation inside it.

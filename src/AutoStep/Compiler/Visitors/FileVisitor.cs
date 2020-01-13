@@ -243,7 +243,7 @@ namespace AutoStep.Compiler
                 _ => throw new LanguageEngineException("Cannot get here unless the Antlr rules have been updated with an additional alternate")
             };
 
-            var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+            var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
 
             MergeVisitorAndReset(stepDefinitionVisitor);
 
@@ -552,7 +552,7 @@ namespace AutoStep.Compiler
                     if (currentStepDefinition is object)
                     {
                         // We are in the step declaration, which does not permit 'And'.
-                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.CannotDefineAStepWithAnd);
+                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword);
                     }
                     else if (currentStepSetLastConcrete is null)
                     {

@@ -7,6 +7,6 @@ namespace AutoStep.Elements.Parts
 {
     public abstract class ContentPart : PositionalElement
     {
-        public string? Text { get; set; }
+        public Range TextRange { get; set; }
     }
 }

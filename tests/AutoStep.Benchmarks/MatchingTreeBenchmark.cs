@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks
@@ -71,20 +72,16 @@ namespace AutoStep.Benchmarks
                     
                     if(isArgument)
                     {
-                        stepDef.AddMatchingPart(ArgumentType.Text);
+                        stepDef.AddPart(new ArgumentPart { Text = "n" });
                     }
                     else
                     {
                         // Probability of whitespace is approximately 50/50.
                         var whitespace = seededRandom.Next(0, 1) == 1;
 
-                        if(whitespace)
+                        if(!whitespace)
                         {
-                            stepDef.AddMatchingPart(" ");
-                        }
-                        else
-                        {
-                            stepDef.AddMatchingPart(words[seededRandom.Next(0, words.Length - 1)]);
+                            stepDef.AddPart(new WordDefinitionPart() { Text = words[seededRandom.Next(0, words.Length - 1)] });
                         }
 
                     }
@@ -95,11 +92,12 @@ namespace AutoStep.Benchmarks
                 tree.AddOrUpdateDefinition(def);
             }
 
-            knownStepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", ArgumentType.Text,
-                                                  " ", "clicked", " ", "the", " ", ArgumentType.Text, "control");
+            knownStepRef = FakeStepReference.Make(StepType.Given, "I", "have", "not", "arg1",
+                                                  "clicked", "the", "arg2", "control");
 
             // Add a 'known' definition.
-            var manualDef = FakeDefElement.Make(knownStepRef);
+            var manualDef = FakeDefElement.Make(StepType.Given, "I", "have", "not", ArgumentType.Text, 
+                                                "clicked", "the", ArgumentType.NumericInteger, "control");
 
             tree.AddOrUpdateDefinition(new TestStepDef(manualDef));
         }
@@ -151,16 +149,17 @@ namespace AutoStep.Benchmarks
             {
                 var refElement = new FakeStepReference();
                 refElement.BindingType = type;
+                refElement.RawText = string.Join(' ', parts);
+                var currentIndex = 1;
 
                 foreach (var part in parts)
                 {
-                    if (part is ArgumentType arg)
+                    if (part is string str)
                     {
-                        refElement.AddArgument(new StepArgumentElement { Type = arg });
-                    }
-                    else if (part is string str)
-                    {
-                        refElement.AddMatchingText(str);
+                        var lastIndex = currentIndex + str.Length - 1;
+                        refElement.AddPart(new WordPart() { TextRange = new Range(currentIndex,  lastIndex)});
+                        // Along 1 to move to the space, and another to move to the start of the next word.
+                        currentIndex += 2;
                     }
                     else
                     {
@@ -179,26 +178,19 @@ namespace AutoStep.Benchmarks
                 Type = type;
             }
 
-            public static FakeDefElement Make(StepReferenceElement refElement)
-            {
-                var defElement = new FakeDefElement(refElement.BindingType.Value);
-                defElement.UpdateFromStepReference(refElement);
-                return defElement;
-            }
-
             public static FakeDefElement Make(StepType type, params object[] parts)
             {
                 var defElement = new FakeDefElement(type);
 
                 foreach (var part in parts)
                 {
-                    if (part is ArgumentType arg)
+                    if (part is string str)
                     {
-                        defElement.AddMatchingPart(arg);
+                        defElement.AddPart(new WordDefinitionPart() { Text = str });
                     }
-                    else if (part is string str)
+                    else if(part is ArgumentType argType)
                     {
-                        defElement.AddMatchingPart(str);
+                        defElement.AddPart(new ArgumentPart { Name = "n", TypeHint = argType });
                     }
                     else
                     {

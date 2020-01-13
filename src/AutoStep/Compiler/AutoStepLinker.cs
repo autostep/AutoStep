@@ -62,7 +62,7 @@ namespace AutoStep.Compiler
             statementBody = statementBody.Trim();
 
             var errors = new List<CompilerMessage>();
-            var success = false;
+            var success = true;
 
             // Compile the text, specifying a starting lexical mode of 'statement'.
             var parseContext = compiler.CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), out var tokenStream, out var parserErrors, AutoStepLexer.definition);
@@ -70,6 +70,7 @@ namespace AutoStep.Compiler
             if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
             {
                 errors.AddRange(parserErrors);
+                success = false;
             }
 
             // Now we need a visitor.
@@ -78,7 +79,12 @@ namespace AutoStep.Compiler
             // Construct a 'reference' step.
             var stepDefinition = stepReferenceVisitor.BuildStepDefinition(stepType, parseContext);
 
-            success = true;
+            if (!stepReferenceVisitor.Success)
+            {
+                success = false;
+            }
+
+            errors.AddRange(stepReferenceVisitor.Messages);
 
             if (stepDefinition.Arguments is object)
             {

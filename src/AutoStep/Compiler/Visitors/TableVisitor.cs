@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
@@ -24,7 +25,6 @@ namespace AutoStep.Compiler
 
         private TableRowElement? currentRow;
         private TableCellElement? currentCell;
-        private InterpolatePart? currentInterpolatePart;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TableVisitor"/> class.
@@ -166,7 +166,11 @@ namespace AutoStep.Compiler
             }
             else
             {
-                currentCell = cell;
+                cell.Text = cellContent.GetText();
+
+                currentCell = cell; 
+
+                PositionalLineInfo(currentCell, cellContent);
 
                 try
                 {
@@ -185,25 +189,44 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellWord([NotNull] AutoStepParser.CellWordContext context)
         {
-            Debug.Assert(Result is object);
-            Debug.Assert(currentCell is object);
-
             AddPart(CreatePart<WordPart>(context));
 
-            return Result;
+            return Result!;
+        }
+
+        public override TableElement VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
+        {
+            var intPart = CreatePart<IntPart>(context);
+
+            intPart.Value = int.Parse(context.CELL_INT().GetText(), NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+
+            AddPart(intPart);
+
+            return Result!;
+        }
+
+        public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
+        {
+            var floatPart = CreatePart<FloatPart>(context);
+
+            floatPart.Value = decimal.Parse(
+                context.CELL_FLOAT().GetText(),
+                NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
+                CultureInfo.CurrentCulture);
+
+            AddPart(floatPart);
+
+            return Result!;
         }
 
         public override TableElement VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context)
         {
-            Debug.Assert(Result is object);
-            Debug.Assert(currentCell is object);
-
             var part = CreatePart<WordPart>(context);
             part.EscapedText = EscapeText(context, tableCellReplacements);
 
             AddPart(part);
 
-            return Result;
+            return Result!;
         }
 
         public override TableElement VisitCellVariable([NotNull] AutoStepParser.CellVariableContext context)
@@ -215,15 +238,31 @@ namespace AutoStep.Compiler
 
             variablePart.VariableName = context.cellVariableName().GetText();
 
+            if (insertionNameValidator is object)
+            {
+                var additionalError = insertionNameValidator(context, variablePart.VariableName);
+
+                if (additionalError is object)
+                {
+                    AddMessage(additionalError);
+                }
+            }
+
             AddPart(variablePart);
 
             return Result;
         }
 
+        public override TableElement VisitCellColon([NotNull] AutoStepParser.CellColonContext context)
+        {
+            AddPart(CreatePart<WordPart>(context));
+
+            return Result!;
+        }
+
         public override TableElement VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
         {
             Debug.Assert(Result is object);
-            Debug.Assert(currentCell is object);
 
             // Interpolate part itself is just the colon.
             AddPart(CreatePart<InterpolatePart>(context.CELL_COLON()));
@@ -238,19 +277,39 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(currentCell is object);
 
-            if (currentInterpolatePart is null)
-            {
-                currentCell.AddPart(part);
-            }
-            else
-            {
-                currentInterpolatePart.AddPart(part);
-            }
+            currentCell.AddPart(part);
+        }
 
-            if (part is InterpolatePart interpolated)
-            {
-                currentInterpolatePart = interpolated;
-            }
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            Debug.Assert(currentCell is object);
+
+            var part = new TStepPart();
+
+            // 0-based offset.
+            var offset = currentCell.SourceColumn - 1;
+            var start = ctxt.Start.Column - offset;
+            var startIndex = ctxt.Start.StartIndex;
+            part.TextRange = new Range(start, start + (ctxt.Stop.StopIndex - startIndex));
+            PositionalLineInfo(part, ctxt);
+            return part;
+        }
+
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
+            where TStepPart : ContentPart, new()
+        {
+            Debug.Assert(currentCell is object);
+
+            var part = new TStepPart();
+
+            // 0-based offset.
+            var offset = currentCell.SourceColumn - 1;
+            var start = ctxt.Symbol.Column - offset;
+            var startIndex = ctxt.Symbol.StartIndex;
+            part.TextRange = new Range(start, start + (ctxt.Symbol.StopIndex - startIndex));
+            PositionalLineInfo(part, ctxt);
+            return part;
         }
     }
 }

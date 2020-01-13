@@ -38,12 +38,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 42, 49)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.Text, "r1.c1", 31, 35, null),
-                                    (ArgumentType.Text, "r1.c2", 42, 46, null)
+                                    ("r1.c1", 31, 35, null),
+                                    ("r1.c2", 42, 46, null)
                                 )
                                 .Row(9, 29,
-                                    (ArgumentType.Text, "r2.c1", 31, 35, null),
-                                    (ArgumentType.Text, "r2.c2", 42, 46, null)
+                                    ("r2.c1", 31, 35, null),
+                                    ("r2.c2", 42, 46, null)
                                 )
                             )
                         )
@@ -78,12 +78,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 39, 46)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.Text, "r1.c1", 30, 34, null),
-                                    (ArgumentType.Text, "r1.c2", 36, 40, null)
+                                    ("r1.c1", 30, 34, null),
+                                    ("r1.c2", 36, 40, null)
                                 )
                                 .Row(9, 29,
-                                    (ArgumentType.Text, "r2.c1", 30, 34, null),
-                                    (ArgumentType.Text, "r2.c2", 36, 40, null)
+                                    ("r2.c1", 30, 34, null),
+                                    ("r2.c2", 36, 40, null)
                                 )
                             )
                         )
@@ -118,12 +118,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 42, 49)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.Empty, null, 30, 39, arg => arg.NullValue()),
-                                    (ArgumentType.Empty, null, 41, 50, arg => arg.NullValue())
+                                    (null, 30, 39, null),
+                                    (null, 41, 50, null)
                                 )
                                 .Row(9, 29,
-                                    (ArgumentType.Text, "r2.c1", 31, 35, null),
-                                    (ArgumentType.Text, "r2.c2", 42, 46, null)
+                                    ("r2.c1", 31, 35, null),
+                                    ("r2.c2", 42, 46, null)
                                 )
                             )
                         )
@@ -151,28 +151,34 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
+                            .Word("this", 31)
+                            .Word("step", 36)
+                            .Word("has", 41)
+                            .Word("a", 45)
+                            .Word("table", 47)
+                            .Colon(52)
                             .Table(7, 29, table => table
                                 .Headers(7, 29,
                                     ("heading1", 31, 38)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.NumericInteger, "123", 31, 33, arg => arg.Value(123))
+                                    ("123", 31, 33, c => c.Int("123", 31))
                                 )
                                 .Row(9, 29,
-                                    (ArgumentType.NumericDecimal, "123.50", 31, 36, arg => arg.Value(123.50M))
+                                    ("123.50", 31, 36, c => c.Float("123.50", 31))
                                 )
                                 .Row(10, 29,
-                                    (ArgumentType.NumericDecimal, "£123.50", 31, 37, arg => arg.Value(123.50M).Symbol("£"))
+                                    ("£123.50", 31, 37, c => c.Word("£", 31).Float("123.50", 32))
                                 )
                                 .Row(11, 29,
-                                    (ArgumentType.Interpolated, "interpolated", 31, 43, arg => arg.NullValue())
+                                    (":interpolated", 31, 43, c => c.InterpolateStart(":", 31).Word("interpolated", 32))
                                 )
                                 .Row(12, 29,
-                                    (ArgumentType.Text, "text", 31, 34, null)
+                                    ("text", 31, 34, null)
                                 )
                             )
                         )
@@ -234,8 +240,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     (null, 41, 50)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.Text, "r1.c1", 31, 35, null),
-                                    (ArgumentType.Text, "r1.c2", 42, 46, null)
+                                    ("r1.c1", 31, 35, null),
+                                    ("r1.c2", 42, 46, null)
                                 )
                             )
                         )
@@ -333,10 +339,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading1", 31, 38)
                                 )
                                 .Row(8, 29,
-                                    (ArgumentType.NumericInteger, "123", 31, 33, arg => arg.Value(123))
+                                    ("123", 31, 33, null)
                                 )
                                 .Row(10, 29,
-                                    (ArgumentType.NumericDecimal, "123.50", 31, 36, arg => arg.Value(123.50M))
+                                    ("123.50", 31, 36, null)
                                 )
                             )
                         )
@@ -365,23 +371,72 @@ namespace AutoStep.Tests.Compiler.Parsing
                         Then another thing happens
             ";
 
-            await CompileAndAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
+                            .Word("this", 31)
+                            .Word("step", 36)
+                            .Word("has", 41)
+                            .Word("a", 45)
+                            .Word("table", 47)
+                            .Colon(52)
                             .Table(8, 29, table => table
                                 .Headers(8, 29,
                                     ("heading1", 31, 38)
                                 )
                                 .Row(9, 29,
-                                    (ArgumentType.NumericInteger, "123", 31, 33, arg => arg.Value(123))
+                                    ("123", 31, 33, c => c.Int("123", 31))
                                 )
                                 .Row(11, 29,
-                                    (ArgumentType.NumericDecimal, "123.50", 31, 36, arg => arg.Value(123.50M))
+                                    ("123.50", 31, 36, c => c.Float("123.50", 31))
                                 )
                             )
                         )
-                        .Then("another thing happens", 13, 25)
+                        .Then("another thing happens", 13, 25, step => step
+                            .Word("another", 30)
+                            .Word("thing", 38)
+                            .Word("happens", 44)
+                        )
+                    )
+                )
+            );
+        }
+
+        [Fact]
+        public async Task TableCellCanHaveColonSeparatorNotInterpolated()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+
+                        Given this step has a table:
+                            | heading1 | 
+                            | this: 1  |
+
+            ";
+
+            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("this step has a table:", 6, 25, step => step
+                            .Word("this", 31)
+                            .Word("step", 36)
+                            .Word("has", 41)
+                            .Word("a", 45)
+                            .Word("table", 47)
+                            .Colon(52)
+                            .Table(7, 29, table => table
+                                .Headers(7, 29,
+                                    ("heading1", 31, 38)
+                                )
+                                .Row(8, 29,
+                                    ("this: 1", 31, 37, c => c.Word("this", 31).Colon(35).Int("1", 37))
+                                )
+                            )
+                        )
                     )
                 )
             );

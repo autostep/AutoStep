@@ -6,8 +6,6 @@ namespace AutoStep.Elements.Parts
         where TNumberType : struct
     {
         public TNumberType Value { get; set; }
-
-        public string? Symbol { get; internal set; }
     }
 
 }

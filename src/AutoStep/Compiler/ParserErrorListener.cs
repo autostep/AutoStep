@@ -62,6 +62,11 @@ namespace AutoStep.Compiler
             else
             {
                 msg = CompilerMessageCodeText.ResourceManager.GetString(ctxt.Code.ToString(), CultureInfo.CurrentCulture);
+
+                if (ctxt.MessageArguments?.Length > 0)
+                {
+                    msg = string.Format(CultureInfo.CurrentCulture, msg, ctxt.MessageArguments);
+                }
             }
 
             if (ctxt.IgnoreFollowingEndOfFileMessages)

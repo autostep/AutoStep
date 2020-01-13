@@ -11,6 +11,8 @@ namespace AutoStep.Elements
     {
         private List<ContentPart> parts = new List<ContentPart>();
 
+        public string Text { get; set; }
+
         public IReadOnlyList<ContentPart> Parts => parts;
 
         public void AddPart(ContentPart nestedPart)

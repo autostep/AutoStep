@@ -34,7 +34,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public TableBuilder Row(int lineNo, int column, params (ArgumentType argType, string rawValue, int startColumn, int endColumn, Action<ArgumentBuilder> cfg)[] cells)
+        public TableBuilder Row(int lineNo, int column, params (string rawValue, int startColumn, int endColumn, Action<CellBuilder> cfg)[] cells)
         {
             var row = new TableRowElement
             {
@@ -44,23 +44,18 @@ namespace AutoStep.Tests.Builders
 
             foreach(var item in cells)
             {
-                var cell = new TableCellElement
-                {
-                    SourceLine = lineNo,
-                    SourceColumn = item.startColumn,
-                    EndColumn = item.endColumn
-                };
-
-                var argument = new ArgumentBuilder(cell, item.rawValue, item.argType, item.startColumn, item.endColumn);
+                var cell = new CellBuilder(item.rawValue, lineNo, item.startColumn, item.endColumn);
 
                 if(item.cfg is object)
                 {
-                    item.cfg(argument);
+                    item.cfg(cell);
                 }
-
-                cell.Value = argument.Built;
-
-                row.AddCell(cell);
+                else if(item.rawValue is string)
+                {
+                    cell.Word(item.rawValue, item.startColumn);
+                }
+                
+                row.AddCell(cell.Built);
             }
 
             Built.AddRow(row);

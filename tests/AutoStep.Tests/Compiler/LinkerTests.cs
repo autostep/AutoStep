@@ -5,6 +5,8 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using System.Threading.Tasks;
+using System;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -61,9 +63,12 @@ namespace AutoStep.Tests.Compiler
             // Built a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Word("I", 1)
+                        .Word("have", 3)
+                        .Word("done", 8)
+                        .Word("something", 13)
                     )
                 ));
 
@@ -93,12 +98,18 @@ namespace AutoStep.Tests.Compiler
             // Built a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("This will not match", 3, 3, step => step
-                        .MatchingText("This", " ", "will", " ", "not", " ", "match")
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("This will not match", 1, 1, step => step
+                        .Word("This", 1)
+                        .Word("will", 6)
+                        .Word("not", 11)
+                        .Word("match", 15)
                     )
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
+                    .Given("I have done something", 1, 1, step => step
+                        .Word("I", 1)
+                        .Word("have", 3)
+                        .Word("done", 8)
+                        .Word("something", 13)
                     )
                 ));
 
@@ -139,13 +150,15 @@ namespace AutoStep.Tests.Compiler
             linker.AddStepDefinitionSource(src1);
             linker.AddStepDefinitionSource(src2);
 
+            throw new NotImplementedException();
+
             // Build a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
                 .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
-                    )
+                    .Given("I have done something", 3, 3)//, step => step
+                        //.MatchingText("I", " ", "have", " ", "done", " ", "something")
+                    
                 ));
 
             var file = fileBuilder.Built;
@@ -162,6 +175,30 @@ namespace AutoStep.Tests.Compiler
 
             // The failing definition should not have a bound definition.
             file.AllStepReferences.First.Value.BoundDefinition.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StepMultipleArguments()
+        {
+            const string TestFile =
+            @"                
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have passed 'argument1' and 'argument2' to something
+
+            ";
+
+            throw new NotImplementedException();
+
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 15, feat => feat
+                    .Scenario("My Scenario", 4, 17, scen => scen
+                        .Given("I have passed 'argument1' and 'argument2' to something", 6, 21)//, step => step
+                            //.Argument(ArgumentType.Text, "argument1", 41, 51)
+                            //.Argument(ArgumentType.Text, "argument2", 57, 67)
+            )));
         }
     }
 }

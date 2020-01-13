@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Builders
 {
@@ -17,16 +18,69 @@ namespace AutoStep.Tests.Builders
             };
         }
 
-        public StepReferenceBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
+        public StepReferenceBuilder Word(string text, int start)
         {
-            var argumentBuilder = new ArgumentBuilder(Built, rawValue, type, start, end);
+            return Part<WordPart>(text, start);
+        }
+        public StepReferenceBuilder Word(string text, string escapedText, int start)
+        {
+            return Part<WordPart>(text, start, p => p.EscapedText = escapedText);
+        }
 
-            if(cfg is object)
+        public StepReferenceBuilder Variable(string varName, int start)
+        {
+            return Part<VariablePart>("<" + varName + ">", start, p => p.VariableName = varName);
+        }
+
+        public StepReferenceBuilder Int(string text, int start)
+        {
+            return Part<IntPart>(text, start, p => p.Value = int.Parse(text));
+        }
+
+        public StepReferenceBuilder Float(string text, int start)
+        {
+            return Part<FloatPart>(text, start, p => p.Value = decimal.Parse(text));
+        }
+        
+        public StepReferenceBuilder InterpolateStart(string text, int start)
+        {
+            return Part<InterpolatePart>(text, start);
+        }
+
+        public StepReferenceBuilder Colon(int column)
+        {
+            return Part<WordPart>(":", column);
+        }
+
+        public StepReferenceBuilder Quote(int column)
+        {
+            return Part<QuotePart>("'", column);
+        }
+
+        public StepReferenceBuilder DoubleQuote(int column)
+        {
+            return Part<QuotePart>("\"", column, p => p.IsDoubleQuote = true);
+        }
+
+        public StepReferenceBuilder Part<TPartType>(string text, int start, Action<TPartType> extraPart = null)
+            where TPartType : ContentPart, new()
+        {
+            var part = new TPartType();
+            part.SourceLine = Built.SourceLine;
+            part.SourceColumn = start;
+            part.EndColumn = start + (text.Length - 1);
+
+            var keywordNegOffset = Built.Type.ToString().Length + 1;
+
+            var startIdx = start - keywordNegOffset - Built.SourceColumn;
+            part.TextRange = new Range(startIdx, startIdx + (text.Length - 1));
+
+            if(extraPart is object)
             {
-                cfg(argumentBuilder);
+                extraPart(part);
             }
 
-            Built.AddArgument(argumentBuilder.Built);
+            Built.AddPart(part);
 
             return this;
         }
@@ -38,16 +92,6 @@ namespace AutoStep.Tests.Builders
             cfg(tableBuilder);
 
             Built.Table = tableBuilder.Built;
-
-            return this;
-        }
-
-        public StepReferenceBuilder MatchingText(params string[] parts)
-        {
-            foreach (var part in parts)
-            {
-                Built.AddMatchingText(part);
-            }
 
             return this;
         }

@@ -35,7 +35,7 @@ namespace AutoStep.Elements.Parts
             return null;
         }
 
-        public override bool IsDefinitionPartMatch(ContentPart part)
+        public override bool IsDefinitionPartMatch(DefinitionContentPart part)
         {
             return part is ArgumentPart otherArg &&
                    Name == otherArg.Name &&

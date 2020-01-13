@@ -17,6 +17,7 @@ using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Utils
 {
@@ -64,7 +65,25 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            AssertElementComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output, false);
+        }
+
+        protected async Task CompileAndAssertWarningsWithStatementParts(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
+        {
+            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
+
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var source = new StringContentSource(content);
+
+            var result = await compiler.CompileAsync(source);
+
+            // Make sure the messages are the same.
+            Assert.Equal(expectedMessages, result.Messages);
+
+            var expectedBuilder = new FileBuilder();
+            cfg(expectedBuilder);
+
+            AssertElementComparison(expectedBuilder.Built, result.Output, true);
         }
 
 
@@ -91,7 +110,7 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            AssertElementComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
         protected async Task CompileAndAssertSuccess(string content, Action<FileBuilder> cfg)
@@ -108,10 +127,27 @@ namespace AutoStep.Tests.Utils
             Assert.Empty(result.Messages);
             Assert.True(result.Success);
 
-            AssertElementComparison(expectedBuilder.Built, result.Output);
+            AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
-        protected void AssertElementComparison(BuiltElement expected, BuiltElement actual)
+        protected async Task CompileAndAssertSuccessWithStatementParts(string content, Action<FileBuilder> cfg)
+        {
+            var expectedBuilder = new FileBuilder();
+            cfg(expectedBuilder);
+
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var source = new StringContentSource(content);
+
+            var result = await compiler.CompileAsync(source);
+
+            // Make sure there are 0 messages
+            Assert.Empty(result.Messages);
+            Assert.True(result.Success);
+
+            AssertElementComparison(expectedBuilder.Built, result.Output, true);
+        }
+
+        protected void AssertElementComparison(BuiltElement expected, BuiltElement actual, bool includeStatementParts)
         {
             Assert.NotNull(actual);
 
@@ -120,9 +156,10 @@ namespace AutoStep.Tests.Utils
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
                     .IncludingAllRuntimeProperties()
-                    // Don't compare internal properties, since they are usually an implementation detail
-                    // (like matching parts).
-                    .Using(new AllExceptInternalPropertiesSelectionRule())
+                    .Excluding((IMemberInfo member) => !includeStatementParts && 
+                                                        member.SelectedMemberInfo != null &&
+                                                        (typeof(ContentPart).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
+                                                        typeof(IEnumerable<ContentPart>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)))
                 );
             }
             catch

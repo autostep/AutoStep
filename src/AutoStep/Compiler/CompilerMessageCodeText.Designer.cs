@@ -97,15 +97,6 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A custom step cannot be defined using the &apos;And&apos; keyword. You must use Given, When or Then..
-        /// </summary>
-        internal static string CannotDefineAStepWithAnd {
-            get {
-                return ResourceManager.GetString("CannotDefineAStepWithAnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You cannot use &apos;{0}&apos; as a Step Parameter. Step Parameter variables must be literal names, e.g. &apos;variable1&apos; or &apos;total&apos;. You cannot specify dynamic values..
         /// </summary>
         internal static string CannotSpecifyDynamicValueInStepDefinition {
@@ -174,6 +165,15 @@ namespace AutoStep.Compiler {
         internal static string InvalidScenarioOutlineKeyword {
             get {
                 return ResourceManager.GetString("InvalidScenarioOutlineKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A custom step cannot be defined using &apos;{0}&apos;. You must use Given, When or Then..
+        /// </summary>
+        internal static string InvalidStepDefineKeyword {
+            get {
+                return ResourceManager.GetString("InvalidStepDefineKeyword", resourceCulture);
             }
         }
         
@@ -277,7 +277,16 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. &apos;variable1&apos; or &apos;total&apos;..
+        ///   Looks up a localized string similar to Extraneous whitespace detected in Step Parameter variable name. You cannot have extra whitespace at the start or end of a Step Parameter variable name..
+        /// </summary>
+        internal static string StepVariableInvalidWhitespace {
+            get {
+                return ResourceManager.GetString("StepVariableInvalidWhitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. {variable1} or {total}..
         /// </summary>
         internal static string StepVariableNameRequired {
             get {

@@ -6,9 +6,11 @@ using AutoStep.Definitions;
 namespace AutoStep.Elements.Parts
 {
 
-    public abstract class DefinitionContentPart : ContentPart
+    public abstract class DefinitionContentPart : PositionalElement
     {
-        public abstract bool IsDefinitionPartMatch(ContentPart part);
+        public string Text { get; set; }
+
+        public abstract bool IsDefinitionPartMatch(DefinitionContentPart part);
 
         public abstract StepReferenceMatchResult DoStepReferenceMatch(ContentPart referencePart);
     }

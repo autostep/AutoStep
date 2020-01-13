@@ -4,13 +4,10 @@ fragment SPACE: [ \t];
 fragment NL: SPACE* '\r'? '\n';
 fragment ESC: '\\\'' | '\\\\';
 fragment DIGIT : [0-9] ; // match single digit
-fragment DOLLAR : '$';
-fragment POUND : '£' | '\u00A3'; // UTF8 and regular encoding of the value
 fragment FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
                | '.' DIGIT+ // match .1 .14159
                ;
 fragment INT : DIGIT+;
-fragment CURR_SYMBOL: DOLLAR | POUND;
 fragment TEXT_CONTENT: ~[ \t\r\n]+?;
 
 
@@ -71,35 +68,35 @@ STATEMENT_VAR_STOP: '>';
 STATEMENT_QUOTE: '\'';
 STATEMENT_DOUBLE_QUOTE: '"';
 STATEMENT_NEWLINE: STATEMENT_WS* (NL|EOF) -> popMode;
-STATEMENT_INT: INT;
 STATEMENT_FLOAT: FLOAT;
-STATEMENT_SYMBOL: CURR_SYMBOL;
-STATEMENT_WORD: ~[ :\\\t#<>\r\n]+;
+STATEMENT_INT: INT;
 STATEMENT_COLON: ':';
 STATEMENT_WS: SPACE+;
+STATEMENT_WORD: ~[ :\\\t#<>\r\n'"0-9]+;
 STATEMENT_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
 
 mode definition;
-DEF_GIVEN: 'Given';
-DEF_WHEN: 'When';
-DEF_THEN: 'Then';
+DEF_GIVEN: 'Given ';
+DEF_WHEN: 'When ';
+DEF_THEN: 'Then ';
 DEF_ESCAPED_LCURLY: '\\{';
 DEF_ESCAPED_RCURLY: '\\}';
 DEF_LCURLY: '{';
 DEF_RCURLY: '}';
 DEF_NEWLINE: DEF_WS* (NL|EOF) -> popMode;
-DEF_SYMBOL: CURR_SYMBOL;
-DEF_WORD: ~[ :\\\t#{}\r\n]+;
 DEF_WS: SPACE+;
-DEF_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
 DEF_COLON: ':';
+DEF_WORD: ~[ :\\\t#{}\r\n]+;
+DEF_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
 
 mode tableRow;
 CELL_ESCAPED_VARSTART: '\\<';
 CELL_ESCAPED_VAREND: '\\>';
 CELL_VAR_START: '<';
 CELL_VAR_STOP: '>';
-CELL_WORD: ~[ :\\\t#<>\r\n]+;
+CELL_WORD: ~[ :\\\t#<>\r\n0-9|]+;
+CELL_FLOAT: FLOAT;
+CELL_INT: INT;
 CELL_COLON: ':';
 CELL_ESCAPED_DELIMITER: '\\|';
 CELL_DELIMITER: '|';
