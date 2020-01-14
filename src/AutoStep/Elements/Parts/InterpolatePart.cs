@@ -8,6 +8,9 @@ namespace AutoStep.Elements.Parts
 
     public class InterpolatePart : ContentPart
     {
+        public InterpolatePart(int startIndex, int length) : base(startIndex, length)
+        {
+        }
     }
 
 }

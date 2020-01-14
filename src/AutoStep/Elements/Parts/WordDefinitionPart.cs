@@ -14,53 +14,68 @@ namespace AutoStep.Elements.Parts
 
         public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<ContentPart> currentPartSpan)
         {
-            throw new NotImplementedException();
-            var textForDefCompare = EscapedText ?? Text;
-            var textForRefCompare = string.Empty;
-            var current = currentPartSpan[0];
+            // The word definition part should:
+            // - Consume text from the current part as much as it can (until either it has consumed all the text in the part or this word has run out of content)
+            // - Return a match with the span after we've done our bit.
+            var defTextSpan = Text.AsSpan();
+            var currentPart = currentPartSpan[0];
+            var refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
 
-            // If the other one is a word, then use the escaped text from that for matching.
-            if (current is WordPart word && word.EscapedText != null)
-            {
-                textForRefCompare = word.EscapedText;
-            }
+            int matchedLength = 0;
 
-            if (textForDefCompare == null || textForRefCompare == null)
+            // While we have some text left in this part.
+            while (!defTextSpan.IsEmpty)
             {
-                Trace.Assert(false, "Parser rules should prevent null text.");
-            }
-
-            if (textForDefCompare!.Length == textForRefCompare!.Length)
-            {
-                // Exact length match. Do a straight-forward compare.
-                if (textForDefCompare == textForRefCompare)
+                // This word definition is bigger than the matching text then we may need to consume
+                // multiple parts.
+                if (defTextSpan.Length > refTextSpan.Length)
                 {
-                    // Exact match.
-                    return new StepReferenceMatchResult(textForRefCompare.Length, true, currentPartSpan);
+                    if (defTextSpan.StartsWith(refTextSpan, StringComparison.CurrentCulture))
+                    {
+                        matchedLength += refTextSpan.Length;
+
+                        // The refTextSpan starts with the reference text, so it's been matched.
+                        // Move the defTextSpan along and move to the next part.
+                        defTextSpan = defTextSpan.Slice(refTextSpan.Length);
+
+                        // Move to the next part.
+                        currentPartSpan = currentPartSpan.Slice(1);
+
+                        if (currentPartSpan.IsEmpty)
+                        {
+                            // Out of reference parts; suggests a partial match on this part.
+                            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
+                        }
+                        else
+                        {
+                            currentPart = currentPartSpan[0];
+                            refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
+                        }
+                    }
+                    else
+                    {
+                        // Not a match.
+                        return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
+                    }
                 }
                 else
                 {
-                    return new StepReferenceMatchResult(0, false, currentPartSpan);
-                }
-            }
-            else if (textForRefCompare.Length > textForDefCompare.Length)
-            {
-                // Not possible to match, the search target contains more text than this part.
-                return new StepReferenceMatchResult(0, false, currentPartSpan);
-            }
-            else
-            {
-                // The other text content has less length that this text content,
-                // indicating a possible partial match.
-                var numberOfMatches = 0;
-                while (numberOfMatches < textForRefCompare.Length && textForRefCompare[numberOfMatches] == textForDefCompare[numberOfMatches])
-                {
-                    numberOfMatches++;
-                }
+                    var searchedCharacters = 0;
+                    while (searchedCharacters < refTextSpan.Length && refTextSpan[searchedCharacters].Equals(defTextSpan[searchedCharacters]))
+                    {
+                        searchedCharacters++;
+                    }
 
-                // Number of character matches in a row equals confidence.
-                return new StepReferenceMatchResult(numberOfMatches, false, currentPartSpan);
+                    // This tells us how many characters matched.
+                    matchedLength += searchedCharacters;
+                    // Move the part span along.
+                    currentPartSpan = currentPartSpan.Slice(1);
+
+                    return new StepReferenceMatchResult(matchedLength, defTextSpan.Length == searchedCharacters, currentPartSpan);
+                }
             }
+
+            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
         }
 
         public override bool IsDefinitionPartMatch(DefinitionContentPart part)

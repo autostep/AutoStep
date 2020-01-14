@@ -8,6 +8,9 @@ namespace AutoStep.Elements.Parts
 
     public class IntPart : NumericalPart<long>
     {
+        public IntPart(int startIndex, int length) : base(startIndex, length)
+        {
+        }
     }
 
 }

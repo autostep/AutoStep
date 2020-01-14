@@ -7,6 +7,14 @@ namespace AutoStep.Elements.Parts
 {
     public abstract class ContentPart : PositionalElement
     {
-        public Range TextRange { get; set; }
+        protected ContentPart(int startIndex, int length)
+        {
+            StartIndex = startIndex;
+            Length = length;
+        }
+
+        public int StartIndex { get; }
+
+        public int Length { get; }
     }
 }

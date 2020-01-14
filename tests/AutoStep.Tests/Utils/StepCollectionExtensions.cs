@@ -10,7 +10,7 @@ namespace AutoStep.Tests.Utils
         public static TBuilder Given<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepReferenceBuilder> cfg = null)
             where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
-            var stepBuilder = new StepReferenceBuilder(body, StepType.Given, StepType.Given, line, column);
+            var stepBuilder = new StepReferenceBuilder(body, StepType.Given, StepType.Given, line, column, builder.RelativeToTextContent);
 
             if (cfg is object)
             {
@@ -27,7 +27,7 @@ namespace AutoStep.Tests.Utils
         public static TBuilder When<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepReferenceBuilder> cfg = null)
             where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
-            var stepBuilder = new StepReferenceBuilder(body, StepType.When, StepType.When, line, column);
+            var stepBuilder = new StepReferenceBuilder(body, StepType.When, StepType.When, line, column, builder.RelativeToTextContent);
 
             if (cfg is object)
             {
@@ -44,7 +44,7 @@ namespace AutoStep.Tests.Utils
         public static TBuilder Then<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepReferenceBuilder> cfg = null)
             where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
-            var stepBuilder = new StepReferenceBuilder(body, StepType.Then, StepType.Then, line, column);
+            var stepBuilder = new StepReferenceBuilder(body, StepType.Then, StepType.Then, line, column, builder.RelativeToTextContent);
 
             if (cfg is object)
             {
@@ -61,7 +61,7 @@ namespace AutoStep.Tests.Utils
         public static TBuilder And<TBuilder>(this TBuilder builder, string body, StepType? actualType, int line, int column, Action<StepReferenceBuilder> cfg = null)
             where TBuilder : IStepCollectionBuilder<StepCollectionElement>
         {
-            var stepBuilder = new StepReferenceBuilder(body, StepType.And, actualType, line, column);
+            var stepBuilder = new StepReferenceBuilder(body, StepType.And, actualType, line, column, builder.RelativeToTextContent);
 
             if (cfg is object)
             {

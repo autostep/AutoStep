@@ -4,6 +4,8 @@ using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
+using AutoStep.Tests.Builders;
+using AutoStep.Tests.Utils;
 using BenchmarkDotNet.Attributes;
 
 namespace AutoStep.Benchmarks
@@ -11,7 +13,7 @@ namespace AutoStep.Benchmarks
     public class MatchingTreeBenchmark
     {
         private MatchingTree tree;
-        private FakeStepReference knownStepRef;
+        private StepReferenceElement knownStepRef;
         private readonly string[] words = new[]
         {
             "I",
@@ -87,19 +89,26 @@ namespace AutoStep.Benchmarks
                     }
                 }
 
-                var def = new TestStepDef(stepDef);
+                var def = new TestDef(stepDef);
 
                 tree.AddOrUpdateDefinition(def);
             }
 
-            knownStepRef = FakeStepReference.Make(StepType.Given, "I", "have", "not", "arg1",
-                                                  "clicked", "the", "arg2", "control");
+            knownStepRef = CreateSimpleRef(StepType.Given, "I have not arg1 clicked the arg2 control");
 
             // Add a 'known' definition.
-            var manualDef = FakeDefElement.Make(StepType.Given, "I", "have", "not", ArgumentType.Text, 
-                                                "clicked", "the", ArgumentType.NumericInteger, "control");
+            var manualDef = CreateDef(StepType.Given, "I have not {arg1} clicked the {arg2} control", s => s
+                                            .WordPart("I", 1)
+                                            .WordPart("have", 3)
+                                            .WordPart("not", 8)
+                                            .Argument("{arg1}", "arg1", 12)
+                                            .WordPart("clicked", 19)
+                                            .WordPart("the", 27)
+                                            .Argument("{arg2}", "arg2", 31)
+                                            .WordPart("control", 38)
+                                     );
 
-            tree.AddOrUpdateDefinition(new TestStepDef(manualDef));
+            tree.AddOrUpdateDefinition(new TestDef(manualDef));
         }
 
         [Benchmark]
@@ -113,92 +122,81 @@ namespace AutoStep.Benchmarks
             }
         }
 
-        private class TestSource : IStepDefinitionSource
+        private StepDefinitionElement CreateSimpleDef(StepType type, string declaration)
         {
-            public string Uid => throw new NotImplementedException();
+            var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
 
-            public string Name => throw new NotImplementedException();
+            var position = 1;
 
-            public DateTime GetLastModifyTime()
+            foreach (var item in declaration.Split(' '))
             {
-                throw new NotImplementedException();
+                defBuilder.WordPart(item, position);
+                position += item.Length + 1;
             }
 
-            public IEnumerable<StepDefinition> GetStepDefinitions()
-            {
-                throw new NotImplementedException();
-            }
+            return defBuilder.Built;
         }
 
-        private class TestStepDef : StepDefinition
+        private StepDefinitionElement CreateDef(StepType type, string declaration, Action<StepDefinitionBuilder> builder)
         {
-            public TestStepDef(StepDefinitionElement definition) : base(new TestSource(), definition.Type, definition.Declaration)
+            var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
+
+            builder(defBuilder);
+
+            return defBuilder.Built;
+        }
+
+        private StepReferenceElement CreateSimpleRef(StepType type, string text)
+        {
+            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
+
+            var position = 1;
+
+            foreach (var item in text.Split(' '))
             {
+                refBuilder.Word(item, position);
+                position += item.Length + 1;
+            }
+
+            refBuilder.Built.FreezeParts();
+
+            return refBuilder.Built;
+        }
+
+        private StepReferenceElement CreateRef(StepType type, string text, Action<StepReferenceBuilder> builder)
+        {
+            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
+
+            builder(refBuilder);
+
+            refBuilder.Built.FreezeParts();
+
+            return refBuilder.Built;
+        }
+
+        private class TestDef : StepDefinition
+        {
+            private string stepId;
+
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            {
+                Definition = definition;
+            }
+
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            {
+                this.stepId = stepId;
                 Definition = definition;
             }
 
             public override bool IsSameDefinition(StepDefinition def)
             {
-                return ReferenceEquals(this, def);
-            }
-        }
-
-        private class FakeStepReference : StepReferenceElement
-        {
-            public static FakeStepReference Make(StepType type, params object[] parts)
-            {
-                var refElement = new FakeStepReference();
-                refElement.BindingType = type;
-                refElement.RawText = string.Join(' ', parts);
-                var currentIndex = 1;
-
-                foreach (var part in parts)
+                if (def is TestDef testDef)
                 {
-                    if (part is string str)
-                    {
-                        var lastIndex = currentIndex + str.Length - 1;
-                        refElement.AddPart(new WordPart() { TextRange = new Range(currentIndex,  lastIndex)});
-                        // Along 1 to move to the space, and another to move to the start of the next word.
-                        currentIndex += 2;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Bad make argument");
-                    }
+                    return testDef.stepId == stepId;
                 }
 
-                return refElement;
-            }
-        }
-
-        private class FakeDefElement : StepDefinitionElement
-        {
-            public FakeDefElement(StepType type)
-            {
-                Type = type;
-            }
-
-            public static FakeDefElement Make(StepType type, params object[] parts)
-            {
-                var defElement = new FakeDefElement(type);
-
-                foreach (var part in parts)
-                {
-                    if (part is string str)
-                    {
-                        defElement.AddPart(new WordDefinitionPart() { Text = str });
-                    }
-                    else if(part is ArgumentType argType)
-                    {
-                        defElement.AddPart(new ArgumentPart { Name = "n", TypeHint = argType });
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Bad make argument");
-                    }
-                }
-
-                return defElement;
+                return false;
             }
         }
     }

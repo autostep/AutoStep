@@ -6,7 +6,8 @@ namespace AutoStep.Tests.Builders
 {
     public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
-        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
+        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new StepReferenceElement
             {
@@ -20,66 +21,70 @@ namespace AutoStep.Tests.Builders
 
         public StepReferenceBuilder Word(string text, int start)
         {
-            return Part<WordPart>(text, start);
+            return Part(text, start, (s, l) => new WordPart(s, l));
         }
 
         public StepReferenceBuilder Word(string text, string escapedText, int start)
         {
-            return Part<WordPart>(text, start, p => p.EscapedText = escapedText);
+            return Part(text, start, (s, l) => new WordPart(s, l) { EscapedText = escapedText });
         }
 
         public StepReferenceBuilder Variable(string varName, int start)
         {
-            return Part<VariablePart>("<" + varName + ">", start, p => p.VariableName = varName);
+            return Part("<" + varName + ">", start, (s, l) => new VariablePart(s, l) { VariableName = varName });
         }
 
         public StepReferenceBuilder Int(string text, int start)
         {
-            return Part<IntPart>(text, start, p => p.Value = int.Parse(text));
+            return Part(text, start, (s, l) => new IntPart(s, l));
         }
 
         public StepReferenceBuilder Float(string text, int start)
         {
-            return Part<FloatPart>(text, start, p => p.Value = decimal.Parse(text));
+            return Part(text, start, (s, l) => new FloatPart(s, l));
         }
         
         public StepReferenceBuilder InterpolateStart(string text, int start)
         {
-            return Part<InterpolatePart>(text, start);
+            return Part(text, start, (s, l) => new InterpolatePart(s, l));
         }
 
         public StepReferenceBuilder Colon(int column)
         {
-            return Part<WordPart>(":", column);
+            return Part(":", column, (s, l) => new WordPart(s, l));
         }
 
         public StepReferenceBuilder Quote(int column)
         {
-            return Part<QuotePart>("'", column);
+            return Part("'", column, (s, l) => new QuotePart(s));
         }
 
         public StepReferenceBuilder DoubleQuote(int column)
         {
-            return Part<QuotePart>("\"", column, p => p.IsDoubleQuote = true);
+            return Part("\"", column, (s, l) => new QuotePart(s) { IsDoubleQuote = true });
         }
 
-        public StepReferenceBuilder Part<TPartType>(string text, int start, Action<TPartType> extraPart = null)
-            where TPartType : ContentPart, new()
+        private StepReferenceBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
+            where TPartType : ContentPart
         {
-            var part = new TPartType();
+            var startIdx = start - Built.SourceColumn;
+
+            // Adjust for the keyword in the line.
+            if(RelativeToTextContent)
+            {
+                startIdx -= Built.Type.ToString().Length + 1;
+            }
+
+            if(startIdx < 0)
+            {
+                throw new ArgumentException("Supplied start column occurs before the declared beginning of the line.", nameof(start));
+            }
+            
+            var part = creator(startIdx, text.Length);
+
             part.SourceLine = Built.SourceLine;
             part.SourceColumn = start;
             part.EndColumn = start + (text.Length - 1);
-
-            var keywordNegOffset = Built.Type.ToString().Length + 1;
-
-            var startIdx = start - keywordNegOffset - Built.SourceColumn;
-            part.TextRange = new Range(startIdx, startIdx + (text.Length - 1));
-
-            if(extraPart is object)
-            {
-                extraPart(part);
-            }
 
             Built.AddPart(part);
 

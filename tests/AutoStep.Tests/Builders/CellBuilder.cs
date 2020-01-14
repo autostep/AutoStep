@@ -6,7 +6,8 @@ namespace AutoStep.Tests.Builders
 {
     public class CellBuilder : BaseBuilder<TableCellElement>
     {
-        public CellBuilder(string body, int line, int start, int end)
+        public CellBuilder(string body, int line, int start, int end, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new TableCellElement
             {   
@@ -19,53 +20,59 @@ namespace AutoStep.Tests.Builders
 
         public CellBuilder Word(string text, int start)
         {
-            return Part<WordPart>(text, start);
+            return Part(text, start, (s, l) => new WordPart(s, l));
         }
 
         public CellBuilder Word(string text, string escapedText, int start)
         {
-            return Part<WordPart>(text, start, p => p.EscapedText = escapedText);
+            return Part(text, start, (s, l) => new WordPart(s, l) { EscapedText = escapedText });
         }
 
         public CellBuilder Variable(string varName, int start)
         {
-            return Part<VariablePart>("<" + varName + ">", start, p => p.VariableName = varName);
+            return Part("<" + varName + ">", start, (s, l) => new VariablePart(s, l) { VariableName = varName });
         }
 
         public CellBuilder Int(string text, int start)
         {
-            return Part<IntPart>(text, start, p => p.Value = int.Parse(text));
+            return Part(text, start, (s, l) => new IntPart(s, l));
         }
 
         public CellBuilder Float(string text, int start)
         {
-            return Part<FloatPart>(text, start, p => p.Value = decimal.Parse(text));
+            return Part(text, start, (s, l) => new FloatPart(s, l));
         }
-        
+
         public CellBuilder InterpolateStart(string text, int start)
         {
-            return Part<InterpolatePart>(text, start);
+            return Part(text, start, (s, l) => new InterpolatePart(s, l));
         }
 
         public CellBuilder Colon(int column)
         {
-            return Part<WordPart>(":", column);
+            return Part(":", column, (s, l) => new WordPart(s, l));
         }
 
-        public CellBuilder Part<TPartType>(string text, int start, Action<TPartType> extraPart = null)
-            where TPartType : ContentPart, new()
+        public CellBuilder Quote(int column)
         {
-            var part = new TPartType();
+            return Part("'", column, (s, l) => new QuotePart(s));
+        }
+
+        public CellBuilder DoubleQuote(int column)
+        {
+            return Part("\"", column, (s, l) => new QuotePart(s) { IsDoubleQuote = true });
+        }
+
+        private CellBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
+            where TPartType : ContentPart
+        {
+            var startIdx = start - Built.SourceColumn;
+
+            var part = creator(startIdx, text.Length);
+
             part.SourceLine = Built.SourceLine;
             part.SourceColumn = start;
             part.EndColumn = start + (text.Length - 1);
-            var startIdx = start - Built.SourceColumn;
-            part.TextRange = new Range(startIdx, startIdx + (text.Length - 1));
-
-            if (extraPart is object)
-            {
-                extraPart(part);
-            }
 
             Built.AddPart(part);
 

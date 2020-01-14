@@ -6,7 +6,8 @@ namespace AutoStep.Tests.Builders
 
     public class ScenarioBuilder : BaseBuilder<ScenarioElement>, IStepCollectionBuilder<ScenarioElement>
     {
-        public ScenarioBuilder(string name, int line, int column)
+        public ScenarioBuilder(string name, int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new ScenarioElement
             {

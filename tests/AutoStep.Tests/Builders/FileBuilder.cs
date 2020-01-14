@@ -6,7 +6,8 @@ namespace AutoStep.Tests.Builders
 
     public class FileBuilder : BaseBuilder<BuiltFile>
     {
-        public FileBuilder()
+        public FileBuilder(bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new BuiltFile();
         }
@@ -18,7 +19,7 @@ namespace AutoStep.Tests.Builders
                 throw new InvalidOperationException("Cannot have more than one feature in a file.");
             }
 
-            var featureBuilder = new FeatureBuilder(featureName, line, column);
+            var featureBuilder = new FeatureBuilder(featureName, line, column, RelativeToTextContent);
 
             if (cfg != null)
             {
@@ -46,9 +47,9 @@ namespace AutoStep.Tests.Builders
 
         public FileBuilder StepDefinition(StepType type, string declaration, int line, int column, Action<StepDefinitionBuilder> cfg = null)
         {
-            var stepDefinitionBuilder = new StepDefinitionBuilder(type, declaration, line, column);
+            var stepDefinitionBuilder = new StepDefinitionBuilder(type, declaration, line, column, RelativeToTextContent);
 
-            if(cfg is object)
+            if (cfg is object)
             {
                 cfg(stepDefinitionBuilder);
             }

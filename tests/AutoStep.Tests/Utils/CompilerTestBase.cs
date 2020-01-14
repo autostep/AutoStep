@@ -62,7 +62,7 @@ namespace AutoStep.Tests.Utils
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
 
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);
 
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
@@ -80,7 +80,7 @@ namespace AutoStep.Tests.Utils
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
 
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);
 
             AssertElementComparison(expectedBuilder.Built, result.Output, true);
@@ -107,7 +107,7 @@ namespace AutoStep.Tests.Utils
 
             var result = await compiler.CompileAsync(source);
 
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);
 
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
@@ -115,7 +115,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssertSuccess(string content, Action<FileBuilder> cfg)
         {
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
@@ -132,7 +132,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssertSuccessWithStatementParts(string content, Action<FileBuilder> cfg)
         {
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);

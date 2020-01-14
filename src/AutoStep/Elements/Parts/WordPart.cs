@@ -9,6 +9,10 @@ namespace AutoStep.Elements.Parts
 {
     internal class WordPart : ContentPart
     {
+        public WordPart(int startIndex, int length) : base(startIndex, length)
+        {
+        }
+
         public string EscapedText { get; set; }
     }
 

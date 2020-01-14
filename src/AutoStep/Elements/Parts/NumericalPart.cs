@@ -2,10 +2,12 @@
 
 namespace AutoStep.Elements.Parts
 {
-    public class NumericalPart<TNumberType> : ContentPart
+    public abstract class NumericalPart<TNumberType> : ContentPart
         where TNumberType : struct
     {
-        public TNumberType Value { get; set; }
+        protected NumericalPart(int startIndex, int length) : base(startIndex, length)
+        {
+        }
     }
 
 }

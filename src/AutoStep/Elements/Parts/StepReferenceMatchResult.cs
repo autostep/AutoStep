@@ -16,11 +16,12 @@ namespace AutoStep.Elements.Parts
         /// </summary>
         /// <param name="length">Match length.</param>
         /// <param name="isExact">Indicates whether this is an exact match.</param>
-        public StepReferenceMatchResult(int length, bool isExact, ReadOnlySpan<ContentPart> remainingSpan)
+        public StepReferenceMatchResult(int length, bool isExact, ReadOnlySpan<ContentPart> remainingSpan, ReadOnlySpan<ContentPart> resultParts = default)
         {
             Length = length;
             IsExact = isExact;
             NewSpan = remainingSpan;
+            ResultParts = resultParts;
         }
 
         /// <summary>
@@ -37,5 +38,7 @@ namespace AutoStep.Elements.Parts
         /// The new span on the set of content parts after this match result has happened.
         /// </summary>
         public ReadOnlySpan<ContentPart> NewSpan { get; }
+
+        public ReadOnlySpan<ContentPart> ResultParts { get; }
     }
 }

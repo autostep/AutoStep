@@ -325,10 +325,11 @@ namespace AutoStep.Compiler.Matching
             // Check for match quality between the part assigned to this node and the part we are looking for.
             var match = matchingPart.DoStepReferenceMatch(referenceText, currentPartSpan);
 
+            finalSpan = match.NewSpan;
+
             if (match.Length == 0)
             {
                 // No match, nothing at this node or below.
-                finalSpan = match.NewSpan;
                 return false;
             }
             else
@@ -359,13 +360,14 @@ namespace AutoStep.Compiler.Matching
 
                     while (currentChild is object)
                     {
-                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.NewSpan, exactOnly, out finalSpan);
+                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.NewSpan, exactOnly, out var searchDepthSpan);
 
                         if (childMatched)
                         {
                             // A more specific match was found, so don't use any results from higher in the tree.
                             addAllRemaining = false;
                             addedSomething = true;
+                            finalSpan = searchDepthSpan;
                         }
 
                         currentChild = currentChild.Next;
@@ -421,7 +423,6 @@ namespace AutoStep.Compiler.Matching
                     }
                 }
 
-                finalSpan = match.NewSpan;
                 return addedSomething;
             }
         }

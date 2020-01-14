@@ -127,7 +127,7 @@ namespace AutoStep.Compiler.Matching
 
             stepReference.PartSpan.ToArray();
 
-            root.SearchRoot(list, stepReference.RawText, stepReference.PartSpan, exactOnly, ref partsMatched);
+            root.SearchRoot(list, stepReference.RawText!, stepReference.PartSpan, exactOnly, ref partsMatched);
 
             return list;
         }

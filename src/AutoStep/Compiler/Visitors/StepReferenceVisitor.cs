@@ -87,26 +87,29 @@ namespace AutoStep.Compiler
 
             VisitChildren(context);
 
+            // Store the escaped text?
+            // TODO
+
             return Result;
         }
 
         public override StepReferenceElement VisitStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context)
         {
-            AddPart(CreatePart<QuotePart>(context));
+            AddPart(CreatePart(context, (s, l) => new QuotePart(s)));
 
             return Result!;
         }
 
         public override StepReferenceElement VisitStatementColon([NotNull] AutoStepParser.StatementColonContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
 
         public override StepReferenceElement VisitStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context)
         {
-            var part = CreatePart<QuotePart>(context);
+            var part = CreatePart(context, (s, l) => new QuotePart(s));
             part.IsDoubleQuote = true;
 
             AddPart(part);
@@ -116,14 +119,14 @@ namespace AutoStep.Compiler
 
         public override StepReferenceElement VisitStatementWord([NotNull] AutoStepParser.StatementWordContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
 
         public override StepReferenceElement VisitStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context)
         {
-            var part = CreatePart<WordPart>(context);
+            var part = CreatePart(context, (s, l) => new WordPart(s, l));
 
             part.EscapedText = EscapeText(context, escapeReplacements);
 
@@ -134,14 +137,14 @@ namespace AutoStep.Compiler
 
         public override StepReferenceElement VisitStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
 
         public override StepReferenceElement VisitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context)
         {
-            var variablePart = CreatePart<VariablePart>(context);
+            var variablePart = CreatePart(context, (s, l) => new VariablePart(s, l));
 
             variablePart.VariableName = context.statementVariableName().GetText();
 
@@ -162,9 +165,7 @@ namespace AutoStep.Compiler
 
         public override StepReferenceElement VisitStatementInt([NotNull] AutoStepParser.StatementIntContext context)
         {
-            var intPart = CreatePart<IntPart>(context);
-
-            intPart.Value = int.Parse(context.STATEMENT_INT().GetText(), NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+            var intPart = CreatePart(context, (s, l) => new IntPart(s, l));
 
             AddPart(intPart);
 
@@ -173,12 +174,7 @@ namespace AutoStep.Compiler
 
         public override StepReferenceElement VisitStatementFloat([NotNull] AutoStepParser.StatementFloatContext context)
         {
-            var floatPart = CreatePart<FloatPart>(context);
-
-            floatPart.Value = decimal.Parse(
-                context.STATEMENT_FLOAT().GetText(),
-                NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
-                CultureInfo.CurrentCulture);
+            var floatPart = CreatePart(context, (s, l) => new FloatPart(s, l));
 
             AddPart(floatPart);
 
@@ -188,10 +184,10 @@ namespace AutoStep.Compiler
         public override StepReferenceElement VisitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context)
         {
             // Interpolate part itself is just the colon.
-            AddPart(CreatePart<InterpolatePart>(context.STATEMENT_COLON()));
+            AddPart(CreatePart(context.STATEMENT_COLON(), (s, l) => new InterpolatePart(s, l)));
 
             // Now add a part for the first word.
-            AddPart(CreatePart<WordPart>(context.STATEMENT_WORD()));
+            AddPart(CreatePart(context.STATEMENT_WORD(), (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
@@ -201,31 +197,31 @@ namespace AutoStep.Compiler
             Result!.AddPart(part);
         }
 
-        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
-            where TStepPart : ContentPart, new()
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : ContentPart
         {
-            var part = new TStepPart();
-
-            // 0-based offset.
             var offset = textColumnOffset;
             var start = ctxt.Start.Column - offset;
             var startIndex = ctxt.Start.StartIndex;
-            part.TextRange = new Range(start, start + (ctxt.Stop.StopIndex - startIndex));
+
+            var part = creator(start, (ctxt.Stop.StopIndex - startIndex) + 1);
+
             PositionalLineInfo(part, ctxt);
+
             return part;
         }
 
-        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
-            where TStepPart : ContentPart, new()
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : ContentPart
         {
-            var part = new TStepPart();
-
-            // 0-based offset.
             var offset = textColumnOffset;
             var start = ctxt.Symbol.Column - offset;
             var startIndex = ctxt.Symbol.StartIndex;
-            part.TextRange = new Range(start, start + (ctxt.Symbol.StopIndex - startIndex));
+
+            var part = creator(start, (ctxt.Symbol.StopIndex - startIndex) + 1);
+
             PositionalLineInfo(part, ctxt);
+
             return part;
         }
     }

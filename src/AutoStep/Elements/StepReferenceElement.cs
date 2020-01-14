@@ -45,7 +45,7 @@ namespace AutoStep.Elements
         /// </summary>
         public ReadOnlySpan<ContentPart> PartSpan => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
 
-        public IEnumerable<ContentPart> Parts => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
+        public IEnumerable<ContentPart> Parts => frozenParts ?? (IEnumerable<ContentPart>)workingParts;
 
         /// <summary>
         /// Gets or sets the associated table for this step.

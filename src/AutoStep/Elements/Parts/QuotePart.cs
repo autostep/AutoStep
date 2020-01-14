@@ -8,6 +8,10 @@ namespace AutoStep.Elements.Parts
 
     public class QuotePart : ContentPart
     {
+        public QuotePart(int startIndex) : base(startIndex, 1)
+        {
+        }
+
         public bool IsDoubleQuote { get; set; }
     }
 }

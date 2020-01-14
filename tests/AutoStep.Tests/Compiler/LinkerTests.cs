@@ -122,7 +122,7 @@ namespace AutoStep.Tests.Compiler
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
-                                    "No step definitions could be found that match this step.", 3, 3)
+                                    "No step definitions could be found that match this step.", 1, 1)
             });
 
             // The failing definition should not have a bound definition.
@@ -149,16 +149,17 @@ namespace AutoStep.Tests.Compiler
 
             linker.AddStepDefinitionSource(src1);
             linker.AddStepDefinitionSource(src2);
-
-            throw new NotImplementedException();
-
+            
             // Build a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("I have done something", 3, 3)//, step => step
-                        //.MatchingText("I", " ", "have", " ", "done", " ", "something")
-                    
+                .Scenario("My Scenario", 2, 1, scen => scen
+                    .Given("I have done something", 3, 1, step => step
+                        .Word("I", 1)
+                        .Word("have", 3)
+                        .Word("done", 8)
+                        .Word("something", 13)
+                    )
                 ));
 
             var file = fileBuilder.Built;
@@ -170,7 +171,7 @@ namespace AutoStep.Tests.Compiler
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
-                                    "There are multiple matching step definitions that match this step.", 3, 3)
+                                    "There are multiple matching step definitions that match this step.", 3, 1)
             });
 
             // The failing definition should not have a bound definition.
@@ -189,9 +190,7 @@ namespace AutoStep.Tests.Compiler
                     Given I have passed 'argument1' and 'argument2' to something
 
             ";
-
-            throw new NotImplementedException();
-
+            
             await CompileAndAssertSuccess(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen

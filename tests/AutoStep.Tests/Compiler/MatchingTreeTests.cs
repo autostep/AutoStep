@@ -7,6 +7,7 @@ using Xunit;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
+using AutoStep.Tests.Builders;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -48,19 +49,18 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanAddSingleStepDefinition()
         {
-            var stepDef = new TestDef(StepType.Given, "I have matched",
-                                      "I", " ", "have", " ", "matched");
+            var stepDef = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef);
 
-            var stepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "matched");
+            var stepRef = CreateSimpleRef(StepType.Given, "I have matched");
 
             var list = tree.Match(stepRef, true, out var partsMatched);
 
             list.Should().HaveCount(1);
-            partsMatched.Should().Be(5);
+            partsMatched.Should().Be(3);
             list.First.Should().NotBeNull();
             list.First.Value.IsExact.Should().BeTrue();
             list.First.Value.Confidence.Should().Be(int.MaxValue);
@@ -70,14 +70,13 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanRemoveSingleStepDefinition()
         {
-            var stepDef = new TestDef(StepType.Given, "I have matched",
-                                      "I", " ", "have", " ", "matched");
+            var stepDef = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef);
 
-            var stepRef = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "matched");
+            var stepRef = CreateSimpleRef(StepType.Given, "I have matched");
 
             var list = tree.Match(stepRef, true, out var partsMatched);
 
@@ -94,14 +93,13 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void NoResultsReturnedForNoMatches()
         {
-            var stepDef = new TestDef(StepType.Given, "I have matched",
-                                      "I", " ", "have", " ", "matched");
+            var stepDef = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef);
 
-            var stepRef = FakeStepReference.Make(StepType.Given, "Not", " ", "going", " ", "to", " ", "match");
+            var stepRef = CreateSimpleRef(StepType.Given, "Not going to match");
 
             var list = tree.Match(stepRef, false, out var partsMatched);
 
@@ -111,23 +109,21 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanAddMultipleStepDefinitionsWithOverlapPartialMatch()
         {
-            var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+            var stepDef1 = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+            var stepDef2 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I have");
 
             var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
-            partsMatched.Should().Be(3);
+            partsMatched.Should().Be(2);
             list[0].IsExact.Should().BeFalse();
             list[0].Confidence.Should().Be(4);
             list[0].Definition.Should().Be(stepDef1);
@@ -139,23 +135,21 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanAddMultipleStepDefinitionsWithOverlapExactMatch()
         {
-            var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+            var stepDef1 = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+            var stepDef2 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "have", " ", "not", " ", "matched");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I have not matched");
 
             var list = tree.Match(stepRef1, true, out var partsMatched).ToList();
 
             list.Should().HaveCount(1);
-            partsMatched.Should().Be(7);
+            partsMatched.Should().Be(4);
             list[0].IsExact.Should().BeTrue();
             list[0].Confidence.Should().Be(int.MaxValue);
             list[0].Definition.Should().Be(stepDef2);
@@ -164,23 +158,21 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanAddMultipleStepDefinitionsWithOverlapPartialText()
         {
-            var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+            var stepDef1 = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+            var stepDef2 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "ha");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I ha");
 
             var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
-            partsMatched.Should().Be(3);
+            partsMatched.Should().Be(2);
             list[0].IsExact.Should().BeFalse();
             list[0].Confidence.Should().Be(2);
             list[0].Definition.Should().Be(stepDef1);
@@ -193,18 +185,16 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanRemoveStepDefinitionsWithOtherDeeperNode()
         {
-            var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", " ", "have", " ", "matched");
+            var stepDef1 = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", " ", "have", " ", "not", " ", "matched");
+            var stepDef2 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched"));
 
             var tree = new MatchingTree();
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", " ", "ha");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I ha");
 
             var list = tree.Match(stepRef1, false, out var partsMatched);
 
@@ -221,18 +211,15 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanReplaceExistingStepDefinition()
         {
-            var stepDef1 = new TestDef("1", StepType.Given, "I have matched",
-                                       "I", "have", "matched");
+            var stepDef1 = new TestDef("1", CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef("2", StepType.Given, "I have not matched",
-                                       "I", "have", "not", "matched");
+            var stepDef2 = new TestDef("2", CreateSimpleDef(StepType.Given, "I have not matched"));
 
-            var stepDefReplace = new TestDef("1", StepType.Given, "I have matched",
-                                             "I", "have", "matched");
+            var stepDefReplace = new TestDef("1", CreateSimpleDef(StepType.Given, "I have matched"));
 
             var tree = new MatchingTree();
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", "have", "matched");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I have matched");
 
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
@@ -247,14 +234,11 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanAddMultipleStepDefinitionsWithExactAndDepthBeyond()
         {
-            var stepDef1 = new TestDef(StepType.Given, "I have matched",
-                                       "I", "have", "matched");
+            var stepDef1 = new TestDef(CreateSimpleDef(StepType.Given, "I have matched"));
 
-            var stepDef2 = new TestDef(StepType.Given, "I have not matched",
-                                       "I", "have", "not", "matched");
+            var stepDef2 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched"));
 
-            var stepDef3 = new TestDef(StepType.Given, "I have not matched properly",
-                                       "I", "have", "not", "matched", "properly");
+            var stepDef3 = new TestDef(CreateSimpleDef(StepType.Given, "I have not matched properly"));
 
             var tree = new MatchingTree();
 
@@ -262,12 +246,12 @@ namespace AutoStep.Tests.Compiler
             tree.AddOrUpdateDefinition(stepDef2);
             tree.AddOrUpdateDefinition(stepDef3);
 
-            var stepRef1 = FakeStepReference.Make(StepType.Given, "I", "have", "not", "matched");
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I have not matched");
             
             var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
-            partsMatched.Should().Be(7);
+            partsMatched.Should().Be(4);
             list[0].IsExact.Should().BeTrue();
             list[0].Confidence.Should().Be(int.MaxValue);
             list[0].Definition.Should().Be(stepDef2);
@@ -317,22 +301,82 @@ namespace AutoStep.Tests.Compiler
                 tree.AddOrUpdateDefinition(def);
             }
 
-            var knownStepRef = FakeStepReference.Make(StepType.Given, "I", "have", "not", "arg1",
-                                                  "clicked", "the", "arg2", "control");
+            var knownStepRef = CreateSimpleRef(StepType.Given, "I have not arg1 clicked the arg2 control");
 
             // Add a 'known' definition.
-            var manualDef = FakeDefElement.Make(StepType.Given, "I", "have", "not", ArgumentType.Text,
-                                                "clicked", "the", ArgumentType.NumericInteger, "control");
+            var manualDef = CreateDef(StepType.Given, "I have not {arg1} clicked the {arg2} control", s => s
+                                            .WordPart("I", 1)
+                                            .WordPart("have", 3)
+                                            .WordPart("not", 8)
+                                            .Argument("{arg1}", "arg1", 12)
+                                            .WordPart("clicked", 19)
+                                            .WordPart("the", 27)
+                                            .Argument("{arg2}", "arg2", 31)
+                                            .WordPart("control", 38)
+                                     );
 
-            tree.AddOrUpdateDefinition(new TestDef(manualDef));
+            var testDef = new TestDef(manualDef);
+            tree.AddOrUpdateDefinition(testDef);
 
             var matches = tree.Match(knownStepRef, false, out var partsMatched).ToArray();
 
             matches.Should().HaveCount(1);
             matches[0].Confidence.Should().Be(int.MaxValue);
             matches[0].IsExact.Should().BeTrue();
-            matches[0].Definition.Should().Be(manualDef);
-            partsMatched.Should().Be(16);
+            matches[0].Definition.Should().Be(testDef);
+            partsMatched.Should().Be(8);
+        }
+
+        private StepDefinitionElement CreateSimpleDef(StepType type, string declaration)
+        {
+            var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
+
+            var position = 1;
+
+            foreach(var item in declaration.Split(' '))
+            {
+                defBuilder.WordPart(item, position);
+                position += item.Length + 1;
+            }
+
+            return defBuilder.Built;
+        }
+
+        private StepDefinitionElement CreateDef(StepType type, string declaration, Action<StepDefinitionBuilder> builder)
+        {
+            var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
+
+            builder(defBuilder);
+            
+            return defBuilder.Built;
+        }
+
+        private StepReferenceElement CreateSimpleRef(StepType type, string text)
+        {
+            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
+            
+            var position = 1;
+
+            foreach (var item in text.Split(' '))
+            {
+                refBuilder.Word(item, position);
+                position += item.Length + 1;
+            }
+
+            refBuilder.Built.FreezeParts();
+
+            return refBuilder.Built;
+        }
+
+        private StepReferenceElement CreateRef(StepType type, string text, Action<StepReferenceBuilder> builder)
+        {
+            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
+
+            builder(refBuilder);
+
+            refBuilder.Built.FreezeParts();
+            
+            return refBuilder.Built;
         }
 
         private class TestDef : StepDefinition
@@ -350,19 +394,6 @@ namespace AutoStep.Tests.Compiler
                 Definition = definition;
             }
 
-            public TestDef(StepType type, string declaration, params object[] parts)
-                : base(TestStepDefinitionSource.Blank, type, declaration)
-            {
-                Definition = FakeDefElement.Make(type, parts);
-            }
-
-            public TestDef(string stepId, StepType type, string declaration, params object[] parts)
-                : base(TestStepDefinitionSource.Blank, type, declaration)
-            {
-                this.stepId = stepId;
-                Definition = FakeDefElement.Make(type, parts);
-            }
-
             public override bool IsSameDefinition(StepDefinition def)
             {
                 if (def is TestDef testDef)
@@ -371,67 +402,6 @@ namespace AutoStep.Tests.Compiler
                 }
 
                 return false;
-            }
-        }
-
-        private class FakeStepReference : StepReferenceElement
-        {
-            public static FakeStepReference Make(StepType type, params object[] parts)
-            {
-                var refElement = new FakeStepReference();
-                refElement.BindingType = type;
-                refElement.RawText = string.Join(' ', parts);
-                var currentIndex = 1;
-
-                foreach (var part in parts)
-                {
-                    if (part is string str)
-                    {
-                        var lastIndex = currentIndex + str.Length - 1;
-                        refElement.AddPart(new WordPart() { TextRange = new Range(currentIndex, lastIndex) });
-                        // Along 1 to move to the space, and another to move to the start of the next word.
-                        currentIndex += 2;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Bad make argument");
-                    }
-                }
-
-                refElement.FreezeParts();
-
-                return refElement;
-            }
-        }
-
-        private class FakeDefElement : StepDefinitionElement
-        {
-            public FakeDefElement(StepType type)
-            {
-                Type = type;
-            }
-
-            public static FakeDefElement Make(StepType type, params object[] parts)
-            {
-                var defElement = new FakeDefElement(type);
-
-                foreach (var part in parts)
-                {
-                    if (part is string str)
-                    {
-                        defElement.AddPart(new WordDefinitionPart() { Text = str });
-                    }
-                    else if (part is ArgumentType argType)
-                    {
-                        defElement.AddPart(new ArgumentPart { Name = "n", TypeHint = argType });
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Bad make argument");
-                    }
-                }
-
-                return defElement;
             }
         }
     }

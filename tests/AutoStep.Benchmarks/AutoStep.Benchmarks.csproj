@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AutoStep\AutoStep.csproj" />
+    <ProjectReference Include="..\AutoStep.Tests\AutoStep.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

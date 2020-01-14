@@ -189,16 +189,14 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellWord([NotNull] AutoStepParser.CellWordContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
 
         public override TableElement VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
         {
-            var intPart = CreatePart<IntPart>(context);
-
-            intPart.Value = int.Parse(context.CELL_INT().GetText(), NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+            var intPart = CreatePart(context, (s, l) => new IntPart(s, l));
 
             AddPart(intPart);
 
@@ -207,12 +205,7 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
         {
-            var floatPart = CreatePart<FloatPart>(context);
-
-            floatPart.Value = decimal.Parse(
-                context.CELL_FLOAT().GetText(),
-                NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
-                CultureInfo.CurrentCulture);
+            var floatPart = CreatePart(context, (s, l) => new FloatPart(s, l));
 
             AddPart(floatPart);
 
@@ -221,7 +214,7 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context)
         {
-            var part = CreatePart<WordPart>(context);
+            var part = CreatePart(context, (s, l) => new WordPart(s, l));
             part.EscapedText = EscapeText(context, tableCellReplacements);
 
             AddPart(part);
@@ -234,7 +227,7 @@ namespace AutoStep.Compiler
             Debug.Assert(Result is object);
             Debug.Assert(currentCell is object);
 
-            var variablePart = CreatePart<VariablePart>(context);
+            var variablePart = CreatePart(context, (s, l) => new VariablePart(s, l));
 
             variablePart.VariableName = context.cellVariableName().GetText();
 
@@ -255,7 +248,7 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellColon([NotNull] AutoStepParser.CellColonContext context)
         {
-            AddPart(CreatePart<WordPart>(context));
+            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
 
             return Result!;
         }
@@ -265,10 +258,10 @@ namespace AutoStep.Compiler
             Debug.Assert(Result is object);
 
             // Interpolate part itself is just the colon.
-            AddPart(CreatePart<InterpolatePart>(context.CELL_COLON()));
+            AddPart(CreatePart(context.CELL_COLON(), (s, l) => new InterpolatePart(s, l)));
 
             // Now add a part for the first word.
-            AddPart(CreatePart<WordPart>(context.CELL_WORD()));
+            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new WordPart(s, l)));
 
             return Result;
         }
@@ -280,35 +273,35 @@ namespace AutoStep.Compiler
             currentCell.AddPart(part);
         }
 
-        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
-            where TStepPart : ContentPart, new()
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : ContentPart
         {
             Debug.Assert(currentCell is object);
 
-            var part = new TStepPart();
-
-            // 0-based offset.
-            var offset = currentCell.SourceColumn - 1;
-            var start = ctxt.Start.Column - offset;
+            var offset = currentCell.SourceColumn;
+            var start = (ctxt.Start.Column + 1) - offset;
             var startIndex = ctxt.Start.StartIndex;
-            part.TextRange = new Range(start, start + (ctxt.Stop.StopIndex - startIndex));
+
+            var part = creator(start, (ctxt.Stop.StopIndex - startIndex) + 1);
+
             PositionalLineInfo(part, ctxt);
+
             return part;
         }
 
-        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
-            where TStepPart : ContentPart, new()
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : ContentPart
         {
             Debug.Assert(currentCell is object);
 
-            var part = new TStepPart();
-
-            // 0-based offset.
-            var offset = currentCell.SourceColumn - 1;
-            var start = ctxt.Symbol.Column - offset;
+            var offset = currentCell.SourceColumn;
+            var start = (ctxt.Symbol.Column + 1) - offset;
             var startIndex = ctxt.Symbol.StartIndex;
-            part.TextRange = new Range(start, start + (ctxt.Symbol.StopIndex - startIndex));
+
+            var part = creator(start, (ctxt.Symbol.StopIndex - startIndex) + 1);
+
             PositionalLineInfo(part, ctxt);
+
             return part;
         }
     }
