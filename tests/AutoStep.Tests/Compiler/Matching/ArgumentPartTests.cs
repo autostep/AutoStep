@@ -51,11 +51,33 @@ namespace AutoStep.Tests.Compiler.Matching
 
             var match = argPart.DoStepReferenceMatch(text, parts);
 
-            // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(4);
             match.ResultTokens.GetText(text).Should().Be("foo bah");
             match.RemainingTokens[0].GetText(text).Should().Be("next");
+        }
+        
+        [Fact]
+        public void UnterminatedQuotedString()
+        {
+            var argPart = new ArgumentPart();
+
+            var text = "'foo bah next";
+
+            var parts = GetContentParts(
+                new QuoteToken(false, 0),
+                WordFromString(text, "foo"),
+                WordFromString(text, "bah"),
+                WordFromString(text, "next")
+            );
+
+            var match = argPart.DoStepReferenceMatch(text, parts);
+
+            // Unterminated quoted arguments cause the capture of the entire remaining tokens.
+            match.IsExact.Should().Be(true);
+            match.Length.Should().Be(4);
+            match.ResultTokens.GetText(text).Should().Be("foo bah next");
+            match.RemainingTokens.IsEmpty.Should().BeTrue();
         }
 
         [Fact]
