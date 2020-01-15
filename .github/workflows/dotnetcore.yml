@@ -33,4 +33,4 @@ jobs:
       run: dotnet test
       
     - name: Pack
-      run:  dotnet pack .\src\AutoStep\AutoStep.csproj --no-build -o artifacts -c Release --version-suffix  ${{ steps.gitversion.outputs.PreReleaseTagWithDash }}
+      run:  dotnet pack ./src/AutoStep/AutoStep.csproj --no-build -o artifacts -c Release --version-suffix  ${{ steps.gitversion.outputs.PreReleaseTagWithDash }}
