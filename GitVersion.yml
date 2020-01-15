@@ -1,4 +1,4 @@
 mode: ContinuousDeployment
 branches:
   master:
-    mode: ContinousDelivery
+    mode: ContinuousDelivery
