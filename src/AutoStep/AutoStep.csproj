@@ -1,16 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\..\Analysis.ruleset</CodeAnalysisRuleSet>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description>AutoStep Compiler and Runner for Gherkin-style Tests</Description>
+    <Authors>AutoStep Team</Authors>
+    <Copyright>Copyright 2020</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/autostep/autostep</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/autostep/autostep</RepositoryUrl>
+    <PackageTags>testing, gherkin</PackageTags>
+    <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageIconUrl />
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Compiler\Parser\.antlr\**" />
     <EmbeddedResource Remove="Compiler\Parser\.antlr\**" />
     <None Remove="Compiler\Parser\.antlr\**" />
+    <None Include="..\..\build\nuget-icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
