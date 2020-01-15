@@ -240,7 +240,7 @@ namespace AutoStep.Compiler
                 AutoStepParser.DeclareGivenContext _ => StepType.Given,
                 AutoStepParser.DeclareWhenContext _ => StepType.When,
                 AutoStepParser.DeclareThenContext _ => StepType.Then,
-                _ => throw new LanguageEngineException("Cannot get here unless the Antlr rules have been updated with an additional alternate")
+                _ => throw new LanguageEngineAssertException()
             };
 
             var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
@@ -586,6 +586,5 @@ namespace AutoStep.Compiler
                 lastStep = step;
             }
         }
-
     }
 }

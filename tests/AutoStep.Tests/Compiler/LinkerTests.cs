@@ -65,10 +65,10 @@ namespace AutoStep.Tests.Compiler
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
                 .Scenario("My Scenario", 1, 1, scen => scen
                     .Given("I have done something", 1, 1, step => step
-                        .Word("I", 1)
-                        .Word("have", 3)
-                        .Word("done", 8)
-                        .Word("something", 13)
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 
@@ -100,16 +100,16 @@ namespace AutoStep.Tests.Compiler
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
                 .Scenario("My Scenario", 1, 1, scen => scen
                     .Given("This will not match", 1, 1, step => step
-                        .Word("This", 1)
-                        .Word("will", 6)
-                        .Word("not", 11)
-                        .Word("match", 15)
+                        .Text("This", 1)
+                        .Text("will", 6)
+                        .Text("not", 11)
+                        .Text("match", 15)
                     )
                     .Given("I have done something", 1, 1, step => step
-                        .Word("I", 1)
-                        .Word("have", 3)
-                        .Word("done", 8)
-                        .Word("something", 13)
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 
@@ -155,10 +155,10 @@ namespace AutoStep.Tests.Compiler
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
                 .Scenario("My Scenario", 2, 1, scen => scen
                     .Given("I have done something", 3, 1, step => step
-                        .Word("I", 1)
-                        .Word("have", 3)
-                        .Word("done", 8)
-                        .Word("something", 13)
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 

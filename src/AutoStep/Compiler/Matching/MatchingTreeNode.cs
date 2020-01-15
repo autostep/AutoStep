@@ -287,19 +287,20 @@ namespace AutoStep.Compiler.Matching
         /// Starts searching for matches starting from this node, treating it as a root node.
         /// </summary>
         /// <param name="results">A set to add match results to.</param>
-        /// <param name="allSearchParts">The set of parts to search for.</param>
+        /// <param name="referenceText">The step reference text to search through.</param>
+        /// <param name="allSearchTokens">The set of search tokens to go through.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
-        public void SearchRoot(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> allSearchParts, bool exactOnly, ref int partsMatched)
+        public void SearchRoot(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> allSearchTokens, bool exactOnly, ref int partsMatched)
         {
             if (children is object)
             {
                 var currentChild = children.First;
                 while (currentChild is object)
                 {
-                    currentChild.Value.SearchMatches(results, referenceText, allSearchParts, exactOnly, out var finalSpan);
+                    currentChild.Value.SearchMatches(results, referenceText, allSearchTokens, exactOnly, out var finalSpan);
 
-                    var handledSize = allSearchParts.Length - finalSpan.Length;
+                    var handledSize = allSearchTokens.Length - finalSpan.Length;
 
                     if (handledSize > partsMatched)
                     {
@@ -312,19 +313,20 @@ namespace AutoStep.Compiler.Matching
         }
 
         /// <summary>
-        /// Searches this node (and all children, if needed) for matches against the current search part.
+        /// Searches this node (and all children, if needed) for matches against the node's part.
         /// </summary>
         /// <param name="results">A set to add match results to.</param>
-        /// <param name="currentPartSpan">The current slice of allSearchParts we are looking at.</param>
+        /// <param name="referenceText">The text to search against.</param>
+        /// <param name="remainingTokenSpan">The remaining set of tokens to search through.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
-        /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
+        /// <param name="finalSpan">Outputs the span of tokens remaining after the search has completed down this path.</param>
         /// <returns>true if this node (or any child) added results to the list.</returns>
-        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> currentPartSpan, bool exactOnly, out ReadOnlySpan<StepToken> finalSpan)
+        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> remainingTokenSpan, bool exactOnly, out ReadOnlySpan<StepToken> finalSpan)
         {
             Debug.Assert(matchingPart is object);
 
             // Check for match quality between the part assigned to this node and the part we are looking for.
-            var match = matchingPart.DoStepReferenceMatch(referenceText, currentPartSpan);
+            var match = matchingPart.DoStepReferenceMatch(referenceText, remainingTokenSpan);
 
             finalSpan = match.RemainingTokens;
 
@@ -413,7 +415,7 @@ namespace AutoStep.Compiler.Matching
                     // Only worry about exact matches (and all the exacts come at the start of the list.
                     while (currentExact is object && currentExact.Value.IsExact)
                     {
-                        var problem = arg.GetBindingMessage(currentPartSpan);
+                        var problem = arg.GetBindingMessage(remainingTokenSpan);
 
                         if (problem is object)
                         {

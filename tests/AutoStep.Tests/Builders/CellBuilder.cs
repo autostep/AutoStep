@@ -20,17 +20,17 @@ namespace AutoStep.Tests.Builders
 
         public CellBuilder Word(string text, int start)
         {
-            return Part(text, start, (s, l) => new WordToken(s, l));
+            return Part(text, start, (s, l) => new TextToken(s, l));
         }
 
         public CellBuilder EscapeChar(string text, string escapedText, int start)
         {
-            return Part(text, start, (s, l) => new EscapedCharToken(s, l) { EscapedValue = escapedText });
+            return Part(text, start, (s, l) => new EscapedCharToken(escapedText, s, l));
         }
 
         public CellBuilder Variable(string varName, int start)
         {
-            return Part("<" + varName + ">", start, (s, l) => new VariableToken(s, l) { VariableName = varName });
+            return Part("<" + varName + ">", start, (s, l) => new VariableToken(varName, s, l));
         }
 
         public CellBuilder Int(string text, int start)
@@ -50,17 +50,17 @@ namespace AutoStep.Tests.Builders
 
         public CellBuilder Colon(int column)
         {
-            return Part(":", column, (s, l) => new WordToken(s, l));
+            return Part(":", column, (s, l) => new TextToken(s, l));
         }
 
         public CellBuilder Quote(int column)
         {
-            return Part("'", column, (s, l) => new QuoteToken(s));
+            return Part("'", column, (s, l) => new QuoteToken(false, s));
         }
 
         public CellBuilder DoubleQuote(int column)
         {
-            return Part("\"", column, (s, l) => new QuoteToken(s) { IsDoubleQuote = true });
+            return Part("\"", column, (s, l) => new QuoteToken(true, s));
         }
 
         private CellBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
@@ -74,7 +74,7 @@ namespace AutoStep.Tests.Builders
             part.StartColumn = start;
             part.EndColumn = start + (text.Length - 1);
 
-            Built.AddPart(part);
+            Built.AddToken(part);
 
             return this;
         }

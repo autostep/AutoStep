@@ -168,7 +168,7 @@ namespace AutoStep.Compiler
             {
                 cell.Text = cellContent.GetText();
 
-                currentCell = cell; 
+                currentCell = cell;
 
                 PositionalLineInfo(currentCell, cellContent);
 
@@ -187,13 +187,23 @@ namespace AutoStep.Compiler
             return Result;
         }
 
+        /// <summary>
+        /// Visits a text token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellWord([NotNull] AutoStepParser.CellWordContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits an int token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
         {
             var intPart = CreatePart(context, (s, l) => new IntToken(s, l));
@@ -203,6 +213,11 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a float token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
         {
             var floatPart = CreatePart(context, (s, l) => new FloatToken(s, l));
@@ -212,24 +227,31 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        /// <summary>
+        /// Visits an escaped character token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context)
         {
-            var part = CreatePart(context, (s, l) => new EscapedCharToken(s, l));
-            part.EscapedValue = EscapeText(context, tableCellReplacements);
+            var part = CreatePart(context, (s, l) => new EscapedCharToken(EscapeText(context, tableCellReplacements), s, l));
 
             AddPart(part);
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a variable token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellVariable([NotNull] AutoStepParser.CellVariableContext context)
         {
             Debug.Assert(Result is object);
             Debug.Assert(currentCell is object);
 
-            var variablePart = CreatePart(context, (s, l) => new VariableToken(s, l));
-
-            variablePart.VariableName = context.cellVariableName().GetText();
+            var variablePart = CreatePart(context, (s, l) => new VariableToken(context.cellVariableName().GetText(), s, l));
 
             if (insertionNameValidator is object)
             {
@@ -246,13 +268,23 @@ namespace AutoStep.Compiler
             return Result;
         }
 
+        /// <summary>
+        /// Visits a colon token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellColon([NotNull] AutoStepParser.CellColonContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits an interpolation start token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
         {
             Debug.Assert(Result is object);
@@ -261,7 +293,7 @@ namespace AutoStep.Compiler
             AddPart(CreatePart(context.CELL_COLON(), (s, l) => new InterpolateStartToken(s)));
 
             // Now add a part for the first word.
-            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new TextToken(s, l)));
 
             return Result;
         }
@@ -270,7 +302,7 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(currentCell is object);
 
-            currentCell.AddPart(part);
+            currentCell.AddToken(part);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)

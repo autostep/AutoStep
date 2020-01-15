@@ -27,9 +27,8 @@ namespace AutoStep.Tests.Builders
 
         public StepDefinitionBuilder WordPart(string word, int start)
         {
-            Built.AddPart(new WordDefinitionPart
+            Built.AddPart(new WordDefinitionPart(word)
             {
-                Text = word,
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
                 EndColumn = start + (word.Length - 1)
@@ -40,10 +39,10 @@ namespace AutoStep.Tests.Builders
 
         public StepDefinitionBuilder WordPart(string word, string escaped, int start)
         {
-            Built.AddPart(new WordDefinitionPart
+            Built.AddPart(new WordDefinitionPart(word)
             {
-                Text = word,
-                EscapedText = escaped,
+                // TODO:
+                // EscapedText = escaped,
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
                 EndColumn = start + (word.Length - 1)
@@ -54,11 +53,8 @@ namespace AutoStep.Tests.Builders
 
         public StepDefinitionBuilder Argument(string text, string variableName, ArgumentType typeHint, int start, int end)
         {
-            Built.AddPart(new ArgumentPart
+            Built.AddPart(new ArgumentPart(text, variableName, typeHint)
             {
-                Text = text,
-                Name = variableName,
-                TypeHint = typeHint,
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
                 EndColumn = start + (text.Length - 1)
@@ -69,10 +65,8 @@ namespace AutoStep.Tests.Builders
 
         public StepDefinitionBuilder Argument(string text, string variableName, int start)
         {
-            Built.AddPart(new ArgumentPart
+            Built.AddPart(new ArgumentPart(text, variableName)
             {
-                Text = text,
-                Name = variableName,
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
                 EndColumn = start + (text.Length - 1)

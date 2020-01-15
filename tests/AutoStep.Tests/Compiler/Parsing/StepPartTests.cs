@@ -30,15 +30,15 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument1' to something", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
-                            .Word("passed", 34)
+                            .Text("I", 27)
+                            .Text("have", 29)
+                            .Text("passed", 34)
                             .Quote(41)
-                            .Word("argument", 42)
+                            .Text("argument", 42)
                             .Int("1", 50)
                             .Quote(51)
-                            .Word("to", 53)
-                            .Word("something", 56)
+                            .Text("to", 53)
+                            .Text("something", 56)
             ))));
         }
 
@@ -59,9 +59,9 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this > that", 6, 21, step => step
-                            .Word("this", 27)
-                            .Word(">", 32)
-                            .Word("that", 34)
+                            .Text("this", 27)
+                            .Text(">", 32)
+                            .Text("that", 34)
             ))));
         }
 
@@ -83,9 +83,9 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this < that", 6, 21, step => step
-                            .Word("this", 27)
-                            .Word("<", 32)
-                            .Word("that", 34)
+                            .Text("this", 27)
+                            .Text("<", 32)
+                            .Text("that", 34)
             ))));
         }
 
@@ -107,11 +107,11 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this < that > those", 6, 21, step => step
-                            .Word("this", 27)
-                            .Word("<", 32)
-                            .Word("that", 34)
-                            .Word(">", 39)
-                            .Word("those", 41)
+                            .Text("this", 27)
+                            .Text("<", 32)
+                            .Text("that", 34)
+                            .Text(">", 39)
+                            .Text("those", 41)
             ))));
         }
 
@@ -133,14 +133,14 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have 'this <variable name>' to something", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
+                            .Text("I", 27)
+                            .Text("have", 29)
                             .Quote(34)
-                            .Word("this", 35)
+                            .Text("this", 35)
                             .Variable("variable name", 40)
                             .Quote(55)
-                            .Word("to", 57)
-                            .Word("something", 60)
+                            .Text("to", 57)
+                            .Text("something", 60)
             ))),
             new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario,
                                 "You have specified an Example variable to insert, 'variable name', but the step is in a Scenario; did you mean to use a Scenario Outline instead?",
@@ -165,12 +165,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                  .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I don't do something", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("don", 29)
+                            .Text("I", 27)
+                            .Text("don", 29)
                             .Quote(32)
-                            .Word("t", 33)
-                            .Word("do", 35)
-                            .Word("something", 38)
+                            .Text("t", 33)
+                            .Text("do", 35)
+                            .Text("something", 38)
             ))));
         }
 
@@ -192,11 +192,11 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed \\'argument", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
-                            .Word("passed", 34)
+                            .Text("I", 27)
+                            .Text("have", 29)
+                            .Text("passed", 34)
                             .EscapeChar("\\'", "'", 41)
-                            .Word("argument", 43)
+                            .Text("argument", 43)
             ))));
         }
 
@@ -217,19 +217,19 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed ':Today at 10:00' to something", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
-                            .Word("passed", 34)
+                            .Text("I", 27)
+                            .Text("have", 29)
+                            .Text("passed", 34)
                             .Quote(41)
                                 .InterpolateStart(":", 42)
-                                .Word("Today", 43)
-                                .Word("at", 49)
+                                .Text("Today", 43)
+                                .Text("at", 49)
                                 .Int("10", 52)
                                 .Colon(54)
                                 .Int("00", 55)
                             .Quote(57)
-                            .Word("to", 59)
-                            .Word("something", 62)
+                            .Text("to", 59)
+                            .Text("something", 62)
             ))));
         }
 
@@ -250,10 +250,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have 123 now", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
+                            .Text("I", 27)
+                            .Text("have", 29)
                             .Int("123", 34)
-                            .Word("now", 38)
+                            .Text("now", 38)
             ))));
         }
         
@@ -274,10 +274,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have123 now", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
+                            .Text("I", 27)
+                            .Text("have", 29)
                             .Int("123", 33)
-                            .Word("now", 37)
+                            .Text("now", 37)
             ))));
         }
 
@@ -298,9 +298,9 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123.5'", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("have", 29)
-                            .Word("passed", 34)
+                            .Text("I", 27)
+                            .Text("have", 29)
+                            .Text("passed", 34)
                             .Quote(41)
                             .Float("123.5", 42)
                             .Quote(47)

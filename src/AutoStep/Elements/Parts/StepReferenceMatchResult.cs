@@ -15,6 +15,8 @@ namespace AutoStep.Elements.Parts
         /// </summary>
         /// <param name="length">Match length.</param>
         /// <param name="isExact">Indicates whether this is an exact match.</param>
+        /// <param name="remainingSpan">The remaining span of step tokens after this match has been executed.</param>
+        /// <param name="resultParts">The result parts (if any).</param>
         public StepReferenceMatchResult(int length, bool isExact, ReadOnlySpan<StepToken> remainingSpan, ReadOnlySpan<StepToken> resultParts = default)
         {
             Length = length;
@@ -39,7 +41,7 @@ namespace AutoStep.Elements.Parts
         public ReadOnlySpan<StepToken> RemainingTokens { get; }
 
         /// <summary>
-        /// Gets a span containing the 'result' of the match (if relevant), that will be available to <see cref="ArgumentPart"/> parts 
+        /// Gets a span containing the 'result' of the match (if relevant), that will be available to <see cref="ArgumentPart"/> parts
         /// when returning up the tree after an exact match.
         /// </summary>
         public ReadOnlySpan<StepToken> ResultTokens { get; }

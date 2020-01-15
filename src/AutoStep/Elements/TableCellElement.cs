@@ -9,20 +9,30 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableCellElement : PositionalElement
     {
-        private List<StepToken> parts = new List<StepToken>();
+        private List<StepToken> tokens = new List<StepToken>();
 
-        public string Text { get; set; }
+        /// <summary>
+        /// Gets or sets the text of the cell.
+        /// </summary>
+        public string? Text { get; set; }
 
-        internal IReadOnlyList<StepToken> Parts => parts;
+        /// <summary>
+        /// Gets the set of tokens.
+        /// </summary>
+        internal IReadOnlyList<StepToken> Tokens => tokens;
 
-        internal void AddPart(StepToken nestedPart)
+        /// <summary>
+        /// Adds a token to the cell.
+        /// </summary>
+        /// <param name="token">The token to add.</param>
+        internal void AddToken(StepToken token)
         {
-            if (nestedPart is null)
+            if (token is null)
             {
-                throw new ArgumentNullException(nameof(nestedPart));
+                throw new ArgumentNullException(nameof(token));
             }
 
-            parts.Add(nestedPart);
+            tokens.Add(token);
         }
     }
 }

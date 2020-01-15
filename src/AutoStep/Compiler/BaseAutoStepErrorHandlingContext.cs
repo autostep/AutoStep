@@ -40,7 +40,7 @@ namespace AutoStep.Compiler
         /// <summary>
         /// Gets any message arguments assigned to the compilation message code.
         /// </summary>
-        public object[] MessageArguments { get; private set; }
+        public object[]? MessageArguments { get; private set; }
 
         /// <summary>
         /// Gets the Starting Symbol of the error (defaults to the Offending Symbol).

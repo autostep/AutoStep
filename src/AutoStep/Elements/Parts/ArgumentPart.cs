@@ -4,12 +4,48 @@ using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts
 {
+    /// <summary>
+    /// Represents a defined step argument.
+    /// </summary>
     internal class ArgumentPart : DefinitionPart
     {
-        public string? Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArgumentPart"/> class.
+        /// </summary>
+        public ArgumentPart()
+            : base(string.Empty)
+        {
+        }
 
-        public ArgumentType? TypeHint { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArgumentPart"/> class.
+        /// </summary>
+        /// <param name="text">The argument definition text.</param>
+        /// <param name="variableName">The variable name.</param>
+        /// <param name="typeHint">A type hint for the parameter (if we have one).</param>
+        public ArgumentPart(string text, string variableName, ArgumentType? typeHint = null)
+            : base(text)
+        {
+            if (text is null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
 
+            Name = variableName ?? throw new ArgumentNullException(nameof(variableName));
+            TypeHint = typeHint;
+        }
+
+        /// <summary>
+        /// Gets the variable name, if we know it.
+        /// </summary>
+        public string? Name { get; }
+
+        /// <summary>
+        /// Gets the type hint for the argument, if we know it.
+        /// </summary>
+        public ArgumentType? TypeHint { get; }
+
+        /// <inheritdoc/>
         public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
             var currentPart = referenceParts[0];
@@ -74,25 +110,29 @@ namespace AutoStep.Elements.Parts
             return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(contentPartsIndex, contentPartsLength));
         }
 
+        /// <summary>
+        /// Generate an optional compiler message for the matched argument. Only invoked on a successful exact match for the entire step reference.
+        /// </summary>
+        /// <param name="referenceParts">The result parts from the original match result.</param>
+        /// <returns>An optional compiler message.</returns>
         public CompilerMessage? GetBindingMessage(ReadOnlySpan<StepToken> referenceParts)
         {
             // Ok, so, does a step reference match? A step reference will 'match' any other part, but then we are going to apply some extra
             // logic and see whether the value fits.
-            if (referenceParts[0] is VariableToken var)
+            if (referenceParts[0] is VariableToken var && TypeHint == ArgumentType.NumericDecimal)
             {
                 // It's a match, a variable can be anything (late-bound), so we will say it matches.
-
             }
-            else if (referenceParts[0] is WordToken word)
+            else if (referenceParts[0] is TextToken word)
             {
                 // Text will match, but let's look at the type of the argument.
-
             }
 
             // TODO
             return null;
         }
 
+        /// <inheritdoc/>
         public override bool IsDefinitionPartMatch(DefinitionPart part)
         {
             return part is ArgumentPart otherArg &&
@@ -100,5 +140,4 @@ namespace AutoStep.Elements.Parts
                    TypeHint == otherArg.TypeHint;
         }
     }
-
 }

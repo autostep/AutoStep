@@ -15,8 +15,8 @@ namespace AutoStep.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
-        private List<StepToken> workingParts = new List<StepToken>();
-        private StepToken[]? frozenParts = null;
+        private List<StepToken> workingTokens = new List<StepToken>();
+        private StepToken[]? frozenTokens = null;
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -43,12 +43,7 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
         /// </summary>
-        internal ReadOnlySpan<StepToken> PartSpan => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
-
-        /// <summary>
-        /// Gets an enumerable set of parts 
-        /// </summary>
-        //internal IEnumerable<StepToken> Parts => frozenParts ?? (IEnumerable<StepToken>)workingParts;
+        internal ReadOnlySpan<StepToken> TokenSpan => frozenTokens ?? throw new InvalidOperationException(ElementExceptionMessages.TokensNotFrozen);
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -56,30 +51,38 @@ namespace AutoStep.Elements
         public TableElement? Table { get; set; }
 
         /// <summary>
-        /// Adds a part to the step reference.
+        /// Adds a token to the step reference.
         /// </summary>
-        /// <param name="part">The part to add.</param>
-        internal void AddPart(StepToken part)
+        /// <param name="token">The part to add.</param>
+        internal void AddToken(StepToken token)
         {
-            if (part is null)
+            if (token is null)
             {
-                throw new System.ArgumentNullException(nameof(part));
+                throw new ArgumentNullException(nameof(token));
             }
 
-            if (frozenParts is object)
+            if (frozenTokens is object)
             {
-                throw new InvalidOperationException("Step parts have been frozen.");
+                throw new InvalidOperationException(ElementExceptionMessages.TokensAlreadyFrozen);
             }
 
-            workingParts.Add(part);
+            workingTokens.Add(token);
         }
 
+        /// <summary>
+        /// Freezes the set of working tokens into an array of tokens (so that a span can be constructed).
+        /// </summary>
         internal void FreezeParts()
         {
-            frozenParts = workingParts.ToArray();
+            if (frozenTokens is object)
+            {
+                throw new InvalidOperationException(ElementExceptionMessages.TokensAlreadyFrozen);
+            }
+
+            frozenTokens = workingTokens.ToArray();
 
             // Wipe the working parts, we aren't going to be using them anymore.
-            workingParts = null!;
+            workingTokens = null!;
         }
 
         /// <summary>

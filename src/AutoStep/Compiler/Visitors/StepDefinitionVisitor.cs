@@ -15,30 +15,28 @@ namespace AutoStep.Compiler
     /// </summary>
     internal class StepDefinitionVisitor : BaseAutoStepVisitor<StepDefinitionElement>
     {
-        private readonly (int TokenType, string Replace)[] escapeReplacements = new[]
-        {
-            (AutoStepParser.DEF_ESCAPED_LCURLY, "{"),
-            (AutoStepParser.DEF_ESCAPED_RCURLY, "}"),
-        };
+        // private readonly (int TokenType, string Replace)[] escapeReplacements = new[]
+        // {
+        //    (AutoStepParser.DEF_ESCAPED_LCURLY, "{"),
+        //    (AutoStepParser.DEF_ESCAPED_RCURLY, "}"),
+        // };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StepReferenceVisitor"/> class.
+        /// Initializes a new instance of the <see cref="StepDefinitionVisitor"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
-        /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
         public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream)
             : base(sourceName, tokenStream)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StepReferenceVisitor"/> class.
+        /// Initializes a new instance of the <see cref="StepDefinitionVisitor"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
-        /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
         public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
@@ -48,6 +46,7 @@ namespace AutoStep.Compiler
         /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
         /// </summary>
         /// <param name="type">The step type.</param>
+        /// <param name="declarationContext">The step declaration context.</param>
         /// <param name="bodyContext">The statement body context.</param>
         /// <returns>A generated step reference.</returns>
         public StepDefinitionElement BuildStepDefinition(StepType type, AutoStepParser.StepDeclarationContext declarationContext, AutoStepParser.StepDeclarationBodyContext bodyContext)
@@ -90,17 +89,21 @@ namespace AutoStep.Compiler
             return Result;
         }
 
+        /// <summary>
+        /// Visits a declaration argument.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step definition element.</returns>
         public override StepDefinitionElement VisitDeclarationArgument([NotNull] AutoStepParser.DeclarationArgumentContext context)
         {
             Debug.Assert(Result is object);
 
             var content = context.stepDeclarationArgument();
 
-            var part = CreatePart<ArgumentPart>(context);
+            var name = content.stepDeclarationArgumentName().GetText();
+            var hint = DetermineTypeHint(name, content.stepDeclarationTypeHint()?.GetText());
 
-            part.Name = content.stepDeclarationArgumentName().GetText();
-
-            part.TypeHint = DetermineTypeHint(part.Name, content.stepDeclarationTypeHint()?.GetText());
+            var part = PositionalLineInfo(new ArgumentPart(context.GetText(), name, hint), context);
 
             AddPart(part);
 
@@ -127,27 +130,42 @@ namespace AutoStep.Compiler
             };
         }
 
+        /// <summary>
+        /// Visits a word declaration part.
+        /// </summary>
+        /// <param name="context">The partser context.</param>
+        /// <returns>The step definition.</returns>
         public override StepDefinitionElement VisitDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context)
         {
-            AddPart(CreatePart<WordDefinitionPart>(context));
+            AddPart(PositionalLineInfo(new WordDefinitionPart(context.GetText()), context));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits an escaped character part.
+        /// </summary>
+        /// <param name="context">The partser context.</param>
+        /// <returns>The step definition.</returns>
         public override StepDefinitionElement VisitDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context)
         {
-            var part = CreatePart<WordDefinitionPart>(context);
+            var part = PositionalLineInfo(new WordDefinitionPart(context.GetText()), context);
 
-            part.EscapedText = EscapeText(context, escapeReplacements);
-
+            // TODO
+            // part.EscapedText = EscapeText(context, escapeReplacements);
             AddPart(part);
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a colon part.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step definition.</returns>
         public override StepDefinitionElement VisitDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context)
         {
-            AddPart(CreatePart<WordDefinitionPart>(context));
+            AddPart(PositionalLineInfo(new WordDefinitionPart(context.GetText()), context));
 
             return Result!;
         }
@@ -155,24 +173,6 @@ namespace AutoStep.Compiler
         private void AddPart(DefinitionPart part)
         {
             Result!.AddPart(part);
-        }
-
-        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
-            where TStepPart : DefinitionPart, new()
-        {
-            var part = new TStepPart();
-            part.Text = ctxt.GetText();
-            PositionalLineInfo(part, ctxt);
-            return part;
-        }
-
-        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
-            where TStepPart : DefinitionPart, new()
-        {
-            var part = new TStepPart();
-            part.Text = ctxt.GetText();
-            PositionalLineInfo(part, ctxt);
-            return part;
         }
     }
 }

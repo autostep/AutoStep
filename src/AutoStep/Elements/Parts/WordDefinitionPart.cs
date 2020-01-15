@@ -8,11 +8,21 @@ using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts
 {
-
+    /// <summary>
+    /// Represents a word part of a step definition (i.e. a block of literal text).
+    /// </summary>
     internal class WordDefinitionPart : DefinitionPart
     {
-        public string EscapedText { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WordDefinitionPart"/> class.
+        /// </summary>
+        /// <param name="text">The text of the part.</param>
+        public WordDefinitionPart(string text)
+            : base(text)
+        {
+        }
 
+        /// <inheritdoc/>
         public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> currentPartSpan)
         {
             // The word definition part should:
@@ -69,6 +79,7 @@ namespace AutoStep.Elements.Parts
 
                     // This tells us how many characters matched.
                     matchedLength += searchedCharacters;
+
                     // Move the part span along.
                     currentPartSpan = currentPartSpan.Slice(1);
 
@@ -79,11 +90,10 @@ namespace AutoStep.Elements.Parts
             return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
         }
 
+        /// <inheritdoc/>
         public override bool IsDefinitionPartMatch(DefinitionPart part)
         {
             return part is DefinitionPart wrd && wrd.Text == Text;
         }
-
     }
-
 }

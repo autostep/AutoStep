@@ -56,7 +56,7 @@ namespace AutoStep.Compiler
         /// Builds a step, taking the Step Type, and the statement line Antlr context.
         /// </summary>
         /// <param name="type">The step type.</param>
-        /// <param name="statementLineContext">The entire line context .</param>
+        /// <param name="statementContext">The statement context.</param>
         /// <returns>A generated step reference.</returns>
         public StepReferenceElement BuildStep(StepType type, AutoStepParser.StatementContext statementContext)
         {
@@ -77,6 +77,11 @@ namespace AutoStep.Compiler
             return Result;
         }
 
+        /// <summary>
+        /// Visits the statement body.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementBody([NotNull] AutoStepParser.StatementBodyContext context)
         {
             Debug.Assert(Result is object);
@@ -90,60 +95,90 @@ namespace AutoStep.Compiler
             return Result;
         }
 
+        /// <summary>
+        /// Visits a statement single quote.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new QuoteToken(s)));
+            AddPart(CreatePart(context, (s, l) => new QuoteToken(false, s)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement colon.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementColon([NotNull] AutoStepParser.StatementColonContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a double quote.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context)
         {
-            var part = CreatePart(context, (s, l) => new QuoteToken(s));
-            part.IsDoubleQuote = true;
+            var part = CreatePart(context, (s, l) => new QuoteToken(true, s));
 
             AddPart(part);
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement word.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementWord([NotNull] AutoStepParser.StatementWordContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement escaped character.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context)
         {
-            var part = CreatePart(context, (s, l) => new EscapedCharToken(s, l));
-
-            part.EscapedValue = EscapeText(context, escapeReplacements);
+            var part = CreatePart(context, (s, l) => new EscapedCharToken(EscapeText(context, escapeReplacements), s, l));
 
             AddPart(part);
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits an unmatched variable marker.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement variable.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context)
         {
-            var variablePart = CreatePart(context, (s, l) => new VariableToken(s, l));
-
-            variablePart.VariableName = context.statementVariableName().GetText();
+            var variablePart = CreatePart(context, (s, l) => new VariableToken(context.statementVariableName().GetText(), s, l));
 
             if (insertionNameValidator is object)
             {
@@ -160,6 +195,11 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement int.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementInt([NotNull] AutoStepParser.StatementIntContext context)
         {
             var intPart = CreatePart(context, (s, l) => new IntToken(s, l));
@@ -169,6 +209,11 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement float.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementFloat([NotNull] AutoStepParser.StatementFloatContext context)
         {
             var floatPart = CreatePart(context, (s, l) => new FloatToken(s, l));
@@ -178,20 +223,25 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
+        /// <summary>
+        /// Visits a statement interpolation start.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The step reference.</returns>
         public override StepReferenceElement VisitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context)
         {
             // Interpolate part itself is just the colon.
             AddPart(CreatePart(context.STATEMENT_COLON(), (s, l) => new InterpolateStartToken(s)));
 
             // Now add a part for the first word.
-            AddPart(CreatePart(context.STATEMENT_WORD(), (s, l) => new WordToken(s, l)));
+            AddPart(CreatePart(context.STATEMENT_WORD(), (s, l) => new TextToken(s, l)));
 
             return Result!;
         }
 
         private void AddPart(StepToken part)
         {
-            Result!.AddPart(part);
+            Result!.AddToken(part);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)

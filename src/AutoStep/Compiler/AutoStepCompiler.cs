@@ -57,7 +57,6 @@ namespace AutoStep.Compiler
             this.tracer = tracer;
         }
 
-
         /// <summary>
         /// Generates a step definition from a statement body/declaration.
         /// </summary>

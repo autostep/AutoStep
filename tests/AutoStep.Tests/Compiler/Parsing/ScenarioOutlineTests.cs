@@ -95,10 +95,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1>'", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("pass", 29)
-                            .Word("an", 34)
-                            .Word("argument", 37)
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
                             .Quote(46)
                             .Variable("variable1", 47)
                             .Quote(58)
@@ -290,13 +290,13 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("pass", 29)
-                            .Word("an", 34)
-                            .Word("argument", 37)
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
                             .Quote(46)
                             .Variable("variable1", 47)
-                            .Word("something", 59)
+                            .Text("something", 59)
                             .Variable("variable2", 69)
                             .Quote(80)
                         )
@@ -343,13 +343,13 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Word("I", 27)
-                            .Word("pass", 29)
-                            .Word("an", 34)
-                            .Word("argument", 37)
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
                             .Quote(46)
                             .Variable("variable1", 47)
-                            .Word("something", 59)
+                            .Text("something", 59)
                             .Variable("variable2", 69)             
                             .Quote(80)
                         )

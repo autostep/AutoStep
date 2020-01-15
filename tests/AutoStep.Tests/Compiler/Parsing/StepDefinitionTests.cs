@@ -30,15 +30,15 @@ namespace AutoStep.Tests.Compiler.Parsing
                     .WordPart("done", 34)
                     .WordPart("something", 39)
                     .Given("I have done this", 4, 17, s => s
-                        .Word("I", 23)
-                        .Word("have", 25)
-                        .Word("done", 30)
-                        .Word("this", 35)
+                        .Text("I", 23)
+                        .Text("have", 25)
+                        .Text("done", 30)
+                        .Text("this", 35)
                     )
                     .Then("this is true", 5, 17, s => s
-                        .Word("this", 22)
-                        .Word("is", 27)
-                        .Word("true", 30)
+                        .Text("this", 22)
+                        .Text("is", 27)
+                        .Text("true", 30)
                     )
             ));
         }
@@ -72,16 +72,16 @@ namespace AutoStep.Tests.Compiler.Parsing
                     .WordPart("and", 66)
                     .Argument("{argument2}", "argument2", 70)
                     .Given("I have used '<argument1>'", 7, 17, g => g
-                        .Word("I", 23)
-                        .Word("have", 25)
-                        .Word("used", 30)
+                        .Text("I", 23)
+                        .Text("have", 25)
+                        .Text("used", 30)
                         .Quote(35)
                         .Variable("argument1", 36)
                         .Quote(47)
                     )
                     .Then("this is <argument2>", 8, 17, t => t
-                        .Word("this", 22)
-                        .Word("is", 27)
+                        .Text("this", 22)
+                        .Text("is", 27)
                         .Variable("argument2", 30)
                     )
             ));

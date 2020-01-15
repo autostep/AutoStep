@@ -42,10 +42,10 @@ namespace AutoStep.Tests.Compiler.Matching
             var text = "'foo bah' next";
 
             var parts = GetContentParts(
-                new QuoteToken(0),
+                new QuoteToken(false, 0),
                 WordFromString(text, "foo"),
                 WordFromString(text, "bah"),
-                new QuoteToken(8),
+                new QuoteToken(false, 8),
                 WordFromString(text, "next")
             );
 
@@ -67,7 +67,7 @@ namespace AutoStep.Tests.Compiler.Matching
 
             var parts = GetContentParts(
                 WordFromString(text, "don"),
-                new QuoteToken(3),
+                new QuoteToken(false, 3),
                 WordFromString(text, "t")
             );
 
@@ -88,12 +88,12 @@ namespace AutoStep.Tests.Compiler.Matching
             var text = "'foo \" bah\"' next";
 
             var parts = GetContentParts(
-                new QuoteToken(0),
+                new QuoteToken(false, 0),
                 WordFromString(text, "foo"),
-                new QuoteToken(5) { IsDoubleQuote = true },
+                new QuoteToken(true, 5),
                 WordFromString(text, "bah"),
-                new QuoteToken(10) { IsDoubleQuote = true },
-                new QuoteToken(8),
+                new QuoteToken(true, 10),
+                new QuoteToken(false, 8),
                 WordFromString(text, "next")
             );
 
@@ -114,12 +114,12 @@ namespace AutoStep.Tests.Compiler.Matching
             var text = "\"foo ' bah'\" next";
 
             var parts = GetContentParts(
-                new QuoteToken(0) { IsDoubleQuote = true },
+                new QuoteToken(true, 0),
                 WordFromString(text, "foo"),
-                new QuoteToken(5),
+                new QuoteToken(false, 5),
                 WordFromString(text, "bah"),
-                new QuoteToken(10),
-                new QuoteToken(8) { IsDoubleQuote = true },
+                new QuoteToken(false, 10),
+                new QuoteToken(true, 8),
                 WordFromString(text, "next")
             );
 
@@ -132,11 +132,11 @@ namespace AutoStep.Tests.Compiler.Matching
             match.RemainingTokens[0].GetText(text).Should().Be("next");
         }
 
-        private WordToken WordFromString(string text, string subtext)
+        private TextToken WordFromString(string text, string subtext)
         {
             var position = text.IndexOf(subtext);
 
-            return new WordToken(position, subtext.Length);
+            return new TextToken(position, subtext.Length);
         }
 
         private ReadOnlySpan<StepToken> GetContentParts(params StepToken[] part)

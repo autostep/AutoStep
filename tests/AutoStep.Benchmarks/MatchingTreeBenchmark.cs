@@ -74,7 +74,7 @@ namespace AutoStep.Benchmarks
                     
                     if(isArgument)
                     {
-                        stepDef.AddPart(new ArgumentPart { Text = "n" });
+                        stepDef.AddPart(new ArgumentPart());
                     }
                     else
                     {
@@ -83,7 +83,7 @@ namespace AutoStep.Benchmarks
 
                         if(!whitespace)
                         {
-                            stepDef.AddPart(new WordDefinitionPart() { Text = words[seededRandom.Next(0, words.Length - 1)] });
+                            stepDef.AddPart(new WordDefinitionPart(words[seededRandom.Next(0, words.Length - 1)]));
                         }
 
                     }
@@ -154,7 +154,7 @@ namespace AutoStep.Benchmarks
 
             foreach (var item in text.Split(' '))
             {
-                refBuilder.Word(item, position);
+                refBuilder.Text(item, position);
                 position += item.Length + 1;
             }
 

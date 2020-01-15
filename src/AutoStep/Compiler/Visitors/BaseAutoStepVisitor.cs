@@ -461,6 +461,5 @@ namespace AutoStep.Compiler
 
             return descriptionBuilder.ToString();
         }
-
     }
 }
