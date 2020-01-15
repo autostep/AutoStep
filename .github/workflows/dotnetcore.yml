@@ -21,9 +21,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.100
-   
-    - name: Setup Nuget.exe
-      uses: warrenbuckley/Setup-Nuget@v1
       
     - name: GitVersion
       id: gitversion  # step id used as reference for output values
@@ -39,4 +36,4 @@ jobs:
       run:  dotnet pack ./src/AutoStep/AutoStep.csproj --no-build -o artifacts -c Release --version-suffix  ${{ steps.gitversion.outputs.PreReleaseTag }}
   
     - name: Push
-      run: nuget push -source https://f.feedz.io/autostep/ci/nuget/index.json -ApiKey ${{ secrets.FEEDZ_IO_KEY }}
+      run: dotnet nuget push artifacts/* -s https://f.feedz.io/autostep/ci/nuget/index.json -k ${{ secrets.FEEDZ_IO_KEY }}
