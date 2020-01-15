@@ -151,7 +151,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
@@ -371,7 +371,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                         Then another thing happens
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
@@ -418,7 +418,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step

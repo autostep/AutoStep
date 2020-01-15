@@ -7,9 +7,9 @@ using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Compiler.Parsing
 {
-    public class StepPartTests : CompilerTestBase
+    public class StepTokenTests : CompilerTestBase
     {
-        public StepPartTests(ITestOutputHelper output) : base(output)
+        public StepTokenTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed 'argument1' to something", 6, 21, step => step
@@ -55,7 +55,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this > that", 6, 21, step => step
@@ -79,7 +79,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this < that", 6, 21, step => step
@@ -103,7 +103,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("this < that > those", 6, 21, step => step
@@ -161,7 +161,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                  .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I don't do something", 6, 21, step => step
@@ -188,7 +188,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed \\'argument", 6, 21, step => step
@@ -213,7 +213,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed ':Today at 10:00' to something", 6, 21, step => step
@@ -246,7 +246,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have 123 now", 6, 21, step => step
@@ -270,7 +270,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have123 now", 6, 21, step => step
@@ -294,7 +294,7 @@ namespace AutoStep.Tests.Compiler.Parsing
 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .Scenario("My Scenario", 4, 17, scen => scen
                         .Given("I have passed '123.5'", 6, 21, step => step

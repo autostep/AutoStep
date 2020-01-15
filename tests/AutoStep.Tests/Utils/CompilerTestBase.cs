@@ -130,7 +130,7 @@ namespace AutoStep.Tests.Utils
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
-        protected async Task CompileAndAssertSuccessWithStatementParts(string content, Action<FileBuilder> cfg)
+        protected async Task CompileAndAssertSuccessWithStatementTokens(string content, Action<FileBuilder> cfg)
         {
             var expectedBuilder = new FileBuilder(true);
             cfg(expectedBuilder);

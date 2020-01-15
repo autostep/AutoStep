@@ -91,7 +91,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1>'", 6, 21, step => step
@@ -286,7 +286,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
@@ -339,7 +339,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step

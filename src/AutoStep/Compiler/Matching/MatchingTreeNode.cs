@@ -359,21 +359,26 @@ namespace AutoStep.Compiler.Matching
                 }
                 else if (children is object)
                 {
-                    var currentChild = children.First;
-
-                    while (currentChild is object)
+                    // There's no point looking at the children unless this node was an exact match. If it's not an exact match
+                    // then there's no point going further in the tree.
+                    if (match.IsExact)
                     {
-                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, out var searchDepthSpan);
+                        var currentChild = children.First;
 
-                        if (childMatched)
+                        while (currentChild is object)
                         {
-                            // A more specific match was found, so don't use any results from higher in the tree.
-                            addAllRemaining = false;
-                            addedSomething = true;
-                            finalSpan = searchDepthSpan;
-                        }
+                            var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, out var searchDepthSpan);
 
-                        currentChild = currentChild.Next;
+                            if (childMatched)
+                            {
+                                // A more specific match was found, so don't use any results from higher in the tree.
+                                addAllRemaining = false;
+                                addedSomething = true;
+                                finalSpan = searchDepthSpan;
+                            }
+
+                            currentChild = currentChild.Next;
+                        }
                     }
                 }
 

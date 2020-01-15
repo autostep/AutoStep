@@ -9,7 +9,7 @@ using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 using AutoStep.Tests.Builders;
 
-namespace AutoStep.Tests.Compiler
+namespace AutoStep.Tests.Compiler.Matching
 {
     public class MatchingTreeTests
     {
@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Compiler
             list.First.Value.Confidence.Should().Be(int.MaxValue);
             list.First.Value.Definition.Should().Be(stepDef);
         }
-        
+
         [Fact]
         public void CanRemoveSingleStepDefinition()
         {
@@ -201,7 +201,7 @@ namespace AutoStep.Tests.Compiler
             list.Should().HaveCount(2);
 
             tree.RemoveDefinition(stepDef1);
-            
+
             list = tree.Match(stepRef1, false, out partsMatched);
 
             list.Should().HaveCount(1);
@@ -247,7 +247,7 @@ namespace AutoStep.Tests.Compiler
             tree.AddOrUpdateDefinition(stepDef3);
 
             var stepRef1 = CreateSimpleRef(StepType.Given, "I have not matched");
-            
+
             var list = tree.Match(stepRef1, false, out var partsMatched).ToList();
 
             list.Should().HaveCount(2);
@@ -333,7 +333,7 @@ namespace AutoStep.Tests.Compiler
 
             var position = 1;
 
-            foreach(var item in declaration.Split(' '))
+            foreach (var item in declaration.Split(' '))
             {
                 defBuilder.WordPart(item, position);
                 position += item.Length + 1;
@@ -347,14 +347,14 @@ namespace AutoStep.Tests.Compiler
             var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
 
             builder(defBuilder);
-            
+
             return defBuilder.Built;
         }
 
         private StepReferenceElement CreateSimpleRef(StepType type, string text)
         {
             var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-            
+
             var position = 1;
 
             foreach (var item in text.Split(' '))
@@ -375,7 +375,7 @@ namespace AutoStep.Tests.Compiler
             builder(refBuilder);
 
             refBuilder.Built.FreezeParts();
-            
+
             return refBuilder.Built;
         }
 

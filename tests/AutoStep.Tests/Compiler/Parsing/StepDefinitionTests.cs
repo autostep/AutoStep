@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 Then this is true
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .StepDefinition(StepType.Given, "I have done something", 2, 21, step => step
                     .WordPart("I", 27)
                     .WordPart("have", 29)
@@ -57,7 +57,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 Then this is <argument2>
             ";
 
-            await CompileAndAssertSuccessWithStatementParts(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .StepDefinition(StepType.Given, "I have defined a step with {argument1} and {argument2}", 4, 21, step => step
                     .Tag("tag1", 2, 15)
                     .Option("opt1", 3, 15)
