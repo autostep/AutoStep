@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Linq;
+using AutoStep.Elements;
 
 namespace AutoStep.Tests.Builders
 {
 
-    public class FileBuilder : BaseBuilder<BuiltFile>
+    public class FileBuilder : BaseBuilder<FileElement>
     {
         public FileBuilder(bool relativeToTextContent = false)
             : base(relativeToTextContent)
         {
-            Built = new BuiltFile();
+            Built = new FileElement();
         }
 
         public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder> cfg = null)

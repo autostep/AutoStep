@@ -30,7 +30,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public interface IAutoStepParserListener : IParseTreeListener {
+internal interface IAutoStepParserListener : IParseTreeListener {
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// </summary>
@@ -851,3 +851,4 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	void ExitDescription([NotNull] AutoStepParser.DescriptionContext context);
 }
 } // namespace AutoStep.Compiler.Parser
+

@@ -13,7 +13,7 @@ namespace AutoStep.Tests.Builders
             Built = new ScenarioOutlineElement
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Name = name
             };
         }

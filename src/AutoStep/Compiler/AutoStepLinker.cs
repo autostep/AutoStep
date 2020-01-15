@@ -46,59 +46,6 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Generates a step definition from a statement body/declaration.
-        /// </summary>
-        /// <param name="stepType">The type of step.</param>
-        /// <param name="statementBody">The body of the step.</param>
-        /// <returns>The step definition parsing result (which may contain errors).</returns>
-        internal StepDefinitionFromBodyResult GetStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
-        {
-            if (statementBody is null)
-            {
-                throw new ArgumentNullException(nameof(statementBody));
-            }
-
-            // Trim first, we don't want to worry about the whitespace at the end.
-            statementBody = statementBody.Trim();
-
-            var errors = new List<CompilerMessage>();
-            var success = true;
-
-            // Compile the text, specifying a starting lexical mode of 'statement'.
-            var parseContext = compiler.CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), out var tokenStream, out var parserErrors, AutoStepLexer.definition);
-
-            if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
-            {
-                errors.AddRange(parserErrors);
-                success = false;
-            }
-
-            // Now we need a visitor.
-            var stepReferenceVisitor = new StepDefinitionVisitor(null, tokenStream);
-
-            // Construct a 'reference' step.
-            var stepDefinition = stepReferenceVisitor.BuildStepDefinition(stepType, parseContext);
-
-            if (!stepReferenceVisitor.Success)
-            {
-                success = false;
-            }
-
-            errors.AddRange(stepReferenceVisitor.Messages);
-
-            if (stepDefinition.Arguments is object)
-            {
-                // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
-                foreach (var declaredArgument in stepDefinition.Arguments)
-                {
-                    // TODO: Validate argument type hints.
-                }
-            }
-
-            return new StepDefinitionFromBodyResult(success, errors, stepDefinition);
-        }
-
-        /// <summary>
         /// Adds a source of step definitions to the linker.
         /// </summary>
         /// <param name="source">The source to add.</param>
@@ -170,7 +117,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="file">The file to link.</param>
         /// <returns>A link result (including a reference to the same file).</returns>
-        public LinkResult Link(BuiltFile file)
+        public LinkResult Link(FileElement file)
         {
             if (file is null)
             {
@@ -225,7 +172,7 @@ namespace AutoStep.Compiler
             {
                 if (stepDef.Definition is null)
                 {
-                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+                    var definitionResult = compiler.CompileStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
 
                     if (definitionResult.Success)
                     {

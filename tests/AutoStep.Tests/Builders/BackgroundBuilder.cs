@@ -10,7 +10,7 @@ namespace AutoStep.Tests.Builders
             Built = new BackgroundElement
             {
                 SourceLine = line,
-                SourceColumn = column
+                StartColumn = column
             };
         }
     }

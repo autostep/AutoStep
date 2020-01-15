@@ -17,7 +17,7 @@ using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
-using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Tests.Utils
 {
@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Utils
     {
         protected ITestOutputHelper TestOutput { get; }
 
-        protected ITracer TestTracer { get; }
+        internal ITracer TestTracer { get; }
 
         protected string NewLine => Environment.NewLine;
 
@@ -153,7 +153,7 @@ namespace AutoStep.Tests.Utils
 
             try
             {
-                var spanType = typeof(ReadOnlySpan<ContentPart>);
+                var spanType = typeof(ReadOnlySpan<StepToken>);
 
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
@@ -162,8 +162,8 @@ namespace AutoStep.Tests.Utils
                                                        (
                                                        !includeStatementParts && 
                                                         member.SelectedMemberInfo != null &&
-                                                        (typeof(ContentPart).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                        typeof(IEnumerable<ContentPart>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)
+                                                        (typeof(StepToken).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
+                                                        typeof(IEnumerable<StepToken>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)
                                                         )))
                 );
             }

@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Builders
             Built = new FeatureElement
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Name = name
             };
         }

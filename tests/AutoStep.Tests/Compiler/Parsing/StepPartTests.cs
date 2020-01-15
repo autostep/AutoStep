@@ -195,7 +195,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                             .Word("I", 27)
                             .Word("have", 29)
                             .Word("passed", 34)
-                            .Word("\\'", "'", 41)
+                            .EscapeChar("\\'", "'", 41)
                             .Word("argument", 43)
             ))));
         }

@@ -12,7 +12,7 @@ namespace AutoStep.Tests.Builders
             Built = new StepDefinitionElement
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Type = type,
                 Declaration = declaration
             };
@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Builders
             {
                 Text = word,
                 SourceLine = Built.SourceLine,
-                SourceColumn = start,
+                StartColumn = start,
                 EndColumn = start + (word.Length - 1)
             });
 
@@ -45,7 +45,7 @@ namespace AutoStep.Tests.Builders
                 Text = word,
                 EscapedText = escaped,
                 SourceLine = Built.SourceLine,
-                SourceColumn = start,
+                StartColumn = start,
                 EndColumn = start + (word.Length - 1)
             });
 
@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Builders
                 Name = variableName,
                 TypeHint = typeHint,
                 SourceLine = Built.SourceLine,
-                SourceColumn = start,
+                StartColumn = start,
                 EndColumn = start + (text.Length - 1)
             });
 
@@ -74,7 +74,7 @@ namespace AutoStep.Tests.Builders
                 Text = text,
                 Name = variableName,
                 SourceLine = Built.SourceLine,
-                SourceColumn = start,
+                StartColumn = start,
                 EndColumn = start + (text.Length - 1)
             });
 

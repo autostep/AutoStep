@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Compiler.Matching
 {
@@ -39,14 +40,14 @@ namespace AutoStep.Compiler.Matching
         /// <summary>
         /// Gets the part used for matching this node.
         /// </summary>
-        private DefinitionContentPart? matchingPart;
+        private DefinitionPart? matchingPart;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingTreeNode"/> class.
         /// </summary>
         /// <param name="allStepDefinitions">The set of all definitions.</param>
         /// <param name="matchingPart">The matching part used by this node.</param>
-        public MatchingTreeNode(LinkedList<StepDefinition> allStepDefinitions, DefinitionContentPart? matchingPart)
+        public MatchingTreeNode(LinkedList<StepDefinition> allStepDefinitions, DefinitionPart? matchingPart)
         {
             allDefinitions = allStepDefinitions;
             this.matchingPart = matchingPart;
@@ -62,7 +63,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="nextPartPosition">The position in allDefinitionParts that this node should look at for comparison.</param>
         public void AddDefinition(
             LinkedListNode<StepDefinition> definitionNode,
-            IReadOnlyList<DefinitionContentPart> allDefinitionParts,
+            IReadOnlyList<DefinitionPart> allDefinitionParts,
             int nextPartPosition)
         {
             var addPosition = nextPartPosition;
@@ -178,7 +179,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="allDefinitionParts">The step matching parts.</param>
         /// <param name="nextPartPosition">The next position in the matching parts.</param>
         /// <returns>The linked list node containing the located step definition (if it's found in this node or one of its children).</returns>
-        public LinkedListNode<StepDefinition>? RemoveDefinition(StepDefinition definition, IReadOnlyList<DefinitionContentPart> allDefinitionParts, int nextPartPosition)
+        public LinkedListNode<StepDefinition>? RemoveDefinition(StepDefinition definition, IReadOnlyList<DefinitionPart> allDefinitionParts, int nextPartPosition)
         {
             var removePosition = nextPartPosition;
             nextPartPosition++;
@@ -289,7 +290,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="allSearchParts">The set of parts to search for.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
-        public void SearchRoot(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<ContentPart> allSearchParts, bool exactOnly, ref int partsMatched)
+        public void SearchRoot(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> allSearchParts, bool exactOnly, ref int partsMatched)
         {
             if (children is object)
             {
@@ -318,14 +319,14 @@ namespace AutoStep.Compiler.Matching
         /// <param name="exactOnly">Whether to return exact matches only.</param>
         /// <param name="partsMatched">Sets a value containing the number of parts (out of allSearchParts) that were matched during the search.</param>
         /// <returns>true if this node (or any child) added results to the list.</returns>
-        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<ContentPart> currentPartSpan, bool exactOnly, out ReadOnlySpan<ContentPart> finalSpan)
+        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> currentPartSpan, bool exactOnly, out ReadOnlySpan<StepToken> finalSpan)
         {
             Debug.Assert(matchingPart is object);
 
             // Check for match quality between the part assigned to this node and the part we are looking for.
             var match = matchingPart.DoStepReferenceMatch(referenceText, currentPartSpan);
 
-            finalSpan = match.NewSpan;
+            finalSpan = match.RemainingTokens;
 
             if (match.Length == 0)
             {
@@ -339,7 +340,7 @@ namespace AutoStep.Compiler.Matching
                 var addedSomething = false;
 
                 // The current match has consumed the entirety of the rest of the reference.
-                if (match.NewSpan.IsEmpty)
+                if (match.RemainingTokens.IsEmpty)
                 {
                     // If this is an exact match, do we have an exact step def for it?
                     if (match.IsExact && exactMatchNodes is object && exactMatchNodes.Count > 0)
@@ -360,7 +361,7 @@ namespace AutoStep.Compiler.Matching
 
                     while (currentChild is object)
                     {
-                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.NewSpan, exactOnly, out var searchDepthSpan);
+                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, out var searchDepthSpan);
 
                         if (childMatched)
                         {

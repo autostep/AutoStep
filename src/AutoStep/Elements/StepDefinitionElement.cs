@@ -11,7 +11,7 @@ namespace AutoStep.Elements
     /// </summary>
     public class StepDefinitionElement : StepCollectionElement, IAnnotatableElement
     {
-        private List<DefinitionContentPart> parts = new List<DefinitionContentPart>();
+        private List<DefinitionPart> parts = new List<DefinitionPart>();
         private List<ArgumentPart> arguments = new List<ArgumentPart>();
 
         /// <summary>
@@ -30,19 +30,19 @@ namespace AutoStep.Elements
         public string? Declaration { get; set; }
 
         /// <summary>
-        /// Gets the set of arguments presented by the Step Definition as being available.
-        /// </summary>
-        public IReadOnlyList<ArgumentPart> Arguments => arguments;
-
-        /// <summary>
-        /// Gets or sets the scenario description.
+        /// Gets or sets the step definition description.
         /// </summary>
         public string? Description { get; set; }
 
         /// <summary>
+        /// Gets the set of arguments presented by the Step Definition as being available.
+        /// </summary>
+        internal IReadOnlyList<ArgumentPart> Arguments => arguments;
+
+        /// <summary>
         /// Gets the set of matching parts used by the step definition element.
         /// </summary>
-        public IReadOnlyList<DefinitionContentPart> Parts => parts;
+        internal IReadOnlyList<DefinitionPart> Parts => parts;
 
         /// <summary>
         /// Check if this step definition contains an argument with the specified name.
@@ -63,7 +63,7 @@ namespace AutoStep.Elements
         /// Adds a part to the step definition.
         /// </summary>
         /// <param name="part">The part to add.</param>
-        public void AddPart(DefinitionContentPart part)
+        internal void AddPart(DefinitionPart part)
         {
             if (part is null)
             {

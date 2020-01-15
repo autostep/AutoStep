@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
-using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
 {
@@ -15,8 +15,8 @@ namespace AutoStep.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
-        private List<ContentPart> workingParts = new List<ContentPart>();
-        private ContentPart[] frozenParts = null;
+        private List<StepToken> workingParts = new List<StepToken>();
+        private StepToken[]? frozenParts = null;
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -43,9 +43,12 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
         /// </summary>
-        public ReadOnlySpan<ContentPart> PartSpan => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
+        internal ReadOnlySpan<StepToken> PartSpan => frozenParts ?? throw new InvalidOperationException("Parts have not been frozen.");
 
-        public IEnumerable<ContentPart> Parts => frozenParts ?? (IEnumerable<ContentPart>)workingParts;
+        /// <summary>
+        /// Gets an enumerable set of parts 
+        /// </summary>
+        //internal IEnumerable<StepToken> Parts => frozenParts ?? (IEnumerable<StepToken>)workingParts;
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -56,7 +59,7 @@ namespace AutoStep.Elements
         /// Adds a part to the step reference.
         /// </summary>
         /// <param name="part">The part to add.</param>
-        public void AddPart(ContentPart part)
+        internal void AddPart(StepToken part)
         {
             if (part is null)
             {
@@ -71,7 +74,7 @@ namespace AutoStep.Elements
             workingParts.Add(part);
         }
 
-        public void FreezeParts()
+        internal void FreezeParts()
         {
             frozenParts = workingParts.ToArray();
 

@@ -12,14 +12,14 @@ namespace AutoStep.Tests.Builders
             Built = new TableElement
             {
                 SourceLine = line,
-                SourceColumn = column
+                StartColumn = column
             };
         }
 
         public TableBuilder Headers(int lineNo, int column, params (string headerName, int startColumn, int endColumn)[] headers)
         {
             Built.Header.SourceLine = lineNo;
-            Built.Header.SourceColumn = column;
+            Built.Header.StartColumn = column;
 
             foreach(var item in headers)
             {
@@ -27,7 +27,7 @@ namespace AutoStep.Tests.Builders
                 {
                     HeaderName = item.headerName,
                     SourceLine = lineNo,
-                    SourceColumn = item.startColumn,
+                    StartColumn = item.startColumn,
                     EndColumn = item.endColumn
                 });
             }
@@ -40,7 +40,7 @@ namespace AutoStep.Tests.Builders
             var row = new TableRowElement
             {
                 SourceLine = lineNo,
-                SourceColumn = column  
+                StartColumn = column  
             };
 
             foreach(var item in cells)

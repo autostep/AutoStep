@@ -21,9 +21,7 @@ namespace AutoStep.Tests.Compiler
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
 
-            var linker = new AutoStepLinker(compiler);
-
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             matched.Output.Should().NotBeNull();
 
@@ -43,9 +41,7 @@ namespace AutoStep.Tests.Compiler
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
 
-            var linker = new AutoStepLinker(compiler);
-
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             matched.Output.Should().NotBeNull();
 
@@ -64,9 +60,7 @@ namespace AutoStep.Tests.Compiler
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
 
-            var linker = new AutoStepLinker(compiler);
-
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
@@ -84,9 +78,7 @@ namespace AutoStep.Tests.Compiler
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
 
-            var linker = new AutoStepLinker(compiler);
-
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
@@ -105,9 +97,7 @@ namespace AutoStep.Tests.Compiler
 
             var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
 
-            var linker = new AutoStepLinker(compiler);
-
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);

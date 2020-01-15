@@ -21,23 +21,11 @@ namespace AutoStep.Compiler
         ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Compile a set of textual content into a resulting Antlr parse context, specifying the start point in the parse tree.
+        /// Generates a step definition from a statement body/declaration.
         /// </summary>
-        /// <typeparam name="TContext">The type of context that is expected.</typeparam>
-        /// <param name="content">The text content to parse.</param>
-        /// <param name="sourceName">The name of the source (used for any errors).</param>
-        /// <param name="entryPoint">A function that invokes the relevant Antlr parser context method.</param>
-        /// <param name="tokenStream">The loaded token stream.</param>
-        /// <param name="parserErrors">Any parser errors.</param>
-        /// <param name="customLexerStartMode">An optional custom lexer mode to start parsing at.</param>
-        /// <returns>The parsed context.</returns>
-        TContext CompileEntryPoint<TContext>(
-            string content,
-            string? sourceName,
-            Func<AutoStepParser, TContext> entryPoint,
-            out ITokenStream tokenStream,
-            out IEnumerable<CompilerMessage> parserErrors,
-            int? customLexerStartMode = null)
-            where TContext : ParserRuleContext;
+        /// <param name="stepType">The type of step.</param>
+        /// <param name="statementBody">The body of the step.</param>
+        /// <returns>The step definition parsing result (which may contain errors).</returns>
+        public StepDefinitionFromBodyResult CompileStepDefinitionElementFromStatementBody(StepType stepType, string statementBody);
     }
 }

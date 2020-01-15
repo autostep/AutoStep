@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
 {
@@ -9,13 +9,13 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableCellElement : PositionalElement
     {
-        private List<ContentPart> parts = new List<ContentPart>();
+        private List<StepToken> parts = new List<StepToken>();
 
         public string Text { get; set; }
 
-        public IReadOnlyList<ContentPart> Parts => parts;
+        internal IReadOnlyList<StepToken> Parts => parts;
 
-        public void AddPart(ContentPart nestedPart)
+        internal void AddPart(StepToken nestedPart)
         {
             if (nestedPart is null)
             {

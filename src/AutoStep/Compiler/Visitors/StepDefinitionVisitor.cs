@@ -152,13 +152,13 @@ namespace AutoStep.Compiler
             return Result!;
         }
 
-        private void AddPart(DefinitionContentPart part)
+        private void AddPart(DefinitionPart part)
         {
             Result!.AddPart(part);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt)
-            where TStepPart : DefinitionContentPart, new()
+            where TStepPart : DefinitionPart, new()
         {
             var part = new TStepPart();
             part.Text = ctxt.GetText();
@@ -167,7 +167,7 @@ namespace AutoStep.Compiler
         }
 
         private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt)
-            where TStepPart : DefinitionContentPart, new()
+            where TStepPart : DefinitionPart, new()
         {
             var part = new TStepPart();
             part.Text = ctxt.GetText();

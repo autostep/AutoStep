@@ -1,15 +1,16 @@
 ﻿using System;
 using AutoStep.Compiler;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts
 {
-    public class ArgumentPart : DefinitionContentPart
+    internal class ArgumentPart : DefinitionPart
     {
         public string? Name { get; set; }
 
         public ArgumentType? TypeHint { get; set; }
 
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<ContentPart> referenceParts)
+        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
             var currentPart = referenceParts[0];
             var remainingParts = referenceParts.Slice(1);
@@ -18,9 +19,9 @@ namespace AutoStep.Elements.Parts
             var contentPartsIndex = 0;
             var contentPartsLength = 1;
 
-            QuotePart? startQuote = currentPart as QuotePart;
+            QuoteToken? startQuote = currentPart as QuoteToken;
 
-            if (startQuote is QuotePart)
+            if (startQuote is QuoteToken)
             {
                 // Starting on a quote, so continue past gaps.
                 stopOnGap = false;
@@ -54,7 +55,7 @@ namespace AutoStep.Elements.Parts
 
                 matchedPartsCount++;
 
-                if (currentPart is QuotePart quote &&
+                if (currentPart is QuoteToken quote &&
                     startQuote is object &&
                     startQuote.IsDoubleQuote == quote.IsDoubleQuote)
                 {
@@ -73,16 +74,16 @@ namespace AutoStep.Elements.Parts
             return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(contentPartsIndex, contentPartsLength));
         }
 
-        public CompilerMessage? GetBindingMessage(ReadOnlySpan<ContentPart> referenceParts)
+        public CompilerMessage? GetBindingMessage(ReadOnlySpan<StepToken> referenceParts)
         {
             // Ok, so, does a step reference match? A step reference will 'match' any other part, but then we are going to apply some extra
             // logic and see whether the value fits.
-            if (referenceParts[0] is VariablePart var)
+            if (referenceParts[0] is VariableToken var)
             {
                 // It's a match, a variable can be anything (late-bound), so we will say it matches.
 
             }
-            else if (referenceParts[0] is WordPart word)
+            else if (referenceParts[0] is WordToken word)
             {
                 // Text will match, but let's look at the type of the argument.
 
@@ -92,7 +93,7 @@ namespace AutoStep.Elements.Parts
             return null;
         }
 
-        public override bool IsDefinitionPartMatch(DefinitionContentPart part)
+        public override bool IsDefinitionPartMatch(DefinitionPart part)
         {
             return part is ArgumentPart otherArg &&
                    Name == otherArg.Name &&

@@ -31,7 +31,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
+internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// </summary>
@@ -517,3 +517,4 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitDescription([NotNull] AutoStepParser.DescriptionContext context);
 }
 } // namespace AutoStep.Compiler.Parser
+

@@ -302,7 +302,7 @@ namespace AutoStep.Compiler
             where TElement : PositionalElement
         {
             element.SourceLine = start.Line;
-            element.SourceColumn = start.Column + 1;
+            element.StartColumn = start.Column + 1;
             element.EndColumn = stop.Column + (stop.StopIndex - stop.StartIndex) + 1;
 
             return element;
@@ -319,7 +319,7 @@ namespace AutoStep.Compiler
             where TElement : BuiltElement
         {
             element.SourceLine = ctxt.Start.Line;
-            element.SourceColumn = ctxt.Start.Column + 1;
+            element.StartColumn = ctxt.Start.Column + 1;
 
             return element;
         }
@@ -335,7 +335,7 @@ namespace AutoStep.Compiler
             where TElement : BuiltElement
         {
             element.SourceLine = ctxt.Symbol.Line;
-            element.SourceColumn = ctxt.Symbol.Column + 1;
+            element.StartColumn = ctxt.Symbol.Column + 1;
 
             return element;
         }

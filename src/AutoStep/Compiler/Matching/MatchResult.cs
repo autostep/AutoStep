@@ -7,7 +7,7 @@ namespace AutoStep.Compiler.Matching
     /// <summary>
     /// Defines a match result found while searching the MatchingTree.
     /// </summary>
-    public struct MatchResult : IEquatable<MatchResult>
+    internal struct MatchResult : IEquatable<MatchResult>
     {
         private List<CompilerMessage>? msgs;
 
@@ -43,11 +43,6 @@ namespace AutoStep.Compiler.Matching
         /// </summary>
         public bool IsExact { get; }
 
-        public void AddMessage(CompilerMessage msg)
-        {
-            msgs.Add(msg);
-        }
-
         /// <summary>
         /// Equals comparison.
         /// </summary>
@@ -68,6 +63,12 @@ namespace AutoStep.Compiler.Matching
         public static bool operator !=(MatchResult left, MatchResult right)
         {
             return !(left == right);
+        }
+
+
+        public void AddMessage(CompilerMessage msg)
+        {
+            msgs.Add(msg);
         }
 
         /// <inheritdoc/>

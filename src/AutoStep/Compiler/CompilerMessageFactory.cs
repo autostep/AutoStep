@@ -99,7 +99,7 @@ namespace AutoStep.Compiler
         /// <returns>The created message.</returns>
         public static CompilerMessage Create(string? sourceName, PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
-            return Create(sourceName, level, code, element.SourceLine, element.SourceColumn, element.SourceLine, element.EndColumn, args);
+            return Create(sourceName, level, code, element.SourceLine, element.StartColumn, element.SourceLine, element.EndColumn, args);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace AutoStep.Compiler
         /// <returns>The created message.</returns>
         public static CompilerMessage Create(string? sourceName, BuiltElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
-            return Create(sourceName, level, code, element.SourceLine, element.SourceColumn, args);
+            return Create(sourceName, level, code, element.SourceLine, element.StartColumn, args);
         }
 
         private static string GetMessageText(CompilerMessageCode code, object[] args)

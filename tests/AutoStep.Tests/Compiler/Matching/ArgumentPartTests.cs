@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
@@ -29,8 +30,8 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(1);
-            match.ResultParts.GetText(text).Should().Be("sample");
-            match.NewSpan[0].Should().Be(secondPart);
+            match.ResultTokens.GetText(text).Should().Be("sample");
+            match.RemainingTokens[0].Should().Be(secondPart);
         }
 
         [Fact]
@@ -41,10 +42,10 @@ namespace AutoStep.Tests.Compiler.Matching
             var text = "'foo bah' next";
 
             var parts = GetContentParts(
-                new QuotePart(0),
+                new QuoteToken(0),
                 WordFromString(text, "foo"),
                 WordFromString(text, "bah"),
-                new QuotePart(8),
+                new QuoteToken(8),
                 WordFromString(text, "next")
             );
 
@@ -53,8 +54,8 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(4);
-            match.ResultParts.GetText(text).Should().Be("foo bah");
-            match.NewSpan[0].GetText(text).Should().Be("next");
+            match.ResultTokens.GetText(text).Should().Be("foo bah");
+            match.RemainingTokens[0].GetText(text).Should().Be("next");
         }
 
         [Fact]
@@ -66,7 +67,7 @@ namespace AutoStep.Tests.Compiler.Matching
 
             var parts = GetContentParts(
                 WordFromString(text, "don"),
-                new QuotePart(3),
+                new QuoteToken(3),
                 WordFromString(text, "t")
             );
 
@@ -75,18 +76,70 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(3);
-            match.ResultParts.GetText(text).Should().Be("don't");
-            match.NewSpan.IsEmpty.Should().BeTrue();
+            match.ResultTokens.GetText(text).Should().Be("don't");
+            match.RemainingTokens.IsEmpty.Should().BeTrue();
         }
 
-        private WordPart WordFromString(string text, string subtext)
+        [Fact]
+        public void DoubleQuotedStringInMiddleOfSingleQuotedBlock()
+        {
+            var argPart = new ArgumentPart();
+
+            var text = "'foo \" bah\"' next";
+
+            var parts = GetContentParts(
+                new QuoteToken(0),
+                WordFromString(text, "foo"),
+                new QuoteToken(5) { IsDoubleQuote = true },
+                WordFromString(text, "bah"),
+                new QuoteToken(10) { IsDoubleQuote = true },
+                new QuoteToken(8),
+                WordFromString(text, "next")
+            );
+
+            var match = argPart.DoStepReferenceMatch(text, parts);
+
+            // If there's no 'grouping', then result should just be the one value.
+            match.IsExact.Should().Be(true);
+            match.Length.Should().Be(6);
+            match.ResultTokens.GetText(text).Should().Be("foo \" bah\"");
+            match.RemainingTokens[0].GetText(text).Should().Be("next");
+        }
+
+        [Fact]
+        public void SingleQuotedStringInMiddleOfDoubleQuotedBlock()
+        {
+            var argPart = new ArgumentPart();
+
+            var text = "\"foo ' bah'\" next";
+
+            var parts = GetContentParts(
+                new QuoteToken(0) { IsDoubleQuote = true },
+                WordFromString(text, "foo"),
+                new QuoteToken(5),
+                WordFromString(text, "bah"),
+                new QuoteToken(10),
+                new QuoteToken(8) { IsDoubleQuote = true },
+                WordFromString(text, "next")
+            );
+
+            var match = argPart.DoStepReferenceMatch(text, parts);
+
+            // If there's no 'grouping', then result should just be the one value.
+            match.IsExact.Should().Be(true);
+            match.Length.Should().Be(6);
+            match.ResultTokens.GetText(text).Should().Be("foo ' bah'");
+            match.RemainingTokens[0].GetText(text).Should().Be("next");
+        }
+
+        private WordToken WordFromString(string text, string subtext)
         {
             var position = text.IndexOf(subtext);
 
-            return new WordPart(position, subtext.Length);
+            return new WordToken(position, subtext.Length);
         }
 
-        private ReadOnlySpan<ContentPart> GetContentParts(params ContentPart[] part)
+        private ReadOnlySpan<StepToken> GetContentParts(params StepToken[] part)
         {
             return part.AsSpan();
         }

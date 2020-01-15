@@ -4,15 +4,16 @@ using System.Diagnostics;
 using AutoStep.Compiler;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts
 {
 
-    internal class WordDefinitionPart : DefinitionContentPart
+    internal class WordDefinitionPart : DefinitionPart
     {
         public string EscapedText { get; set; }
 
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<ContentPart> currentPartSpan)
+        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> currentPartSpan)
         {
             // The word definition part should:
             // - Consume text from the current part as much as it can (until either it has consumed all the text in the part or this word has run out of content)
@@ -78,9 +79,9 @@ namespace AutoStep.Elements.Parts
             return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
         }
 
-        public override bool IsDefinitionPartMatch(DefinitionContentPart part)
+        public override bool IsDefinitionPartMatch(DefinitionPart part)
         {
-            return part is DefinitionContentPart wrd && wrd.Text == Text;
+            return part is DefinitionPart wrd && wrd.Text == Text;
         }
 
     }

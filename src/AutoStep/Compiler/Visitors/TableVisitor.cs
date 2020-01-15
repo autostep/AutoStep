@@ -6,7 +6,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
-using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Compiler
 {
@@ -189,14 +189,14 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellWord([NotNull] AutoStepParser.CellWordContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
+            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
 
             return Result!;
         }
 
         public override TableElement VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
         {
-            var intPart = CreatePart(context, (s, l) => new IntPart(s, l));
+            var intPart = CreatePart(context, (s, l) => new IntToken(s, l));
 
             AddPart(intPart);
 
@@ -205,7 +205,7 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
         {
-            var floatPart = CreatePart(context, (s, l) => new FloatPart(s, l));
+            var floatPart = CreatePart(context, (s, l) => new FloatToken(s, l));
 
             AddPart(floatPart);
 
@@ -214,8 +214,8 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context)
         {
-            var part = CreatePart(context, (s, l) => new WordPart(s, l));
-            part.EscapedText = EscapeText(context, tableCellReplacements);
+            var part = CreatePart(context, (s, l) => new EscapedCharToken(s, l));
+            part.EscapedValue = EscapeText(context, tableCellReplacements);
 
             AddPart(part);
 
@@ -227,7 +227,7 @@ namespace AutoStep.Compiler
             Debug.Assert(Result is object);
             Debug.Assert(currentCell is object);
 
-            var variablePart = CreatePart(context, (s, l) => new VariablePart(s, l));
+            var variablePart = CreatePart(context, (s, l) => new VariableToken(s, l));
 
             variablePart.VariableName = context.cellVariableName().GetText();
 
@@ -248,7 +248,7 @@ namespace AutoStep.Compiler
 
         public override TableElement VisitCellColon([NotNull] AutoStepParser.CellColonContext context)
         {
-            AddPart(CreatePart(context, (s, l) => new WordPart(s, l)));
+            AddPart(CreatePart(context, (s, l) => new WordToken(s, l)));
 
             return Result!;
         }
@@ -258,15 +258,15 @@ namespace AutoStep.Compiler
             Debug.Assert(Result is object);
 
             // Interpolate part itself is just the colon.
-            AddPart(CreatePart(context.CELL_COLON(), (s, l) => new InterpolatePart(s, l)));
+            AddPart(CreatePart(context.CELL_COLON(), (s, l) => new InterpolateStartToken(s)));
 
             // Now add a part for the first word.
-            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new WordPart(s, l)));
+            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new WordToken(s, l)));
 
             return Result;
         }
 
-        private void AddPart(ContentPart part)
+        private void AddPart(StepToken part)
         {
             Debug.Assert(currentCell is object);
 
@@ -274,11 +274,11 @@ namespace AutoStep.Compiler
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)
-            where TStepPart : ContentPart
+            where TStepPart : StepToken
         {
             Debug.Assert(currentCell is object);
 
-            var offset = currentCell.SourceColumn;
+            var offset = currentCell.StartColumn;
             var start = (ctxt.Start.Column + 1) - offset;
             var startIndex = ctxt.Start.StartIndex;
 
@@ -290,11 +290,11 @@ namespace AutoStep.Compiler
         }
 
         private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt, Func<int, int, TStepPart> creator)
-            where TStepPart : ContentPart
+            where TStepPart : StepToken
         {
             Debug.Assert(currentCell is object);
 
-            var offset = currentCell.SourceColumn;
+            var offset = currentCell.StartColumn;
             var start = (ctxt.Symbol.Column + 1) - offset;
             var startIndex = ctxt.Symbol.StartIndex;
 

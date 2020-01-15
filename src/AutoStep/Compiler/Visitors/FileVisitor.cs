@@ -13,9 +13,9 @@ namespace AutoStep.Compiler
 {
     /// <summary>
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
-    /// and builts a <see cref="BuiltFile"/> from that tree.
+    /// and builts a <see cref="FileElement"/> from that tree.
     /// </summary>
-    internal class FileVisitor : BaseAutoStepVisitor<BuiltFile>
+    internal class FileVisitor : BaseAutoStepVisitor<FileElement>
     {
         private readonly StepReferenceVisitor stepVisitor;
         private readonly TableVisitor tableVisitor;
@@ -47,9 +47,9 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitFile(AutoStepParser.FileContext context)
+        public override FileElement VisitFile(AutoStepParser.FileContext context)
         {
-            Result = new BuiltFile();
+            Result = new FileElement();
 
             VisitChildren(context);
 
@@ -61,7 +61,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitFeatureBlock([NotNull] AutoStepParser.FeatureBlockContext context)
+        public override FileElement VisitFeatureBlock([NotNull] AutoStepParser.FeatureBlockContext context)
         {
             Debug.Assert(Result is object);
 
@@ -92,7 +92,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context)
+        public override FileElement VisitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context)
         {
             Debug.Assert(Result is object);
 
@@ -116,7 +116,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context)
+        public override FileElement VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context)
         {
             Debug.Assert(Result is object);
 
@@ -171,7 +171,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitFeatureDefinition([NotNull] AutoStepParser.FeatureDefinitionContext context)
+        public override FileElement VisitFeatureDefinition([NotNull] AutoStepParser.FeatureDefinitionContext context)
         {
             Debug.Assert(Result is object);
 
@@ -206,7 +206,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitBackgroundBlock([NotNull] AutoStepParser.BackgroundBlockContext context)
+        public override FileElement VisitBackgroundBlock([NotNull] AutoStepParser.BackgroundBlockContext context)
         {
             Debug.Assert(Result is object);
 
@@ -227,7 +227,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
-        public override BuiltFile VisitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context)
+        public override FileElement VisitStepDefinitionBlock([NotNull] AutoStepParser.StepDefinitionBlockContext context)
         {
             Debug.Assert(Result is object);
 
@@ -288,7 +288,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitScenarioBlock([NotNull] AutoStepParser.ScenarioBlockContext context)
+        public override FileElement VisitScenarioBlock([NotNull] AutoStepParser.ScenarioBlockContext context)
         {
             Debug.Assert(Result is object);
 
@@ -379,7 +379,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitGiven([NotNull] AutoStepParser.GivenContext context)
+        public override FileElement VisitGiven([NotNull] AutoStepParser.GivenContext context)
         {
             Debug.Assert(Result is object);
 
@@ -393,7 +393,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitThen([NotNull] AutoStepParser.ThenContext context)
+        public override FileElement VisitThen([NotNull] AutoStepParser.ThenContext context)
         {
             Debug.Assert(Result is object);
 
@@ -407,7 +407,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitWhen([NotNull] AutoStepParser.WhenContext context)
+        public override FileElement VisitWhen([NotNull] AutoStepParser.WhenContext context)
         {
             Debug.Assert(Result is object);
 
@@ -421,7 +421,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitAnd([NotNull] AutoStepParser.AndContext context)
+        public override FileElement VisitAnd([NotNull] AutoStepParser.AndContext context)
         {
             Debug.Assert(Result is object);
 
@@ -435,7 +435,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitStatementWithTable([NotNull] AutoStepParser.StatementWithTableContext context)
+        public override FileElement VisitStatementWithTable([NotNull] AutoStepParser.StatementWithTableContext context)
         {
             Debug.Assert(Result is object);
 
@@ -460,7 +460,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>
-        public override BuiltFile VisitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context)
+        public override FileElement VisitExampleBlock([NotNull] AutoStepParser.ExampleBlockContext context)
         {
             Debug.Assert(Result is object);
             Debug.Assert(currentScenario is object);

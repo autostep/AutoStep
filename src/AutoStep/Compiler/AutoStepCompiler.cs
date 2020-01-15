@@ -24,7 +24,7 @@ namespace AutoStep.Compiler
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    public partial class AutoStepCompiler : IAutoStepCompiler
+    internal partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
         private readonly ITracer? tracer;
@@ -57,8 +57,107 @@ namespace AutoStep.Compiler
             this.tracer = tracer;
         }
 
+
+        /// <summary>
+        /// Generates a step definition from a statement body/declaration.
+        /// </summary>
+        /// <param name="stepType">The type of step.</param>
+        /// <param name="statementBody">The body of the step.</param>
+        /// <returns>The step definition parsing result (which may contain errors).</returns>
+        public StepDefinitionFromBodyResult CompileStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
+        {
+            if (statementBody is null)
+            {
+                throw new ArgumentNullException(nameof(statementBody));
+            }
+
+            // Trim first, we don't want to worry about the whitespace at the end.
+            statementBody = statementBody.Trim();
+
+            var errors = new List<CompilerMessage>();
+            var success = true;
+
+            // Compile the text, specifying a starting lexical mode of 'statement'.
+            var parseContext = CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), out var tokenStream, out var parserErrors, AutoStepLexer.definition);
+
+            if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
+            {
+                errors.AddRange(parserErrors);
+                success = false;
+            }
+
+            // Now we need a visitor.
+            var stepReferenceVisitor = new StepDefinitionVisitor(null, tokenStream);
+
+            // Construct a 'reference' step.
+            var stepDefinition = stepReferenceVisitor.BuildStepDefinition(stepType, parseContext);
+
+            if (!stepReferenceVisitor.Success)
+            {
+                success = false;
+            }
+
+            errors.AddRange(stepReferenceVisitor.Messages);
+
+            if (stepDefinition.Arguments is object)
+            {
+                // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
+                foreach (var declaredArgument in stepDefinition.Arguments)
+                {
+                    // TODO: Validate argument type hints.
+                }
+            }
+
+            return new StepDefinitionFromBodyResult(success, errors, stepDefinition);
+        }
+
         /// <inheritdoc/>
-        public TContext CompileEntryPoint<TContext>(
+        public async ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            // Read from the content source.
+            var sourceContent = await source.GetContentAsync(cancelToken);
+
+            var fileContext = CompileEntryPoint(sourceContent, source.SourceName, p => p.file(), out var tokenStream, out var parserMessages);
+
+            // Allow the op to be cancelled before we jump into the tree walker.
+            if (cancelToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException();
+            }
+
+            // Inspect the errors.
+            if (parserMessages.Any())
+            {
+                // Parser failed.
+                return new FileCompilerResult(false, parserMessages);
+            }
+
+            // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
+            var compilerVisitor = new FileVisitor(source.SourceName, tokenStream);
+
+            var builtFile = compilerVisitor.Visit(fileContext);
+
+            // Compile the file.
+            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.Messages, compilerVisitor.Success ? builtFile : null);
+        }
+
+        /// <summary>
+        /// Compile a set of textual content into a resulting Antlr parse context, specifying the start point in the parse tree.
+        /// </summary>
+        /// <typeparam name="TContext">The type of context that is expected.</typeparam>
+        /// <param name="content">The text content to parse.</param>
+        /// <param name="sourceName">The name of the source (used for any errors).</param>
+        /// <param name="entryPoint">A function that invokes the relevant Antlr parser context method.</param>
+        /// <param name="tokenStream">The loaded token stream.</param>
+        /// <param name="parserErrors">Any parser errors.</param>
+        /// <param name="customLexerStartMode">An optional custom lexer mode to start parsing at.</param>
+        /// <returns>The parsed context.</returns>
+        private TContext CompileEntryPoint<TContext>(
             string content,
             string? sourceName,
             Func<AutoStepParser, TContext> entryPoint,
@@ -139,41 +238,6 @@ namespace AutoStep.Compiler
             tokenStream = commonTokenStream;
 
             return context;
-        }
-
-        /// <inheritdoc/>
-        public async ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            // Read from the content source.
-            var sourceContent = await source.GetContentAsync(cancelToken);
-
-            var fileContext = CompileEntryPoint(sourceContent, source.SourceName, p => p.file(), out var tokenStream, out var parserMessages);
-
-            // Allow the op to be cancelled before we jump into the tree walker.
-            if (cancelToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException();
-            }
-
-            // Inspect the errors.
-            if (parserMessages.Any())
-            {
-                // Parser failed.
-                return new FileCompilerResult(false, parserMessages);
-            }
-
-            // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
-            var compilerVisitor = new FileVisitor(source.SourceName, tokenStream);
-
-            var builtFile = compilerVisitor.Visit(fileContext);
-
-            // Compile the file.
-            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.Messages, compilerVisitor.Success ? builtFile : null);
         }
     }
 }

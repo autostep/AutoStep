@@ -34,7 +34,7 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public partial class AutoStepParserBaseListener : IAutoStepParserListener {
+internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -1016,3 +1016,4 @@ public partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	public virtual void VisitErrorNode([NotNull] IErrorNode node) { }
 }
 } // namespace AutoStep.Compiler.Parser
+

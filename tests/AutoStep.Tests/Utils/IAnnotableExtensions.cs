@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Utils
             builder.GetBuilt().Annotations.Add(new TagElement
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Tag = tagName
             });
 
@@ -24,7 +24,7 @@ namespace AutoStep.Tests.Utils
             builder.GetBuilt().Annotations.Add(new OptionElement(optionName)
             {
                 SourceLine = line,
-                SourceColumn = column
+                StartColumn = column
             });
 
             return builder;
@@ -35,7 +35,7 @@ namespace AutoStep.Tests.Utils
             builder.GetBuilt().Annotations.Add(new OptionElement(optionName)
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Setting = setting
             });
 

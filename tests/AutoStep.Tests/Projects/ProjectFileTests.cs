@@ -55,7 +55,7 @@ namespace AutoStep.Tests.Projects
         {
             var projFile = new ProjectFile("/test", new StringContentSource("something"));
 
-            var builtFile = new BuiltFile();
+            var builtFile = new FileElement();
             builtFile.AddStepDefinition(new StepDefinitionElement { Type = StepType.Given, Declaration = "I have done a thing" });
 
             var result = new FileCompilerResult(false, builtFile);

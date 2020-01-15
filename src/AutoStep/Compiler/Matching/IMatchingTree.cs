@@ -7,7 +7,7 @@ namespace AutoStep.Compiler.Matching
     /// <summary>
     /// Defines a tree used to search for step definitions from step references.
     /// </summary>
-    public interface IMatchingTree
+    internal interface IMatchingTree
     {
         /// <summary>
         /// Add a definition to the tree. An existing step definition where <see cref="StepDefinition.IsSameDefinition(StepDefinition)"/>

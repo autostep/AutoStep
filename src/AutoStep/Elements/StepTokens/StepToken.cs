@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 
-namespace AutoStep.Elements.Parts
+namespace AutoStep.Elements.StepTokens
 {
-    public abstract class ContentPart : PositionalElement
+    internal abstract class StepToken : PositionalElement
     {
-        protected ContentPart(int startIndex, int length)
+        protected StepToken(int startIndex, int length)
         {
             StartIndex = startIndex;
             Length = length;

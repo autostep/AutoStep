@@ -33,7 +33,7 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public partial class AutoStepParser : Parser {
+internal partial class AutoStepParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
@@ -132,7 +132,7 @@ public partial class AutoStepParser : Parser {
 		Interpreter = new ParserATNSimulator(this, _ATN, decisionToDFA, sharedContextCache);
 	}
 
-	public partial class FileContext : ParserRuleContext {
+	internal partial class FileContext : ParserRuleContext {
 		public ITerminalNode Eof() { return GetToken(AutoStepParser.Eof, 0); }
 		public ITerminalNode[] NEWLINE() { return GetTokens(AutoStepParser.NEWLINE); }
 		public ITerminalNode NEWLINE(int i) {
@@ -248,7 +248,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDefinitionBlockContext : ParserRuleContext {
+	internal partial class StepDefinitionBlockContext : ParserRuleContext {
 		public AnnotationsContext annotations() {
 			return GetRuleContext<AnnotationsContext>(0);
 		}
@@ -301,7 +301,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDefinitionContext : ParserRuleContext {
+	internal partial class StepDefinitionContext : ParserRuleContext {
 		public ITerminalNode STEP_DEFINE() { return GetToken(AutoStepParser.STEP_DEFINE, 0); }
 		public StepDeclarationContext stepDeclaration() {
 			return GetRuleContext<StepDeclarationContext>(0);
@@ -383,7 +383,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDefinitionBodyContext : ParserRuleContext {
+	internal partial class StepDefinitionBodyContext : ParserRuleContext {
 		public StepCollectionBodyLineContext[] stepCollectionBodyLine() {
 			return GetRuleContexts<StepCollectionBodyLineContext>();
 		}
@@ -446,7 +446,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationContext : ParserRuleContext {
+	internal partial class StepDeclarationContext : ParserRuleContext {
 		public StepDeclarationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -458,7 +458,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class DeclareGivenContext : StepDeclarationContext {
+	internal partial class DeclareGivenContext : StepDeclarationContext {
 		public ITerminalNode DEF_GIVEN() { return GetToken(AutoStepParser.DEF_GIVEN, 0); }
 		public StepDeclarationBodyContext stepDeclarationBody() {
 			return GetRuleContext<StepDeclarationBodyContext>(0);
@@ -478,7 +478,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclareWhenContext : StepDeclarationContext {
+	internal partial class DeclareWhenContext : StepDeclarationContext {
 		public ITerminalNode DEF_WHEN() { return GetToken(AutoStepParser.DEF_WHEN, 0); }
 		public StepDeclarationBodyContext stepDeclarationBody() {
 			return GetRuleContext<StepDeclarationBodyContext>(0);
@@ -498,7 +498,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclareThenContext : StepDeclarationContext {
+	internal partial class DeclareThenContext : StepDeclarationContext {
 		public ITerminalNode DEF_THEN() { return GetToken(AutoStepParser.DEF_THEN, 0); }
 		public StepDeclarationBodyContext stepDeclarationBody() {
 			return GetRuleContext<StepDeclarationBodyContext>(0);
@@ -566,7 +566,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationBodyContext : ParserRuleContext {
+	internal partial class StepDeclarationBodyContext : ParserRuleContext {
 		public StepDeclarationSectionContext[] stepDeclarationSection() {
 			return GetRuleContexts<StepDeclarationSectionContext>();
 		}
@@ -627,7 +627,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationSectionContext : ParserRuleContext {
+	internal partial class StepDeclarationSectionContext : ParserRuleContext {
 		public StepDeclarationSectionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -639,7 +639,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class DeclarationSectionContext : StepDeclarationSectionContext {
+	internal partial class DeclarationSectionContext : StepDeclarationSectionContext {
 		public StepDeclarationSectionContentContext stepDeclarationSectionContent() {
 			return GetRuleContext<StepDeclarationSectionContentContext>(0);
 		}
@@ -658,7 +658,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclarationArgumentContext : StepDeclarationSectionContext {
+	internal partial class DeclarationArgumentContext : StepDeclarationSectionContext {
 		public ITerminalNode DEF_LCURLY() { return GetToken(AutoStepParser.DEF_LCURLY, 0); }
 		public StepDeclarationArgumentContext stepDeclarationArgument() {
 			return GetRuleContext<StepDeclarationArgumentContext>(0);
@@ -723,7 +723,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationArgumentContext : ParserRuleContext {
+	internal partial class StepDeclarationArgumentContext : ParserRuleContext {
 		public StepDeclarationArgumentNameContext stepDeclarationArgumentName() {
 			return GetRuleContext<StepDeclarationArgumentNameContext>(0);
 		}
@@ -783,7 +783,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationArgumentNameContext : ParserRuleContext {
+	internal partial class StepDeclarationArgumentNameContext : ParserRuleContext {
 		public ITerminalNode DEF_WORD() { return GetToken(AutoStepParser.DEF_WORD, 0); }
 		public StepDeclarationArgumentNameContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -826,7 +826,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationTypeHintContext : ParserRuleContext {
+	internal partial class StepDeclarationTypeHintContext : ParserRuleContext {
 		public ITerminalNode DEF_WORD() { return GetToken(AutoStepParser.DEF_WORD, 0); }
 		public StepDeclarationTypeHintContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -869,7 +869,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepDeclarationSectionContentContext : ParserRuleContext {
+	internal partial class StepDeclarationSectionContentContext : ParserRuleContext {
 		public StepDeclarationSectionContentContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -881,7 +881,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class DeclarationWordContext : StepDeclarationSectionContentContext {
+	internal partial class DeclarationWordContext : StepDeclarationSectionContentContext {
 		public ITerminalNode DEF_WORD() { return GetToken(AutoStepParser.DEF_WORD, 0); }
 		public DeclarationWordContext(StepDeclarationSectionContentContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -898,7 +898,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclarationWsContext : StepDeclarationSectionContentContext {
+	internal partial class DeclarationWsContext : StepDeclarationSectionContentContext {
 		public ITerminalNode DEF_WS() { return GetToken(AutoStepParser.DEF_WS, 0); }
 		public DeclarationWsContext(StepDeclarationSectionContentContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -915,7 +915,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclarationColonContext : StepDeclarationSectionContentContext {
+	internal partial class DeclarationColonContext : StepDeclarationSectionContentContext {
 		public ITerminalNode DEF_COLON() { return GetToken(AutoStepParser.DEF_COLON, 0); }
 		public DeclarationColonContext(StepDeclarationSectionContentContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -932,7 +932,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class DeclarationEscapedContext : StepDeclarationSectionContentContext {
+	internal partial class DeclarationEscapedContext : StepDeclarationSectionContentContext {
 		public ITerminalNode DEF_ESCAPED_LCURLY() { return GetToken(AutoStepParser.DEF_ESCAPED_LCURLY, 0); }
 		public ITerminalNode DEF_ESCAPED_RCURLY() { return GetToken(AutoStepParser.DEF_ESCAPED_RCURLY, 0); }
 		public DeclarationEscapedContext(StepDeclarationSectionContentContext context) { CopyFrom(context); }
@@ -1012,7 +1012,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FeatureBlockContext : ParserRuleContext {
+	internal partial class FeatureBlockContext : ParserRuleContext {
 		public AnnotationsContext annotations() {
 			return GetRuleContext<AnnotationsContext>(0);
 		}
@@ -1077,7 +1077,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AnnotationsContext : ParserRuleContext {
+	internal partial class AnnotationsContext : ParserRuleContext {
 		public AnnotationContext[] annotation() {
 			return GetRuleContexts<AnnotationContext>();
 		}
@@ -1140,7 +1140,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AnnotationContext : ParserRuleContext {
+	internal partial class AnnotationContext : ParserRuleContext {
 		public AnnotationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1152,7 +1152,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class BlankContext : AnnotationContext {
+	internal partial class BlankContext : AnnotationContext {
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
 		public BlankContext(AnnotationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -1169,7 +1169,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class OptionAnnotationContext : AnnotationContext {
+	internal partial class OptionAnnotationContext : AnnotationContext {
 		public ITerminalNode OPTION() { return GetToken(AutoStepParser.OPTION, 0); }
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
 		public ITerminalNode WS() { return GetToken(AutoStepParser.WS, 0); }
@@ -1188,7 +1188,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class TagAnnotationContext : AnnotationContext {
+	internal partial class TagAnnotationContext : AnnotationContext {
 		public ITerminalNode TAG() { return GetToken(AutoStepParser.TAG, 0); }
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
 		public ITerminalNode WS() { return GetToken(AutoStepParser.WS, 0); }
@@ -1271,7 +1271,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FeatureDefinitionContext : ParserRuleContext {
+	internal partial class FeatureDefinitionContext : ParserRuleContext {
 		public FeatureTitleContext featureTitle() {
 			return GetRuleContext<FeatureTitleContext>(0);
 		}
@@ -1341,7 +1341,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FeatureTitleContext : ParserRuleContext {
+	internal partial class FeatureTitleContext : ParserRuleContext {
 		public ITerminalNode FEATURE() { return GetToken(AutoStepParser.FEATURE, 0); }
 		public TextContext text() {
 			return GetRuleContext<TextContext>(0);
@@ -1398,7 +1398,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FeatureBodyContext : ParserRuleContext {
+	internal partial class FeatureBodyContext : ParserRuleContext {
 		public ScenarioBlockContext[] scenarioBlock() {
 			return GetRuleContexts<ScenarioBlockContext>();
 		}
@@ -1461,7 +1461,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class BackgroundBlockContext : ParserRuleContext {
+	internal partial class BackgroundBlockContext : ParserRuleContext {
 		public ITerminalNode BACKGROUND() { return GetToken(AutoStepParser.BACKGROUND, 0); }
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
 		public BackgroundBodyContext backgroundBody() {
@@ -1521,7 +1521,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class BackgroundBodyContext : ParserRuleContext {
+	internal partial class BackgroundBodyContext : ParserRuleContext {
 		public StepCollectionBodyLineContext[] stepCollectionBodyLine() {
 			return GetRuleContexts<StepCollectionBodyLineContext>();
 		}
@@ -1584,7 +1584,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ScenarioBlockContext : ParserRuleContext {
+	internal partial class ScenarioBlockContext : ParserRuleContext {
 		public AnnotationsContext annotations() {
 			return GetRuleContext<AnnotationsContext>(0);
 		}
@@ -1641,7 +1641,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ScenarioDefinitionContext : ParserRuleContext {
+	internal partial class ScenarioDefinitionContext : ParserRuleContext {
 		public ScenarioTitleContext scenarioTitle() {
 			return GetRuleContext<ScenarioTitleContext>(0);
 		}
@@ -1711,7 +1711,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ScenarioTitleContext : ParserRuleContext {
+	internal partial class ScenarioTitleContext : ParserRuleContext {
 		public ScenarioTitleContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1723,7 +1723,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class NormalScenarioTitleContext : ScenarioTitleContext {
+	internal partial class NormalScenarioTitleContext : ScenarioTitleContext {
 		public ITerminalNode SCENARIO() { return GetToken(AutoStepParser.SCENARIO, 0); }
 		public TextContext text() {
 			return GetRuleContext<TextContext>(0);
@@ -1744,7 +1744,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ScenarioOutlineTitleContext : ScenarioTitleContext {
+	internal partial class ScenarioOutlineTitleContext : ScenarioTitleContext {
 		public ITerminalNode SCENARIO_OUTLINE() { return GetToken(AutoStepParser.SCENARIO_OUTLINE, 0); }
 		public TextContext text() {
 			return GetRuleContext<TextContext>(0);
@@ -1823,7 +1823,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ScenarioBodyContext : ParserRuleContext {
+	internal partial class ScenarioBodyContext : ParserRuleContext {
 		public StepCollectionBodyLineContext[] stepCollectionBodyLine() {
 			return GetRuleContexts<StepCollectionBodyLineContext>();
 		}
@@ -1886,7 +1886,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StepCollectionBodyLineContext : ParserRuleContext {
+	internal partial class StepCollectionBodyLineContext : ParserRuleContext {
 		public StatementBlockContext statementBlock() {
 			return GetRuleContext<StatementBlockContext>(0);
 		}
@@ -1950,7 +1950,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementBlockContext : ParserRuleContext {
+	internal partial class StatementBlockContext : ParserRuleContext {
 		public StatementBlockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1962,7 +1962,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class StatementEofTerminatedContext : StatementBlockContext {
+	internal partial class StatementEofTerminatedContext : StatementBlockContext {
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
@@ -1986,7 +1986,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementLineTerminatedContext : StatementBlockContext {
+	internal partial class StatementLineTerminatedContext : StatementBlockContext {
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
@@ -2007,7 +2007,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementWithTableContext : StatementBlockContext {
+	internal partial class StatementWithTableContext : StatementBlockContext {
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
@@ -2132,7 +2132,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementContext : ParserRuleContext {
+	internal partial class StatementContext : ParserRuleContext {
 		public StatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -2144,7 +2144,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class GivenContext : StatementContext {
+	internal partial class GivenContext : StatementContext {
 		public ITerminalNode GIVEN() { return GetToken(AutoStepParser.GIVEN, 0); }
 		public StatementBodyContext statementBody() {
 			return GetRuleContext<StatementBodyContext>(0);
@@ -2164,7 +2164,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class AndContext : StatementContext {
+	internal partial class AndContext : StatementContext {
 		public ITerminalNode AND() { return GetToken(AutoStepParser.AND, 0); }
 		public StatementBodyContext statementBody() {
 			return GetRuleContext<StatementBodyContext>(0);
@@ -2184,7 +2184,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ThenContext : StatementContext {
+	internal partial class ThenContext : StatementContext {
 		public ITerminalNode THEN() { return GetToken(AutoStepParser.THEN, 0); }
 		public StatementBodyContext statementBody() {
 			return GetRuleContext<StatementBodyContext>(0);
@@ -2204,7 +2204,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class WhenContext : StatementContext {
+	internal partial class WhenContext : StatementContext {
 		public ITerminalNode WHEN() { return GetToken(AutoStepParser.WHEN, 0); }
 		public StatementBodyContext statementBody() {
 			return GetRuleContext<StatementBodyContext>(0);
@@ -2280,7 +2280,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementBodyContext : ParserRuleContext {
+	internal partial class StatementBodyContext : ParserRuleContext {
 		public StatementSectionContext[] statementSection() {
 			return GetRuleContexts<StatementSectionContext>();
 		}
@@ -2341,7 +2341,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementSectionContext : ParserRuleContext {
+	internal partial class StatementSectionContext : ParserRuleContext {
 		public StatementSectionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -2353,7 +2353,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class StatementVarUnmatchedContext : StatementSectionContext {
+	internal partial class StatementVarUnmatchedContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_VAR_START() { return GetToken(AutoStepParser.STATEMENT_VAR_START, 0); }
 		public ITerminalNode STATEMENT_VAR_STOP() { return GetToken(AutoStepParser.STATEMENT_VAR_STOP, 0); }
 		public StatementVarUnmatchedContext(StatementSectionContext context) { CopyFrom(context); }
@@ -2371,7 +2371,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementEscapedCharContext : StatementSectionContext {
+	internal partial class StatementEscapedCharContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_ESCAPED_QUOTE() { return GetToken(AutoStepParser.STATEMENT_ESCAPED_QUOTE, 0); }
 		public ITerminalNode STATEMENT_ESCAPED_DBLQUOTE() { return GetToken(AutoStepParser.STATEMENT_ESCAPED_DBLQUOTE, 0); }
 		public ITerminalNode STATEMENT_ESCAPED_VARSTART() { return GetToken(AutoStepParser.STATEMENT_ESCAPED_VARSTART, 0); }
@@ -2391,7 +2391,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementVariableContext : StatementSectionContext {
+	internal partial class StatementVariableContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_VAR_START() { return GetToken(AutoStepParser.STATEMENT_VAR_START, 0); }
 		public StatementVariableNameContext statementVariableName() {
 			return GetRuleContext<StatementVariableNameContext>(0);
@@ -2412,7 +2412,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementBlockWsContext : StatementSectionContext {
+	internal partial class StatementBlockWsContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_WS() { return GetToken(AutoStepParser.STATEMENT_WS, 0); }
 		public StatementBlockWsContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2429,7 +2429,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementDoubleQuoteContext : StatementSectionContext {
+	internal partial class StatementDoubleQuoteContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_DOUBLE_QUOTE() { return GetToken(AutoStepParser.STATEMENT_DOUBLE_QUOTE, 0); }
 		public StatementDoubleQuoteContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2446,7 +2446,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementColonContext : StatementSectionContext {
+	internal partial class StatementColonContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_COLON() { return GetToken(AutoStepParser.STATEMENT_COLON, 0); }
 		public StatementColonContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2463,7 +2463,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementWordContext : StatementSectionContext {
+	internal partial class StatementWordContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_WORD() { return GetToken(AutoStepParser.STATEMENT_WORD, 0); }
 		public StatementWordContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2480,7 +2480,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementFloatContext : StatementSectionContext {
+	internal partial class StatementFloatContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_FLOAT() { return GetToken(AutoStepParser.STATEMENT_FLOAT, 0); }
 		public StatementFloatContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2497,7 +2497,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementInterpolateContext : StatementSectionContext {
+	internal partial class StatementInterpolateContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_COLON() { return GetToken(AutoStepParser.STATEMENT_COLON, 0); }
 		public ITerminalNode STATEMENT_WORD() { return GetToken(AutoStepParser.STATEMENT_WORD, 0); }
 		public StatementInterpolateContext(StatementSectionContext context) { CopyFrom(context); }
@@ -2515,7 +2515,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementQuoteContext : StatementSectionContext {
+	internal partial class StatementQuoteContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_QUOTE() { return GetToken(AutoStepParser.STATEMENT_QUOTE, 0); }
 		public StatementQuoteContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2532,7 +2532,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StatementIntContext : StatementSectionContext {
+	internal partial class StatementIntContext : StatementSectionContext {
 		public ITerminalNode STATEMENT_INT() { return GetToken(AutoStepParser.STATEMENT_INT, 0); }
 		public StatementIntContext(StatementSectionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -2668,7 +2668,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementVariableNameContext : ParserRuleContext {
+	internal partial class StatementVariableNameContext : ParserRuleContext {
 		public StatementVarPhraseContext[] statementVarPhrase() {
 			return GetRuleContexts<StatementVarPhraseContext>();
 		}
@@ -2735,7 +2735,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementVarPhraseContext : ParserRuleContext {
+	internal partial class StatementVarPhraseContext : ParserRuleContext {
 		public ITerminalNode[] STATEMENT_WORD() { return GetTokens(AutoStepParser.STATEMENT_WORD); }
 		public ITerminalNode STATEMENT_WORD(int i) {
 			return GetToken(AutoStepParser.STATEMENT_WORD, i);
@@ -2806,7 +2806,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ExamplesContext : ParserRuleContext {
+	internal partial class ExamplesContext : ParserRuleContext {
 		public ExampleBlockContext[] exampleBlock() {
 			return GetRuleContexts<ExampleBlockContext>();
 		}
@@ -2869,7 +2869,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ExampleBlockContext : ParserRuleContext {
+	internal partial class ExampleBlockContext : ParserRuleContext {
 		public AnnotationsContext annotations() {
 			return GetRuleContext<AnnotationsContext>(0);
 		}
@@ -2948,7 +2948,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableBlockContext : ParserRuleContext {
+	internal partial class TableBlockContext : ParserRuleContext {
 		public TableHeaderContext tableHeader() {
 			return GetRuleContext<TableHeaderContext>(0);
 		}
@@ -3057,7 +3057,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableHeaderContext : ParserRuleContext {
+	internal partial class TableHeaderContext : ParserRuleContext {
 		public ITerminalNode CELL_DELIMITER() { return GetToken(AutoStepParser.CELL_DELIMITER, 0); }
 		public ITerminalNode ROW_NL() { return GetToken(AutoStepParser.ROW_NL, 0); }
 		public TableHeaderCellContext[] tableHeaderCell() {
@@ -3128,7 +3128,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableHeaderCellContext : ParserRuleContext {
+	internal partial class TableHeaderCellContext : ParserRuleContext {
 		public ITerminalNode TABLE_START() { return GetToken(AutoStepParser.TABLE_START, 0); }
 		public ITerminalNode CELL_DELIMITER() { return GetToken(AutoStepParser.CELL_DELIMITER, 0); }
 		public ITerminalNode[] CELL_WS() { return GetTokens(AutoStepParser.CELL_WS); }
@@ -3215,7 +3215,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableRowContext : ParserRuleContext {
+	internal partial class TableRowContext : ParserRuleContext {
 		public ITerminalNode CELL_DELIMITER() { return GetToken(AutoStepParser.CELL_DELIMITER, 0); }
 		public ITerminalNode ROW_NL() { return GetToken(AutoStepParser.ROW_NL, 0); }
 		public TableRowCellContext[] tableRowCell() {
@@ -3286,7 +3286,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableRowCellContext : ParserRuleContext {
+	internal partial class TableRowCellContext : ParserRuleContext {
 		public ITerminalNode TABLE_START() { return GetToken(AutoStepParser.TABLE_START, 0); }
 		public ITerminalNode CELL_DELIMITER() { return GetToken(AutoStepParser.CELL_DELIMITER, 0); }
 		public ITerminalNode[] CELL_WS() { return GetTokens(AutoStepParser.CELL_WS); }
@@ -3373,7 +3373,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TableRowCellContentContext : ParserRuleContext {
+	internal partial class TableRowCellContentContext : ParserRuleContext {
 		public CellContentBlockContext[] cellContentBlock() {
 			return GetRuleContexts<CellContentBlockContext>();
 		}
@@ -3454,7 +3454,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class CellContentBlockContext : ParserRuleContext {
+	internal partial class CellContentBlockContext : ParserRuleContext {
 		public CellContentBlockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -3466,7 +3466,7 @@ public partial class AutoStepParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class CellColonContext : CellContentBlockContext {
+	internal partial class CellColonContext : CellContentBlockContext {
 		public ITerminalNode CELL_COLON() { return GetToken(AutoStepParser.CELL_COLON, 0); }
 		public CellColonContext(CellContentBlockContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -3483,7 +3483,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellEscapedCharContext : CellContentBlockContext {
+	internal partial class CellEscapedCharContext : CellContentBlockContext {
 		public ITerminalNode CELL_ESCAPED_DELIMITER() { return GetToken(AutoStepParser.CELL_ESCAPED_DELIMITER, 0); }
 		public ITerminalNode CELL_ESCAPED_VARSTART() { return GetToken(AutoStepParser.CELL_ESCAPED_VARSTART, 0); }
 		public ITerminalNode CELL_ESCAPED_VAREND() { return GetToken(AutoStepParser.CELL_ESCAPED_VAREND, 0); }
@@ -3502,7 +3502,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellVariableContext : CellContentBlockContext {
+	internal partial class CellVariableContext : CellContentBlockContext {
 		public ITerminalNode CELL_VAR_START() { return GetToken(AutoStepParser.CELL_VAR_START, 0); }
 		public CellVariableNameContext cellVariableName() {
 			return GetRuleContext<CellVariableNameContext>(0);
@@ -3523,7 +3523,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellInterpolateContext : CellContentBlockContext {
+	internal partial class CellInterpolateContext : CellContentBlockContext {
 		public ITerminalNode CELL_COLON() { return GetToken(AutoStepParser.CELL_COLON, 0); }
 		public ITerminalNode CELL_WORD() { return GetToken(AutoStepParser.CELL_WORD, 0); }
 		public CellInterpolateContext(CellContentBlockContext context) { CopyFrom(context); }
@@ -3541,7 +3541,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellIntContext : CellContentBlockContext {
+	internal partial class CellIntContext : CellContentBlockContext {
 		public ITerminalNode CELL_INT() { return GetToken(AutoStepParser.CELL_INT, 0); }
 		public CellIntContext(CellContentBlockContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -3558,7 +3558,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellWordContext : CellContentBlockContext {
+	internal partial class CellWordContext : CellContentBlockContext {
 		public ITerminalNode CELL_WORD() { return GetToken(AutoStepParser.CELL_WORD, 0); }
 		public CellWordContext(CellContentBlockContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -3575,7 +3575,7 @@ public partial class AutoStepParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class CellFloatContext : CellContentBlockContext {
+	internal partial class CellFloatContext : CellContentBlockContext {
 		public ITerminalNode CELL_FLOAT() { return GetToken(AutoStepParser.CELL_FLOAT, 0); }
 		public CellFloatContext(CellContentBlockContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -3675,7 +3675,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class CellVariableNameContext : ParserRuleContext {
+	internal partial class CellVariableNameContext : ParserRuleContext {
 		public CellVarPhraseContext[] cellVarPhrase() {
 			return GetRuleContexts<CellVarPhraseContext>();
 		}
@@ -3744,7 +3744,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class CellVarPhraseContext : ParserRuleContext {
+	internal partial class CellVarPhraseContext : ParserRuleContext {
 		public ITerminalNode[] CELL_WORD() { return GetTokens(AutoStepParser.CELL_WORD); }
 		public ITerminalNode CELL_WORD(int i) {
 			return GetToken(AutoStepParser.CELL_WORD, i);
@@ -3815,7 +3815,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TextContext : ParserRuleContext {
+	internal partial class TextContext : ParserRuleContext {
 		public ITerminalNode[] WORD() { return GetTokens(AutoStepParser.WORD); }
 		public ITerminalNode WORD(int i) {
 			return GetToken(AutoStepParser.WORD, i);
@@ -3887,7 +3887,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class LineContext : ParserRuleContext {
+	internal partial class LineContext : ParserRuleContext {
 		public ITerminalNode NEWLINE() { return GetToken(AutoStepParser.NEWLINE, 0); }
 		public ITerminalNode WS() { return GetToken(AutoStepParser.WS, 0); }
 		public TextContext text() {
@@ -3953,7 +3953,7 @@ public partial class AutoStepParser : Parser {
 		return _localctx;
 	}
 
-	public partial class DescriptionContext : ParserRuleContext {
+	internal partial class DescriptionContext : ParserRuleContext {
 		public ITerminalNode[] NEWLINE() { return GetTokens(AutoStepParser.NEWLINE); }
 		public ITerminalNode NEWLINE(int i) {
 			return GetToken(AutoStepParser.NEWLINE, i);
@@ -4483,3 +4483,4 @@ public partial class AutoStepParser : Parser {
 
 }
 } // namespace AutoStep.Compiler.Parser
+

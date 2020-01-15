@@ -33,7 +33,7 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public partial class AutoStepParserBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, IAutoStepParserVisitor<Result> {
+internal partial class AutoStepParserBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, IAutoStepParserVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// <para>
@@ -815,3 +815,4 @@ public partial class AutoStepParserBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitDescription([NotNull] AutoStepParser.DescriptionContext context) { return VisitChildren(context); }
 }
 } // namespace AutoStep.Compiler.Parser
+

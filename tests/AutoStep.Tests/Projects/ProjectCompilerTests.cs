@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Tests.Builders;
 using FluentAssertions;
@@ -48,7 +49,7 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
-                new FileCompilerResult(true, new BuiltFile())
+                new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
@@ -121,7 +122,7 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
-                new FileCompilerResult(true, new BuiltFile())
+                new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
@@ -155,7 +156,7 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
-                new FileCompilerResult(true, new BuiltFile())
+                new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
