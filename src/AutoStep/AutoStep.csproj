@@ -39,6 +39,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerMessageCodeText.resx</DependentUpon>
     </Compile>
+    <Compile Update="Compiler\LanguageEngineExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LanguageEngineExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Compiler\Matching\MatchingTreeMessages.Designer.cs">
       <DependentUpon>MatchingTreeMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -48,6 +53,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>TokenStreamExtensionsMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Elements\ElementExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -60,6 +70,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerMessageCodeText.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Compiler\LanguageEngineExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LanguageEngineExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Compiler\Matching\MatchingTreeMessages.resx">
       <LastGenOutput>MatchingTreeMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -67,6 +81,10 @@
     <EmbeddedResource Update="Compiler\TokenStreamExtensionsMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>TokenStreamExtensionsMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Elements\ElementExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

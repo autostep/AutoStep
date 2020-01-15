@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
 {
@@ -14,8 +15,8 @@ namespace AutoStep.Elements
     /// </remarks>
     public class StepReferenceElement : BuiltElement
     {
-        private List<StepArgumentElement>? arguments;
-        private List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
+        private List<StepToken> workingTokens = new List<StepToken>();
+        private StepToken[]? frozenTokens = null;
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
@@ -35,11 +36,6 @@ namespace AutoStep.Elements
         public string? RawText { get; set; }
 
         /// <summary>
-        /// Gets the set of arguments presented by the Step Reference.
-        /// </summary>
-        public IReadOnlyCollection<StepArgumentElement>? Arguments => arguments;
-
-        /// <summary>
         /// Gets the bound step definition; will be null if the step cannot be bound, or the linker could not find a matching step definition.
         /// </summary>
         public StepDefinition? BoundDefinition { get; private set; }
@@ -47,7 +43,7 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
         /// </summary>
-        internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
+        internal ReadOnlySpan<StepToken> TokenSpan => frozenTokens ?? throw new InvalidOperationException(ElementExceptionMessages.TokensNotFrozen);
 
         /// <summary>
         /// Gets or sets the associated table for this step.
@@ -55,38 +51,38 @@ namespace AutoStep.Elements
         public TableElement? Table { get; set; }
 
         /// <summary>
-        /// Adds an argument to the step reference.
+        /// Adds a token to the step reference.
         /// </summary>
-        /// <param name="argument">The argument to add.</param>
-        public void AddArgument(StepArgumentElement argument)
+        /// <param name="token">The part to add.</param>
+        internal void AddToken(StepToken token)
         {
-            if (argument is null)
+            if (token is null)
             {
-                throw new System.ArgumentNullException(nameof(argument));
+                throw new ArgumentNullException(nameof(token));
             }
 
-            if (arguments == null)
+            if (frozenTokens is object)
             {
-                arguments = new List<StepArgumentElement>();
+                throw new InvalidOperationException(ElementExceptionMessages.TokensAlreadyFrozen);
             }
 
-            matchingParts.Add(new StepMatchingPart(argument.Type));
-
-            arguments.Add(argument);
+            workingTokens.Add(token);
         }
 
         /// <summary>
-        /// Adds a block of matching text to the step reference.
+        /// Freezes the set of working tokens into an array of tokens (so that a span can be constructed).
         /// </summary>
-        /// <param name="textContent">The body of the matching text.</param>
-        public void AddMatchingText(string textContent)
+        internal void FreezeParts()
         {
-            if (textContent is null)
+            if (frozenTokens is object)
             {
-                throw new System.ArgumentNullException(nameof(textContent));
+                throw new InvalidOperationException(ElementExceptionMessages.TokensAlreadyFrozen);
             }
 
-            matchingParts.Add(new StepMatchingPart(textContent));
+            frozenTokens = workingTokens.ToArray();
+
+            // Wipe the working parts, we aren't going to be using them anymore.
+            workingTokens = null!;
         }
 
         /// <summary>

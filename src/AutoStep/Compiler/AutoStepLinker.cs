@@ -46,80 +46,6 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Generates a step definition from a statement body/declaration.
-        /// </summary>
-        /// <param name="stepType">The type of step.</param>
-        /// <param name="statementBody">The body of the step.</param>
-        /// <returns>The step definition parsing result (which may contain errors).</returns>
-        internal StepDefinitionFromBodyResult GetStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
-        {
-            if (statementBody is null)
-            {
-                throw new ArgumentNullException(nameof(statementBody));
-            }
-
-            // Trim first, we don't want to worry about the whitespace at the end.
-            statementBody = statementBody.Trim();
-
-            var errors = new List<CompilerMessage>();
-            var success = false;
-
-            // Compile the text, specifying a starting lexical mode of 'statement'.
-            var parseContext = compiler.CompileEntryPoint(statementBody, null, p => p.statementBody(), out var tokenStream, out var parserErrors, AutoStepLexer.statement);
-
-            if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
-            {
-                errors.AddRange(parserErrors);
-            }
-
-            // Now we need a visitor.
-            var stepReferenceVisitor = new StepReferenceVisitor(null, tokenStream);
-
-            // Construct a 'reference' step.
-            var stepReference = stepReferenceVisitor.BuildStep(stepType, null, parseContext);
-
-            StepDefinitionElement? definition = null;
-
-            if (stepReference != null)
-            {
-                definition = new StepDefinitionElement { SourceLine = 1, SourceColumn = 1 };
-
-                definition.UpdateFromStepReference(stepReference);
-
-                success = true;
-
-                if (definition.Arguments is object)
-                {
-                    // At this point, we'll validate the provided 'arguments' to the step. All the arguments should just be variable names.
-                    foreach (var declaredArgument in definition.Arguments)
-                    {
-                        if (declaredArgument.Type == ArgumentType.Empty)
-                        {
-                            errors.Add(CompilerMessageFactory.Create(null, declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired));
-                            success = false;
-                        }
-                        else if (declaredArgument.Value is null)
-                        {
-                            // If the value cannot be immediately determined, it means there is some dynamic component (e.g. insertion variables or example inserts).
-                            // Everything else is allowed.
-                            var argumentName = declaredArgument.RawArgument;
-
-                            if (declaredArgument.Type == ArgumentType.Interpolated)
-                            {
-                                argumentName = ":" + argumentName;
-                            }
-
-                            errors.Add(CompilerMessageFactory.Create(null, declaredArgument, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition, argumentName!));
-                            success = false;
-                        }
-                    }
-                }
-            }
-
-            return new StepDefinitionFromBodyResult(success, errors, definition);
-        }
-
-        /// <summary>
         /// Adds a source of step definitions to the linker.
         /// </summary>
         /// <param name="source">The source to add.</param>
@@ -191,7 +117,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="file">The file to link.</param>
         /// <returns>A link result (including a reference to the same file).</returns>
-        public LinkResult Link(BuiltFile file)
+        public LinkResult Link(FileElement file)
         {
             if (file is null)
             {
@@ -246,7 +172,7 @@ namespace AutoStep.Compiler
             {
                 if (stepDef.Definition is null)
                 {
-                    var definitionResult = GetStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
+                    var definitionResult = compiler.CompileStepDefinitionElementFromStatementBody(stepDef.Type, stepDef.Declaration);
 
                     if (definitionResult.Success)
                     {

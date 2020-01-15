@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements;
 
-namespace AutoStep
+namespace AutoStep.Elements
 {
     /// <summary>
     /// Defines the built content of an AutoStep content source (i.e. a raw file becomes a set of built content).
     /// </summary>
-    public class BuiltContent : BuiltElement
+    public class CodeEntityElement : BuiltElement
     {
         private List<StepDefinitionElement>? stepDefinitions;
 

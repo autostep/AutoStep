@@ -1,32 +1,92 @@
 ﻿using System;
 using AutoStep.Elements;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Tests.Builders
 {
     public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
-        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
+        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new StepReferenceElement
             {
                 Type = type,
                 BindingType = bindingType,
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 RawText = body
             };
         }
 
-        public StepReferenceBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
+        public StepReferenceBuilder Text(string text, int start)
         {
-            var argumentBuilder = new ArgumentBuilder(Built, rawValue, type, start, end);
+            return Part(text, start, (s, l) => new TextToken(s, l));
+        }
 
-            if(cfg is object)
+        public StepReferenceBuilder EscapeChar(string text, string escapedText, int start)
+        {
+            return Part(text, start, (s, l) => new EscapedCharToken(escapedText, s, l));
+        }
+
+        public StepReferenceBuilder Variable(string varName, int start)
+        {
+            return Part("<" + varName + ">", start, (s, l) => new VariableToken(varName, s, l));
+        }
+
+        public StepReferenceBuilder Int(string text, int start)
+        {
+            return Part(text, start, (s, l) => new IntToken(s, l));
+        }
+
+        public StepReferenceBuilder Float(string text, int start)
+        {
+            return Part(text, start, (s, l) => new FloatToken(s, l));
+        }
+        
+        public StepReferenceBuilder InterpolateStart(string text, int start)
+        {
+            return Part(text, start, (s, l) => new InterpolateStartToken(s));
+        }
+
+        public StepReferenceBuilder Colon(int column)
+        {
+            return Part(":", column, (s, l) => new TextToken(s, l));
+        }
+
+        public StepReferenceBuilder Quote(int column)
+        {
+            return Part("'", column, (s, l) => new QuoteToken(false, s));
+        }
+
+        public StepReferenceBuilder DoubleQuote(int column)
+        {
+            return Part("\"", column, (s, l) => new QuoteToken(true, s));
+        }
+
+        private StepReferenceBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
+            where TPartType : StepToken
+        {
+            var startIdx = start - Built.StartColumn;
+
+            // Adjust for the keyword in the line.
+            if(RelativeToTextContent)
             {
-                cfg(argumentBuilder);
+                startIdx -= Built.Type.ToString().Length + 1;
             }
 
-            Built.AddArgument(argumentBuilder.Built);
+            if(startIdx < 0)
+            {
+                throw new ArgumentException("Supplied start column occurs before the declared beginning of the line.", nameof(start));
+            }
+            
+            var part = creator(startIdx, text.Length);
+
+            part.SourceLine = Built.SourceLine;
+            part.StartColumn = start;
+            part.EndColumn = start + (text.Length - 1);
+
+            Built.AddToken(part);
 
             return this;
         }
@@ -38,16 +98,6 @@ namespace AutoStep.Tests.Builders
             cfg(tableBuilder);
 
             Built.Table = tableBuilder.Built;
-
-            return this;
-        }
-
-        public StepReferenceBuilder MatchingText(params string[] parts)
-        {
-            foreach (var part in parts)
-            {
-                Built.AddMatchingText(part);
-            }
 
             return this;
         }

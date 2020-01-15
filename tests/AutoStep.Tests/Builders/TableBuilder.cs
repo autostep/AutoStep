@@ -6,19 +6,20 @@ namespace AutoStep.Tests.Builders
 {
     public class TableBuilder : BaseBuilder<TableElement>
     {
-        public TableBuilder(int line, int column)
+        public TableBuilder(int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new TableElement
             {
                 SourceLine = line,
-                SourceColumn = column
+                StartColumn = column
             };
         }
 
         public TableBuilder Headers(int lineNo, int column, params (string headerName, int startColumn, int endColumn)[] headers)
         {
             Built.Header.SourceLine = lineNo;
-            Built.Header.SourceColumn = column;
+            Built.Header.StartColumn = column;
 
             foreach(var item in headers)
             {
@@ -26,7 +27,7 @@ namespace AutoStep.Tests.Builders
                 {
                     HeaderName = item.headerName,
                     SourceLine = lineNo,
-                    SourceColumn = item.startColumn,
+                    StartColumn = item.startColumn,
                     EndColumn = item.endColumn
                 });
             }
@@ -34,33 +35,28 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public TableBuilder Row(int lineNo, int column, params (ArgumentType argType, string rawValue, int startColumn, int endColumn, Action<ArgumentBuilder> cfg)[] cells)
+        public TableBuilder Row(int lineNo, int column, params (string rawValue, int startColumn, int endColumn, Action<CellBuilder> cfg)[] cells)
         {
             var row = new TableRowElement
             {
                 SourceLine = lineNo,
-                SourceColumn = column  
+                StartColumn = column  
             };
 
             foreach(var item in cells)
             {
-                var cell = new TableCellElement
-                {
-                    SourceLine = lineNo,
-                    SourceColumn = item.startColumn,
-                    EndColumn = item.endColumn
-                };
-
-                var argument = new ArgumentBuilder(cell, item.rawValue, item.argType, item.startColumn, item.endColumn);
+                var cell = new CellBuilder(item.rawValue, lineNo, item.startColumn, item.endColumn);
 
                 if(item.cfg is object)
                 {
-                    item.cfg(argument);
+                    item.cfg(cell);
                 }
-
-                cell.Value = argument.Built;
-
-                row.AddCell(cell);
+                else if(item.rawValue is string)
+                {
+                    cell.Word(item.rawValue, item.startColumn);
+                }
+                
+                row.AddCell(cell.Built);
             }
 
             Built.AddRow(row);

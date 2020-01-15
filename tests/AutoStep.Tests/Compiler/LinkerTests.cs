@@ -5,6 +5,8 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using System.Threading.Tasks;
+using System;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -61,9 +63,12 @@ namespace AutoStep.Tests.Compiler
             // Built a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 
@@ -93,12 +98,18 @@ namespace AutoStep.Tests.Compiler
             // Built a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("This will not match", 3, 3, step => step
-                        .MatchingText("This", " ", "will", " ", "not", " ", "match")
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("This will not match", 1, 1, step => step
+                        .Text("This", 1)
+                        .Text("will", 6)
+                        .Text("not", 11)
+                        .Text("match", 15)
                     )
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 
@@ -111,7 +122,7 @@ namespace AutoStep.Tests.Compiler
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
-                                    "No step definitions could be found that match this step.", 3, 3)
+                                    "No step definitions could be found that match this step.", 1, 1)
             });
 
             // The failing definition should not have a bound definition.
@@ -138,13 +149,16 @@ namespace AutoStep.Tests.Compiler
 
             linker.AddStepDefinitionSource(src1);
             linker.AddStepDefinitionSource(src2);
-
+            
             // Build a file and check it links.
             var fileBuilder = new FileBuilder();
             fileBuilder.Feature("My Feature", 1, 1, feat => feat
-                .Scenario("My Scenario", 2, 2, scen => scen
-                    .Given("I have done something", 3, 3, step => step
-                        .MatchingText("I", " ", "have", " ", "done", " ", "something")
+                .Scenario("My Scenario", 2, 1, scen => scen
+                    .Given("I have done something", 3, 1, step => step
+                        .Text("I", 1)
+                        .Text("have", 3)
+                        .Text("done", 8)
+                        .Text("something", 13)
                     )
                 ));
 
@@ -157,11 +171,33 @@ namespace AutoStep.Tests.Compiler
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
-                                    "There are multiple matching step definitions that match this step.", 3, 3)
+                                    "There are multiple matching step definitions that match this step.", 3, 1)
             });
 
             // The failing definition should not have a bound definition.
             file.AllStepReferences.First.Value.BoundDefinition.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StepMultipleArguments()
+        {
+            const string TestFile =
+            @"                
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have passed 'argument1' and 'argument2' to something
+
+            ";
+            
+            await CompileAndAssertSuccess(TestFile, file => file
+                .Feature("My Feature", 2, 15, feat => feat
+                    .Scenario("My Scenario", 4, 17, scen => scen
+                        .Given("I have passed 'argument1' and 'argument2' to something", 6, 21)//, step => step
+                            //.Argument(ArgumentType.Text, "argument1", 41, 51)
+                            //.Argument(ArgumentType.Text, "argument2", 57, 67)
+            )));
         }
     }
 }

@@ -13,6 +13,6 @@
         /// <summary>
         /// Gets or sets the column position on the line.
         /// </summary>
-        public int SourceColumn { get; set; }
+        public int StartColumn { get; set; }
     }
 }

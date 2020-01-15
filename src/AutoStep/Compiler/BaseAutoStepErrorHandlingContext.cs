@@ -38,6 +38,11 @@ namespace AutoStep.Compiler
         public CompilerMessageCode Code { get; private set; }
 
         /// <summary>
+        /// Gets any message arguments assigned to the compilation message code.
+        /// </summary>
+        public object[]? MessageArguments { get; private set; }
+
+        /// <summary>
         /// Gets the Starting Symbol of the error (defaults to the Offending Symbol).
         /// Update this to change the beginning of the error in the token stream.
         /// </summary>
@@ -193,9 +198,11 @@ namespace AutoStep.Compiler
         /// Changes the message code for this error.
         /// </summary>
         /// <param name="code">The new code.</param>
-        protected void ChangeError(CompilerMessageCode code)
+        /// <param name="formatArgs">Format arguments for the message.</param>
+        protected void ChangeError(CompilerMessageCode code, params object[] formatArgs)
         {
             Code = code;
+            MessageArguments = formatArgs;
         }
     }
 }

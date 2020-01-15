@@ -5,7 +5,7 @@ namespace AutoStep.Compiler
 {
     /// <summary>
     /// Defines the result of a step definition compilation, returned from
-    /// <see cref="AutoStepLinker.GetStepDefinitionElementFromStatementBody(StepType, string)"/>.
+    /// <see cref="AutoStepCompiler.CompileStepDefinitionElementFromStatementBody(StepType, string)"/>.
     /// </summary>
     public class StepDefinitionFromBodyResult : CompilerResult<StepDefinitionElement>
     {

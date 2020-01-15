@@ -1,16 +1,18 @@
 ﻿using System;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Builders
 {
     public class StepDefinitionBuilder : BaseBuilder<StepDefinitionElement>, IStepCollectionBuilder<StepDefinitionElement>
     {
-        public StepDefinitionBuilder(StepType type, string declaration, int line, int column)
+        public StepDefinitionBuilder(StepType type, string declaration, int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new StepDefinitionElement
             {
                 SourceLine = line,
-                SourceColumn = column,
+                StartColumn = column,
                 Type = type,
                 Declaration = declaration
             };
@@ -23,16 +25,52 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public StepDefinitionBuilder Argument(ArgumentType type, string rawValue, int start, int end, Action<ArgumentBuilder> cfg = null)
+        public StepDefinitionBuilder WordPart(string word, int start)
         {
-            var argumentBuilder = new ArgumentBuilder(Built, rawValue, type, start, end);
-
-            if (cfg is object)
+            Built.AddPart(new WordDefinitionPart(word)
             {
-                cfg(argumentBuilder);
-            }
+                SourceLine = Built.SourceLine,
+                StartColumn = start,
+                EndColumn = start + (word.Length - 1)
+            });
 
-            Built.AddArgument(argumentBuilder.Built);
+            return this;
+        }
+
+        public StepDefinitionBuilder WordPart(string word, string escaped, int start)
+        {
+            Built.AddPart(new WordDefinitionPart(word)
+            {
+                // TODO:
+                // EscapedText = escaped,
+                SourceLine = Built.SourceLine,
+                StartColumn = start,
+                EndColumn = start + (word.Length - 1)
+            });
+
+            return this;
+        }
+
+        public StepDefinitionBuilder Argument(string text, string variableName, ArgumentType typeHint, int start, int end)
+        {
+            Built.AddPart(new ArgumentPart(text, variableName, typeHint)
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = start,
+                EndColumn = start + (text.Length - 1)
+            });
+
+            return this;
+        }
+
+        public StepDefinitionBuilder Argument(string text, string variableName, int start)
+        {
+            Built.AddPart(new ArgumentPart(text, variableName)
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = start,
+                EndColumn = start + (text.Length - 1)
+            });
 
             return this;
         }

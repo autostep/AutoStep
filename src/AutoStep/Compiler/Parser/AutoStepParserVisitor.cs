@@ -31,7 +31,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
+internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// </summary>
@@ -57,11 +57,92 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// Visit a parse tree produced by the <c>declareGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	Result VisitDeclareGiven([NotNull] AutoStepParser.DeclareGivenContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declareWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclareWhen([NotNull] AutoStepParser.DeclareWhenContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declareThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclareThen([NotNull] AutoStepParser.DeclareThenContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclarationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDeclarationBody([NotNull] AutoStepParser.StepDeclarationBodyContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationArgument</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationArgument([NotNull] AutoStepParser.DeclarationArgumentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationSection</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationSection([NotNull] AutoStepParser.DeclarationSectionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgument"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDeclarationArgument([NotNull] AutoStepParser.StepDeclarationArgumentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgumentName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDeclarationArgumentName([NotNull] AutoStepParser.StepDeclarationArgumentNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDeclarationTypeHint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStepDeclarationTypeHint([NotNull] AutoStepParser.StepDeclarationTypeHintContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationEscaped</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationWs([NotNull] AutoStepParser.DeclarationWsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.featureBlock"/>.
 	/// </summary>
@@ -219,92 +300,94 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatementBody([NotNull] AutoStepParser.StatementBodyContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>statementSectionPart</c>
+	/// Visit a parse tree produced by the <c>statementQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStatementSectionPart([NotNull] AutoStepParser.StatementSectionPartContext context);
+	Result VisitStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>statementWs</c>
+	/// Visit a parse tree produced by the <c>statementDoubleQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStatementWs([NotNull] AutoStepParser.StatementWsContext context);
+	Result VisitStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>argEmpty</c>
+	/// Visit a parse tree produced by the <c>statementVariable</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgEmpty([NotNull] AutoStepParser.ArgEmptyContext context);
+	Result VisitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>argFloat</c>
+	/// Visit a parse tree produced by the <c>statementEscapedChar</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgFloat([NotNull] AutoStepParser.ArgFloatContext context);
+	Result VisitStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>argInt</c>
+	/// Visit a parse tree produced by the <c>statementInt</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgInt([NotNull] AutoStepParser.ArgIntContext context);
+	Result VisitStatementInt([NotNull] AutoStepParser.StatementIntContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>argInterpolate</c>
+	/// Visit a parse tree produced by the <c>statementFloat</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgInterpolate([NotNull] AutoStepParser.ArgInterpolateContext context);
+	Result VisitStatementFloat([NotNull] AutoStepParser.StatementFloatContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>argText</c>
+	/// Visit a parse tree produced by the <c>statementInterpolate</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgText([NotNull] AutoStepParser.ArgTextContext context);
+	Result VisitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.statementArgument"/>.
+	/// Visit a parse tree produced by the <c>statementColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStatementArgument([NotNull] AutoStepParser.StatementArgumentContext context);
+	Result VisitStatementColon([NotNull] AutoStepParser.StatementColonContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>exampleArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Visit a parse tree produced by the <c>statementWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExampleArgBlock([NotNull] AutoStepParser.ExampleArgBlockContext context);
+	Result VisitStatementWord([NotNull] AutoStepParser.StatementWordContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>textArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Visit a parse tree produced by the <c>statementVarUnmatched</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitTextArgBlock([NotNull] AutoStepParser.TextArgBlockContext context);
+	Result VisitStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBody"/>.
+	/// Visit a parse tree produced by the <c>statementBlockWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgumentExampleNameBody([NotNull] AutoStepParser.ArgumentExampleNameBodyContext context);
+	Result VisitStatementBlockWs([NotNull] AutoStepParser.StatementBlockWsContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBodyContent"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.statementVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgumentExampleNameBodyContent([NotNull] AutoStepParser.ArgumentExampleNameBodyContentContext context);
+	Result VisitStatementVariableName([NotNull] AutoStepParser.StatementVariableNameContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.argumentBody"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.statementVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgumentBody([NotNull] AutoStepParser.ArgumentBodyContext context);
+	Result VisitStatementVarPhrase([NotNull] AutoStepParser.StatementVarPhraseContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.examples"/>.
 	/// </summary>
@@ -348,83 +431,72 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitTableRowCell([NotNull] AutoStepParser.TableRowCellContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>cellFloat</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.tableRowCellContent"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	Result VisitTableRowCellContent([NotNull] AutoStepParser.TableRowCellContentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>cellEscapedChar</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>cellVariable</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCellVariable([NotNull] AutoStepParser.CellVariableContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>cellInt</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCellInt([NotNull] AutoStepParser.CellIntContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>cellFloat</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>cellInterpolate</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>cellText</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Visit a parse tree produced by the <c>cellColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitCellText([NotNull] AutoStepParser.CellTextContext context);
+	Result VisitCellColon([NotNull] AutoStepParser.CellColonContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.headerCell"/>.
+	/// Visit a parse tree produced by the <c>cellWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitHeaderCell([NotNull] AutoStepParser.HeaderCellContext context);
+	Result VisitCellWord([NotNull] AutoStepParser.CellWordContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.cellArgument"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.cellVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitCellArgument([NotNull] AutoStepParser.CellArgumentContext context);
+	Result VisitCellVariableName([NotNull] AutoStepParser.CellVariableNameContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>exampleCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
+	/// Visit a parse tree produced by <see cref="AutoStepParser.cellVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExampleCellBlock([NotNull] AutoStepParser.ExampleCellBlockContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>textCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTextCellBlock([NotNull] AutoStepParser.TextCellBlockContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.headerCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitHeaderCellBody([NotNull] AutoStepParser.HeaderCellBodyContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCellExampleNameBody([NotNull] AutoStepParser.CellExampleNameBodyContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBodyContent"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCellExampleNameBodyContent([NotNull] AutoStepParser.CellExampleNameBodyContentContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="AutoStepParser.generalCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitGeneralCellBody([NotNull] AutoStepParser.GeneralCellBodyContext context);
+	Result VisitCellVarPhrase([NotNull] AutoStepParser.CellVarPhraseContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.text"/>.
 	/// </summary>
@@ -445,3 +517,4 @@ public interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitDescription([NotNull] AutoStepParser.DescriptionContext context);
 }
 } // namespace AutoStep.Compiler.Parser
+

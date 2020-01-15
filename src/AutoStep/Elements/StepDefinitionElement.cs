@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Compiler.Matching;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Elements
 {
@@ -10,10 +11,11 @@ namespace AutoStep.Elements
     /// </summary>
     public class StepDefinitionElement : StepCollectionElement, IAnnotatableElement
     {
-        private List<StepMatchingPart> matchingParts = new List<StepMatchingPart>();
+        private List<DefinitionPart> parts = new List<DefinitionPart>();
+        private List<ArgumentPart> arguments = new List<ArgumentPart>();
 
         /// <summary>
-        /// Gets the annotations applied to the feature, in applied order.
+        /// Gets the annotations applied to the step definition, in applied order.
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
@@ -28,19 +30,19 @@ namespace AutoStep.Elements
         public string? Declaration { get; set; }
 
         /// <summary>
-        /// Gets the set of arguments presented by the Step Definition as being available.
-        /// </summary>
-        public List<StepArgumentElement>? Arguments { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the scenario description.
+        /// Gets or sets the step definition description.
         /// </summary>
         public string? Description { get; set; }
 
         /// <summary>
+        /// Gets the set of arguments presented by the Step Definition as being available.
+        /// </summary>
+        internal IReadOnlyList<ArgumentPart> Arguments => arguments;
+
+        /// <summary>
         /// Gets the set of matching parts used by the step definition element.
         /// </summary>
-        internal IReadOnlyList<StepMatchingPart> MatchingParts => matchingParts;
+        internal IReadOnlyList<DefinitionPart> Parts => parts;
 
         /// <summary>
         /// Check if this step definition contains an argument with the specified name.
@@ -54,74 +56,26 @@ namespace AutoStep.Elements
                 return false;
             }
 
-            return Arguments.Any(a => a.RawArgument == argumentName);
+            return Arguments.Any(a => a.Name == argumentName);
         }
 
         /// <summary>
-        /// Adds an argument to the step definition.
+        /// Adds a part to the step definition.
         /// </summary>
-        /// <param name="argument">The argument to add.</param>
-        public void AddArgument(StepArgumentElement argument)
+        /// <param name="part">The part to add.</param>
+        internal void AddPart(DefinitionPart part)
         {
-            if (argument is null)
+            if (part is null)
             {
-                throw new ArgumentNullException(nameof(argument));
+                throw new ArgumentNullException(nameof(part));
             }
 
-            if (Arguments == null)
+            parts.Add(part);
+
+            if (part is ArgumentPart argPart)
             {
-                Arguments = new List<StepArgumentElement>();
+                arguments.Add(argPart);
             }
-
-            Arguments.Add(argument);
-        }
-
-        /// <summary>
-        /// Update this Step Definition from a parsed step reference.
-        /// </summary>
-        /// <param name="step">The step reference.</param>
-        /// <remarks>
-        /// The compiler treats step definition statements as step references until we convert them,
-        /// just so we can re-use the same compiler tree visitors.
-        /// </remarks>
-        public void UpdateFromStepReference(StepReferenceElement step)
-        {
-            if (step is null)
-            {
-                throw new ArgumentNullException(nameof(step));
-            }
-
-            if (step.Arguments != null)
-            {
-                if (Arguments == null)
-                {
-                    Arguments = new List<StepArgumentElement>();
-                }
-
-                Arguments.AddRange(step.Arguments);
-            }
-
-            Type = step.Type;
-            Declaration = step.RawText;
-            matchingParts.AddRange(step.MatchingParts);
-        }
-
-        /// <summary>
-        /// Add a definition text matching part.
-        /// </summary>
-        /// <param name="text">The text content.</param>
-        public void AddMatchingPart(string text)
-        {
-            matchingParts.Add(new StepMatchingPart(text));
-        }
-
-        /// <summary>
-        /// Add a definition argument matching part.
-        /// </summary>
-        /// <param name="argType">The type of the argument.</param>
-        public void AddMatchingPart(ArgumentType argType)
-        {
-            matchingParts.Add(new StepMatchingPart(argType));
         }
     }
 }

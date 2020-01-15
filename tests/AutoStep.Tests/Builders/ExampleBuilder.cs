@@ -5,18 +5,19 @@ namespace AutoStep.Tests.Builders
 {
     public class ExampleBuilder : BaseBuilder<ExampleElement>
     {
-        public ExampleBuilder(int line, int column)
+        public ExampleBuilder(int line, int column, bool relativeToTextContent = false)
+            : base(relativeToTextContent)
         {
             Built = new ExampleElement
             {
                 SourceLine = line,
-                SourceColumn = column
+                StartColumn = column
             };
         }
         
         public ExampleBuilder Table(int line, int column, Action<TableBuilder> cfg)
         {
-            var tableBuilder = new TableBuilder(line, column);
+            var tableBuilder = new TableBuilder(line, column, RelativeToTextContent);
 
             cfg(tableBuilder);
 

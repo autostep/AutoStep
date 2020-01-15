@@ -50,8 +50,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 36, 43)
                                 )
                                 .Row(12, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 36, 45, null)
+                                    ("something1", 23, 32, null),
+                                    ("something2", 36, 45, null)
                                 )
                             )
                         )
@@ -64,8 +64,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 36, 43)
                                 )
                                 .Row(18, 21,
-                                    (ArgumentType.Text, "new1", 23, 26, null),
-                                    (ArgumentType.Text, "new2", 36, 39, null)
+                                    ("new1", 23, 26, null),
+                                    ("new2", 36, 39, null)
                                 )
                             )
                         )
@@ -91,14 +91,17 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1>'", 6, 21, step => step
-                            .Argument(ArgumentType.Text, "<variable1>", 46, 58, arg => arg
-                                .VariableInsertion("variable1", 47, 57)
-                                .NullValue()
-                            )
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
+                            .Quote(46)
+                            .Variable("variable1", 47)
+                            .Quote(58)
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -107,8 +110,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32)),
+                                    ("something2", 37, 46, c => c.Word("something", 37).Int("2", 46))
                                 )
                             )
                         )
@@ -143,9 +146,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                         .Given("I pass an argument for this table:", 6, 21, step => step
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
-                                .Row(8, 26, (ArgumentType.Text, "<variable1>", 28, 38, arg => arg
-                                    .VariableInsertion("variable1", 28, 38)
-                                    .NullValue()
+                                .Row(8, 26, ("<variable1>", 28, 38, arg => arg
+                                    .Variable("variable1", 28)
                                 ))
                             )
                         )
@@ -156,8 +158,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, null),
+                                    ("something2", 37, 46, null)
                                 )
                             )
                         )
@@ -192,11 +194,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                         .Given("I pass an argument for this table:", 6, 21, step => step
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
-                                .Row(8, 26, (ArgumentType.Text, "<variable1> and <variable2>", 28, 54, arg => arg
-                                    .VariableInsertion("variable1", 28, 38)
-                                    .Section(" and ", 39, 43)
-                                    .VariableInsertion("variable2", 44, 54)
-                                    .NullValue()
+                                .Row(8, 26, ("<variable1> and <variable2>", 28, 54, c => c
+                                    .Variable("variable1", 28)
+                                    .Word("and", 40)
+                                    .Variable("variable2", 44)
                                 ))
                             )
                         )
@@ -207,8 +208,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, null),
+                                    ("something2", 37, 46, null)
                                 )
                             )
                         )
@@ -243,9 +244,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                         .Given("I pass an argument for this table:", 6, 21, step => step
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
-                                .Row(8, 26, (ArgumentType.Text, "<not a variable>", 28, 43, arg => arg
-                                    .VariableInsertion("not a variable", 28, 43)
-                                    .NullValue()
+                                .Row(8, 26, ("<not a variable>", 28, 43, arg => arg
+                                    .Variable("not a variable", 28)
                                 ))
                             )
                         )
@@ -256,8 +256,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, null),
+                                    ("something2", 37, 46, null)
                                 )
                             )
                         )
@@ -286,16 +286,19 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Argument(ArgumentType.Text, "<variable1> something <variable2>", 46, 80, arg => arg
-                                .VariableInsertion("variable1", 47, 57)
-                                .Section(" something ", 58, 68)
-                                .VariableInsertion("variable2", 69, 79)
-                                .NullValue()
-                            )
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
+                            .Quote(46)
+                            .Variable("variable1", 47)
+                            .Text("something", 59)
+                            .Variable("variable2", 69)
+                            .Quote(80)
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -304,8 +307,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32)),
+                                    ("something2", 37, 46, c => c.Word("something", 37).Int("2", 46))
                                 )
                             )
                         )
@@ -336,16 +339,19 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
             ";
 
-            await CompileAndAssertSuccess(TestFile, file => file
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Argument(ArgumentType.Text, "<variable1> something <variable2>", 46, 80, arg => arg
-                                .VariableInsertion("variable1", 47, 57)
-                                .Section(" something ", 58, 68)
-                                .VariableInsertion("variable2", 69, 79)
-                                .NullValue()
-                            )
+                            .Text("I", 27)
+                            .Text("pass", 29)
+                            .Text("an", 34)
+                            .Text("argument", 37)
+                            .Quote(46)
+                            .Variable("variable1", 47)
+                            .Text("something", 59)
+                            .Variable("variable2", 69)             
+                            .Quote(80)
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -353,7 +359,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable1", 23, 31)
                                 )
                                 .Row(10, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null)
+                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32))
                                 )
                             )
                         )
@@ -363,7 +369,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 23, 31)
                                 )
                                 .Row(14, 21,
-                                    (ArgumentType.Text, "something2", 23, 32, null)
+                                    ("something2", 23, 32, c => c.Word("something", 23).Int("2", 32))
                                 )
                             )
                         )
@@ -392,11 +398,7 @@ namespace AutoStep.Tests.Compiler.Parsing
             await CompileAndAssertWarnings(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
-                        .Given("I pass an argument '<not a variable>'", 6, 21, step => step
-                            .Argument(ArgumentType.Text, "<not a variable>", 46, 63, arg => arg
-                                .VariableInsertion("not a variable", 47, 62)
-                                .NullValue()
-                            )
+                        .Given("I pass an argument '<not a variable>'", 6, 21
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -405,8 +407,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    (ArgumentType.Text, "something1", 23, 32, null),
-                                    (ArgumentType.Text, "something2", 37, 46, null)
+                                    ("something1", 23, 32, null),
+                                    ("something2", 37, 46, null)
                                 )
                             )
                         )

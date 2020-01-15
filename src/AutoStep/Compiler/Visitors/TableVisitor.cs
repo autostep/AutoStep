@@ -3,25 +3,28 @@ using System.Diagnostics;
 using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Elements;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Compiler
 {
     /// <summary>
     /// Generates table elements from table parse contexts.
     /// </summary>
-    internal class TableVisitor : ArgumentHandlingVisitor<TableElement>
+    internal class TableVisitor : BaseAutoStepVisitor<TableElement>
     {
         private readonly Func<ParserRuleContext, string, CompilerMessage?> insertionNameValidator;
         private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]
         {
-            (AutoStepParser.ESCAPED_TABLE_DELIMITER, "|"),
-            (AutoStepParser.ARG_EXAMPLE_START_ESCAPE, "<"),
-            (AutoStepParser.ARG_EXAMPLE_END_ESCAPE, ">"),
+            (AutoStepParser.CELL_ESCAPED_DELIMITER, "|"),
+            (AutoStepParser.CELL_ESCAPED_VARSTART, "<"),
+            (AutoStepParser.CELL_ESCAPED_VAREND, ">"),
         };
 
         private TableRowElement? currentRow;
+        private TableCellElement? currentCell;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TableVisitor"/> class.
@@ -77,14 +80,14 @@ namespace AutoStep.Compiler
         {
             Debug.Assert(Result is object);
 
-            var headerTextBlock = context.headerCell();
+            var variableName = context.cellVariableName();
 
             var header = new TableHeaderCellElement
             {
-                HeaderName = headerTextBlock?.GetText(),
+                HeaderName = variableName?.GetText(),
             };
 
-            if (headerTextBlock is null)
+            if (variableName is null)
             {
                 var cellWs = context.CELL_WS(0);
 
@@ -99,7 +102,7 @@ namespace AutoStep.Compiler
             }
             else
             {
-                PositionalLineInfo(header, headerTextBlock);
+                PositionalLineInfo(header, variableName);
             }
 
             Result.Header.AddHeader(header);
@@ -143,253 +146,195 @@ namespace AutoStep.Compiler
 
             var cellContent = context.tableRowCellContent();
 
+            var cell = new TableCellElement();
+
             if (cellContent == null)
             {
-                // Empty cell, add a cell with an empty argument.
-                var cell = new TableCellElement();
-
                 var cellWs = context.CELL_WS(0);
-
-                var arg = new StepArgumentElement
-                {
-                    RawArgument = null,
-                    Type = ArgumentType.Empty,
-                    EscapedArgument = null,
-                    Value = null,
-                };
 
                 if (cellWs == null)
                 {
                     // If there's no whitespace, we'll just have to use the start of the table delimiter.
                     PositionalLineInfo(cell, context);
-                    PositionalLineInfo(arg, context);
                 }
                 else
                 {
                     PositionalLineInfo(cell, cellWs);
-                    PositionalLineInfo(arg, cellWs);
                 }
-
-                cell.Value = arg;
 
                 currentRow.AddCell(cell);
             }
             else
             {
-                Visit(cellContent);
+                cell.Text = cellContent.GetText();
+
+                currentCell = cell;
+
+                PositionalLineInfo(currentCell, cellContent);
+
+                try
+                {
+                    Visit(cellContent);
+                }
+                finally
+                {
+                    currentCell = null;
+                }
+
+                currentRow.AddCell(cell);
             }
 
             return Result;
         }
 
         /// <summary>
-        /// Vists a float value in a table data cell.
+        /// Visits a text token within a cell.
         /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
+        public override TableElement VisitCellWord([NotNull] AutoStepParser.CellWordContext context)
         {
-            Debug.Assert(Result is object);
-            Debug.Assert(currentRow is object);
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
 
-            var cell = new TableCellElement();
-
-            PositionalLineInfo(cell, context);
-
-            var valueText = context.CELL_FLOAT().GetText();
-            var symbolText = context.CELL_CURR_SYMBOL()?.GetText();
-            var content = symbolText + valueText;
-
-            var arg = PositionalLineInfo(
-                new StepArgumentElement
-                {
-                    RawArgument = content,
-                    Type = ArgumentType.NumericDecimal,
-                    EscapedArgument = content,
-                    Value = decimal.Parse(valueText, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
-                    Symbol = symbolText,
-                }, context);
-
-            cell.Value = arg;
-
-            currentRow.AddCell(cell);
-
-            return Result;
+            return Result!;
         }
 
         /// <summary>
-        /// Vists an int value in a table data cell.
+        /// Visits an int token within a cell.
         /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellInt([NotNull] AutoStepParser.CellIntContext context)
         {
+            var intPart = CreatePart(context, (s, l) => new IntToken(s, l));
+
+            AddPart(intPart);
+
+            return Result!;
+        }
+
+        /// <summary>
+        /// Visits a float token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
+        public override TableElement VisitCellFloat([NotNull] AutoStepParser.CellFloatContext context)
+        {
+            var floatPart = CreatePart(context, (s, l) => new FloatToken(s, l));
+
+            AddPart(floatPart);
+
+            return Result!;
+        }
+
+        /// <summary>
+        /// Visits an escaped character token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
+        public override TableElement VisitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context)
+        {
+            var part = CreatePart(context, (s, l) => new EscapedCharToken(EscapeText(context, tableCellReplacements), s, l));
+
+            AddPart(part);
+
+            return Result!;
+        }
+
+        /// <summary>
+        /// Visits a variable token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
+        public override TableElement VisitCellVariable([NotNull] AutoStepParser.CellVariableContext context)
+        {
             Debug.Assert(Result is object);
-            Debug.Assert(currentRow is object);
+            Debug.Assert(currentCell is object);
 
-            var cell = new TableCellElement();
+            var variablePart = CreatePart(context, (s, l) => new VariableToken(context.cellVariableName().GetText(), s, l));
 
-            PositionalLineInfo(cell, context);
+            if (insertionNameValidator is object)
+            {
+                var additionalError = insertionNameValidator(context, variablePart.VariableName);
 
-            var valueText = context.CELL_INT().GetText();
-            var symbolText = context.CELL_CURR_SYMBOL()?.GetText();
-            var content = symbolText + valueText;
-
-            var arg = PositionalLineInfo(
-                new StepArgumentElement
+                if (additionalError is object)
                 {
-                    RawArgument = content,
-                    Type = ArgumentType.NumericInteger,
-                    EscapedArgument = content,
-                    Value = int.Parse(valueText, NumberStyles.AllowThousands, CultureInfo.CurrentCulture),
-                    Symbol = symbolText,
-                }, context);
+                    AddMessage(additionalError);
+                }
+            }
 
-            cell.Value = arg;
-
-            currentRow.AddCell(cell);
+            AddPart(variablePart);
 
             return Result;
         }
 
         /// <summary>
-        /// Vists an interpolated value in a table data cell.
+        /// Visits a colon token within a cell.
         /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
+        public override TableElement VisitCellColon([NotNull] AutoStepParser.CellColonContext context)
+        {
+            AddPart(CreatePart(context, (s, l) => new TextToken(s, l)));
+
+            return Result!;
+        }
+
+        /// <summary>
+        /// Visits an interpolation start token within a cell.
+        /// </summary>
+        /// <param name="context">The parser context.</param>
+        /// <returns>The table.</returns>
         public override TableElement VisitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context)
         {
             Debug.Assert(Result is object);
-            Debug.Assert(currentRow is object);
 
-            var cell = new TableCellElement();
+            // Interpolate part itself is just the colon.
+            AddPart(CreatePart(context.CELL_COLON(), (s, l) => new InterpolateStartToken(s)));
 
-            PositionalLineInfo(cell, context);
-
-            var contentBlock = context.cellArgument();
-
-            Visit(contentBlock);
-
-            PersistWorkingTextSection(tableCellReplacements);
-
-            var escaped = Rewriter.GetText(contentBlock.SourceInterval);
-
-            var arg = new StepArgumentElement
-            {
-                RawArgument = contentBlock.GetText(),
-                Type = ArgumentType.Interpolated,
-
-                // The rewriter will contain any modifications that replace the escaped characters.
-                EscapedArgument = escaped,
-            };
-
-            arg.ReplaceSections(CurrentArgumentSections);
-
-            PositionalLineInfo(arg, context);
-
-            CurrentArgumentSections.Clear();
-            CanArgumentValueBeDetermined = true;
-
-            cell.Value = arg;
-
-            currentRow.AddCell(cell);
+            // Now add a part for the first word.
+            AddPart(CreatePart(context.CELL_WORD(), (s, l) => new TextToken(s, l)));
 
             return Result;
         }
 
-        /// <summary>
-        /// Vists a text value in a table data cell.
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override TableElement VisitCellText([NotNull] AutoStepParser.CellTextContext context)
+        private void AddPart(StepToken part)
         {
-            Debug.Assert(Result is object);
-            Debug.Assert(currentRow is object);
+            Debug.Assert(currentCell is object);
 
-            var cell = new TableCellElement();
-
-            PositionalLineInfo(cell, context);
-
-            var contentBlock = context.cellArgument();
-
-            Visit(contentBlock);
-
-            PersistWorkingTextSection(tableCellReplacements);
-
-            var escaped = Rewriter.GetText(contentBlock.SourceInterval);
-
-            var arg = new StepArgumentElement
-            {
-                RawArgument = contentBlock.GetText(),
-                Type = ArgumentType.Text,
-
-                // The rewriter will contain any modifications that replace the escaped characters.
-                EscapedArgument = escaped,
-            };
-
-            arg.ReplaceSections(CurrentArgumentSections);
-
-            PositionalLineInfo(arg, context);
-
-            if (CanArgumentValueBeDetermined)
-            {
-                arg.Value = escaped;
-            }
-
-            CurrentArgumentSections.Clear();
-            CanArgumentValueBeDetermined = true;
-
-            cell.Value = arg;
-
-            currentRow.AddCell(cell);
-
-            return Result;
+            currentCell.AddToken(part);
         }
 
-        /// <summary>
-        /// Visit the example cell block (which is the part of the cell that contains an example reference).
-        /// </summary>
-        /// <param name="context">The parse context.</param>
-        /// <returns>The file.</returns>
-        public override TableElement VisitExampleCellBlock([NotNull] AutoStepParser.ExampleCellBlockContext context)
+        private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : StepToken
         {
-            Debug.Assert(Result is object);
+            Debug.Assert(currentCell is object);
 
-            PersistWorkingTextSection(tableCellReplacements);
+            var offset = currentCell.StartColumn;
+            var start = (ctxt.Start.Column + 1) - offset;
+            var startIndex = ctxt.Start.StartIndex;
 
-            var content = context.GetText();
+            var part = creator(start, (ctxt.Stop.StopIndex - startIndex) + 1);
 
-            var escaped = EscapeText(
-                context,
-                tableCellReplacements);
+            PositionalLineInfo(part, ctxt);
 
-            var allBodyInterval = context.cellExampleNameBody().SourceInterval;
+            return part;
+        }
 
-            var insertionName = Rewriter.GetText(allBodyInterval);
+        private TStepPart CreatePart<TStepPart>(ITerminalNode ctxt, Func<int, int, TStepPart> creator)
+            where TStepPart : StepToken
+        {
+            Debug.Assert(currentCell is object);
 
-            var arg = new ArgumentSectionElement
-            {
-                RawText = content,
-                EscapedText = escaped,
+            var offset = currentCell.StartColumn;
+            var start = (ctxt.Symbol.Column + 1) - offset;
+            var startIndex = ctxt.Symbol.StartIndex;
 
-                // The insertion name is the escaped name inside the angle brackets
-                ExampleInsertionName = Rewriter.GetText(allBodyInterval),
-            };
+            var part = creator(start, (ctxt.Symbol.StopIndex - startIndex) + 1);
 
-            // If we've got an insertion, then the value of an argument cannot be determined at compile time.
-            CanArgumentValueBeDetermined = false;
+            PositionalLineInfo(part, ctxt);
 
-            var additionalError = insertionNameValidator(context, insertionName);
-
-            if (additionalError is object)
-            {
-                AddMessage(additionalError);
-            }
-
-            CurrentArgumentSections.Add(PositionalLineInfo(arg, context));
-
-            return Result;
+            return part;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Tests.Builders;
 using FluentAssertions;
@@ -54,13 +55,13 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
-            mockLinker.Setup(x => x.Link(It.IsAny<BuiltFile>())).Verifiable();
+            mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
-            mockLinker.Verify(l => l.Link(It.IsAny<BuiltFile>()), Times.Never());
+            mockLinker.Verify(l => l.Link(It.IsAny<FileElement>()), Times.Never());
         }
 
         [Fact]
@@ -268,7 +269,7 @@ namespace AutoStep.Tests.Projects
             
             project.TryAddFile(projFile);
 
-            mockLinker.Setup(x => x.Link(It.IsAny<BuiltFile>())).Verifiable();
+            mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 

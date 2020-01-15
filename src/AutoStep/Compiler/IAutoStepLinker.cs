@@ -1,4 +1,5 @@
 ﻿using AutoStep.Definitions;
+using AutoStep.Elements;
 
 namespace AutoStep.Compiler
 {
@@ -12,7 +13,7 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="file">The file to link.</param>
         /// <returns>A link result (including a reference to the same file).</returns>
-        LinkResult Link(BuiltFile file);
+        LinkResult Link(FileElement file);
 
         /// <summary>
         /// Adds a source of step definitions to the linker (that won't change until its removed).

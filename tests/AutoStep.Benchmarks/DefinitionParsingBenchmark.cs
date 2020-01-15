@@ -8,13 +8,11 @@ namespace AutoStep.Benchmarks
     public class DefinitionParsingBenchmark
     {
         private AutoStepCompiler compiler;
-        private AutoStepLinker linker;
 
         [GlobalSetup]
         public void Setup()
         {
             compiler = new AutoStepCompiler();
-            linker = new AutoStepLinker(compiler);
         }
         
         [Benchmark]
@@ -22,7 +20,7 @@ namespace AutoStep.Benchmarks
         {
             const string TestStep = "I have done something";
 
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             if(!matched.Success)
             {
@@ -33,9 +31,9 @@ namespace AutoStep.Benchmarks
         [Benchmark]
         public void WithArguments()
         {
-            const string TestStep = "I have done something with 'argument1'";
+            const string TestStep = "I have done something with {argument1}";
 
-            var matched = linker.GetStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
 
             if (!matched.Success)
             {

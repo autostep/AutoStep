@@ -30,7 +30,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
 [System.CLSCompliant(false)]
-public interface IAutoStepParserListener : IParseTreeListener {
+internal interface IAutoStepParserListener : IParseTreeListener {
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.file"/>.
 	/// </summary>
@@ -72,15 +72,153 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStepDefinitionBody([NotNull] AutoStepParser.StepDefinitionBodyContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// Enter a parse tree produced by the <c>declareGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	void EnterDeclareGiven([NotNull] AutoStepParser.DeclareGivenContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclaration"/>.
+	/// Exit a parse tree produced by the <c>declareGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStepDeclaration([NotNull] AutoStepParser.StepDeclarationContext context);
+	void ExitDeclareGiven([NotNull] AutoStepParser.DeclareGivenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declareWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclareWhen([NotNull] AutoStepParser.DeclareWhenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declareWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclareWhen([NotNull] AutoStepParser.DeclareWhenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declareThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclareThen([NotNull] AutoStepParser.DeclareThenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declareThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclareThen([NotNull] AutoStepParser.DeclareThenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclarationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDeclarationBody([NotNull] AutoStepParser.StepDeclarationBodyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclarationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDeclarationBody([NotNull] AutoStepParser.StepDeclarationBodyContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationArgument</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationArgument([NotNull] AutoStepParser.DeclarationArgumentContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationArgument</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationArgument([NotNull] AutoStepParser.DeclarationArgumentContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationSection</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationSection([NotNull] AutoStepParser.DeclarationSectionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationSection</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationSection([NotNull] AutoStepParser.DeclarationSectionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgument"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDeclarationArgument([NotNull] AutoStepParser.StepDeclarationArgumentContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgument"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDeclarationArgument([NotNull] AutoStepParser.StepDeclarationArgumentContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgumentName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDeclarationArgumentName([NotNull] AutoStepParser.StepDeclarationArgumentNameContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclarationArgumentName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDeclarationArgumentName([NotNull] AutoStepParser.StepDeclarationArgumentNameContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDeclarationTypeHint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStepDeclarationTypeHint([NotNull] AutoStepParser.StepDeclarationTypeHintContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.stepDeclarationTypeHint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStepDeclarationTypeHint([NotNull] AutoStepParser.StepDeclarationTypeHintContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationEscaped</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationEscaped</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationWs([NotNull] AutoStepParser.DeclarationWsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationWs([NotNull] AutoStepParser.DeclarationWsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSectionContent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureBlock"/>.
 	/// </summary>
@@ -346,153 +484,157 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStatementBody([NotNull] AutoStepParser.StatementBodyContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>statementSectionPart</c>
+	/// Enter a parse tree produced by the <c>statementQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStatementSectionPart([NotNull] AutoStepParser.StatementSectionPartContext context);
+	void EnterStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>statementSectionPart</c>
+	/// Exit a parse tree produced by the <c>statementQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStatementSectionPart([NotNull] AutoStepParser.StatementSectionPartContext context);
+	void ExitStatementQuote([NotNull] AutoStepParser.StatementQuoteContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>statementWs</c>
+	/// Enter a parse tree produced by the <c>statementDoubleQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStatementWs([NotNull] AutoStepParser.StatementWsContext context);
+	void EnterStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>statementWs</c>
+	/// Exit a parse tree produced by the <c>statementDoubleQuote</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStatementWs([NotNull] AutoStepParser.StatementWsContext context);
+	void ExitStatementDoubleQuote([NotNull] AutoStepParser.StatementDoubleQuoteContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>argEmpty</c>
+	/// Enter a parse tree produced by the <c>statementVariable</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgEmpty([NotNull] AutoStepParser.ArgEmptyContext context);
+	void EnterStatementVariable([NotNull] AutoStepParser.StatementVariableContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>argEmpty</c>
+	/// Exit a parse tree produced by the <c>statementVariable</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgEmpty([NotNull] AutoStepParser.ArgEmptyContext context);
+	void ExitStatementVariable([NotNull] AutoStepParser.StatementVariableContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>argFloat</c>
+	/// Enter a parse tree produced by the <c>statementEscapedChar</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgFloat([NotNull] AutoStepParser.ArgFloatContext context);
+	void EnterStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>argFloat</c>
+	/// Exit a parse tree produced by the <c>statementEscapedChar</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgFloat([NotNull] AutoStepParser.ArgFloatContext context);
+	void ExitStatementEscapedChar([NotNull] AutoStepParser.StatementEscapedCharContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>argInt</c>
+	/// Enter a parse tree produced by the <c>statementInt</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgInt([NotNull] AutoStepParser.ArgIntContext context);
+	void EnterStatementInt([NotNull] AutoStepParser.StatementIntContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>argInt</c>
+	/// Exit a parse tree produced by the <c>statementInt</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgInt([NotNull] AutoStepParser.ArgIntContext context);
+	void ExitStatementInt([NotNull] AutoStepParser.StatementIntContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>argInterpolate</c>
+	/// Enter a parse tree produced by the <c>statementFloat</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgInterpolate([NotNull] AutoStepParser.ArgInterpolateContext context);
+	void EnterStatementFloat([NotNull] AutoStepParser.StatementFloatContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>argInterpolate</c>
+	/// Exit a parse tree produced by the <c>statementFloat</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgInterpolate([NotNull] AutoStepParser.ArgInterpolateContext context);
+	void ExitStatementFloat([NotNull] AutoStepParser.StatementFloatContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>argText</c>
+	/// Enter a parse tree produced by the <c>statementInterpolate</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgText([NotNull] AutoStepParser.ArgTextContext context);
+	void EnterStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>argText</c>
+	/// Exit a parse tree produced by the <c>statementInterpolate</c>
 	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgText([NotNull] AutoStepParser.ArgTextContext context);
+	void ExitStatementInterpolate([NotNull] AutoStepParser.StatementInterpolateContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.statementArgument"/>.
+	/// Enter a parse tree produced by the <c>statementColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStatementArgument([NotNull] AutoStepParser.StatementArgumentContext context);
+	void EnterStatementColon([NotNull] AutoStepParser.StatementColonContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.statementArgument"/>.
+	/// Exit a parse tree produced by the <c>statementColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStatementArgument([NotNull] AutoStepParser.StatementArgumentContext context);
+	void ExitStatementColon([NotNull] AutoStepParser.StatementColonContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>exampleArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Enter a parse tree produced by the <c>statementWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExampleArgBlock([NotNull] AutoStepParser.ExampleArgBlockContext context);
+	void EnterStatementWord([NotNull] AutoStepParser.StatementWordContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>exampleArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Exit a parse tree produced by the <c>statementWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExampleArgBlock([NotNull] AutoStepParser.ExampleArgBlockContext context);
+	void ExitStatementWord([NotNull] AutoStepParser.StatementWordContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>textArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Enter a parse tree produced by the <c>statementVarUnmatched</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterTextArgBlock([NotNull] AutoStepParser.TextArgBlockContext context);
+	void EnterStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>textArgBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.statementArgumentBlock"/>.
+	/// Exit a parse tree produced by the <c>statementVarUnmatched</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitTextArgBlock([NotNull] AutoStepParser.TextArgBlockContext context);
+	void ExitStatementVarUnmatched([NotNull] AutoStepParser.StatementVarUnmatchedContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBody"/>.
+	/// Enter a parse tree produced by the <c>statementBlockWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgumentExampleNameBody([NotNull] AutoStepParser.ArgumentExampleNameBodyContext context);
+	void EnterStatementBlockWs([NotNull] AutoStepParser.StatementBlockWsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBody"/>.
+	/// Exit a parse tree produced by the <c>statementBlockWs</c>
+	/// labeled alternative in <see cref="AutoStepParser.statementSection"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgumentExampleNameBody([NotNull] AutoStepParser.ArgumentExampleNameBodyContext context);
+	void ExitStatementBlockWs([NotNull] AutoStepParser.StatementBlockWsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBodyContent"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.statementVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgumentExampleNameBodyContent([NotNull] AutoStepParser.ArgumentExampleNameBodyContentContext context);
+	void EnterStatementVariableName([NotNull] AutoStepParser.StatementVariableNameContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.argumentExampleNameBodyContent"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.statementVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgumentExampleNameBodyContent([NotNull] AutoStepParser.ArgumentExampleNameBodyContentContext context);
+	void ExitStatementVariableName([NotNull] AutoStepParser.StatementVariableNameContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.argumentBody"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.statementVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArgumentBody([NotNull] AutoStepParser.ArgumentBodyContext context);
+	void EnterStatementVarPhrase([NotNull] AutoStepParser.StatementVarPhraseContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.argumentBody"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.statementVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArgumentBody([NotNull] AutoStepParser.ArgumentBodyContext context);
+	void ExitStatementVarPhrase([NotNull] AutoStepParser.StatementVarPhraseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.examples"/>.
 	/// </summary>
@@ -564,137 +706,119 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTableRowCell([NotNull] AutoStepParser.TableRowCellContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>cellFloat</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.tableRowCellContent"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	void EnterTableRowCellContent([NotNull] AutoStepParser.TableRowCellContentContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>cellFloat</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.tableRowCellContent"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	void ExitTableRowCellContent([NotNull] AutoStepParser.TableRowCellContentContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>cellEscapedChar</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>cellEscapedChar</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCellEscapedChar([NotNull] AutoStepParser.CellEscapedCharContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>cellVariable</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCellVariable([NotNull] AutoStepParser.CellVariableContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>cellVariable</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCellVariable([NotNull] AutoStepParser.CellVariableContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>cellInt</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void EnterCellInt([NotNull] AutoStepParser.CellIntContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>cellInt</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCellInt([NotNull] AutoStepParser.CellIntContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>cellFloat</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>cellFloat</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCellFloat([NotNull] AutoStepParser.CellFloatContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>cellInterpolate</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void EnterCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context);
 	/// <summary>
 	/// Exit a parse tree produced by the <c>cellInterpolate</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCellInterpolate([NotNull] AutoStepParser.CellInterpolateContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>cellText</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Enter a parse tree produced by the <c>cellColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterCellText([NotNull] AutoStepParser.CellTextContext context);
+	void EnterCellColon([NotNull] AutoStepParser.CellColonContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>cellText</c>
-	/// labeled alternative in <see cref="AutoStepParser.tableRowCellContent"/>.
+	/// Exit a parse tree produced by the <c>cellColon</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitCellText([NotNull] AutoStepParser.CellTextContext context);
+	void ExitCellColon([NotNull] AutoStepParser.CellColonContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.headerCell"/>.
+	/// Enter a parse tree produced by the <c>cellWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterHeaderCell([NotNull] AutoStepParser.HeaderCellContext context);
+	void EnterCellWord([NotNull] AutoStepParser.CellWordContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.headerCell"/>.
+	/// Exit a parse tree produced by the <c>cellWord</c>
+	/// labeled alternative in <see cref="AutoStepParser.cellContentBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitHeaderCell([NotNull] AutoStepParser.HeaderCellContext context);
+	void ExitCellWord([NotNull] AutoStepParser.CellWordContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.cellArgument"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.cellVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterCellArgument([NotNull] AutoStepParser.CellArgumentContext context);
+	void EnterCellVariableName([NotNull] AutoStepParser.CellVariableNameContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.cellArgument"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.cellVariableName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitCellArgument([NotNull] AutoStepParser.CellArgumentContext context);
+	void ExitCellVariableName([NotNull] AutoStepParser.CellVariableNameContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>exampleCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
+	/// Enter a parse tree produced by <see cref="AutoStepParser.cellVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExampleCellBlock([NotNull] AutoStepParser.ExampleCellBlockContext context);
+	void EnterCellVarPhrase([NotNull] AutoStepParser.CellVarPhraseContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>exampleCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
+	/// Exit a parse tree produced by <see cref="AutoStepParser.cellVarPhrase"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExampleCellBlock([NotNull] AutoStepParser.ExampleCellBlockContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>textCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterTextCellBlock([NotNull] AutoStepParser.TextCellBlockContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>textCellBlock</c>
-	/// labeled alternative in <see cref="AutoStepParser.cellArgumentBlock"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitTextCellBlock([NotNull] AutoStepParser.TextCellBlockContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.headerCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterHeaderCellBody([NotNull] AutoStepParser.HeaderCellBodyContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.headerCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitHeaderCellBody([NotNull] AutoStepParser.HeaderCellBodyContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.cellExampleNameBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterCellExampleNameBody([NotNull] AutoStepParser.CellExampleNameBodyContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitCellExampleNameBody([NotNull] AutoStepParser.CellExampleNameBodyContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.cellExampleNameBodyContent"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterCellExampleNameBodyContent([NotNull] AutoStepParser.CellExampleNameBodyContentContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.cellExampleNameBodyContent"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitCellExampleNameBodyContent([NotNull] AutoStepParser.CellExampleNameBodyContentContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="AutoStepParser.generalCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterGeneralCellBody([NotNull] AutoStepParser.GeneralCellBodyContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="AutoStepParser.generalCellBody"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitGeneralCellBody([NotNull] AutoStepParser.GeneralCellBodyContext context);
+	void ExitCellVarPhrase([NotNull] AutoStepParser.CellVarPhraseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.text"/>.
 	/// </summary>
@@ -727,3 +851,4 @@ public interface IAutoStepParserListener : IParseTreeListener {
 	void ExitDescription([NotNull] AutoStepParser.DescriptionContext context);
 }
 } // namespace AutoStep.Compiler.Parser
+
