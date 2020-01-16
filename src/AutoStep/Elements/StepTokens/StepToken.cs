@@ -32,9 +32,14 @@ namespace AutoStep.Elements.StepTokens
         /// </summary>
         public int Length { get; }
 
-        public bool IsImmediatelyAdjacentTo(StepToken nextPart)
+        /// <summary>
+        /// Checks if the specified token occurs immediately after this token in the text stream.
+        /// </summary>
+        /// <param name="nextToken">The token to check.</param>
+        /// <returns>True if the specified part immediately follows this one.</returns>
+        public bool IsImmediatelyFollowedBy(StepToken nextToken)
         {
-            return StartIndex + Length == nextPart.StartIndex;
+            return StartIndex + Length == nextToken.StartIndex;
         }
     }
 }

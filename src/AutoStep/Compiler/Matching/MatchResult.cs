@@ -63,6 +63,11 @@ namespace AutoStep.Compiler.Matching
             msgs.Add(msg);
         }
 
+        /// <summary>
+        /// Prepends (inserts at the beginning) an argument set to the overall match result, using an individual part match.
+        /// </summary>
+        /// <param name="arg">The argument part.</param>
+        /// <param name="matchResult">The result of the argument matching.</param>
         public void PrependArgumentSet(ArgumentPart arg, StepReferenceMatchResult matchResult)
         {
             if (ArgumentSet is null)

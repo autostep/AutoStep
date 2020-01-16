@@ -215,7 +215,7 @@ namespace AutoStep.Compiler
             {
                 if (binding.StartExclusive)
                 {
-                    if (!rangeTestTokens[0].IsImmediatelyAdjacentTo(rangeTestTokens[1]))
+                    if (!rangeTestTokens[0].IsImmediatelyFollowedBy(rangeTestTokens[1]))
                     {
                         // There is whitespace.
                         containsWhiteSpacePadding = true;
@@ -228,7 +228,7 @@ namespace AutoStep.Compiler
                 if (binding.EndExclusive)
                 {
                     // If the last token is not immediately after the penultimate one.
-                    if (!rangeTestTokens[rangeTestTokens.Length - 2].IsImmediatelyAdjacentTo(rangeTestTokens[rangeTestTokens.Length - 1]))
+                    if (!rangeTestTokens[rangeTestTokens.Length - 2].IsImmediatelyFollowedBy(rangeTestTokens[rangeTestTokens.Length - 1]))
                     {
                         // We have whitespace.
                         containsWhiteSpacePadding = true;

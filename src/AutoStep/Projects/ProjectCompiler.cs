@@ -30,6 +30,17 @@ namespace AutoStep.Execution
         }
 
         /// <summary>
+        /// Creates a default project compiler with the normal compiler and linker settings.
+        /// </summary>
+        /// <param name="project">The project to work against.</param>
+        /// <returns>A project compiler.</returns>
+        public static ProjectCompiler CreateDefault(Project project)
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.Default);
+            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler));
+        }
+
+        /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>

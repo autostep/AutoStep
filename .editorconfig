@@ -127,3 +127,6 @@ dotnet_diagnostic.SA1633.severity = silent
 
 # SA1202: Elements should be ordered by access - it's a fight between SA1202 and SA1201 (property/method order), and SA1201 wins.
 dotnet_diagnostic.SA1202.severity = silent
+
+# SA1204: Static elements should appear before instance elements
+dotnet_diagnostic.SA1204.severity = none
