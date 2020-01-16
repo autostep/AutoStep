@@ -6,8 +6,9 @@ namespace AutoStep.Tests.Builders
 {
     public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
-        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column, bool relativeToTextContent = false)
-            : base(relativeToTextContent)
+        private int nextTokenIdx = 0;
+
+        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {
             Built = new StepReferenceElement
             {
@@ -19,74 +20,70 @@ namespace AutoStep.Tests.Builders
             };
         }
 
-        public StepReferenceBuilder Text(string text, int start)
+        public StepReferenceBuilder Text(string text)
         {
-            return Part(text, start, (s, l) => new TextToken(s, l));
+            return Part(text, (s, l) => new TextToken(s, l));
         }
 
-        public StepReferenceBuilder EscapeChar(string text, string escapedText, int start)
+        public StepReferenceBuilder EscapeChar(string text, string escapedText)
         {
-            return Part(text, start, (s, l) => new EscapedCharToken(escapedText, s, l));
+            return Part(text, (s, l) => new EscapedCharToken(escapedText, s, l));
         }
 
-        public StepReferenceBuilder Variable(string varName, int start)
+        public StepReferenceBuilder Variable(string varName)
         {
-            return Part("<" + varName + ">", start, (s, l) => new VariableToken(varName, s, l));
+            return Part("<" + varName + ">", (s, l) => new VariableToken(varName, s, l));
         }
 
-        public StepReferenceBuilder Int(string text, int start)
+        public StepReferenceBuilder Int(string text)
         {
-            return Part(text, start, (s, l) => new IntToken(s, l));
+            return Part(text, (s, l) => new IntToken(s, l));
         }
 
-        public StepReferenceBuilder Float(string text, int start)
+        public StepReferenceBuilder Float(string text)
         {
-            return Part(text, start, (s, l) => new FloatToken(s, l));
+            return Part(text, (s, l) => new FloatToken(s, l));
         }
         
-        public StepReferenceBuilder InterpolateStart(string text, int start)
+        public StepReferenceBuilder InterpolateStart()
         {
-            return Part(text, start, (s, l) => new InterpolateStartToken(s));
+            return Part(":", (s, l) => new InterpolateStartToken(s));
         }
 
-        public StepReferenceBuilder Colon(int column)
+        public StepReferenceBuilder Colon()
         {
-            return Part(":", column, (s, l) => new TextToken(s, l));
+            return Part(":", (s, l) => new TextToken(s, l));
         }
 
-        public StepReferenceBuilder Quote(int column)
+        public StepReferenceBuilder Quote()
         {
-            return Part("'", column, (s, l) => new QuoteToken(false, s));
+            return Part("'", (s, l) => new QuoteToken(false, s));
         }
 
-        public StepReferenceBuilder DoubleQuote(int column)
+        public StepReferenceBuilder DoubleQuote()
         {
-            return Part("\"", column, (s, l) => new QuoteToken(true, s));
+            return Part("\"", (s, l) => new QuoteToken(true, s));
         }
 
-        private StepReferenceBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
+        private StepReferenceBuilder Part<TPartType>(string text, Func<int, int, TPartType> creator)
             where TPartType : StepToken
         {
-            var startIdx = start - Built.StartColumn;
+            var startIdx = Built.RawText.IndexOf(text, nextTokenIdx);
 
-            // Adjust for the keyword in the line.
-            if(RelativeToTextContent)
+            if(startIdx == -1)
             {
-                startIdx -= Built.Type.ToString().Length + 1;
-            }
-
-            if(startIdx < 0)
-            {
-                throw new ArgumentException("Supplied start column occurs before the declared beginning of the line.", nameof(start));
+                throw new ArgumentException("Bad text; not present in step definition.");
             }
             
             var part = creator(startIdx, text.Length);
 
             part.SourceLine = Built.SourceLine;
-            part.StartColumn = start;
-            part.EndColumn = start + (text.Length - 1);
+            part.StartColumn = Built.StartColumn + startIdx;
+            part.EndColumn = part.StartColumn + text.Length;
 
             Built.AddToken(part);
+            
+            nextTokenIdx = startIdx + 1;
 
             return this;
         }

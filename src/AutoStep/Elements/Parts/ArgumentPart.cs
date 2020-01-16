@@ -48,12 +48,14 @@ namespace AutoStep.Elements.Parts
         /// <inheritdoc/>
         public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
-            var currentPart = referenceParts[0];
+            var firstPart = referenceParts[0];
+            var currentPart = firstPart;
             var remainingParts = referenceParts.Slice(1);
             var stopOnGap = true;
             var matchedPartsCount = 1;
-            var contentPartsIndex = 0;
             var contentPartsLength = 1;
+            var startExclusive = false;
+            var endExclusive = false;
 
             QuoteToken? startQuote = currentPart as QuoteToken;
 
@@ -61,14 +63,16 @@ namespace AutoStep.Elements.Parts
             {
                 // Starting on a quote, so continue past gaps.
                 stopOnGap = false;
-                contentPartsIndex = 1;
-                contentPartsLength = 0;
 
                 // If this part is the last available part, then we have to assume that the resulting part is
                 // just the quote character being passed as an argument. Bit odd, but it's fine.
                 if (remainingParts.IsEmpty)
                 {
                     return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(0, 1));
+                }
+                else
+                {
+                    startExclusive = true;
                 }
             }
 
@@ -98,6 +102,7 @@ namespace AutoStep.Elements.Parts
                     // The quote is the same type; that means we have hit the end of the quoted section, and the
                     // rest of this argument.
                     remainingParts = remainingParts.Slice(1);
+                    endExclusive = true;
                     break;
                 }
                 else
@@ -107,29 +112,7 @@ namespace AutoStep.Elements.Parts
                 }
             }
 
-            return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(contentPartsIndex, contentPartsLength));
-        }
-
-        /// <summary>
-        /// Generate an optional compiler message for the matched argument. Only invoked on a successful exact match for the entire step reference.
-        /// </summary>
-        /// <param name="referenceParts">The result parts from the original match result.</param>
-        /// <returns>An optional compiler message.</returns>
-        public CompilerMessage? GetBindingMessage(ReadOnlySpan<StepToken> referenceParts)
-        {
-            // Ok, so, does a step reference match? A step reference will 'match' any other part, but then we are going to apply some extra
-            // logic and see whether the value fits.
-            if (referenceParts[0] is VariableToken var && TypeHint == ArgumentType.NumericDecimal)
-            {
-                // It's a match, a variable can be anything (late-bound), so we will say it matches.
-            }
-            else if (referenceParts[0] is TextToken word)
-            {
-                // Text will match, but let's look at the type of the argument.
-            }
-
-            // TODO
-            return null;
+            return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(0, matchedPartsCount), startExclusive, endExclusive);
         }
 
         /// <inheritdoc/>

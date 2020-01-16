@@ -415,19 +415,17 @@ namespace AutoStep.Compiler.Matching
                     // When at least one exact match has been added, it means that this node's
                     // argument binding resulted in a final match.
                     // Now let's see if there are any additional checks we can make on the argument.
-                    var currentExact = results.First;
+                    var currentResult = results.First;
 
                     // Only worry about exact matches (and all the exacts come at the start of the list.
-                    while (currentExact is object && currentExact.Value.IsExact)
+                    while (currentResult is object && currentResult.Value.IsExact)
                     {
-                        var problem = arg.GetBindingMessage(remainingTokenSpan);
+                        var exactMatch = currentResult.Value;
 
-                        if (problem is object)
-                        {
-                            currentExact.Value.AddMessage(problem);
-                        }
+                        // Add to the list of 'argument token spans'.
+                        exactMatch.PrependArgumentSet(arg, match);
 
-                        currentExact = currentExact.Next;
+                        currentResult = currentResult.Next;
                     }
                 }
 

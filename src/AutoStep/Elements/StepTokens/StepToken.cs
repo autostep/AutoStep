@@ -31,5 +31,10 @@ namespace AutoStep.Elements.StepTokens
         /// Gets the character length of the token.
         /// </summary>
         public int Length { get; }
+
+        public bool IsImmediatelyAdjacentTo(StepToken nextPart)
+        {
+            return StartIndex + Length == nextPart.StartIndex;
+        }
     }
 }

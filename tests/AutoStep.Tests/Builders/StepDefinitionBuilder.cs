@@ -6,8 +6,7 @@ namespace AutoStep.Tests.Builders
 {
     public class StepDefinitionBuilder : BaseBuilder<StepDefinitionElement>, IStepCollectionBuilder<StepDefinitionElement>
     {
-        public StepDefinitionBuilder(StepType type, string declaration, int line, int column, bool relativeToTextContent = false)
-            : base(relativeToTextContent)
+        public StepDefinitionBuilder(StepType type, string declaration, int line, int column)
         {
             Built = new StepDefinitionElement
             {

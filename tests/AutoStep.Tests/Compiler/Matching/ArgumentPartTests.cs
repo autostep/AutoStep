@@ -30,7 +30,7 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(1);
-            match.ResultTokens.GetText(text).Should().Be("sample");
+            match.GetText(text).Should().Be("sample");
             match.RemainingTokens[0].Should().Be(secondPart);
         }
 
@@ -53,7 +53,7 @@ namespace AutoStep.Tests.Compiler.Matching
 
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(4);
-            match.ResultTokens.GetText(text).Should().Be("foo bah");
+            match.GetText(text).Should().Be("foo bah");
             match.RemainingTokens[0].GetText(text).Should().Be("next");
         }
         
@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Compiler.Matching
             // Unterminated quoted arguments cause the capture of the entire remaining tokens.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(4);
-            match.ResultTokens.GetText(text).Should().Be("foo bah next");
+            match.GetText(text).Should().Be("foo bah next");
             match.RemainingTokens.IsEmpty.Should().BeTrue();
         }
 
@@ -98,7 +98,7 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(3);
-            match.ResultTokens.GetText(text).Should().Be("don't");
+            match.GetText(text).Should().Be("don't");
             match.RemainingTokens.IsEmpty.Should().BeTrue();
         }
 
@@ -115,7 +115,7 @@ namespace AutoStep.Tests.Compiler.Matching
                 new QuoteToken(true, 5),
                 WordFromString(text, "bah"),
                 new QuoteToken(true, 10),
-                new QuoteToken(false, 8),
+                new QuoteToken(false, 11),
                 WordFromString(text, "next")
             );
 
@@ -124,7 +124,7 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(6);
-            match.ResultTokens.GetText(text).Should().Be("foo \" bah\"");
+            match.GetText(text).Should().Be("foo \" bah\"");
             match.RemainingTokens[0].GetText(text).Should().Be("next");
         }
 
@@ -141,7 +141,7 @@ namespace AutoStep.Tests.Compiler.Matching
                 new QuoteToken(false, 5),
                 WordFromString(text, "bah"),
                 new QuoteToken(false, 10),
-                new QuoteToken(true, 8),
+                new QuoteToken(true, 11),
                 WordFromString(text, "next")
             );
 
@@ -150,7 +150,7 @@ namespace AutoStep.Tests.Compiler.Matching
             // If there's no 'grouping', then result should just be the one value.
             match.IsExact.Should().Be(true);
             match.Length.Should().Be(6);
-            match.ResultTokens.GetText(text).Should().Be("foo ' bah'");
+            match.GetText(text).Should().Be("foo ' bah'");
             match.RemainingTokens[0].GetText(text).Should().Be("next");
         }
 

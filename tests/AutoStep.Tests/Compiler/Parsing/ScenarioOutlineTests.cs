@@ -95,13 +95,13 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1>'", 6, 21, step => step
-                            .Text("I", 27)
-                            .Text("pass", 29)
-                            .Text("an", 34)
-                            .Text("argument", 37)
-                            .Quote(46)
-                            .Variable("variable1", 47)
-                            .Quote(58)
+                            .Text("I")
+                            .Text("pass")
+                            .Text("an")
+                            .Text("argument")
+                            .Quote()
+                            .Variable("variable1")
+                            .Quote()
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -290,15 +290,15 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Text("I", 27)
-                            .Text("pass", 29)
-                            .Text("an", 34)
-                            .Text("argument", 37)
-                            .Quote(46)
-                            .Variable("variable1", 47)
-                            .Text("something", 59)
-                            .Variable("variable2", 69)
-                            .Quote(80)
+                            .Text("I")
+                            .Text("pass")
+                            .Text("an")
+                            .Text("argument")
+                            .Quote()
+                            .Variable("variable1")
+                            .Text("something")
+                            .Variable("variable2")
+                            .Quote()
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab
@@ -343,15 +343,15 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
                         .Given("I pass an argument '<variable1> something <variable2>'", 6, 21, step => step
-                            .Text("I", 27)
-                            .Text("pass", 29)
-                            .Text("an", 34)
-                            .Text("argument", 37)
-                            .Quote(46)
-                            .Variable("variable1", 47)
-                            .Text("something", 59)
-                            .Variable("variable2", 69)             
-                            .Quote(80)
+                            .Text("I")
+                            .Text("pass")
+                            .Text("an")
+                            .Text("argument")
+                            .Quote()
+                            .Variable("variable1")
+                            .Text("something")
+                            .Variable("variable2")             
+                            .Quote()
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab

@@ -24,7 +24,7 @@ namespace AutoStep.Compiler
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    internal partial class AutoStepCompiler : IAutoStepCompiler
+    public partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
         private readonly ITracer? tracer;

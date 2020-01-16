@@ -6,8 +6,6 @@ namespace AutoStep.Tests.Builders
         where TBuilt : StepCollectionElement
     {
         TBuilt Built { get; }
-
-        bool RelativeToTextContent { get; }
     }
 
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoStep.Compiler;
+using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Tests.Utils
@@ -12,12 +14,38 @@ namespace AutoStep.Tests.Utils
             return text.Substring(part.StartIndex, part.Length);
         }
 
-        public static string GetText(this ReadOnlySpan<StepToken> parts, string text)
+        public static string GetText(this ArgumentBinding binding, string text)
         {
-            var firstSpan = parts[0];
-            var lastSpan = parts[parts.Length - 1];
+            return GetText(text, binding.MatchedTokens, binding.StartExclusive, binding.EndExclusive);
+        }
 
-            return text.Substring(firstSpan.StartIndex, (lastSpan.StartIndex - firstSpan.StartIndex) + lastSpan.Length);
+        public static string GetText(this StepReferenceMatchResult result, string text)
+        {
+            return GetText(text, result.MatchedTokens, result.StartExclusive, result.EndExclusive);
+        }
+
+        private static string GetText(string text, ReadOnlySpan<StepToken> tokens, bool startExclusive, bool endExclusive)
+        {
+            var first = tokens[0];            
+            var last = tokens[tokens.Length - 1];
+            int startIndex = first.StartIndex;
+            int length = (last.StartIndex - startIndex) + last.Length;
+
+            if (tokens.Length > 1)
+            {
+                if (startExclusive)
+                {
+                    startIndex += first.Length;
+                    length -= first.Length;
+                }
+
+                if (endExclusive)
+                {
+                    length -= last.Length;
+                }
+            }
+
+            return text.Substring(startIndex, length);
         }
     }
 }

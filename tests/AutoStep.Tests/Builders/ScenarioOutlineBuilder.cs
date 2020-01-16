@@ -7,8 +7,7 @@ namespace AutoStep.Tests.Builders
 
     public class ScenarioOutlineBuilder : BaseBuilder<ScenarioOutlineElement>, IStepCollectionBuilder<ScenarioOutlineElement>
     {
-        public ScenarioOutlineBuilder(string name, int line, int column, bool relativeToTextContent = false)
-            : base(relativeToTextContent)
+        public ScenarioOutlineBuilder(string name, int line, int column)
         {
             Built = new ScenarioOutlineElement
             {
@@ -27,7 +26,7 @@ namespace AutoStep.Tests.Builders
 
         public ScenarioOutlineBuilder Examples(int line, int column, Action<ExampleBuilder> cfg)
         {
-            var newExample = new ExampleBuilder(line, column, RelativeToTextContent);
+            var newExample = new ExampleBuilder(line, column);
 
             cfg(newExample);
 
