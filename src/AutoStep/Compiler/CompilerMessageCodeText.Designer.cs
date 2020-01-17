@@ -79,6 +79,15 @@ namespace AutoStep.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot use a value of type {0} for an argument declared as a {1}..
+        /// </summary>
+        internal static string ArgumentTypeNotCompatible {
+            get {
+                return ResourceManager.GetString("ArgumentTypeNotCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bad option format. Option must the format &apos;$optionName&apos;, optionally with a value separated by &apos;:&apos;, e.g. &apos;$optionName:value&apos;..
         /// </summary>
         internal static string BadOptionFormat {
@@ -327,6 +336,15 @@ namespace AutoStep.Compiler {
         internal static string TableRowHasNotBeenTerminated {
             get {
                 return ResourceManager.GetString("TableRowHasNotBeenTerminated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The step definition requires a type of {0} for this argument, but no value has been provided..
+        /// </summary>
+        internal static string TypeRequiresValueForArgument {
+            get {
+                return ResourceManager.GetString("TypeRequiresValueForArgument", resourceCulture);
             }
         }
         

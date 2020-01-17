@@ -24,7 +24,7 @@ namespace AutoStep.Compiler
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    internal partial class AutoStepCompiler : IAutoStepCompiler
+    public partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
         private readonly ITracer? tracer;
@@ -165,16 +165,6 @@ namespace AutoStep.Compiler
             int? customLexerStartMode = null)
             where TContext : ParserRuleContext
         {
-            if (content is null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-
-            if (entryPoint is null)
-            {
-                throw new ArgumentNullException(nameof(entryPoint));
-            }
-
             // Create the source stream, the lexer itself, and the resulting token stream.
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepLexer(inputStream);

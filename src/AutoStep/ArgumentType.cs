@@ -11,13 +11,13 @@
         Text,
 
         /// <summary>
-        /// Integer argument (optionally prefixed with a symbol).
-        /// </summary>
-        NumericInteger,
-
-        /// <summary>
-        /// Decimal argument (optionally prefixed with a symbol).
+        /// Decimal argument.
         /// </summary>
         NumericDecimal,
+
+        /// <summary>
+        /// Integer argument.
+        /// </summary>
+        NumericInteger,
     }
 }

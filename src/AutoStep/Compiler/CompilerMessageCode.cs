@@ -170,6 +170,16 @@ namespace AutoStep.Compiler
         /// </summary>
         LinkerMultipleMatchingDefinitions = 20002,
 
+        /// <summary>
+        /// The hinted argument type requires a value.
+        /// </summary>
+        TypeRequiresValueForArgument = 20003,
+
+        /// <summary>
+        /// The hinted argument type is not compatible with the bound step reference.
+        /// </summary>
+        ArgumentTypeNotCompatible = 20004,
+
         //// Errors from Exceptions ////
 
         /// <summary>

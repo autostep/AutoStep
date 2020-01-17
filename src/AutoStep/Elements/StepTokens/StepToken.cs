@@ -31,5 +31,15 @@ namespace AutoStep.Elements.StepTokens
         /// Gets the character length of the token.
         /// </summary>
         public int Length { get; }
+
+        /// <summary>
+        /// Checks if the specified token occurs immediately after this token in the text stream.
+        /// </summary>
+        /// <param name="nextToken">The token to check.</param>
+        /// <returns>True if the specified part immediately follows this one.</returns>
+        public bool IsImmediatelyFollowedBy(StepToken nextToken)
+        {
+            return StartIndex + Length == nextToken.StartIndex;
+        }
     }
 }

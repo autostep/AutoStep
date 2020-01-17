@@ -5,8 +5,7 @@ namespace AutoStep.Tests.Builders
 {
     public class FeatureBuilder : BaseBuilder<FeatureElement>
     {
-        public FeatureBuilder(string name, int line, int column, bool relativeToTextContent = false)
-            : base(relativeToTextContent)
+        public FeatureBuilder(string name, int line, int column)
         {
             Built = new FeatureElement
             {
@@ -30,7 +29,7 @@ namespace AutoStep.Tests.Builders
                 throw new ArgumentNullException(nameof(cfg));
             }
 
-            var backgroundBuilder = new BackgroundBuilder(line, column, RelativeToTextContent);
+            var backgroundBuilder = new BackgroundBuilder(line, column);
 
             cfg(backgroundBuilder);
 
@@ -41,7 +40,7 @@ namespace AutoStep.Tests.Builders
 
         public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder> cfg = null)
         {
-            var scenarioBuilder = new ScenarioBuilder(name, line, column, RelativeToTextContent);
+            var scenarioBuilder = new ScenarioBuilder(name, line, column);
 
             if (cfg is object)
             {
@@ -55,7 +54,7 @@ namespace AutoStep.Tests.Builders
 
         public FeatureBuilder ScenarioOutline(string name, int line, int column, Action<ScenarioOutlineBuilder> cfg = null)
         {
-            var scenarioOutlineBuilder = new ScenarioOutlineBuilder(name, line, column, RelativeToTextContent);
+            var scenarioOutlineBuilder = new ScenarioOutlineBuilder(name, line, column);
 
             if(cfg is object)
             {

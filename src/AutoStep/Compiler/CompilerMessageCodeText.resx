@@ -123,6 +123,9 @@
   <data name="ArgumentHasNotBeenClosed" xml:space="preserve">
     <value>Quoted argument has not been closed.</value>
   </data>
+  <data name="ArgumentTypeNotCompatible" xml:space="preserve">
+    <value>Cannot use a value of type {0} for an argument declared as a {1}.</value>
+  </data>
   <data name="BadOptionFormat" xml:space="preserve">
     <value>Bad option format. Option must the format '$optionName', optionally with a value separated by ':', e.g. '$optionName:value'.</value>
   </data>
@@ -206,6 +209,9 @@
   </data>
   <data name="TableRowHasNotBeenTerminated" xml:space="preserve">
     <value>Table cell has not been terminated. Expecting a table delimiter character '|'.</value>
+  </data>
+  <data name="TypeRequiresValueForArgument" xml:space="preserve">
+    <value>The step definition requires a type of {0} for this argument, but no value has been provided.</value>
   </data>
   <data name="UncategorisedException" xml:space="preserve">
     <value>Internal Error: {0}</value>

@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using Antlr4.Runtime;
+using AutoStep.Compiler.Matching;
 using AutoStep.Elements;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Compiler
 {
@@ -72,6 +74,35 @@ namespace AutoStep.Compiler
         public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
         {
             return Create(sourceName, level, code, start.Line, start.Column + 1, stop.Line, stop.Column + 1 + (stop.StopIndex - stop.StartIndex), args);
+        }
+
+        /// <summary>
+        /// Create a compiler message.
+        /// </summary>
+        /// <param name="sourceName">The source name.</param>
+        /// <param name="level">Message level.</param>
+        /// <param name="code">Message code.</param>
+        /// <param name="argBinding">The argument binding the message covers.</param>
+        /// <param name="args">Any arguments used to prepare the message string.</param>
+        /// <returns>The created message.</returns>
+        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, ArgumentBinding argBinding, params object[] args)
+        {
+            return Create(sourceName, level, code, argBinding.MatchedTokens[0], argBinding.MatchedTokens[argBinding.MatchedTokens.Length - 1], args);
+        }
+
+        /// <summary>
+        /// Create a compiler message.
+        /// </summary>
+        /// <param name="sourceName">The source name.</param>
+        /// <param name="level">Message level.</param>
+        /// <param name="code">Message code.</param>
+        /// <param name="start">The step token at which the message starts.</param>
+        /// <param name="stop">The step token at which the message stops.</param>
+        /// <param name="args">Any arguments used to prepare the message string.</param>
+        /// <returns>The created message.</returns>
+        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, StepToken start, StepToken stop, params object[] args)
+        {
+            return Create(sourceName, level, code, start.SourceLine, start.StartColumn, stop.SourceLine, stop.EndColumn, args);
         }
 
         /// <summary>

@@ -6,6 +6,8 @@ using AutoStep.Compiler.Matching;
 using AutoStep.Compiler.Parser;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 using AutoStep.Tracing;
 
 namespace AutoStep.Compiler
@@ -152,7 +154,19 @@ namespace AutoStep.Compiler
                     var foundMatch = matches.First.Value;
 
                     // Link successful, bind the reference.
-                    stepRef.Bind(foundMatch.Definition);
+                    if (foundMatch.ArgumentSet is object)
+                    {
+                        // Run argument validation on the step (doesn't prevent it binding).
+                        if (!ValidateArgumentBinding(file.SourceName, foundMatch.ArgumentSet, messages))
+                        {
+                            success = false;
+                        }
+                    }
+
+                    // Needs to materialise the argument set here. Assign the reference binding.
+                    var referenceBinding = new StepReferenceBinding(foundMatch.Definition, foundMatch.ArgumentSet?.ToArray());
+
+                    stepRef.Bind(referenceBinding);
 
                     var defSource = foundMatch.Definition.Source;
 
@@ -161,6 +175,127 @@ namespace AutoStep.Compiler
             }
 
             return new LinkResult(success, messages, allFoundStepSources.Values, file);
+        }
+
+        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, List<CompilerMessage> messages)
+        {
+            var success = true;
+
+            foreach (var arg in argumentSet)
+            {
+                var bindingMessage = GetBindingMessage(sourceName, arg);
+
+                if (bindingMessage is object)
+                {
+                    if (bindingMessage.Level == CompilerMessageLevel.Error)
+                    {
+                        success = false;
+                    }
+
+                    messages.Add(bindingMessage);
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Generate an optional compiler message for the matched argument. Only invoked on a successful exact match for the entire step reference.
+        /// </summary>
+        /// <returns>An optional compiler message.</returns>
+        private static CompilerMessage? GetBindingMessage(string? sourceName, ArgumentBinding binding)
+        {
+            var part = binding.Part;
+            var resultTokens = binding.MatchedTokens.AsSpan();
+            var rangeTestTokens = resultTokens;
+
+            var containsWhiteSpacePadding = false;
+
+            if (resultTokens.Length > 1)
+            {
+                if (binding.StartExclusive)
+                {
+                    if (!rangeTestTokens[0].IsImmediatelyFollowedBy(rangeTestTokens[1]))
+                    {
+                        // There is whitespace.
+                        containsWhiteSpacePadding = true;
+                    }
+
+                    // Ignore the first token.
+                    resultTokens = resultTokens.Slice(1);
+                }
+
+                if (binding.EndExclusive)
+                {
+                    // If the last token is not immediately after the penultimate one.
+                    if (!rangeTestTokens[rangeTestTokens.Length - 2].IsImmediatelyFollowedBy(rangeTestTokens[rangeTestTokens.Length - 1]))
+                    {
+                        // We have whitespace.
+                        containsWhiteSpacePadding = true;
+                    }
+
+                    // Ignore the last character.
+                    resultTokens = resultTokens.Slice(0, resultTokens.Length - 1);
+                }
+            }
+
+            ArgumentType? effectiveType;
+            CompilerMessage? message = null;
+
+            if (resultTokens.Length == 0)
+            {
+                // No tokens either means entirely whitespace or an empty string.
+                effectiveType = ArgumentType.Text;
+
+                // No tokens. This is a problem for int and decimal types, which expect a value.
+                if (part.TypeHint == ArgumentType.NumericDecimal || part.TypeHint == ArgumentType.NumericInteger)
+                {
+                    // We are expecting a value.
+                    message = CompilerMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.TypeRequiresValueForArgument, binding, part.TypeHint);
+                }
+            }
+            else if (resultTokens.Length > 1 || containsWhiteSpacePadding)
+            {
+                // If there's more than 1 token, or contains any whitespace, we are always going to be text or unknown.
+                // (because if everything could go in one token, i.e. an int, a float, then it will).
+                effectiveType = ArgumentType.Text;
+
+                foreach (var knownToken in resultTokens)
+                {
+                    if (knownToken is InterpolateStartToken || knownToken is VariableToken)
+                    {
+                        // Effective type cannot be known.
+                        effectiveType = null;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                effectiveType = resultTokens[0] switch
+                {
+                    TextToken _ => ArgumentType.Text,
+                    EscapedCharToken _ => ArgumentType.Text,
+                    QuoteToken _ => ArgumentType.Text,
+                    IntToken _ => ArgumentType.NumericInteger,
+                    FloatToken _ => ArgumentType.NumericDecimal,
+
+                    InterpolateStartToken _ => null, // cannot know the type of an interpolation result
+                    VariableToken _ => null, // cannot know the type of a variable insert
+                    _ => null
+                };
+            }
+
+            // Store the determined type for later use.
+            binding.DeterminedType = effectiveType;
+
+            if (message is null && effectiveType != null && part.TypeHint != null && effectiveType < part.TypeHint)
+            {
+                // The type hint indicates an incompatible type assignment (float can't be assigned to int, text can't be assigned to int, etc).
+                message = CompilerMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.ArgumentTypeNotCompatible, binding, effectiveType, part.TypeHint);
+            }
+
+            return message;
         }
 
         private void RefreshStepDefinitions(StepSourceWithTracking trackedSource)

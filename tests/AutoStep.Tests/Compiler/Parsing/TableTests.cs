@@ -155,12 +155,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
-                            .Text("this", 31)
-                            .Text("step", 36)
-                            .Text("has", 41)
-                            .Text("a", 45)
-                            .Text("table", 47)
-                            .Colon(52)
+                            .Text("this")
+                            .Text("step")
+                            .Text("has")
+                            .Text("a")
+                            .Text("table")
+                            .Colon()
                             .Table(7, 29, table => table
                                 .Headers(7, 29,
                                     ("heading1", 31, 38)
@@ -375,12 +375,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
-                            .Text("this", 31)
-                            .Text("step", 36)
-                            .Text("has", 41)
-                            .Text("a", 45)
-                            .Text("table", 47)
-                            .Colon(52)
+                            .Text("this")
+                            .Text("step")
+                            .Text("has")
+                            .Text("a")
+                            .Text("table")
+                            .Colon()
                             .Table(8, 29, table => table
                                 .Headers(8, 29,
                                     ("heading1", 31, 38)
@@ -394,9 +394,9 @@ namespace AutoStep.Tests.Compiler.Parsing
                             )
                         )
                         .Then("another thing happens", 13, 25, step => step
-                            .Text("another", 30)
-                            .Text("thing", 38)
-                            .Text("happens", 44)
+                            .Text("another")
+                            .Text("thing")
+                            .Text("happens")
                         )
                     )
                 )
@@ -422,12 +422,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                 .Feature("My Feature", 2, 17, feat => feat
                     .Scenario("My Scenario", 4, 21, scen => scen
                         .Given("this step has a table:", 6, 25, step => step
-                            .Text("this", 31)
-                            .Text("step", 36)
-                            .Text("has", 41)
-                            .Text("a", 45)
-                            .Text("table", 47)
-                            .Colon(52)
+                            .Text("this")
+                            .Text("step")
+                            .Text("has")
+                            .Text("a")
+                            .Text("table")
+                            .Colon()
                             .Table(7, 29, table => table
                                 .Headers(7, 29,
                                     ("heading1", 31, 38)

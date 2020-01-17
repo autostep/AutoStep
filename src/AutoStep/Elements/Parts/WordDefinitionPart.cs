@@ -23,15 +23,16 @@ namespace AutoStep.Elements.Parts
         }
 
         /// <inheritdoc/>
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> currentPartSpan)
+        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> originalPartSpan)
         {
             // The word definition part should:
             // - Consume text from the current part as much as it can (until either it has consumed all the text in the part or this word has run out of content)
             // - Return a match with the span after we've done our bit.
             var defTextSpan = Text.AsSpan();
+            var currentPartSpan = originalPartSpan;
             var currentPart = currentPartSpan[0];
             var refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
-
+            int consumedTokens = 1;
             int matchedLength = 0;
 
             // While we have some text left in this part.
@@ -55,18 +56,19 @@ namespace AutoStep.Elements.Parts
                         if (currentPartSpan.IsEmpty)
                         {
                             // Out of reference parts; suggests a partial match on this part.
-                            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
+                            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                         }
                         else
                         {
                             currentPart = currentPartSpan[0];
+                            consumedTokens++;
                             refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
                         }
                     }
                     else
                     {
                         // Not a match.
-                        return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
+                        return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                     }
                 }
                 else
@@ -83,11 +85,11 @@ namespace AutoStep.Elements.Parts
                     // Move the part span along.
                     currentPartSpan = currentPartSpan.Slice(1);
 
-                    return new StepReferenceMatchResult(matchedLength, defTextSpan.Length == searchedCharacters, currentPartSpan);
+                    return new StepReferenceMatchResult(matchedLength, defTextSpan.Length == searchedCharacters, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                 }
             }
 
-            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan);
+            return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
         }
 
         /// <inheritdoc/>

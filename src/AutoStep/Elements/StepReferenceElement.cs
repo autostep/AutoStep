@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoStep.Compiler;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements.StepTokens;
@@ -38,7 +39,7 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the bound step definition; will be null if the step cannot be bound, or the linker could not find a matching step definition.
         /// </summary>
-        public StepDefinition? BoundDefinition { get; private set; }
+        public StepReferenceBinding? Binding { get; private set; }
 
         /// <summary>
         /// Gets the generated 'matching parts' used by the linker to associate step references to definitions.
@@ -88,10 +89,10 @@ namespace AutoStep.Elements
         /// <summary>
         /// Bind a given step definition onto the step reference.
         /// </summary>
-        /// <param name="definition">The definition that provides this step reference.</param>
-        public void Bind(StepDefinition definition)
+        /// <param name="binding">The binding that provides this step reference.</param>
+        public void Bind(StepReferenceBinding binding)
         {
-            BoundDefinition = definition ?? throw new ArgumentNullException(nameof(definition));
+            Binding = binding ?? throw new ArgumentNullException(nameof(binding));
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace AutoStep.Elements
         /// </summary>
         public void Unbind()
         {
-            BoundDefinition = null;
+            Binding = null;
         }
     }
 }

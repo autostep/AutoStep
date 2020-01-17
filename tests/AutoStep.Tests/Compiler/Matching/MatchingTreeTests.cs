@@ -354,13 +354,10 @@ namespace AutoStep.Tests.Compiler.Matching
         private StepReferenceElement CreateSimpleRef(StepType type, string text)
         {
             var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-
-            var position = 1;
-
+            
             foreach (var item in text.Split(' '))
             {
-                refBuilder.Text(item, position);
-                position += item.Length + 1;
+                refBuilder.Text(item);
             }
 
             refBuilder.Built.FreezeParts();

@@ -6,8 +6,7 @@ namespace AutoStep.Tests.Builders
 {
     public class TableBuilder : BaseBuilder<TableElement>
     {
-        public TableBuilder(int line, int column, bool relativeToTextContent = false)
-            : base(relativeToTextContent)
+        public TableBuilder(int line, int column)
         {
             Built = new TableElement
             {
