@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoStep.Compiler;
 
-namespace AutoStep
+namespace AutoStep.Projects
 {
     /// <summary>
     /// An AutoStep Project contains one or more test files that can be executed.

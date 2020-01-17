@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Compiler;
 
-namespace AutoStep.Execution
+namespace AutoStep.Projects
 {
     /// <summary>
     /// Represents the outcome of a project compilation, by <see cref="ProjectCompiler.Compile(System.Threading.CancellationToken)"/>.

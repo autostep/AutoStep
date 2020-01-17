@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 
-namespace AutoStep
+namespace AutoStep.Projects
 {
     /// <summary>
     /// Represents the configuration for the project.
