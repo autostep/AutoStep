@@ -165,16 +165,6 @@ namespace AutoStep.Compiler
             int? customLexerStartMode = null)
             where TContext : ParserRuleContext
         {
-            if (content is null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-
-            if (entryPoint is null)
-            {
-                throw new ArgumentNullException(nameof(entryPoint));
-            }
-
             // Create the source stream, the lexer itself, and the resulting token stream.
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepLexer(inputStream);
