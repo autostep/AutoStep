@@ -118,7 +118,7 @@ or even have a license for Visual Studio.
 AutoStep does **not** generate code for another test system (NUnit, JUnit, XUnit, etc) and does not depend on any existing testing framework. Tests are compiled and executed completely by AutoStep, with no other execution dependencies. This means we don't need any build system other than our own!
 
 AutoStep 1.0 will ship with its own mini-IDE designed for writing BDD tests, that 
-removes a lot of the complexity of using Visual Studio or similar IDEs, making the experience much more straightforward for for test writers/readers.
+removes a lot of the complexity of using Visual Studio or similar IDEs, making the experience much more straightforward for test writers/readers.
 
 Eventually we are going to add support for writing tests in the popular IDEs, but our priority is getting people who don't already use one writing tests first.
 
