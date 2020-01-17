@@ -2,8 +2,7 @@
 
 # AutoStep
 
-AutoStep is a compiler and runner for Gherkin-style BDD tests, with a few extra language features
-on top of standard gherkin that add useful functionality.
+AutoStep is a compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard gherkin that add useful functionality.
 
 ---
 
@@ -20,7 +19,7 @@ Get the 'alpha' pre-release for latest develop.
 
 # Why AutoStep
 
-Why does AutoStep exist? The team behind AutoStep has spent years testing big web applications using the existing Gherkin technologies (mostly SpecFlow) and while we are a big fan of these, we've also identified a couple of things we'd like to add. Here are a few of the useful features in AutoStep that help us with that.
+Why does AutoStep exist? The team behind AutoStep has spent years testing enterprise-level web applications using the existing Gherkin technologies (mostly SpecFlow) and while we are a big fan of these, we've also identified a couple of things we'd like to add. Here are a few of the useful features in AutoStep that help us with that.
 
 ## Defining Steps in the same Language as the Tests
 
@@ -100,6 +99,12 @@ Step: Given I have placed and shipped an order for {value:float}
     Given I have placed an order for <value>
       And I have shipped an order for <value>
 
+# Use the new single step
+Scenario: Shipping an Order Increments the User Shipped Count
+
+    Given I have placed and shipped an order for 100
+
+    Then the user's shipped count should be 1
 ```
 
 ## No Visual Studio/MSBuild Dependency
@@ -113,7 +118,7 @@ or even have a license for Visual Studio.
 AutoStep does **not** generate code for another test system (NUnit, JUnit, XUnit, etc) and does not depend on any existing testing framework. Tests are compiled and executed completely by AutoStep, with no other execution dependencies. This means we don't need any build system other than our own!
 
 AutoStep 1.0 will ship with its own mini-IDE designed for writing BDD tests, that 
-removes a lot of the complexity using Visual Studio or a similar IDE adds for test writers/readers.
+removes a lot of the complexity of using Visual Studio or similar IDEs, making the experience much more straightforward for for test writers/readers.
 
 Eventually we are going to add support for writing tests in the popular IDEs, but our priority is getting people who don't already use one writing tests first.
 
