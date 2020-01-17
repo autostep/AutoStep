@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoStep.Compiler;
 using Microsoft.Extensions.FileProviders;
 
-namespace AutoStep
+namespace AutoStep.Projects
 {
     /// <summary>
     /// Defines a content source that loads a project file from an <see cref="IFileProvider" />.
@@ -21,7 +21,7 @@ namespace AutoStep
         /// <param name="fileProvider">Provider of IO.</param>
         public FileProviderContentSource(string path, IFileProvider fileProvider)
         {
-            this.SourceName = path;
+            SourceName = path;
             this.fileProvider = fileProvider ?? throw new ArgumentNullException(nameof(fileProvider));
         }
 

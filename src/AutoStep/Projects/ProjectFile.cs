@@ -4,7 +4,7 @@ using AutoStep.Compiler;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 
-namespace AutoStep
+namespace AutoStep.Projects
 {
     /// <summary>
     /// Represents a single file within a project.

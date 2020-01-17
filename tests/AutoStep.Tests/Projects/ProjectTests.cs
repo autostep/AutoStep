@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Compiler;
+using AutoStep.Projects;
 using FluentAssertions;
 using Xunit;
 

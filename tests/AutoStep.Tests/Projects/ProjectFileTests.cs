@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoStep.Compiler;
 using AutoStep.Elements;
+using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;

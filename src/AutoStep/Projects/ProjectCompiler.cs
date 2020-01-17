@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 
-namespace AutoStep.Execution
+namespace AutoStep.Projects
 {
     /// <summary>
     /// Provides the functionality to compile and link an entire project.
