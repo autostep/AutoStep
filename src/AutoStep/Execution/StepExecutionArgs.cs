@@ -1,6 +1,8 @@
 ﻿using System;
 using AutoStep.Compiler;
 using AutoStep.Elements;
+using AutoStep.Execution.Control;
+using AutoStep.Execution.Strategy;
 
 namespace AutoStep.Execution
 {

@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
 using AutoStep.Tracing;
 

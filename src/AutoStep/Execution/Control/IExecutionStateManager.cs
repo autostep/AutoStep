@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Control
 {
     /// <summary>
     /// Allows the RunContext to interact with a state manager that can control program flow (step over, step into, pause, etc).

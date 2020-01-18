@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using AutoStep.Execution.Control;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Strategy
 {
     internal class DefaultStepExecutionStrategy : IStepExecutionStrategy
     {

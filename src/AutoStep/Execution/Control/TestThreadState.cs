@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Control
 {
     public enum TestThreadState
     {

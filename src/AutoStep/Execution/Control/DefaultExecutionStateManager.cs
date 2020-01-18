@@ -10,7 +10,7 @@ using AutoStep.Elements;
 using AutoStep.Projects;
 using AutoStep.Tracing;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Control
 {
 
     public enum ContinueTo

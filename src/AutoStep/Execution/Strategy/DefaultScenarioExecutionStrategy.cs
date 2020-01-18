@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Execution.Control;
 using AutoStep.Tracing;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Strategy
 {
     internal class DefaultScenarioExecutionStrategy : IScenarioExecutionStrategy
     {

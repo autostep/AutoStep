@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using AutoStep.Elements;
+using AutoStep.Execution.Control;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Strategy
 {
     internal interface IScenarioExecutionStrategy
     {
