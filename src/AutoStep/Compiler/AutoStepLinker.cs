@@ -26,6 +26,8 @@ namespace AutoStep.Compiler
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
         private readonly ITracer? tracer;
 
+        public IEnumerable<IStepDefinitionSource> AllStepDefinitionSources => trackedSources.Values.Select(x => x.Source);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
         /// </summary>

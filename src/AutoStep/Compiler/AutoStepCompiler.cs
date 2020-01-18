@@ -210,13 +210,13 @@ namespace AutoStep.Compiler
             // Write to the tracer if diagnostics are on.
             if (options.HasFlag(CompilerOptions.EnableDiagnostics) && tracer is object)
             {
-                tracer.TraceInfo("Token Stream for source {sourceName}: \n{tokenStream}", new
+                tracer.Info("Token Stream for source {sourceName}: \n{tokenStream}", new
                 {
                     sourceName,
                     tokenStream = commonTokenStream.GetTokenDebugText(lexer.Vocabulary),
                 });
 
-                tracer.TraceInfo("Compiled Parse Tree for source {sourceName}: \n{parseTree}", new
+                tracer.Info("Compiled Parse Tree for source {sourceName}: \n{parseTree}", new
                 {
                     sourceName,
                     parseTree = context.GetParseTreeDebugText(parser),

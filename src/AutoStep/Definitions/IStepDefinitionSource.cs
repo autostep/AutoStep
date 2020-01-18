@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoStep.Execution;
 
 namespace AutoStep.Definitions
 {
@@ -23,5 +24,7 @@ namespace AutoStep.Definitions
         /// </summary>
         /// <returns>The step definitions.</returns>
         IEnumerable<StepDefinition> GetStepDefinitions();
+
+        void RegisterExecutionServices(IServicesBuilder servicesBuilder);
     }
 }

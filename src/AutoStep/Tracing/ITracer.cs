@@ -12,14 +12,14 @@ namespace AutoStep.Tracing
         /// </summary>
         /// <param name="msg">The message body.</param>
         /// <param name="data">An object containing message values.</param>
-        void TraceInfo(string msg, object data);
+        void Info(string msg, object data);
 
         /// <summary>
         /// Invoked when a warning-level event occurs.
         /// </summary>
         /// <param name="msg">The message body.</param>
         /// <param name="data">An object containing message values.</param>
-        void TraceWarn(string msg, object data);
+        void Warn(string msg, object data);
 
         /// <summary>
         /// Invoked when an error-level event occurs.
@@ -27,6 +27,13 @@ namespace AutoStep.Tracing
         /// <param name="ex">The exception related to the error.</param>
         /// <param name="msg">The message body.</param>
         /// <param name="data">An object containing message values.</param>
-        void TraceError(Exception ex, string msg, object data);
+        void Error(Exception ex, string msg, object data);
+
+        /// <summary>
+        /// Invoked with debug-level data.
+        /// </summary>
+        /// <param name="format">The message body.</param>
+        /// <param name="frmtArgs">Format arguments.</param>
+        void Debug(string format, params object[] frmtArgs);
     }
 }

@@ -1,4 +1,5 @@
-﻿using AutoStep.Definitions;
+﻿using System.Collections.Generic;
+using AutoStep.Definitions;
 using AutoStep.Elements;
 
 namespace AutoStep.Compiler
@@ -8,6 +9,8 @@ namespace AutoStep.Compiler
     /// </summary>
     public interface IAutoStepLinker
     {
+        IEnumerable<IStepDefinitionSource> AllStepDefinitionSources { get; }
+
         /// <summary>
         /// Links (or re-links) a built autostep file; all step references that can be updated with step definition bindings will be.
         /// </summary>

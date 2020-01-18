@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Definitions;
+using AutoStep.Execution;
 
 namespace AutoStep.Tests.Utils
 {
@@ -25,6 +26,8 @@ namespace AutoStep.Tests.Utils
 
         public string Name => "Test";
 
+        public bool RegisterServicesCalled { get; private set; }
+
         public void AddStepDefinition(StepType type, string declaration)
         {
             defs.Add(new LocalStepDef(this, type, declaration));
@@ -33,6 +36,11 @@ namespace AutoStep.Tests.Utils
         public IEnumerable<StepDefinition> GetStepDefinitions()
         {
             return defs;
+        }
+
+        public void RegisterExecutionServices(IServicesBuilder servicesBuilder)
+        {
+            RegisterServicesCalled = true;
         }
 
         private class LocalStepDef : StepDefinition

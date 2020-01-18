@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using AutoStep.Execution;
 using AutoStep.Tracing;
 
 namespace AutoStep.Definitions
@@ -15,6 +16,7 @@ namespace AutoStep.Definitions
         private readonly Assembly assembly;
         private readonly ITracer tracer;
         private readonly List<StepDefinition> definitions = new List<StepDefinition>();
+        private readonly List<Type> definitionOwningTypes = new List<Type>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyStepDefinitionSource"/> class.
@@ -64,7 +66,9 @@ namespace AutoStep.Definitions
                 {
                     if (type.GetCustomAttribute<StepsAttribute>(true) is object && !type.IsAbstract)
                     {
-                        tracer.TraceInfo("Looking in type '{FullName}' for steps", new { type.FullName });
+                        var anyDefinitions = false;
+
+                        tracer.Info("Looking in type '{FullName}' for steps", new { type.FullName });
 
                         // This type may contain steps.
                         foreach (var method in type.GetMethods())
@@ -73,7 +77,9 @@ namespace AutoStep.Definitions
 
                             if (definition is object)
                             {
-                                tracer.TraceInfo("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
+                                anyDefinitions = true;
+
+                                tracer.Info("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
 
                                 definitions.Add(new BuiltStepDefinition(this, method, definition));
                             }
@@ -83,6 +89,21 @@ namespace AutoStep.Definitions
             }
 
             return definitions;
+        }
+
+        public void RegisterExecutionServices(IServicesBuilder servicesBuilder)
+        {
+            if (servicesBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(servicesBuilder));
+            }
+
+            // All types providing steps should be registered.
+            // We'll see about reloading DLLs later (TODO).
+            foreach (var definitionType in definitionOwningTypes)
+            {
+                servicesBuilder.RegisterConsumer(definitionType);
+            }
         }
     }
 }

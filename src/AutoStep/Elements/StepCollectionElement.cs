@@ -10,6 +10,18 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the set of steps in the collection.
         /// </summary>
-        public List<StepReferenceElement> Steps { get; } = new List<StepReferenceElement>();
+        public List<StepReferenceElement> Steps { get; private set; } = new List<StepReferenceElement>();
+
+        public void UseStepsFrom(StepCollectionElement other)
+        {
+            if (other is null)
+            {
+                throw new System.ArgumentNullException(nameof(other));
+            }
+
+            // Note that this is a direct reference rather than a
+            // clone.
+            Steps = other.Steps;
+        }
     }
 }

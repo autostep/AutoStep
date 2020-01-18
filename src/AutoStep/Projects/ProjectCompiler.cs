@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
+using AutoStep.Definitions;
 
 namespace AutoStep.Projects
 {
@@ -105,6 +106,31 @@ namespace AutoStep.Projects
             }
 
             return compileResult;
+        }
+
+        public void AddStaticStepDefinitionSource(IStepDefinitionSource source)
+        {
+            if (source is null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            linker.AddStepDefinitionSource(source);
+        }
+
+        public void AddUpdatableStepDefinitionSource(IUpdatableStepDefinitionSource source)
+        {
+            if (source is null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            linker.AddOrUpdateStepDefinitionSource(source);
+        }
+
+        public IEnumerable<IStepDefinitionSource> EnumerateStepDefinitionSources()
+        {
+            return linker.AllStepDefinitionSources;
         }
 
         /// <summary>
