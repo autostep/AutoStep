@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Dependency
 {
     internal class AutofacServiceScope : IServiceScope
     {

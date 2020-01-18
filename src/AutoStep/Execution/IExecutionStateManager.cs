@@ -10,5 +10,6 @@ namespace AutoStep.Execution
     public interface IExecutionStateManager
     {
         Task<HaltResponseInstruction?> CheckforHalt(ExecutionContext context, TestThreadState starting);
+        Task<BreakResponseInstruction?> StepError(StepContext stepContext);
     }
 }

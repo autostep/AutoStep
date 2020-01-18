@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 
 namespace AutoStep.Definitions

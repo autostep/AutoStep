@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 using AutoStep.Tracing;
 
 namespace AutoStep.Definitions

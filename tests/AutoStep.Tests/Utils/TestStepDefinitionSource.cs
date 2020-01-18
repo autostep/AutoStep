@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Tests.Utils
 {
@@ -47,6 +49,11 @@ namespace AutoStep.Tests.Utils
         {
             public LocalStepDef(IStepDefinitionSource source, StepType type, string declaration) : base(source, type, declaration)
             {
+            }
+
+            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            {
+                throw new System.NotImplementedException();
             }
 
             public override bool IsSameDefinition(StepDefinition def)

@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 using AutoStep.Tracing;
 
@@ -31,103 +33,6 @@ namespace AutoStep.Execution
 
     }
     
-    public interface IResultSource
-    {
-        void RegisterOnStartFeature();
-        void RegisterOnEndFeature();
-
-        void RegisterScenarioPassed();
-        void RegisterScenarioFailed();
-
-        void RegisterStepPassed();
-        void RegisterStepFailed();
-
-        event EventHandler StartFeature;
-        event EventHandler EndFeature;
-
-        event EventHandler ScenarioPassed;
-        event EventHandler ScenarioFailed;
-
-        event EventHandler StepPassed;
-        event EventHandler StepFailed;
-    }
-
-    public class RunContext : ExecutionContext
-    {
-        internal RunContext(IServiceScope scope) : base(scope)
-        {
-        }
-    }
-
-    public class ThreadContext : ExecutionContext
-    {
-        public RunContext RunContext { get; }
-
-        internal ThreadContext(int testThreadId, RunContext runCtxt)
-            : base(runCtxt.Scope.BeginNewScope(ScopeTags.ThreadTag))
-        {
-            RunContext = runCtxt;
-        }
-    }
-
-    public class ErrorCapturingContext : ExecutionContext
-    {
-        public ErrorCapturingContext(IServiceScope scope) : base(scope)
-        {
-        }
-
-        public Exception? FailException { get; internal set; }
-
-        public TimeSpan Elapsed { get; internal set; }
-    }
-
-    public class FeatureContext : ExecutionContext
-    {
-        internal FeatureContext(FeatureElement feature, ThreadContext threadContext)
-            : base(threadContext.Scope.BeginNewScope(ScopeTags.FeatureTag))
-        {
-            Feature = feature;
-        }
-
-        public FeatureElement Feature { get; }
-    }
-
-    public class ScenarioContext : ErrorCapturingContext
-    {
-        private ExampleElement? example;
-
-        internal ScenarioContext(FeatureContext featureContext, ScenarioElement scenario, VariableSet example)
-            : base(featureContext.Scope.BeginNewScope(ScopeTags.ScenarioTag))
-        {
-            FeatureContext = featureContext;
-            Scenario = scenario;
-            Variables = example;
-        }
-
-        public FeatureContext FeatureContext { get; }
-
-        public ScenarioElement Scenario { get; }
-
-        public VariableSet Variables { get; }
-    }
-
-    public class StepContext : ErrorCapturingContext
-    {
-        internal StepContext(ExecutionContext parentContext, StepReferenceElement step, VariableSet variables)
-            : base(parentContext.Scope.BeginNewScope(ScopeTags.StepTag))
-        {
-            ParentContext = parentContext;
-            Step = step;
-            Variables = variables;
-        }
-
-        public ExecutionContext ParentContext { get; }
-
-        public StepReferenceElement Step { get; }
-
-        public VariableSet Variables { get; }
-    }
-
     public class TestRun
     {
         private readonly ProjectCompiler compiler;
@@ -214,12 +119,16 @@ namespace AutoStep.Execution
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, tracer);
 
+            // NEED TO CHANGE HOW CONTEXTS ARE CREATED
+            //  These contexts aren't available in the lifetime scope, because I create them manually.
+
             // Create a top-level run context (disposes at the end of the method).
             using var runContext = new RunContext(rootScope.BeginNewScope(ScopeTags.RunTag));
 
-            // Enter our entry/exit scope.
-            await using (await events.EnterEventScope(runContext, (h, ctxt) => h.BeginExecute(ctxt), (h, ctxt) => h.EndExecute(ctxt)))
+            await events.InvokeEvent(runContext, (handler, ctxt, next) => handler.Execute(ctxt, next), async ctxt =>
             {
+                // Event handlers have all executed now.
+
                 // Create a queue of all features.
                 var featureQueue = new ConcurrentQueue<FeatureElement>(executionSet.Features);
 
@@ -250,8 +159,7 @@ namespace AutoStep.Execution
 
                 // Wait for test threads to finish.
                 await Task.WhenAll(parallelTasks).ConfigureAwait(false);
-
-            }
+            }).ConfigureAwait(false);
 
             return new RunResult();
         }
@@ -263,12 +171,11 @@ namespace AutoStep.Execution
 
             using var threadContext = new ThreadContext(testThreadId, runContext);
 
-            await using (await events.EnterEventScope(threadContext, (h, ctxt) => h.BeginThread(ctxt), (h, ctxt) => h.EndThread(ctxt)))
+            await events.InvokeEvent(threadContext, (handler, ctxt, next) => handler.Thread(ctxt, next), async ctxt =>
             {
                 var haltInstruction = await executionManager.CheckforHalt(threadContext, TestThreadState.Starting).ConfigureAwait(false);
 
                 // TODO: Do something with halt instruction (terminate, for example?).
-
                 while (true)
                 {
                     var feature = nextFeature();
@@ -284,38 +191,33 @@ namespace AutoStep.Execution
                         break;
                     }
                 }
-            }
+            }).ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<ScenarioResult>> TestFeature(ThreadContext threadContext, EventManager events, FeatureElement feature)
+        private async Task TestFeature(ThreadContext threadContext, EventManager events, FeatureElement feature)
         {
             using var featureContext = new FeatureContext(feature, threadContext);
 
-            await using (await events.EnterEventScope(featureContext, (h, ctxt) => h.BeginFeature(ctxt), (h, ctxt) => h.EndFeature(ctxt)))
+            await events.InvokeEvent(featureContext, (handler, ctxt, next) => handler.Feature(ctxt, next), async ctxt =>
             {
-                var haltInstruction = await executionManager.CheckforHalt(threadContext, TestThreadState.StartingFeature).ConfigureAwait(false);
+                var haltInstruction = await executionManager.CheckforHalt(featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
-                // TODO: Handle feature halt; exit feature?
-                var scenarioResults = new List<ScenarioResult>();
+                // TODO: Run background.
 
                 // Go through each scenario.
                 foreach (var scenario in feature.Scenarios)
                 {
                     foreach (var variableSet in ExpandScenario(scenario))
                     {
-                        var scenarioResult = await scenarioStrategy.Execute(
+                        await scenarioStrategy.Execute(
                             featureContext,
                             scenario,
                             variableSet,
                             events,
                             executionManager).ConfigureAwait(false);
-
-                        scenarioResults.Add(scenarioResult);
                     }
                 }
-
-                return scenarioResults;
-            }
+            }).ConfigureAwait(false);
         }
 
         private IEnumerable<VariableSet> ExpandScenario(ScenarioElement scenario)

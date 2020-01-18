@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Dependency
 {
     public interface IServiceScope : IServiceResolver, IDisposable
     {

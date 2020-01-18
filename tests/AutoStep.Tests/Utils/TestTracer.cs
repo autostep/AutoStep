@@ -14,6 +14,11 @@ namespace AutoStep.Tests.Utils
             this.outputHelper = outputHelper;
         }
 
+        public void Debug(string format, params object[] frmtArgs)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Error(Exception ex, string msg, object data)
         {
             outputHelper.WriteLine("ERROR: " + msg.FormatWith(data) + $"\n{ex.ToString()}");

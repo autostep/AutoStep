@@ -1,4 +1,6 @@
-﻿using AutoStep.Elements;
+﻿using System.Threading.Tasks;
+using AutoStep.Elements;
+using AutoStep.Execution;
 
 namespace AutoStep.Definitions
 {
@@ -46,5 +48,7 @@ namespace AutoStep.Definitions
         /// <param name="def">The definition to check against.</param>
         /// <returns>True if the definition is semantically the same.</returns>
         public abstract bool IsSameDefinition(StepDefinition def);
+
+        public abstract Task ExecuteStepAsync(StepExecutionArgs executionArguments);
     }
 }

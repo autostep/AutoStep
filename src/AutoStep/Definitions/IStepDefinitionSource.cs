@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions
 {

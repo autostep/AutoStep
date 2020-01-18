@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoStep.Elements;
 
 namespace AutoStep.Execution
 {
     public class StepFailureException : Exception
     {
-        public StepFailureException(Exception innerException) : base("Step Failure Occurred", innerException)
-        {
-        }
-    }
+        public StepReferenceElement Step { get; }
 
-    public class EventHandlingException : Exception
-    {
-        public EventHandlingException(Exception innerException) : base("Event Handler Failure Occurred", innerException)
+        public StepFailureException(StepReferenceElement stepReference, Exception innerException) : base("Step Failure Occurred", innerException)
         {
+            Step = stepReference;
+        }
+
+        public StepFailureException(StepReferenceElement stepReference, string message)
+            : base(message)
+        {
+            Step = stepReference;
         }
     }
 }

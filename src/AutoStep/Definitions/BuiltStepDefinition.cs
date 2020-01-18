@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
+using AutoStep.Execution;
 
 namespace AutoStep.Definitions
 {
@@ -20,6 +22,12 @@ namespace AutoStep.Definitions
             : base(source, declaringAttribute?.Type ?? throw new ArgumentNullException(nameof(declaringAttribute)), declaringAttribute.Declaration)
         {
             this.method = method;
+        }
+
+        public override async Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+        {
+            // TODO - Bind the step and execute!!
+            
         }
 
         /// <summary>

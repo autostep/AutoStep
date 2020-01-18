@@ -29,16 +29,27 @@ namespace AutoStep.Execution
 
     }
 
+    public class BreakResponseInstruction
+    {
+
+    }
+
     /// <summary>
     /// Default execution state manager does things.
     /// </summary>
     public class DefaultExecutionStateManager : IExecutionStateManager
     {
-        private readonly Task<HaltResponseInstruction?> Completed = Task.FromResult<HaltResponseInstruction?>(null);
+        private readonly Task<HaltResponseInstruction?> CompletedHalt = Task.FromResult<HaltResponseInstruction?>(null);
+        private readonly Task<BreakResponseInstruction?> CompletedBreak = Task.FromResult<BreakResponseInstruction?>(null);
 
-        public Task<HaltResponseInstruction?> CheckforHalt(ThreadContext threadCtxt)
+        public Task<HaltResponseInstruction?> CheckforHalt(ExecutionContext context, TestThreadState starting)
         {
-            return Completed;
+            return CompletedHalt;
+        }
+
+        public Task<BreakResponseInstruction?> StepError(StepContext stepContext)
+        {
+            return CompletedBreak;
         }
     }
 }

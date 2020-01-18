@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Elements;
+using AutoStep.Execution;
 
 namespace AutoStep.Definitions
 {
@@ -31,6 +33,16 @@ namespace AutoStep.Definitions
         public override bool IsSameDefinition(StepDefinition def)
         {
             return Type == def.Type && def.Declaration == def.Declaration;
+        }
+
+        public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+        {
+            // Extract the arguments, and invoke the collection executor.
+            var variables = new VariableSet();
+
+            // TODO: Populate the variables from the binding arguments.
+            // Execute the referenced steps.
+            return executionArguments.CollectionExecutionStrategy.Execute(executionArguments.Context, Definition, variables, executionArguments.Events, executionArguments.ExecutionManager);
         }
     }
 }
