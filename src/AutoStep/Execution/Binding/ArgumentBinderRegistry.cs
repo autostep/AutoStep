@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Binding
 {
@@ -18,6 +19,21 @@ namespace AutoStep.Execution.Binding
         public void RegisterArgumentBinder<TBinder>(Type argumentType)
         {
 
+        }
+
+        public IArgumentBinder GetBinderForType(IServiceScope scope, Type parameterType)
+        {
+            if (scope is null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            if (binders.TryGetValue(parameterType, out var binder))
+            {
+                return scope.Resolve<IArgumentBinder>(binder);
+            }
+
+            return defaultBinder;
         }
     }
 }

@@ -25,5 +25,10 @@ namespace AutoStep.Execution
         {
             return new VariableSet();
         }
+
+        public string GetVariableText(string variableName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace AutoStep.Definitions
             var table = executionArguments.Step.Table;
 
             // Get the argument bind registry.
-            executionArguments.Scope.Resolve<ArgumentBinderRegistry>();
+            var binderRegistry = executionArguments.Scope.Resolve<ArgumentBinderRegistry>();
 
             var methodArgs = method.GetParameters();
 
@@ -80,7 +80,7 @@ namespace AutoStep.Definitions
 
                 var fullTextValue = bindingArg.GetFullText(executionArguments.Scope, executionArguments.Step.RawText, executionArguments.Variables);
 
-
+                var binder = binderRegistry.GetBinderForType(arg.ParameterType);
             }
 
             return bindResult;

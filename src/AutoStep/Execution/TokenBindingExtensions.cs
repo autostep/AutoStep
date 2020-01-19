@@ -27,38 +27,114 @@ namespace AutoStep.Execution
             }
 
             // Ok, so we need to go get the raw text from the matched tokens.
-            var tokens = binding.MatchedTokens.AsSpan();
+            var tokens = binding.MatchedTokens;
 
-            if (binding.StartExclusive)
+            if (tokens.Length == 0)
             {
-                tokens = tokens.Slice(1);
+                return string.Empty;
             }
 
-            if (binding.EndExclusive)
-            {
-                tokens = tokens.Slice(0, tokens.Length - 1);
-            }
+            var lastToken = tokens[0];
+            var lastStopIdx = 0;
+            var currentTextReadIdx = lastToken.StartIndex;
 
-            var workingSpace = new StepToken[tokens.Length];
+            var startTokIdx = 0;
+            var length = tokens.Length;
+
+            var foundVariables = new string?[tokens.Length];
+
             int textSize = 0;
 
             // Do a first pass to determine string length and variable size.
             for (int tokenIdx = 0; tokenIdx < tokens.Length; tokenIdx++)
             {
-                var tok = tokens[tokenIdx];
+                var currentToken = tokens[tokenIdx];
 
-                if (tok is VariableToken variable)
+                if (binding.StartExclusive && tokenIdx == 0)
                 {
+                    lastToken = currentToken;
+                    lastStopIdx = lastToken.StartIndex + lastToken.Length;
 
+                    // Just skip.
+                    continue;
                 }
-                else if (tok is InterpolateStartToken inter)
+
+                // Add the space between this and the last token.
+                textSize += currentToken.StartIndex - lastStopIdx;
+
+                if (!binding.EndExclusive || tokenIdx != tokens.Length - 1)
                 {
-                    // We'll come back to this.
-                    throw new NotImplementedException();
+                    // Add text size for the token itself.
+                    if (currentToken is VariableToken variable)
+                    {
+                        var variableText = variables.GetVariableText(variable.VariableName);
+                        foundVariables[tokenIdx] = variableText;
+                        textSize += variableText.Length;
+                    }
+                    else if (currentToken is InterpolateStartToken inter)
+                    {
+                        // We'll come back to this.
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        textSize += currentToken.Length;
+                    }
+
+                    lastToken = currentToken;
+                    lastStopIdx = lastToken.StartIndex + lastToken.Length;
                 }
             }
 
-            return string.Empty;
+            var createdString = string.Create(textSize, tokens, (chars, tokens) =>
+            {
+                var textSpan = rawText.AsSpan();
+
+                // Now we loop over the tokens and do our actual copy.
+                for (int tokenIdx = 0; tokenIdx < tokens.Length; tokenIdx++)
+                {
+                    var currentToken = tokens[tokenIdx];
+
+                    if (binding.StartExclusive && tokenIdx == 0)
+                    {
+                        lastToken = currentToken;
+                        lastStopIdx = lastToken.StartIndex + lastToken.Length;
+
+                        // Just skip.
+                        continue;
+                    }
+
+                    // Add the space between this and the last token.
+                    var whiteSpaceLength = currentToken.StartIndex - lastStopIdx;
+
+                    textSpan.Slice(lastStopIdx, whiteSpaceLength).CopyTo(chars);
+
+                    // Move the chars along.
+                    chars = chars.Slice(0, whiteSpaceLength);
+
+                    if (!binding.EndExclusive || tokenIdx != tokens.Length - 1)
+                    {
+                        var knownVariable = foundVariables[tokenIdx];
+
+                        if (knownVariable is null)
+                        {
+                            // Copy the contents of the token.
+                            textSpan.Slice(currentToken.StartIndex, currentToken.Length).CopyTo(chars);
+                            chars = chars.Slice(0, currentToken.Length);
+                        }
+                        else
+                        {
+                            knownVariable.AsSpan().CopyTo(chars);
+                            chars = chars.Slice(0, knownVariable.Length);
+                        }
+
+                        lastToken = currentToken;
+                        lastStopIdx = lastToken.StartIndex + lastToken.Length;
+                    }
+                }
+            });
+
+            return createdString;
         }
     }
 }
