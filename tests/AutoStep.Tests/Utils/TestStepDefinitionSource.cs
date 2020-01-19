@@ -28,7 +28,7 @@ namespace AutoStep.Tests.Utils
 
         public string Name => "Test";
 
-        public bool RegisterServicesCalled { get; private set; }
+        public bool ConfigureServicesCalled { get; private set; }
 
         public void AddStepDefinition(StepType type, string declaration)
         {
@@ -40,9 +40,9 @@ namespace AutoStep.Tests.Utils
             return defs;
         }
 
-        public void RegisterExecutionServices(IServicesBuilder servicesBuilder)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration config)
         {
-            RegisterServicesCalled = true;
+            ConfigureServicesCalled = true;
         }
 
         private class LocalStepDef : StepDefinition

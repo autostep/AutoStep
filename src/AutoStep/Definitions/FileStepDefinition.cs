@@ -41,8 +41,15 @@ namespace AutoStep.Definitions
             var variables = new VariableSet();
 
             // TODO: Populate the variables from the binding arguments.
+
             // Execute the referenced steps.
-            return executionArguments.CollectionExecutionStrategy.Execute(executionArguments.Context, Definition, variables, executionArguments.Events, executionArguments.ExecutionManager);
+            return executionArguments.CollectionExecutionStrategy.Execute(
+                executionArguments.Scope,
+                executionArguments.Context,
+                Definition,
+                variables,
+                executionArguments.Events,
+                executionArguments.ExecutionManager);
         }
     }
 }

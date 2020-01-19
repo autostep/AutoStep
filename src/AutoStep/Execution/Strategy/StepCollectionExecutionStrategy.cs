@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Execution.Control;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -15,48 +16,59 @@ namespace AutoStep.Execution.Strategy
             this.stepExecutionStrategy = stepExecutionStrategy ?? new DefaultStepExecutionStrategy();
         }
 
-        public async Task Execute(ErrorCapturingContext owningContext, StepCollectionElement stepCollection, VariableSet variables, EventManager events, IExecutionStateManager executionManager)
+        public async Task Execute(IServiceScope owningScope, ErrorCapturingContext owningContext, StepCollectionElement stepCollection, VariableSet variables, EventPipeline events, IExecutionStateManager executionManager)
         {
             // Resolve the thread context, so we can access the stack of steps.
-            var threadContext = owningContext.Scope.Resolve<ThreadContext>();
+            var threadContext = owningScope.ThreadContext();
 
             for (var stepIdx = 0; stepIdx < stepCollection.Steps.Count; stepIdx++)
             {
                 var step = stepCollection.Steps[stepIdx];
 
-                using var stepContext = new StepContext(owningContext, stepIdx, step, variables);
+                var stepContext = new StepContext(stepIdx, owningContext, step, variables);
+
+                using var stepScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
 
                 // Halt before the step begins.
-                var stepHaltInstruction = await executionManager.CheckforHalt(owningContext, TestThreadState.StartingStep).ConfigureAwait(false);
+                var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, owningContext, TestThreadState.StartingStep).ConfigureAwait(false);
 
                 // Halt instruction for step collections can include:
                 //  - Moving to a specific step position
                 //  - Stepping Up (i.e. run to next scope).
                 //  - Something else?
-
-                await events.InvokeEvent(stepContext, (handler, ctxt, next) => handler.Step(ctxt, next), async ctxt =>
-                {
-                    var timer = new Stopwatch();
-
-                    timer.Start();
-
-                    try
+                await events.InvokeEvent(
+                    stepScope,
+                    stepContext,
+                    (handler, sc, ctxt, next) => handler.Step(sc, ctxt, next),
+                    async (scope, ctxt) =>
                     {
-                        // Execute the step.
-                        await stepExecutionStrategy.ExecuteStep(stepContext, variables, events, executionManager, this).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Record the exception in the step context, so it's available to event handlers.
-                        ctxt.FailException = ex;
-                    }
-                    finally
-                    {
-                        timer.Stop();
-                        ctxt.Elapsed = timer.Elapsed;
-                    }
+                        var timer = new Stopwatch();
 
-                }).ConfigureAwait(false);
+                        timer.Start();
+
+                        try
+                        {
+                            // Execute the step.
+                            await stepExecutionStrategy.ExecuteStep(
+                                scope,
+                                ctxt,
+                                variables,
+                                events,
+                                executionManager,
+                                this).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Record the exception in the step context, so it's available to event handlers.
+                            stepContext.FailException = ex;
+                        }
+                        finally
+                        {
+                            timer.Stop();
+                            stepContext.Elapsed = timer.Elapsed;
+                        }
+
+                    }).ConfigureAwait(false);
 
                 if (stepContext.FailException is object)
                 {

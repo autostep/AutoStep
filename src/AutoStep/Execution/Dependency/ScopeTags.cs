@@ -6,6 +6,7 @@ namespace AutoStep.Execution
 {
     internal class ScopeTags
     {
+        public const string Root = "__asRoot";
         public const string RunTag = "__asRun";
         public const string ThreadTag = "__asThread";
         public const string FeatureTag = "__asFeature";

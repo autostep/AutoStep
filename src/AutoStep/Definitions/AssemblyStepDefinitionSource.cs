@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tracing;
 
@@ -39,6 +40,21 @@ namespace AutoStep.Definitions
         /// Gets the name of the source.
         /// </summary>
         public string Name => assembly.Location;
+
+        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
+        {
+            if (servicesBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(servicesBuilder));
+            }
+
+            // All types providing steps should be registered.
+            // We'll see about reloading DLLs later (TODO).
+            foreach (var definitionType in definitionOwningTypes)
+            {
+                servicesBuilder.RegisterConsumer(definitionType);
+            }
+        }
 
         /// <summary>
         /// Gets the last modification time of the assembly.
@@ -81,7 +97,7 @@ namespace AutoStep.Definitions
 
                                 tracer.Info("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
 
-                                definitions.Add(new BuiltStepDefinition(this, method, definition));
+                                definitions.Add(new BuiltStepDefinition(this, type, method, definition));
                             }
                         }
                     }
@@ -89,21 +105,6 @@ namespace AutoStep.Definitions
             }
 
             return definitions;
-        }
-
-        public void RegisterExecutionServices(IServicesBuilder servicesBuilder)
-        {
-            if (servicesBuilder is null)
-            {
-                throw new ArgumentNullException(nameof(servicesBuilder));
-            }
-
-            // All types providing steps should be registered.
-            // We'll see about reloading DLLs later (TODO).
-            foreach (var definitionType in definitionOwningTypes)
-            {
-                servicesBuilder.RegisterConsumer(definitionType);
-            }
         }
     }
 }

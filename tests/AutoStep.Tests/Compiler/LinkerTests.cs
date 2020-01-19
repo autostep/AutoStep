@@ -8,6 +8,7 @@ using AutoStep.Definitions;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using AutoStep.Execution;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -31,6 +32,11 @@ namespace AutoStep.Tests.Compiler
             public override bool IsSameDefinition(StepDefinition def)
             {
                 return ReferenceEquals(def, this);
+            }
+
+            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            {
+                throw new NotImplementedException();
             }
         }
 

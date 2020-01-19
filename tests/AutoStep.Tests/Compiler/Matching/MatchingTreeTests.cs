@@ -8,6 +8,8 @@ using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 using AutoStep.Tests.Builders;
+using System.Threading.Tasks;
+using AutoStep.Execution;
 
 namespace AutoStep.Tests.Compiler.Matching
 {
@@ -389,6 +391,11 @@ namespace AutoStep.Tests.Compiler.Matching
             {
                 this.stepId = stepId;
                 Definition = definition;
+            }
+
+            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            {
+                throw new NotImplementedException();
             }
 
             public override bool IsSameDefinition(StepDefinition def)

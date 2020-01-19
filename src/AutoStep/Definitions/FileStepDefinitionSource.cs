@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 
@@ -35,6 +36,7 @@ namespace AutoStep.Definitions
         /// </summary>
         public ProjectFile File { get; }
 
+
         /// <summary>
         /// Gets the last modification time of the source, which is equal to the last compilation
         /// time of the file.
@@ -56,7 +58,7 @@ namespace AutoStep.Definitions
                    ?? Enumerable.Empty<FileStepDefinition>();
         }
 
-        public void RegisterExecutionServices(IServicesBuilder servicesBuilder)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
         {
             // No additional services needed for these.
         }

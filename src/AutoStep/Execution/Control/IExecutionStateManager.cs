@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Control
 {
@@ -9,7 +10,7 @@ namespace AutoStep.Execution.Control
     /// </summary>
     public interface IExecutionStateManager
     {
-        Task<HaltResponseInstruction?> CheckforHalt(ExecutionContext context, TestThreadState starting);
+        Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, ExecutionContext context, TestThreadState starting);
         Task<BreakResponseInstruction?> StepError(StepContext stepContext);
     }
 }

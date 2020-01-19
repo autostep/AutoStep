@@ -38,6 +38,7 @@ namespace AutoStep.Execution
     public class TestRun
     {
         private readonly ProjectCompiler compiler;
+        private readonly RunConfiguration configuration;
         private readonly IRunFilter filter;
         private readonly ITracer tracer;
         private readonly IExecutionStateManager executionManager;
@@ -55,6 +56,7 @@ namespace AutoStep.Execution
         {
             Project = project;
             this.compiler = compiler;
+            this.configuration = configuration;
             this.filter = filter ?? new RunAllFilter();
             this.tracer = tracer ?? NullTracer.Instance;
             this.scenarioStrategy = new DefaultScenarioExecutionStrategy(tracer);
@@ -72,19 +74,19 @@ namespace AutoStep.Execution
         {
             Project = project;
             this.compiler = compiler;
+            this.configuration = configuration;
             this.filter = filter ?? new RunAllFilter();
             this.tracer = tracer ?? NullTracer.Instance;
             this.scenarioStrategy = executionStrategy;
             this.executionManager = executionStateManager ?? new DefaultExecutionStateManager();
         }
 
-        public async Task<RunResult> Execute(CancellationToken cancelToken = default)
+        public async Task<RunResult> Execute(Action<IEventPipelineBuilder>? eventBuilder = null, CancellationToken cancelToken = default)
         { 
             // TODO: Logging!
 
-            // Prepare can only be called once. This method sets up any services for execution and loads plugins.
-
-            // We'll run a compile and link to start; this ensures we are all up to date (note that if everything is up to date, then nothing actually happens).
+            // We'll run a compile and link to start; this ensures we are all up to date
+            // (note that if everything is up to date, then nothing actually happens).
             await compiler.Compile(cancelToken).ConfigureAwait(false);
 
             // Link regardless.
@@ -98,113 +100,128 @@ namespace AutoStep.Execution
 
             var exposedServiceRegistration = new AutofacServiceBuilder(serviceBuilder);
 
-            foreach (var source in compiler.EnumerateStepDefinitionSources())
+            var pipelineBuilder = new EventPipelineBuilder();
+
+            if (eventBuilder is object)
             {
-                // Let each step definition source register services (e.g. step classes).
-                source.RegisterExecutionServices(exposedServiceRegistration);
+                eventBuilder(pipelineBuilder);
             }
 
-            // Register the various context types.
-            exposedServiceRegistration.RegisterPerThread<ThreadContext>();
-            exposedServiceRegistration.RegisterPerFeatureService<FeatureContext>();
-            exposedServiceRegistration.RegisterPerScenarioService<ScenarioContext>();
-            exposedServiceRegistration.RegisterPerStepService<StepContext>();
+            // Let the event handlers configure services.
+            var events = pipelineBuilder.Build();
 
-            var container = serviceBuilder.Build();
-
-            // Create our root scope.
-            using var rootScope = new AutofacServiceScope(container);
-
-            // TODO: Resolve any event handler implementations and remember them (to save us constantly resolving things).
-            var events = new EventManager(rootScope.Resolve<IEnumerable<IEventHandler>>(), tracer);
+            events.ConfigureServices(exposedServiceRegistration, configuration);
 
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, tracer);
 
-            // NEED TO CHANGE HOW CONTEXTS ARE CREATED
-            //  These contexts aren't available in the lifetime scope, because I create them manually.
+            // Register the entire set in the container.
+            exposedServiceRegistration.RegisterSingleInstance(executionSet);
+
+            foreach (var source in compiler.EnumerateStepDefinitionSources())
+            {
+                // Let each step definition source register services (e.g. step classes).
+                source.ConfigureServices(exposedServiceRegistration, configuration);
+            }
+
+            var container = serviceBuilder.Build();
+
+            // Create our root scope.
+            using var rootScope = new AutofacServiceScope(ScopeTags.Root, container);
 
             // Create a top-level run context (disposes at the end of the method).
-            using var runContext = new RunContext(rootScope.BeginNewScope(ScopeTags.RunTag));
+            var runContext = new RunContext();
 
-            await events.InvokeEvent(runContext, (handler, ctxt, next) => handler.Execute(ctxt, next), async ctxt =>
-            {
-                // Event handlers have all executed now.
+            using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
 
-                // Create a queue of all features.
-                var featureQueue = new ConcurrentQueue<FeatureElement>(executionSet.Features);
-
-                // Will need to come from config.
-                var parallelConfig = 1;
-
-                var parallelValue = Math.Min(featureQueue.Count, parallelConfig);
-
-                // Create x tasks based on level of parallelism.
-                var parallelTasks = new Task[parallelValue];
-
-                FeatureElement? FeatureDeQueue(ConcurrentQueue<FeatureElement> queue)
+            await events.InvokeEvent(
+                runScope, 
+                runContext, 
+                (handler, sc, ctxt, next) => handler.Execute(sc, ctxt, next), 
+                async (scope, ctxt) =>
                 {
-                    if (queue.TryDequeue(out var result))
+                    // Event handlers have all executed now.
+
+                    // Create a queue of all features.
+                    var featureQueue = new ConcurrentQueue<FeatureElement>(executionSet.Features);
+
+                    // Will need to come from config.
+                    var parallelConfig = 1;
+
+                    var parallelValue = Math.Min(featureQueue.Count, parallelConfig);
+
+                    // Create x tasks based on level of parallelism.
+                    var parallelTasks = new Task[parallelValue];
+
+                    FeatureElement? FeatureDeQueue(ConcurrentQueue<FeatureElement> queue)
                     {
-                        return result;
+                        if (queue.TryDequeue(out var result))
+                        {
+                            return result;
+                        }
+
+                        return null;
                     }
 
-                    return null;
-                }
+                    for (int idx = 0; idx < parallelValue; idx++)
+                    {
+                        // Initially we'll just go for a feature parallel, but eventually we will
+                        // probably add support for a scenario parallel.
+                        parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(idx, () => FeatureDeQueue(featureQueue), events, runScope));
+                    }
 
-                for (int idx = 0; idx < parallelValue; idx++)
-                {
-                    // Initially we'll just go for a feature parallel, but eventually we will
-                    // probably add support for a scenario parallel.
-                    parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(idx, () => FeatureDeQueue(featureQueue), events, runContext));
-                }
-
-                // Wait for test threads to finish.
-                await Task.WhenAll(parallelTasks).ConfigureAwait(false);
-            }).ConfigureAwait(false);
+                    // Wait for test threads to finish.
+                    await Task.WhenAll(parallelTasks).ConfigureAwait(false);
+                }).ConfigureAwait(false);
 
             return new RunResult();
         }
 
-        private async Task TestThreadFeatureParallel(int testThreadId, Func<FeatureElement?> nextFeature, EventManager events, RunContext runContext)
+        private async Task TestThreadFeatureParallel(int testThreadId, Func<FeatureElement?> nextFeature, EventPipeline events, IServiceScope scope)
         {
             // Event handler is set by only caller, which has its own catch.
             Debug.Assert(events is object);
 
-            using var threadContext = new ThreadContext(testThreadId, runContext);
+            var threadContext = new ThreadContext(testThreadId);
 
-            await events.InvokeEvent(threadContext, (handler, ctxt, next) => handler.Thread(ctxt, next), async ctxt =>
-            {
-                var haltInstruction = await executionManager.CheckforHalt(threadContext, TestThreadState.Starting).ConfigureAwait(false);
+            using var threadScope = scope.BeginNewScope(ScopeTags.ThreadTag, threadContext);
 
-                // TODO: Do something with halt instruction (terminate, for example?).
-                while (true)
+            await events.InvokeEvent(
+                threadScope,
+                threadContext,
+                (handler, sc, ctxt, next) => handler.Thread(sc, ctxt, next),
+                async (scope, ctxt) =>
                 {
-                    var feature = nextFeature();
+                    var haltInstruction = await executionManager.CheckforHalt(scope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
 
-                    if (feature is object)
+                    // TODO: Do something with halt instruction (terminate, for example?).
+                    while (true)
                     {
-                        // We have a feature.
-                        await TestFeature(threadContext, events, feature).ConfigureAwait(false);
+                        var feature = nextFeature();
+
+                        if (feature is object)
+                        {
+                            // We have a feature.
+                            await TestFeature(scope, events, feature).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            tracer.Debug("Test Thread ID {0}; no more features to run.", testThreadId);
+                            break;
+                        }
                     }
-                    else
-                    {
-                        tracer.Debug("Test Thread ID {0}; no more features to run.", testThreadId);
-                        break;
-                    }
-                }
-            }).ConfigureAwait(false);
+                }).ConfigureAwait(false);
         }
 
-        private async Task TestFeature(ThreadContext threadContext, EventManager events, FeatureElement feature)
+        private async Task TestFeature(IServiceScope scope, EventPipeline events, FeatureElement feature)
         {
-            using var featureContext = new FeatureContext(feature, threadContext);
+            var featureContext = new FeatureContext(feature);
 
-            await events.InvokeEvent(featureContext, (handler, ctxt, next) => handler.Feature(ctxt, next), async ctxt =>
+            using var featureScope = scope.BeginNewScope(ScopeTags.FeatureTag, featureContext);
+
+            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.Feature(sc, ctxt, next), async (sc, ctxt) =>
             {
-                var haltInstruction = await executionManager.CheckforHalt(featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
-
-                // TODO: Run background.
+                var haltInstruction = await executionManager.CheckforHalt(sc, ctxt, TestThreadState.StartingFeature).ConfigureAwait(false);
 
                 // Go through each scenario.
                 foreach (var scenario in feature.Scenarios)
@@ -212,6 +229,7 @@ namespace AutoStep.Execution
                     foreach (var variableSet in ExpandScenario(scenario))
                     {
                         await scenarioStrategy.Execute(
+                            featureScope,
                             featureContext,
                             scenario,
                             variableSet,

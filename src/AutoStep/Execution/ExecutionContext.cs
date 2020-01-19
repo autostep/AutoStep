@@ -10,37 +10,7 @@ using AutoStep.Tracing;
 namespace AutoStep.Execution
 {
 
-    public abstract class ExecutionContext : IDisposable
+    public abstract class ExecutionContext
     {
-        private bool isDisposed = false; // To detect redundant calls
-        private readonly IServiceScope scope;
-
-        protected ExecutionContext(IServiceScope scope)
-        {
-            this.scope = scope;
-        }
-
-        ~ExecutionContext()
-        {
-            Dispose(false);
-        }
-
-        public IServiceScope Scope => isDisposed ? throw new ObjectDisposedException(nameof(ExecutionContext)) : scope;
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!isDisposed)
-            {
-                Scope.Dispose();
-                isDisposed = true;
-            }
-        }
-
     }
 }

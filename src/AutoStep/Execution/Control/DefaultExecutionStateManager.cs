@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Elements;
+using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 using AutoStep.Tracing;
 
@@ -42,7 +43,7 @@ namespace AutoStep.Execution.Control
         private readonly Task<HaltResponseInstruction?> CompletedHalt = Task.FromResult<HaltResponseInstruction?>(null);
         private readonly Task<BreakResponseInstruction?> CompletedBreak = Task.FromResult<BreakResponseInstruction?>(null);
 
-        public Task<HaltResponseInstruction?> CheckforHalt(ExecutionContext context, TestThreadState starting)
+        public Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, ExecutionContext context, TestThreadState starting)
         {
             return CompletedHalt;
         }

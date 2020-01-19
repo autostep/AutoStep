@@ -2,8 +2,17 @@
 
 namespace AutoStep.Execution.Dependency
 {
-    public interface IServiceScope : IServiceResolver, IDisposable
+    public interface IServiceScope : IDisposable
     {
-        IServiceScope BeginNewScope(string scopeTag);
+        string Tag { get; }
+
+        TService Resolve<TService>();
+
+        TServiceType Resolve<TServiceType>(Type serviceType);
+
+        object Resolve(Type serviceType);
+
+        IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
+            where TContext : ExecutionContext;
     }
 }

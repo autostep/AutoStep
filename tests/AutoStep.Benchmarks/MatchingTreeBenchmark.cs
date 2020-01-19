@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
+using AutoStep.Execution;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using BenchmarkDotNet.Attributes;
@@ -184,6 +186,11 @@ namespace AutoStep.Benchmarks
             {
                 this.stepId = stepId;
                 Definition = definition;
+            }
+
+            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            {
+                throw new NotImplementedException();
             }
 
             public override bool IsSameDefinition(StepDefinition def)

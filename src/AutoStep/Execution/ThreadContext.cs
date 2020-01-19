@@ -18,15 +18,11 @@ namespace AutoStep.Execution
     {
         public int TestThreadId { get; }
 
-        public RunContext RunContext { get; }
-
         internal Stack<StepDefinition> DefinitionStack { get; } = new Stack<StepDefinition>();
 
-        internal ThreadContext(int testThreadId, RunContext runCtxt)
-            : base(runCtxt.Scope.BeginNewScope(ScopeTags.ThreadTag))
+        internal ThreadContext(int testThreadId)
         {
             TestThreadId = testThreadId;
-            RunContext = runCtxt;
         }
     }
 }

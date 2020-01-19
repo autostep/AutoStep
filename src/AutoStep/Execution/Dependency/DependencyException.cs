@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Dependency
 {
     public class DependencyException : Exception
     {

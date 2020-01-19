@@ -1,25 +1,39 @@
 ﻿using System;
 using Autofac;
+using Autofac.Util;
 
 namespace AutoStep.Execution.Dependency
 {
-    internal class AutofacServiceScope : IServiceScope
+    /// <summary>
+    /// Inherit from the Autofac Disposable so we get the same semantics.
+    /// </summary>
+    internal class AutofacServiceScope : Disposable, IServiceScope
     {
         private readonly ILifetimeScope scope;
 
-        public AutofacServiceScope(ILifetimeScope scope)
+        public string Tag { get; }
+
+        public AutofacServiceScope(string tag, ILifetimeScope scope)
         {
             this.scope = scope;
+            Tag = tag;
         }
 
         public TService Resolve<TService>()
         {
-            return scope.Resolve<TService>();
+            try
+            {
+                return scope.Resolve<TService>();
+            }
+            catch(Autofac.Core.DependencyResolutionException autofacEx)
+            {
+                throw new DependencyException("Dependency Resolution Error", autofacEx);
+            }
         }
 
         public TServiceType Resolve<TServiceType>(Type serviceType)
         {
-            var obj = scope.Resolve(serviceType);
+            var obj = Resolve(serviceType);
 
             if (obj is TServiceType srv)
             {
@@ -32,18 +46,27 @@ namespace AutoStep.Execution.Dependency
             }
         }
 
-        public IServiceScope BeginNewScope(string scopeTag)
+        public object Resolve(Type serviceType)
         {
-            return new AutofacServiceScope(scope.BeginLifetimeScope(scopeTag, cfg =>
+            return scope.Resolve(serviceType);
+        }
+
+        public IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
+            where TContext : ExecutionContext
+        {
+            return new AutofacServiceScope(scopeTag, scope.BeginLifetimeScope(scopeTag, cfg =>
             {
-                cfg.Register<IServiceScope>(ctxt => new AutofacServiceScope(ctxt.Resolve<ILifetimeScope>())).InstancePerDependency();
+                // Register the relevant context object.
+                cfg.RegisterInstance(contextInstance);
             }));
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            scope.Dispose();
+            if (disposing)
+            {
+                scope.Dispose();
+            }
         }
-
     }
 }
