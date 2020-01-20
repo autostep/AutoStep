@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -34,7 +35,7 @@ namespace AutoStep.Tests.Compiler
                 return ReferenceEquals(def, this);
             }
 
-            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }

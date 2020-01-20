@@ -97,7 +97,7 @@ namespace AutoStep.Definitions
 
                                 tracer.Info("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
 
-                                definitions.Add(new BuiltStepDefinition(this, type, method, definition));
+                                definitions.Add(new ClassStepDefinition(this, type, method, definition));
                             }
                         }
                     }

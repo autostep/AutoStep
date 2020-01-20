@@ -15,8 +15,6 @@ namespace AutoStep.Execution
         bool MatchesFeature(ProjectFile file, FeatureElement feature);
 
         bool MatchesScenario(ScenarioElement scen, ExampleElement? example);
-
-        bool MatchesExample();
     }
 
     /// <summary>
@@ -34,17 +32,12 @@ namespace AutoStep.Execution
 
     public class RunAllFilter : IRunFilter
     {
-        public bool MatchesExample()
+        public bool MatchesFile(ProjectFile file)
         {
             return true;
         }
 
         public bool MatchesFeature(ProjectFile file, FeatureElement feature)
-        {
-            return true;
-        }
-
-        public bool MatchesFile(ProjectFile file)
         {
             return true;
         }

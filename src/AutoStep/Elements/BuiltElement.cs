@@ -1,9 +1,11 @@
-﻿namespace AutoStep.Elements
+﻿using AutoStep.Elements.ReadOnly;
+
+namespace AutoStep.Elements
 {
     /// <summary>
     /// Represents a generic built element that has a position in a file.
     /// </summary>
-    public class BuiltElement
+    public class BuiltElement : IElementInfo
     {
         /// <summary>
         /// Gets or sets the line number in the source.

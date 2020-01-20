@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Elements.ReadOnly;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tracing;
@@ -10,18 +11,13 @@ namespace AutoStep.Execution.Strategy
 {
     internal class DefaultScenarioExecutionStrategy : IScenarioExecutionStrategy
     {
-        private readonly ITracer tracer;
-        private readonly IStepCollectionExecutionStrategy collectionExecutionStrategy;
-
-        public DefaultScenarioExecutionStrategy(ITracer tracer, IStepCollectionExecutionStrategy? stepCollectionExecutionStrategy = null)
-        {
-            this.tracer = tracer;
-            collectionExecutionStrategy = stepCollectionExecutionStrategy ?? new StepCollectionExecutionStrategy();
-        }
-
-        public async Task Execute(IServiceScope featureScope, FeatureContext featureContext, ScenarioElement scenario, VariableSet variableSet, EventPipeline events, IExecutionStateManager executionManager)
+        public async Task Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
+
+            var collectionExecutor = featureScope.Resolve<IStepCollectionExecutionStrategy>();
+            var executionManager = featureScope.Resolve<IExecutionStateManager>();
+            var events = featureScope.Resolve<IEventPipeline>();
 
             using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, scenarioContext);
 
@@ -33,23 +29,19 @@ namespace AutoStep.Execution.Strategy
                 if (featureContext.Feature.Background is object)
                 {
                     // There is a background to execute.
-                    await collectionExecutionStrategy.Execute(
+                    await collectionExecutor.Execute(
                         scope,
                         ctxt,
                         featureContext.Feature.Background,
-                        variableSet,
-                        events,
-                        executionManager).ConfigureAwait(false);
+                        variableSet).ConfigureAwait(false);
                 }
 
                 // Any errors will be udated on the scenario context.
-                await collectionExecutionStrategy.Execute(
+                await collectionExecutor.Execute(
                     scenarioScope,
                     scenarioContext,
                     scenario,
-                    variableSet,
-                    events,
-                    executionManager).ConfigureAwait(false);
+                    variableSet).ConfigureAwait(false);
 
             }).ConfigureAwait(false);
         }

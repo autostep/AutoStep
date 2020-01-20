@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Elements
 {
     /// <summary>
     /// Defines a built Feature block, that can contain Background and Scenarios.
     /// </summary>
-    public class FeatureElement : BuiltElement, IAnnotatableElement
+    public class FeatureElement : BuiltElement, IAnnotatableElement, IFeatureInfo
     {
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
+        IReadOnlyList<IAnnotationInfo> IFeatureInfo.Annotations => Annotations;
+
         /// <summary>
         /// Gets or sets the name of the feature.
         /// </summary>
         public string? Name { get; set; }
+
+        string IFeatureInfo.Name => Name ?? throw new LanguageEngineAssertException();
 
         /// <summary>
         /// Gets or sets the description body (if any).
@@ -29,10 +34,14 @@ namespace AutoStep.Elements
         /// </summary>
         public BackgroundElement? Background { get; set; }
 
+        IBackgroundInfo? IFeatureInfo.Background => Background;
+
         /// <summary>
         /// Gets the list of scenarios.
         /// </summary>
         public List<ScenarioElement> Scenarios { get; } = new List<ScenarioElement>();
+
+        IReadOnlyList<IScenarioInfo> IFeatureInfo.Scenarios => Scenarios;
 
         /// <summary>
         /// Creates a copy of this feature, with a filtered set of scenarios.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AutoStep.Compiler;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
+using AutoStep.Elements.ReadOnly;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
@@ -14,7 +15,7 @@ namespace AutoStep.Elements
     /// The base <see cref="StepReferenceElement"/> class
     /// does not understand binding or what can run, it just defines the information about the written line in the test.
     /// </remarks>
-    public class StepReferenceElement : BuiltElement
+    public class StepReferenceElement : BuiltElement, IStepReferenceInfo
     {
         private List<StepToken> workingTokens = new List<StepToken>();
         private StepToken[]? frozenTokens = null;
@@ -36,6 +37,8 @@ namespace AutoStep.Elements
         /// </summary>
         public string? RawText { get; set; }
 
+        string IStepReferenceInfo.Text => RawText ?? throw new LanguageEngineAssertException();
+
         /// <summary>
         /// Gets the bound step definition; will be null if the step cannot be bound, or the linker could not find a matching step definition.
         /// </summary>
@@ -46,10 +49,14 @@ namespace AutoStep.Elements
         /// </summary>
         internal ReadOnlySpan<StepToken> TokenSpan => frozenTokens ?? throw new InvalidOperationException(ElementExceptionMessages.TokensNotFrozen);
 
+        ReadOnlySpan<StepToken> IStepReferenceInfo.TokenSpan => TokenSpan;
+
         /// <summary>
         /// Gets or sets the associated table for this step.
         /// </summary>
         public TableElement? Table { get; set; }
+
+        ITableInfo? IStepReferenceInfo.Table => Table;
 
         /// <summary>
         /// Adds a token to the step reference.

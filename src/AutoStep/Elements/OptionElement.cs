@@ -1,9 +1,11 @@
-﻿namespace AutoStep.Elements
+﻿using AutoStep.Elements.ReadOnly;
+
+namespace AutoStep.Elements
 {
     /// <summary>
     /// Defines an option annotation.
     /// </summary>
-    public class OptionElement : AnnotationElement
+    public class OptionElement : AnnotationElement, IOptionInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionElement"/> class.

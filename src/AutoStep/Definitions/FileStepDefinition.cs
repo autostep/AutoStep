@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Strategy;
 
 namespace AutoStep.Definitions
 {
@@ -35,21 +37,21 @@ namespace AutoStep.Definitions
             return Type == def.Type && def.Declaration == def.Declaration;
         }
 
-        public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+        public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
-            var variables = new VariableSet();
+            // TODO
+
+            var nestedVariables = new VariableSet();
+
+            var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
 
             // TODO: Populate the variables from the binding arguments.
-
-            // Execute the referenced steps.
-            return executionArguments.CollectionExecutionStrategy.Execute(
-                executionArguments.Scope,
-                executionArguments.Context,
+            return collectionStrategy.Execute(
+                stepScope,
+                context,
                 Definition,
-                variables,
-                executionArguments.Events,
-                executionArguments.ExecutionManager);
+                nestedVariables);
         }
     }
 }

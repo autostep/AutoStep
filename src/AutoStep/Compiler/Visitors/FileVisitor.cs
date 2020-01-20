@@ -106,7 +106,7 @@ namespace AutoStep.Compiler
 
             var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
 
-            currentAnnotatable.Annotations.Add(LineInfo(new TagElement { Tag = tagBody }, tag));
+            currentAnnotatable.Annotations.Add(LineInfo(new TagElement(tagBody), tag));
 
             return Result;
         }

@@ -51,7 +51,7 @@ namespace AutoStep.Tests.Utils
             {
             }
 
-            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 throw new System.NotImplementedException();
             }

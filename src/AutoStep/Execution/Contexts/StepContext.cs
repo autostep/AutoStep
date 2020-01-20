@@ -1,11 +1,11 @@
-﻿using AutoStep.Elements;
+﻿using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Execution
 {
 
     public class StepContext : ErrorCapturingContext
     {
-        internal StepContext(int stepIndex, ErrorCapturingContext parentContext, StepReferenceElement step, VariableSet variables)
+        public StepContext(int stepIndex, ErrorCapturingContext parentContext, IStepReferenceInfo step, VariableSet variables)
         {
             StepIndex = stepIndex;
             ParentContext = parentContext;
@@ -17,7 +17,7 @@ namespace AutoStep.Execution
 
         public ErrorCapturingContext ParentContext { get; }
 
-        public StepReferenceElement Step { get; }
+        public IStepReferenceInfo Step { get; }
 
         public VariableSet Variables { get; }
     }

@@ -10,6 +10,7 @@ using AutoStep.Elements.Parts;
 using AutoStep.Tests.Builders;
 using System.Threading.Tasks;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Tests.Compiler.Matching
 {
@@ -393,7 +394,7 @@ namespace AutoStep.Tests.Compiler.Matching
                 Definition = definition;
             }
 
-            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }

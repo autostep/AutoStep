@@ -2,24 +2,22 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoStep.Elements;
+using AutoStep.Elements.ReadOnly;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Strategy
 {
-    internal class StepCollectionExecutionStrategy : IStepCollectionExecutionStrategy
+    internal class DefaultStepCollectionExecutionStrategy : IStepCollectionExecutionStrategy
     {
-        private readonly IStepExecutionStrategy stepExecutionStrategy;
-
-        public StepCollectionExecutionStrategy(IStepExecutionStrategy? stepExecutionStrategy = null)
-        {
-            this.stepExecutionStrategy = stepExecutionStrategy ?? new DefaultStepExecutionStrategy();
-        }
-
-        public async Task Execute(IServiceScope owningScope, ErrorCapturingContext owningContext, StepCollectionElement stepCollection, VariableSet variables, EventPipeline events, IExecutionStateManager executionManager)
+        public async Task Execute(IServiceScope owningScope, ErrorCapturingContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
         {
             // Resolve the thread context, so we can access the stack of steps.
             var threadContext = owningScope.ThreadContext();
+
+            var stepExecutionStrategy = owningScope.Resolve<IStepExecutionStrategy>();
+            var executionManager = owningScope.Resolve<IExecutionStateManager>();
+            var events = owningScope.Resolve<IEventPipeline>();
 
             for (var stepIdx = 0; stepIdx < stepCollection.Steps.Count; stepIdx++)
             {
@@ -52,10 +50,7 @@ namespace AutoStep.Execution.Strategy
                             await stepExecutionStrategy.ExecuteStep(
                                 scope,
                                 ctxt,
-                                variables,
-                                events,
-                                executionManager,
-                                this).ConfigureAwait(false);
+                                variables).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {

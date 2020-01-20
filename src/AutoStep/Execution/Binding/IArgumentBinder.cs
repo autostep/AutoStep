@@ -6,6 +6,6 @@ namespace AutoStep.Execution.Binding
 {
     public interface IArgumentBinder
     {
-
+        object Bind(string textValue, Type destinationType);
     }
 }

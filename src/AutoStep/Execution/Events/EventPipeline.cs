@@ -8,7 +8,7 @@ using AutoStep.Tracing;
 
 namespace AutoStep.Execution
 {
-    internal class EventPipeline
+    internal class EventPipeline : IEventPipeline
     {
         private List<IEventHandler> handlers;
 

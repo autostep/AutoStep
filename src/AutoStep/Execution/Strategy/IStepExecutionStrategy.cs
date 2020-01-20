@@ -4,15 +4,11 @@ using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Strategy
 {
-    internal interface IStepExecutionStrategy
+    public interface IStepExecutionStrategy
     {
         Task ExecuteStep(
             IServiceScope stepScope,
             StepContext context,
-            VariableSet variables,
-            EventPipeline events,
-            IExecutionStateManager executionManager,
-            IStepCollectionExecutionStrategy stepCollectionExecutionStrategy);
+            VariableSet variables);
     }
-
 }

@@ -1,15 +1,15 @@
-﻿using AutoStep.Elements;
+﻿using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Execution
 {
 
     public class FeatureContext : ExecutionContext
     {
-        internal FeatureContext(FeatureElement feature)
+        internal FeatureContext(IFeatureInfo feature)
         {
             Feature = feature;
         }
 
-        public FeatureElement Feature { get; }
+        public IFeatureInfo Feature { get; }
     }
 }

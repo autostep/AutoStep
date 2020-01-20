@@ -8,11 +8,10 @@ namespace AutoStep.Tests.Utils
         public static TBuilder Tag<TBuilder>(this TBuilder builder, string tagName, int line, int column)
              where TBuilder : IBuilder<IAnnotatableElement>
         {
-            builder.GetBuilt().Annotations.Add(new TagElement
+            builder.GetBuilt().Annotations.Add(new TagElement(tagName)
             {
                 SourceLine = line,
-                StartColumn = column,
-                Tag = tagName
+                StartColumn = column
             });
 
             return builder;

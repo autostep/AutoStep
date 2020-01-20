@@ -6,6 +6,7 @@ using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using BenchmarkDotNet.Attributes;
@@ -188,7 +189,7 @@ namespace AutoStep.Benchmarks
                 Definition = definition;
             }
 
-            public override Task ExecuteStepAsync(StepExecutionArgs executionArguments)
+            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }

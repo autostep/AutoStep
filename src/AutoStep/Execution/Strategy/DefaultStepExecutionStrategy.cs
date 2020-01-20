@@ -9,10 +9,7 @@ namespace AutoStep.Execution.Strategy
         public Task ExecuteStep(
             IServiceScope stepScope,
             StepContext context,
-            VariableSet variables,
-            EventPipeline events,
-            IExecutionStateManager executionManager,
-            IStepCollectionExecutionStrategy collectionExecutor)
+            VariableSet variables)
         {
             var reference = context.Step;
             var binding = reference.Binding;
@@ -22,10 +19,7 @@ namespace AutoStep.Execution.Strategy
                 throw new UnboundStepException(reference);
             }
 
-            // Create args structure.
-            var args = new StepExecutionArgs(stepScope, context, reference, variables, binding, events, executionManager, collectionExecutor);
-
-            return binding.Definition.ExecuteStepAsync(args);
+            return binding.Definition.ExecuteStepAsync(stepScope, context, variables);
         }
     }
 }

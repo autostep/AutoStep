@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Binding
 {
-    internal class DefaultArgumentBinder : IArgumentBinder
-    {
-
-    }
 
     public class ArgumentBinderRegistry
     {
@@ -18,7 +15,7 @@ namespace AutoStep.Execution.Binding
 
         public void RegisterArgumentBinder<TBinder>(Type argumentType)
         {
-
+            binders[argumentType] = typeof(TBinder);
         }
 
         public IArgumentBinder GetBinderForType(IServiceScope scope, Type parameterType)

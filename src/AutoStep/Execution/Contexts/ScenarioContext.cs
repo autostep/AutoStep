@@ -1,19 +1,18 @@
 ﻿using AutoStep.Elements;
+using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Execution
 {
 
     public class ScenarioContext : ErrorCapturingContext
     {
-        private ExampleElement? example;
-
-        internal ScenarioContext(ScenarioElement scenario, VariableSet example)
+        internal ScenarioContext(IScenarioInfo scenario, VariableSet example)
         {
             Scenario = scenario;
             Variables = example;
         }
 
-        public ScenarioElement Scenario { get; }
+        public IScenarioInfo Scenario { get; }
 
         public VariableSet Variables { get; }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Elements;
+using AutoStep.Elements.ReadOnly;
 using AutoStep.Projects;
 using AutoStep.Tracing;
 
@@ -47,7 +48,7 @@ namespace AutoStep.Execution
             return order;
         }
 
-        public IReadOnlyList<FeatureElement> Features => features;
+        public IReadOnlyList<IFeatureInfo> Features => features;
 
         private void Populate()
         {

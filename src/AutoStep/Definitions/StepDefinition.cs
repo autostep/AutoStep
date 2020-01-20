@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions
 {
@@ -49,6 +50,6 @@ namespace AutoStep.Definitions
         /// <returns>True if the definition is semantically the same.</returns>
         public abstract bool IsSameDefinition(StepDefinition def);
 
-        public abstract Task ExecuteStepAsync(StepExecutionArgs executionArguments);
+        public abstract Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables);
     }
 }
