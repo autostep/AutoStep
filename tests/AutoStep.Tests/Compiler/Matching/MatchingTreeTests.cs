@@ -363,7 +363,7 @@ namespace AutoStep.Tests.Compiler.Matching
                 refBuilder.Text(item);
             }
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -374,7 +374,7 @@ namespace AutoStep.Tests.Compiler.Matching
 
             builder(refBuilder);
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }

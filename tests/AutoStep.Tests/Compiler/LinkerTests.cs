@@ -44,9 +44,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void SourceLoadPopulatesDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new AutoStepLinker(compiler, LogFactory);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -58,9 +58,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinksStepToDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new AutoStepLinker(compiler, LogFactory);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -96,9 +96,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinkingErrorOnOneStepAllowsContinue()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new AutoStepLinker(compiler, LogFactory);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -149,9 +149,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinkingErrorMultipleDefinitions()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new AutoStepLinker(compiler, LogFactory);
 
             var src1 = new TestStepDefinitionSource("src1");
 
@@ -736,9 +736,9 @@ namespace AutoStep.Tests.Compiler
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new AutoStepLinker(compiler, LogFactory);
 
             var def = new TestDef(type, defText);
 

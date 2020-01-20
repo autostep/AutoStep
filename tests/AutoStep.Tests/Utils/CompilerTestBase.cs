@@ -18,6 +18,7 @@ using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Tests.Utils
 {
@@ -25,22 +26,21 @@ namespace AutoStep.Tests.Utils
     {
         protected ITestOutputHelper TestOutput { get; }
 
-        internal ITracer TestTracer { get; }
+        internal ILoggerFactory LogFactory { get; }
 
         protected string NewLine => Environment.NewLine;
 
         protected CompilerTestBase(ITestOutputHelper output)
         {
             TestOutput = output;
-
-            TestTracer = new TestTracer(output);
+            LogFactory = TestLogFactory.Create(output);
         }
 
         protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -54,7 +54,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -91,7 +91,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -102,7 +102,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -118,7 +118,7 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);
@@ -135,7 +135,7 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source);

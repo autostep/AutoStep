@@ -17,7 +17,7 @@ namespace AutoStep.Tests.Definition
         [Fact]
         public void CanLoadStepsFromAnAssembly()
         {
-            var assemblySource = new AssemblyStepDefinitionSource(typeof(BasicSteps).Assembly, TestTracer);
+            var assemblySource = new AssemblyStepDefinitionSource(typeof(BasicSteps).Assembly, LogFactory);
 
             var stepDefinitions = assemblySource.GetStepDefinitions().ToList();
 

@@ -60,7 +60,7 @@ namespace AutoStep.Execution.Strategy
             }
             else
             {
-                yield return VariableSet.CreateBlank();
+                yield return VariableSet.Blank;
             }
         }
     }

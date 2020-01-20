@@ -9,6 +9,7 @@ using AutoStep.Elements;
 using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
 {
@@ -23,8 +24,8 @@ namespace AutoStep.Compiler
     {
         private readonly IAutoStepCompiler compiler;
         private readonly IMatchingTree linkerTree;
+        private readonly ILogger logger;
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
-        private readonly ITracer? tracer;
 
         public IEnumerable<IStepDefinitionSource> AllStepDefinitionSources => trackedSources.Values.Select(x => x.Source);
 
@@ -32,21 +33,11 @@ namespace AutoStep.Compiler
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler)
+        public AutoStepLinker(IAutoStepCompiler compiler, ILoggerFactory logFactory)
         {
             this.compiler = compiler;
             linkerTree = new MatchingTree();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLinker"/> class, providing a custom matcher tree.
-        /// </summary>
-        /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        /// <param name="tracer">A tracer for the operations of the linker.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler, ITracer tracer)
-            : this(compiler)
-        {
-            this.tracer = tracer;
+            logger = logFactory.CreateLogger<AutoStepLinker>();
         }
 
         /// <summary>

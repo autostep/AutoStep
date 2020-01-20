@@ -17,7 +17,7 @@ namespace AutoStep.Tests.Utils
                 cfg(stepBuilder);
             }
 
-            stepBuilder.Built.FreezeParts();
+            stepBuilder.Built.FreezeTokens();
 
             builder.Built.Steps.Add(stepBuilder.Built);
 
@@ -34,7 +34,7 @@ namespace AutoStep.Tests.Utils
                 cfg(stepBuilder);
             }
 
-            stepBuilder.Built.FreezeParts();
+            stepBuilder.Built.FreezeTokens();
 
             builder.Built.Steps.Add(stepBuilder.Built);
 
@@ -51,7 +51,7 @@ namespace AutoStep.Tests.Utils
                 cfg(stepBuilder);
             }
 
-            stepBuilder.Built.FreezeParts();
+            stepBuilder.Built.FreezeTokens();
 
             builder.Built.Steps.Add(stepBuilder.Built);
 
@@ -68,7 +68,7 @@ namespace AutoStep.Tests.Utils
                 cfg(stepBuilder);
             }
 
-            stepBuilder.Built.FreezeParts();
+            stepBuilder.Built.FreezeTokens();
 
             builder.Built.Steps.Add(stepBuilder.Built);
 

@@ -12,6 +12,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
 using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
 {
@@ -27,13 +28,13 @@ namespace AutoStep.Compiler
     public partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
-        private readonly ITracer? tracer;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
-        public AutoStepCompiler()
-            : this(CompilerOptions.Default)
+        public AutoStepCompiler(ILoggerFactory logFactory)
+            : this(CompilerOptions.Default, logFactory)
         {
         }
 
@@ -41,20 +42,10 @@ namespace AutoStep.Compiler
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
-        public AutoStepCompiler(CompilerOptions options)
+        public AutoStepCompiler(CompilerOptions options, ILoggerFactory logFactory)
         {
             this.options = options;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
-        /// </summary>
-        /// <param name="options">Compiler options.</param>
-        /// <param name="tracer">A tracer instance that will receive internal messages and diagnostics from the compiler.</param>
-        public AutoStepCompiler(CompilerOptions options, ITracer tracer)
-            : this(options)
-        {
-            this.tracer = tracer;
+            this.logger = logFactory.CreateLogger<LoggerFactory>();
         }
 
         /// <summary>
@@ -208,19 +199,18 @@ namespace AutoStep.Compiler
             }
 
             // Write to the tracer if diagnostics are on.
-            if (options.HasFlag(CompilerOptions.EnableDiagnostics) && tracer is object)
+            if (options.HasFlag(CompilerOptions.EnableDiagnostics))
             {
-                tracer.Info("Token Stream for source {sourceName}: \n{tokenStream}", new
-                {
+                logger.LogDebug(
+                    "Token Stream for source {0}: \n{1}", 
                     sourceName,
-                    tokenStream = commonTokenStream.GetTokenDebugText(lexer.Vocabulary),
-                });
+                    commonTokenStream.GetTokenDebugText(lexer.Vocabulary)
+                );
 
-                tracer.Info("Compiled Parse Tree for source {sourceName}: \n{parseTree}", new
-                {
+                logger.LogDebug("Compiled Parse Tree for source {0}: \n{1}",
                     sourceName,
-                    parseTree = context.GetParseTreeDebugText(parser),
-                });
+                    context.GetParseTreeDebugText(parser)
+                );
             }
 
             parserErrors = errorListener.ParserErrors;

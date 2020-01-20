@@ -7,6 +7,7 @@ using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Projects;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace AutoStep.Tests.Execution
@@ -55,7 +56,9 @@ namespace AutoStep.Tests.Execution
 
             var linkResult = compiler.Link();
 
-            var testRun = new TestRun(project, compiler, new RunConfiguration());
+            var loggerFactory = new LoggerFactory();
+
+            var testRun = new TestRun(project, compiler, new RunConfiguration(), loggerFactory);
 
             await testRun.Execute();
 

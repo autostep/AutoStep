@@ -59,15 +59,18 @@ namespace AutoStep.Execution
                     continue;
                 }
 
-                // Add the space between this and the last token.
-                textSize += currentToken.StartIndex - lastStopIdx;
+                if (tokenIdx > 0)
+                {
+                    // Add the space between this and the last token.
+                    textSize += currentToken.StartIndex - lastStopIdx;
+                }
 
                 if (!binding.EndExclusive || tokenIdx != tokens.Length - 1)
                 {
                     // Add text size for the token itself.
                     if (currentToken is VariableToken variable)
                     {
-                        var variableText = variables.GetVariableText(variable.VariableName);
+                        var variableText = variables.Get(variable.VariableName);
                         foundVariables[tokenIdx] = variableText;
                         textSize += variableText.Length;
                     }
@@ -104,13 +107,16 @@ namespace AutoStep.Execution
                         continue;
                     }
 
-                    // Add the space between this and the last token.
-                    var whiteSpaceLength = currentToken.StartIndex - lastStopIdx;
+                    if (tokenIdx > 0)
+                    {
+                        // Add the space between this and the last token.
+                        var whiteSpaceLength = currentToken.StartIndex - lastStopIdx;
 
-                    textSpan.Slice(lastStopIdx, whiteSpaceLength).CopyTo(chars);
+                        textSpan.Slice(lastStopIdx, whiteSpaceLength).CopyTo(chars);
 
-                    // Move the chars along.
-                    chars = chars.Slice(whiteSpaceLength);
+                        // Move the chars along.
+                        chars = chars.Slice(whiteSpaceLength);
+                    }
 
                     if (!binding.EndExclusive || tokenIdx != tokens.Length - 1)
                     {

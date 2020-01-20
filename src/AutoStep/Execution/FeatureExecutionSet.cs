@@ -5,6 +5,7 @@ using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
 using AutoStep.Projects;
 using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution
 {
@@ -12,19 +13,19 @@ namespace AutoStep.Execution
     {
         private readonly Project project;
         private readonly IRunFilter filter;
-        private readonly ITracer tracer;
+        private readonly ILogger<FeatureExecutionSet> logger;
 
         // This contains the list of everything to run.
         private readonly List<FeatureElement> features = new List<FeatureElement>();
 
-        private FeatureExecutionSet(Project project, IRunFilter filter, ITracer tracer)
+        private FeatureExecutionSet(Project project, IRunFilter filter, ILoggerFactory logFactory)
         {
             this.project = project;
             this.filter = filter;
-            this.tracer = tracer;
+            this.logger = logFactory.CreateLogger<FeatureExecutionSet>();
         }
 
-        public static FeatureExecutionSet Create(Project project, IRunFilter filter, ITracer tracer)
+        public static FeatureExecutionSet Create(Project project, IRunFilter filter, ILoggerFactory logFactory)
         {
             if (project is null)
             {
@@ -36,12 +37,12 @@ namespace AutoStep.Execution
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            if (tracer is null)
+            if (logFactory is null)
             {
-                throw new ArgumentNullException(nameof(tracer));
+                throw new ArgumentNullException(nameof(logFactory));
             }
 
-            var order = new FeatureExecutionSet(project, filter, tracer);
+            var order = new FeatureExecutionSet(project, filter, logFactory);
 
             order.Populate();
 
@@ -64,8 +65,9 @@ namespace AutoStep.Execution
         private void AddFile(ProjectFile file)
         {
             var lastLinkResult = file.LastLinkResult;
+            var lastCompile = file.LastCompileResult;
 
-            if (lastLinkResult is object && lastLinkResult.Success)
+            if (lastCompile is object && lastCompile.Success && lastLinkResult is object && lastLinkResult.Success)
             {
                 var built = lastLinkResult.Output;
 
@@ -87,6 +89,7 @@ namespace AutoStep.Execution
             else
             {
                 // Trace skip event.
+                logger.LogInformation("Excluded File '{0}' from test run because it has not been successfully compiled.", file.Path);
             }
         }
     }

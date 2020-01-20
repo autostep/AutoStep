@@ -14,6 +14,7 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
 using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution
 {
@@ -27,21 +28,12 @@ namespace AutoStep.Execution
 
     }
 
-    /// <summary>
-    /// Represents the outcome of a run. This should include run failure details, including aggregated feature/scenario results, as well as the 
-    /// breakdown.
-    /// </summary>
-    public class RunResult
-    {
-
-    }
-    
     public class TestRun
     {
         private readonly ProjectCompiler compiler;
         private readonly RunConfiguration configuration;
+        private readonly ILoggerFactory logFactory;
         private readonly IRunFilter filter;
-        private readonly ITracer tracer;
         private readonly IExecutionStateManager executionManager;
 
         private IRunExecutionStrategy runExecutionStrategy;
@@ -56,15 +48,15 @@ namespace AutoStep.Execution
             Project project,
             ProjectCompiler compiler,
             RunConfiguration configuration,
+            ILoggerFactory logFactory,
             IRunFilter? filter = null,
-            ITracer? tracer = null,
             IExecutionStateManager? executionStateManager = null)
         {
-            Project = project;
-            this.compiler = compiler;
-            this.configuration = configuration;
+            Project = project ?? throw new ArgumentNullException(nameof(project));
+            this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.logFactory = logFactory;
             this.filter = filter ?? new RunAllFilter();
-            this.tracer = tracer ?? NullTracer.Instance;
             this.runExecutionStrategy = new DefaultRunExecutionStrategy();
             this.featureExecutionStrategy = new DefaultFeatureExecutionStrategy();
             this.scenarioStrategy = new DefaultScenarioExecutionStrategy();
@@ -74,8 +66,19 @@ namespace AutoStep.Execution
             this.executionManager = executionStateManager ?? new DefaultExecutionStateManager();
         }
 
-        public async Task<RunResult> Execute(Action<IEventPipelineBuilder>? eventBuilder = null, CancellationToken cancelToken = default)
-        { 
+        public void SetRunExecutionStrategy(IRunExecutionStrategy runStrategy)
+        {
+            if (runStrategy is null)
+            {
+                throw new ArgumentNullException(nameof(runStrategy));
+            }
+
+            runExecutionStrategy = runStrategy;
+        }
+
+        public async Task<RunContext> Execute(Action<IEventPipelineBuilder>? eventBuilder = null, CancellationToken cancelToken = default)
+        {
+
             // TODO: Logging!
 
             // We'll run a compile and link to start; this ensures we are all up to date
@@ -85,9 +88,26 @@ namespace AutoStep.Execution
             // Link regardless.
             compiler.Link(cancelToken);
 
+            // Determined the filtered set of features/scenarios.
+            var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
+
+            // Create a top-level run context
+            var runContext = new RunContext();
+
+            if (executionSet.Features.Count == 0)
+            {
+                // No features. What should we do? Just return an empty run result, no point continuing really.
+                // Trace.
+                return runContext;
+            }
+
             // Built the DI container for the execution.
             // Go through all the step definitions and allow them to hook into services.
             var serviceBuilder = new ContainerBuilder();
+
+            serviceBuilder.RegisterGeneric(typeof(LoggerWrapper<>)).As(typeof(ILogger<>));
+            serviceBuilder.RegisterInstance(logFactory);
+
             var exposedServiceRegistration = new AutofacServiceBuilder(serviceBuilder);
 
             // Register our strategies.
@@ -121,9 +141,6 @@ namespace AutoStep.Execution
 
             events.ConfigureServices(exposedServiceRegistration, configuration);
 
-            // Determined the filtered set of features/scenarios.
-            var executionSet = FeatureExecutionSet.Create(Project, filter, tracer);
-
             // Register the entire set in the container.
             exposedServiceRegistration.RegisterSingleInstance(executionSet);
 
@@ -138,9 +155,7 @@ namespace AutoStep.Execution
             // Create our root scope.
             using var rootScope = new AutofacServiceScope(ScopeTags.Root, container);
 
-            // Create a top-level run context (disposes at the end of the method).
-            var runContext = new RunContext();
-
+            // Run scope (disposes at the end of the method).
             using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
 
             await events.InvokeEvent(
@@ -152,7 +167,7 @@ namespace AutoStep.Execution
                     return runExecutionStrategy.Execute(scope, ctxt, executionSet, events);
                 }).ConfigureAwait(false);
 
-            return new RunResult();
+            return runContext;
         }
 
     }

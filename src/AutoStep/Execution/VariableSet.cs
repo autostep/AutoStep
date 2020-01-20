@@ -9,6 +9,8 @@ namespace AutoStep.Execution
 {
     public class VariableSet
     {
+        public static readonly VariableSet Blank = new VariableSet();
+
         public static VariableSet Create(ITableInfo table, ITableRowInfo row)
         {
             throw new NotImplementedException();
@@ -22,14 +24,21 @@ namespace AutoStep.Execution
             }
         }
 
-        public static VariableSet CreateBlank()
+        private readonly Dictionary<string, string> valuesStore = new Dictionary<string, string>();
+
+        public string Get(string variableName)
         {
-            return new VariableSet();
+            if (valuesStore.TryGetValue(variableName, out var varValue))
+            {
+                return varValue;
+            }
+
+            return string.Empty;
         }
 
-        public string GetVariableText(string variableName)
+        public void Set(string name, string value)
         {
-            throw new NotImplementedException();
+            valuesStore[name] = value;
         }
     }
 }

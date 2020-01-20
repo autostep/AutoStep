@@ -158,7 +158,7 @@ namespace AutoStep.Benchmarks
                 refBuilder.Text(item);
             }
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -169,7 +169,7 @@ namespace AutoStep.Benchmarks
 
             builder(refBuilder);
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }

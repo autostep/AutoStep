@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
 {
@@ -35,10 +36,15 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="project">The project to work against.</param>
         /// <returns>A project compiler.</returns>
+        public static ProjectCompiler CreateDefault(Project project, ILoggerFactory logFactory)
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.Default, logFactory);
+            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler, logFactory));
+        }
+
         public static ProjectCompiler CreateDefault(Project project)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.Default);
-            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler));
+            return CreateDefault(project, new LoggerFactory());
         }
 
         /// <summary>

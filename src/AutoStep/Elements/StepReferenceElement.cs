@@ -80,7 +80,7 @@ namespace AutoStep.Elements
         /// <summary>
         /// Freezes the set of working tokens into an array of tokens (so that a span can be constructed).
         /// </summary>
-        internal void FreezeParts()
+        internal void FreezeTokens()
         {
             if (frozenTokens is object)
             {

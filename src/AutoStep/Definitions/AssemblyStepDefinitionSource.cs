@@ -6,6 +6,7 @@ using System.Text;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Definitions
 {
@@ -15,7 +16,7 @@ namespace AutoStep.Definitions
     public class AssemblyStepDefinitionSource : IStepDefinitionSource
     {
         private readonly Assembly assembly;
-        private readonly ITracer tracer;
+        private readonly ILogger logger;
         private readonly List<StepDefinition> definitions = new List<StepDefinition>();
         private readonly List<Type> definitionOwningTypes = new List<Type>();
 
@@ -24,10 +25,10 @@ namespace AutoStep.Definitions
         /// </summary>
         /// <param name="assembly">The assembly to load steps from.</param>
         /// <param name="tracer">The tracer.</param>
-        public AssemblyStepDefinitionSource(Assembly assembly, ITracer tracer)
+        public AssemblyStepDefinitionSource(Assembly assembly, ILoggerFactory logFactory)
         {
             this.assembly = assembly;
-            this.tracer = tracer;
+            this.logger = logFactory.CreateLogger($"AssemblySteps-{assembly.GetName().Name}");
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace AutoStep.Definitions
                     {
                         var anyDefinitions = false;
 
-                        tracer.Info("Looking in type '{FullName}' for steps", new { type.FullName });
+                        logger.LogInformation("Looking in type '{0}' for steps.", type.FullName);
 
                         // This type may contain steps.
                         foreach (var method in type.GetMethods())
@@ -95,7 +96,7 @@ namespace AutoStep.Definitions
                             {
                                 anyDefinitions = true;
 
-                                tracer.Info("Found step method, declared as '{Type} {Declaration}' on '{Name}'", new { definition.Type, definition.Declaration, method.Name });
+                                logger.LogInformation("Found step method, declared as '{0} {1}' on '{2}'", definition.Type, definition.Declaration, method.Name);
 
                                 definitions.Add(new ClassStepDefinition(this, type, method, definition));
                             }
