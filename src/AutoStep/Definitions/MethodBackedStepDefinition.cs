@@ -84,7 +84,13 @@ namespace AutoStep.Definitions
             // Get the argument bind registry.
             var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
 
-            var methodArgs = Method.GetParameters();
+            var methodArgs = Method.GetParameters().AsSpan();
+
+            if (typeof(IServiceScope).IsAssignableFrom(methodArgs[0].ParameterType))
+            {
+                // Don't bind the first one.
+                methodArgs = methodArgs.Slice(1);
+            }
 
             var bindResult = new object[methodArgs.Length];
 

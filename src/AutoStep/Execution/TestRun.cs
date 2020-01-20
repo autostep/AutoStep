@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Execution.Binding;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Strategy;
@@ -91,9 +92,14 @@ namespace AutoStep.Execution
 
             // Register our strategies.
             exposedServiceRegistration.RegisterSingleInstance(runExecutionStrategy);
+            exposedServiceRegistration.RegisterSingleInstance(featureExecutionStrategy);
             exposedServiceRegistration.RegisterSingleInstance(stepCollectionExecutionStrategy);
             exposedServiceRegistration.RegisterSingleInstance(stepExecutionStrategy);
             exposedServiceRegistration.RegisterSingleInstance(scenarioStrategy);
+
+            // Register our argument binder registry.
+            var argumentBinderRegistry = new ArgumentBinderRegistry();
+            exposedServiceRegistration.RegisterSingleInstance(argumentBinderRegistry);
 
             // Register the execution manager.
             exposedServiceRegistration.RegisterSingleInstance(executionManager);

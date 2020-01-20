@@ -138,7 +138,7 @@ namespace AutoStep.Compiler
             {
                 var matches = linkerTree.Match(stepRef, true, out var _);
 
-                if (matches.Count == 0)
+                if (matches.Count == 0 || !matches.First.Value.IsExact)
                 {
                     // No matches.
                     messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));

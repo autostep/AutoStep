@@ -110,7 +110,7 @@ namespace AutoStep.Execution
                     textSpan.Slice(lastStopIdx, whiteSpaceLength).CopyTo(chars);
 
                     // Move the chars along.
-                    chars = chars.Slice(0, whiteSpaceLength);
+                    chars = chars.Slice(whiteSpaceLength);
 
                     if (!binding.EndExclusive || tokenIdx != tokens.Length - 1)
                     {
@@ -120,12 +120,12 @@ namespace AutoStep.Execution
                         {
                             // Copy the contents of the token.
                             textSpan.Slice(currentToken.StartIndex, currentToken.Length).CopyTo(chars);
-                            chars = chars.Slice(0, currentToken.Length);
+                            chars = chars.Slice(currentToken.Length);
                         }
                         else
                         {
                             knownVariable.AsSpan().CopyTo(chars);
-                            chars = chars.Slice(0, knownVariable.Length);
+                            chars = chars.Slice(knownVariable.Length);
                         }
 
                         lastToken = currentToken;

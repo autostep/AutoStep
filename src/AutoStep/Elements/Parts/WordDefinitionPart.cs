@@ -74,7 +74,7 @@ namespace AutoStep.Elements.Parts
                 else
                 {
                     var searchedCharacters = 0;
-                    while (searchedCharacters < refTextSpan.Length && refTextSpan[searchedCharacters].Equals(defTextSpan[searchedCharacters]))
+                    while (searchedCharacters < defTextSpan.Length && refTextSpan[searchedCharacters].Equals(defTextSpan[searchedCharacters]))
                     {
                         searchedCharacters++;
                     }
@@ -85,7 +85,7 @@ namespace AutoStep.Elements.Parts
                     // Move the part span along.
                     currentPartSpan = currentPartSpan.Slice(1);
 
-                    return new StepReferenceMatchResult(matchedLength, defTextSpan.Length == searchedCharacters, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
+                    return new StepReferenceMatchResult(matchedLength, refTextSpan.Length == searchedCharacters, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                 }
             }
 
