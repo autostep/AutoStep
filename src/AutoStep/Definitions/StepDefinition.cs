@@ -50,6 +50,13 @@ namespace AutoStep.Definitions
         /// <returns>True if the definition is semantically the same.</returns>
         public abstract bool IsSameDefinition(StepDefinition def);
 
+        /// <summary>
+        /// This method is invoked when the step definition should be executed.
+        /// </summary>
+        /// <param name="stepScope">The current DI scope.</param>
+        /// <param name="context">The step context (including all binding information).</param>
+        /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
+        /// <returns>A task that will complete when the step finishes executing.</returns>
         public abstract Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables);
     }
 }

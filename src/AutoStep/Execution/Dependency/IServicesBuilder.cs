@@ -14,10 +14,10 @@ namespace AutoStep.Execution.Dependency
         void RegisterPerFeatureService<TService>();
         void RegisterPerScenarioService<TService, TComponent>();
         void RegisterPerScenarioService<TService>();
-        void RegisterPerStepService<TService>();
-        void RegisterPerStepService<TService, TComponent>();
-        void RegisterPerThread<TService>();
-        void RegisterPerThread<TService, TComponent>();
+        void RegisterPerScopeService<TService>();
+        void RegisterPerScopeService<TService, TComponent>();
+        void RegisterPerThreadService<TService>();
+        void RegisterPerThreadService<TService, TComponent>();
         void RegisterSingleInstance<TService>(TService instance) where TService : class;
 
         void RegisterEventHandler(IEventHandler eventHandler);

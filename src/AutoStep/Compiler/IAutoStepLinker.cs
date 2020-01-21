@@ -9,6 +9,9 @@ namespace AutoStep.Compiler
     /// </summary>
     public interface IAutoStepLinker
     {
+        /// <summary>
+        /// Gets the set of all sources of step definitions registered with the linker.
+        /// </summary>
         IEnumerable<IStepDefinitionSource> AllStepDefinitionSources { get; }
 
         /// <summary>

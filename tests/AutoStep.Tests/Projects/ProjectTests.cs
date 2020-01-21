@@ -11,6 +11,14 @@ namespace AutoStep.Tests.Projects
     public class ProjectTests
     {
         [Fact]
+        public void NullCompilerNullArgumentException()
+        {
+            Action act = () => new Project(null);
+
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void CanAddFile()
         {
             var project = new Project();

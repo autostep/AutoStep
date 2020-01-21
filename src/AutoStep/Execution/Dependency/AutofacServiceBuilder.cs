@@ -49,22 +49,22 @@ namespace AutoStep.Execution.Dependency
             Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
 
-        public void RegisterPerStepService<TService>()
+        public void RegisterPerScopeService<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.StepTag);
+            Builder.RegisterType<TService>().InstancePerLifetimeScope();
         }
 
-        public void RegisterPerStepService<TService, TComponent>()
+        public void RegisterPerScopeService<TService, TComponent>()
         {
-            Builder.RegisterType<TComponent>().As<TComponent>().InstancePerMatchingLifetimeScope(ScopeTags.StepTag);
+            Builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
         }
 
-        public void RegisterPerThread<TService>()
+        public void RegisterPerThreadService<TService>()
         {
             Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }
 
-        public void RegisterPerThread<TService, TComponent>()
+        public void RegisterPerThreadService<TService, TComponent>()
         {
             Builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }

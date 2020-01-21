@@ -27,18 +27,22 @@ namespace AutoStep.Compiler
         private readonly ILogger logger;
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
 
-        public IEnumerable<IStepDefinitionSource> AllStepDefinitionSources => trackedSources.Values.Select(x => x.Source);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
+        /// <param name="logFactory">A log factory for creating a logger for the linker.</param>
         public AutoStepLinker(IAutoStepCompiler compiler, ILoggerFactory logFactory)
         {
             this.compiler = compiler;
             linkerTree = new MatchingTree();
             logger = logFactory.CreateLogger<AutoStepLinker>();
         }
+
+        /// <summary>
+        /// Gets the set of all known step definition sources.
+        /// </summary>
+        public IEnumerable<IStepDefinitionSource> AllStepDefinitionSources => trackedSources.Values.Select(x => x.Source);
 
         /// <summary>
         /// Adds a source of step definitions to the linker.

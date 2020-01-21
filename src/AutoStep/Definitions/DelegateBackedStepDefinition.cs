@@ -26,15 +26,9 @@ namespace AutoStep.Definitions
             return false;
         }
 
-        protected override Task InvokeMethod(IServiceScope scope, object[] args)
+        protected override object GetMethodTarget(IServiceScope scope)
         {
-            var arrayWithServiceScope = new object[args.Length + 1];
-
-            arrayWithServiceScope[0] = scope;
-
-            args.CopyTo(arrayWithServiceScope, 1);
-
-            return InvokeInstanceMethod(scope, Target, arrayWithServiceScope);
+            return Target;
         }
     }
 }

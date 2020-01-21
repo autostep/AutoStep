@@ -25,7 +25,7 @@ namespace AutoStep.Execution.Strategy
 
                 var stepContext = new StepContext(stepIdx, owningContext, step, variables);
 
-                using var stepScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
+                using var stepScope = owningScope.BeginNewScope(stepContext);
 
                 // Halt before the step begins.
                 var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, owningContext, TestThreadState.StartingStep).ConfigureAwait(false);

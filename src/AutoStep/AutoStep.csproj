@@ -52,10 +52,20 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AutoStepLinkerMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Compiler\CompilerLogMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CompilerLogMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Compiler\CompilerMessageCodeText.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerMessageCodeText.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Definitions\DefinitionsLogMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefinitionsLogMessages.resx</DependentUpon>
     </Compile>
     <Compile Update="LanguageEngineExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -84,9 +94,17 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AutoStepLinkerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Compiler\CompilerLogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Compiler\CompilerMessageCodeText.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerMessageCodeText.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Definitions\DefinitionsLogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefinitionsLogMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="LanguageEngineExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

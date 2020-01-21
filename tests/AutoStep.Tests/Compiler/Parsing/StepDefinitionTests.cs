@@ -110,7 +110,7 @@ namespace AutoStep.Tests.Compiler.Parsing
         {
             const string TestFile =
             @"                
-              Step: Given I have passed 'arg' to this
+              Step: Given I have passed {arg} to this
                 
                 Given I have referenced another '<not an arg>'
             ";
@@ -121,6 +121,24 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     4, 50, 4, 61)
             );
         }
+        
+        [Fact]
+        public async Task DefineStepBodyHasUnBoundAndGivesError()
+        {
+            const string TestFile =
+            @"                
+              Step: Given I have passed {arg} to this
+                
+                And I have referenced another
+            ";
+
+            await CompileAndAssertWarnings(TestFile,
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep,
+                                    "An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.",
+                                    4, 17, 4, 45)
+            );
+        }
+
 
         [Fact]
         public async Task DefineStepUsingEmptyVariableGivesError()

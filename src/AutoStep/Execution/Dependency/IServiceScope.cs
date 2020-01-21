@@ -12,6 +12,9 @@ namespace AutoStep.Execution.Dependency
 
         object Resolve(Type serviceType);
 
+        IServiceScope BeginNewScope<TContext>(TContext contextInstance)
+            where TContext : ExecutionContext;
+
         IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
             where TContext : ExecutionContext;
     }

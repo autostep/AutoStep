@@ -17,6 +17,7 @@ namespace AutoStep.Definitions
         /// Initializes a new instance of the <see cref="ClassStepDefinition"/> class.
         /// </summary>
         /// <param name="source">The source used to load the step definition.</param>
+        /// <param name="owner">The owning type.</param>
         /// <param name="method">The method info representing the method to bind against.</param>
         /// <param name="declaringAttribute">The attribute that declared the step definition.</param>
         public ClassStepDefinition(AssemblyStepDefinitionSource source, Type owner, MethodInfo method, StepDefinitionAttribute declaringAttribute)
@@ -25,7 +26,12 @@ namespace AutoStep.Definitions
             this.owner = owner;
         }
 
-        protected override Task InvokeMethod(IServiceScope scope, object[] args)
+        /// <summary>
+        /// Invokes the step method. Resolves an instance of the owning type and then executes the method.
+        /// </summary>
+        /// <param name="scope">The current scope to resolve from.</param>
+        /// <returns>An instance of the class.</returns>
+        protected override object GetMethodTarget(IServiceScope scope)
         {
             if (scope is null)
             {
@@ -33,10 +39,7 @@ namespace AutoStep.Definitions
             }
 
             // Resolve an instance of the service. It will let it access any services.
-            var instance = scope.Resolve<object>(owner);
-
-            // Go back to the base now we have our method instance.
-            return InvokeInstanceMethod(scope, instance, args);
+            return scope.Resolve<object>(owner);
         }
 
         /// <summary>

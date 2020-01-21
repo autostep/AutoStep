@@ -20,6 +20,22 @@ namespace AutoStep.Projects
         /// </summary>
         public ProjectConfiguration? Configuration { get; }
 
+        public IProjectCompiler Compiler { get; }
+
+        public Project()
+        {
+            Compiler = ProjectCompiler.CreateDefault(this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// </summary>
+        /// <param name="compiler"></param>
+        public Project(IProjectCompiler compiler)
+        {
+            Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+        }
+
         /// <summary>
         /// Attempts to add a file to the project (will return false if it's already in the project).
         /// </summary>

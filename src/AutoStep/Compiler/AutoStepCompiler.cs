@@ -33,6 +33,7 @@ namespace AutoStep.Compiler
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
+        /// <param name="logFactory">A log factory for the compiler to create loggers from.</param>
         public AutoStepCompiler(ILoggerFactory logFactory)
             : this(CompilerOptions.Default, logFactory)
         {
@@ -42,6 +43,7 @@ namespace AutoStep.Compiler
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
+        /// <param name="logFactory">A log factory for the compiler to create loggers from.</param>
         public AutoStepCompiler(CompilerOptions options, ILoggerFactory logFactory)
         {
             this.options = options;
@@ -202,15 +204,14 @@ namespace AutoStep.Compiler
             if (options.HasFlag(CompilerOptions.EnableDiagnostics))
             {
                 logger.LogDebug(
-                    "Token Stream for source {0}: \n{1}", 
+                    CompilerLogMessages.AutoStepCompiler_TokenStreamForSource,
                     sourceName,
-                    commonTokenStream.GetTokenDebugText(lexer.Vocabulary)
-                );
+                    commonTokenStream.GetTokenDebugText(lexer.Vocabulary));
 
-                logger.LogDebug("Compiled Parse Tree for source {0}: \n{1}",
+                logger.LogDebug(
+                    CompilerLogMessages.AutoStepCompiler_CompiledParseTreeForSource,
                     sourceName,
-                    context.GetParseTreeDebugText(parser)
-                );
+                    context.GetParseTreeDebugText(parser));
             }
 
             parserErrors = errorListener.ParserErrors;

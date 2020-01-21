@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Elements;
+using AutoStep.Elements.ReadOnly;
 using AutoStep.Projects;
 
 namespace AutoStep.Execution
@@ -12,9 +13,9 @@ namespace AutoStep.Execution
     {
         bool MatchesFile(ProjectFile file);
 
-        bool MatchesFeature(ProjectFile file, FeatureElement feature);
+        bool MatchesFeature(ProjectFile file, IFeatureInfo feature);
 
-        bool MatchesScenario(ScenarioElement scen, ExampleElement? example);
+        bool MatchesScenario(IScenarioInfo scen, IExampleInfo? example);
     }
 
     /// <summary>
@@ -37,12 +38,12 @@ namespace AutoStep.Execution
             return true;
         }
 
-        public bool MatchesFeature(ProjectFile file, FeatureElement feature)
+        public bool MatchesFeature(ProjectFile file, IFeatureInfo feature)
         {
             return true;
         }
 
-        public bool MatchesScenario(ScenarioElement scen, ExampleElement? example)
+        public bool MatchesScenario(IScenarioInfo scen, IExampleInfo? example)
         {
             return true;
         }

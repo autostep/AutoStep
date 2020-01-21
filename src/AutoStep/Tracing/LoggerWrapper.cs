@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Tracing
 {
-    internal class LoggerWrapper<T> : ILogger
+    internal class LoggerWrapper<T> : ILogger<T>
     {
         private ILogger logImplementation;
 

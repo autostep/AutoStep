@@ -1,8 +1,4 @@
-﻿using System;
-using Autofac;
-using AutoStep.Execution.Dependency;
-
-namespace AutoStep.Execution
+﻿namespace AutoStep.Execution.Dependency
 {
     internal class ScopeTags
     {

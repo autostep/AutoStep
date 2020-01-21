@@ -30,9 +30,9 @@ namespace AutoStep.Execution
 
     public class TestRun
     {
-        private readonly ProjectCompiler compiler;
         private readonly RunConfiguration configuration;
         private readonly ILoggerFactory logFactory;
+        private readonly ILogger<TestRun> logger;
         private readonly IRunFilter filter;
         private readonly IExecutionStateManager executionManager;
 
@@ -46,16 +46,15 @@ namespace AutoStep.Execution
 
         public TestRun(
             Project project,
-            ProjectCompiler compiler,
             RunConfiguration configuration,
             ILoggerFactory logFactory,
             IRunFilter? filter = null,
             IExecutionStateManager? executionStateManager = null)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
-            this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.logFactory = logFactory;
+            this.logger = logFactory.CreateLogger<TestRun>();
             this.filter = filter ?? new RunAllFilter();
             this.runExecutionStrategy = new DefaultRunExecutionStrategy();
             this.featureExecutionStrategy = new DefaultFeatureExecutionStrategy();
@@ -76,17 +75,9 @@ namespace AutoStep.Execution
             runExecutionStrategy = runStrategy;
         }
 
-        public async Task<RunContext> Execute(Action<IEventPipelineBuilder>? eventBuilder = null, CancellationToken cancelToken = default)
+        public async Task<RunContext> Execute(Action<IEventPipelineBuilder>? eventBuilder = null, Action<IServicesBuilder>? serviceRegistration = null, CancellationToken cancelToken = default)
         {
-
             // TODO: Logging!
-
-            // We'll run a compile and link to start; this ensures we are all up to date
-            // (note that if everything is up to date, then nothing actually happens).
-            await compiler.Compile(cancelToken).ConfigureAwait(false);
-
-            // Link regardless.
-            compiler.Link(cancelToken);
 
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
@@ -97,10 +88,41 @@ namespace AutoStep.Execution
             if (executionSet.Features.Count == 0)
             {
                 // No features. What should we do? Just return an empty run result, no point continuing really.
-                // Trace.
+                logger.LogInformation("No features match the specified filters.");
                 return runContext;
             }
 
+            // TODO: Go through our modules and allow them to register services.
+            var pipelineBuilder = new EventPipelineBuilder();
+
+            if (eventBuilder is object)
+            {
+                eventBuilder(pipelineBuilder);
+            }
+
+            // Build the pipeline.
+            var events = pipelineBuilder.Build();
+
+            // Build the container and prepare a root scope.
+            using var rootScope = PrepareContainer(events, executionSet);
+
+            // Run scope (disposes at the end of the method).
+            using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
+
+            await events.InvokeEvent(
+                runScope,
+                runContext,
+                (handler, sc, ctxt, next) => handler.Execute(sc, ctxt, next),
+                (scope, ctxt) =>
+                {
+                    return runExecutionStrategy.Execute(scope, ctxt, executionSet, events);
+                }).ConfigureAwait(false);
+
+            return runContext;
+        }
+
+        private IServiceScope PrepareContainer(EventPipeline events, FeatureExecutionSet featureSet)
+        {
             // Built the DI container for the execution.
             // Go through all the step definitions and allow them to hook into services.
             var serviceBuilder = new ContainerBuilder();
@@ -124,27 +146,16 @@ namespace AutoStep.Execution
             // Register the execution manager.
             exposedServiceRegistration.RegisterSingleInstance(executionManager);
 
-            // TODO: Go through our modules and allow them to register services.
-
-            var pipelineBuilder = new EventPipelineBuilder();
-
-            if (eventBuilder is object)
-            {
-                eventBuilder(pipelineBuilder);
-            }
-
-            // Let the event handlers configure services.
-            var events = pipelineBuilder.Build();
-
             // Add our built event pipeline to DI.
             exposedServiceRegistration.RegisterSingleInstance<IEventPipeline>(events);
 
             events.ConfigureServices(exposedServiceRegistration, configuration);
 
             // Register the entire set in the container.
-            exposedServiceRegistration.RegisterSingleInstance(executionSet);
+            exposedServiceRegistration.RegisterSingleInstance(featureSet);
 
-            foreach (var source in compiler.EnumerateStepDefinitionSources())
+            // Ask the project's compiler for the list of step definition sources.
+            foreach (var source in Project.Compiler.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
                 source.ConfigureServices(exposedServiceRegistration, configuration);
@@ -152,22 +163,7 @@ namespace AutoStep.Execution
 
             var container = serviceBuilder.Build();
 
-            // Create our root scope.
-            using var rootScope = new AutofacServiceScope(ScopeTags.Root, container);
-
-            // Run scope (disposes at the end of the method).
-            using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
-
-            await events.InvokeEvent(
-                runScope,
-                runContext,
-                (handler, sc, ctxt, next) => handler.Execute(sc, ctxt, next),
-                (scope, ctxt) =>
-                {
-                    return runExecutionStrategy.Execute(scope, ctxt, executionSet, events);
-                }).ConfigureAwait(false);
-
-            return runContext;
+            return new AutofacServiceScope(ScopeTags.Root, container);
         }
 
     }

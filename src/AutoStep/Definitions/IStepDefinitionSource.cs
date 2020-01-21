@@ -26,6 +26,11 @@ namespace AutoStep.Definitions
         /// <returns>The step definitions.</returns>
         IEnumerable<StepDefinition> GetStepDefinitions();
 
+        /// <summary>
+        /// Called before any tests execute to allow the source to register its own services to be resolved.
+        /// </summary>
+        /// <param name="servicesBuilder">The services builder.</param>
+        /// <param name="configuration">The run-time configuration.</param>
         void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration);
     }
 }

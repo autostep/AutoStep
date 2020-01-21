@@ -40,9 +40,27 @@ namespace AutoStep.Definitions
         public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
-            // TODO
-
             var nestedVariables = new VariableSet();
+
+            if (context.Step.Binding is null)
+            {
+                throw new LanguageEngineAssertException();
+            }
+
+            if (Definition is null || Definition.Arguments.Count != context.Step.Binding.Arguments.Length)
+            {
+                throw new LanguageEngineAssertException();
+            }
+
+            // TODO: Do this once per row of the table in the step reference, or just once if there's no table.
+            for (var argIdx = 0; argIdx < Definition.Arguments.Count; argIdx++)
+            {
+                var argValue = context.Step.Binding.Arguments[argIdx];
+
+                var argText = argValue.GetFullText(stepScope, context.Step.Text, variables);
+
+                nestedVariables.Set(Definition.Arguments[argIdx].Name, argText);
+            }
 
             var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
 

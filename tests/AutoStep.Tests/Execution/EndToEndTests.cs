@@ -33,7 +33,59 @@ namespace AutoStep.Tests.Execution
 
             project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
 
-            var compiler = ProjectCompiler.CreateDefault(project);
+            var steps = new CallbackDefinitionSource();
+
+            var doneSomethingCalled = false;
+            string argumentValue = null;
+
+            steps.Given("I have done something", () =>
+            {
+                doneSomethingCalled = true;
+            });
+
+            steps.Given("I have passed {arg} to something", (string arg1) =>
+            {
+                argumentValue = arg1;
+            });
+
+            project.Compiler.AddStaticStepDefinitionSource(steps);
+
+            var compileResult = await project.Compiler.Compile();
+
+            var linkResult = project.Compiler.Link();
+
+            var loggerFactory = new LoggerFactory();
+
+            var testRun = new TestRun(project, new RunConfiguration(), loggerFactory);
+
+            await testRun.Execute();
+
+            doneSomethingCalled.Should().BeTrue();
+            argumentValue.Should().Be("argument1");
+        }
+
+        [Fact]
+        public async Task ReferencingAStepInMyFile()
+        {
+            // Compile a file.
+            const string TestFile =
+            @"                
+              Step: Given I have called my defined step with {arg}
+
+                    Given I have done something
+                      And I have passed <arg> to something
+
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have called my defined step with argument1
+
+            ";
+
+            var project = new Project();
+
+            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -50,20 +102,78 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await compiler.Compile();
+            var compileResult = await project.Compiler.Compile();
 
-            var linkResult = compiler.Link();
+            var linkResult = project.Compiler.Link();
 
             var loggerFactory = new LoggerFactory();
 
-            var testRun = new TestRun(project, compiler, new RunConfiguration(), loggerFactory);
+            var testRun = new TestRun(project, new RunConfiguration(), loggerFactory);
 
             await testRun.Execute();
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
+        }
+
+        [Fact]
+        public async Task ReferencingAStepInAnotherFile()
+        {
+            // Compile a file.
+            const string TestFile =
+            @"                
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have called my defined step with 'an argument1'
+
+            ";
+
+            const string StepsFile =
+            @"
+              Step: Given I have called my defined step with {arg}
+
+                    Given I have done something
+                      And I have passed <arg> to something
+            ";
+
+            var project = new Project();
+
+            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectFile("/steps", new StringContentSource(StepsFile)));
+
+            var steps = new CallbackDefinitionSource();
+
+            var doneSomethingCalled = false;
+            string argumentValue = null;
+
+            steps.Given("I have done something", () =>
+            {
+                doneSomethingCalled = true;
+            });
+
+            steps.Given("I have passed {arg} to something", (string arg1) =>
+            {
+                argumentValue = arg1;
+            });
+
+            project.Compiler.AddStaticStepDefinitionSource(steps);
+
+            var compileResult = await project.Compiler.Compile();
+
+            var linkResult = project.Compiler.Link();
+
+            var loggerFactory = new LoggerFactory();
+
+            var testRun = new TestRun(project, new RunConfiguration(), loggerFactory);
+
+            await testRun.Execute();
+
+            doneSomethingCalled.Should().BeTrue();
+            argumentValue.Should().Be("an argument1");
         }
     }
 }

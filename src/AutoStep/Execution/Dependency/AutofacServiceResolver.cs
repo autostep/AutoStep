@@ -61,6 +61,16 @@ namespace AutoStep.Execution.Dependency
             }));
         }
 
+        public IServiceScope BeginNewScope<TContext>(TContext contextInstance)
+            where TContext : ExecutionContext
+        {
+            return new AutofacServiceScope(ScopeTags.StepTag, scope.BeginLifetimeScope(cfg =>
+            {
+                // Register the relevant context object.
+                cfg.RegisterInstance(contextInstance);
+            }));
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -68,5 +78,6 @@ namespace AutoStep.Execution.Dependency
                 scope.Dispose();
             }
         }
+
     }
 }

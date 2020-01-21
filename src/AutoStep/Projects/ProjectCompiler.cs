@@ -12,7 +12,7 @@ namespace AutoStep.Projects
     /// <summary>
     /// Provides the functionality to compile and link an entire project.
     /// </summary>
-    public class ProjectCompiler
+    public class ProjectCompiler : IProjectCompiler
     {
         private readonly Project project;
         private readonly IAutoStepCompiler compiler;

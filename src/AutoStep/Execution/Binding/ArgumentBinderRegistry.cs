@@ -14,7 +14,13 @@ namespace AutoStep.Execution.Binding
         private IArgumentBinder defaultBinder = new DefaultArgumentBinder();
 
         public void RegisterArgumentBinder<TBinder>(Type argumentType)
+            where TBinder : IArgumentBinder
         {
+            if (argumentType is null)
+            {
+                throw new ArgumentNullException(nameof(argumentType));
+            }
+
             binders[argumentType] = typeof(TBinder);
         }
 
@@ -23,6 +29,11 @@ namespace AutoStep.Execution.Binding
             if (scope is null)
             {
                 throw new ArgumentNullException(nameof(scope));
+            }
+
+            if (parameterType is null)
+            {
+                throw new ArgumentNullException(nameof(parameterType));
             }
 
             if (binders.TryGetValue(parameterType, out var binder))

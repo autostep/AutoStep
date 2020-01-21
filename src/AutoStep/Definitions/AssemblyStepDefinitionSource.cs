@@ -24,10 +24,15 @@ namespace AutoStep.Definitions
         /// Initializes a new instance of the <see cref="AssemblyStepDefinitionSource"/> class.
         /// </summary>
         /// <param name="assembly">The assembly to load steps from.</param>
-        /// <param name="tracer">The tracer.</param>
+        /// <param name="logFactory">A log factory (to create a logger from).</param>
         public AssemblyStepDefinitionSource(Assembly assembly, ILoggerFactory logFactory)
         {
-            this.assembly = assembly;
+            if (logFactory is null)
+            {
+                throw new ArgumentNullException(nameof(logFactory));
+            }
+
+            this.assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             this.logger = logFactory.CreateLogger($"AssemblySteps-{assembly.GetName().Name}");
         }
 
@@ -42,6 +47,11 @@ namespace AutoStep.Definitions
         /// </summary>
         public string Name => assembly.Location;
 
+        /// <summary>
+        /// Configures any services required by the step definition source (including any consumers that want to resolve services).
+        /// </summary>
+        /// <param name="servicesBuilder">The services builder.</param>
+        /// <param name="configuration">The run configuration.</param>
         public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
         {
             if (servicesBuilder is null)
@@ -83,9 +93,7 @@ namespace AutoStep.Definitions
                 {
                     if (type.GetCustomAttribute<StepsAttribute>(true) is object && !type.IsAbstract)
                     {
-                        var anyDefinitions = false;
-
-                        logger.LogInformation("Looking in type '{0}' for steps.", type.FullName);
+                        logger.LogInformation(DefinitionsLogMessages.AssemblyStepDefinitionSource_LookingInTypeForSteps, type.FullName);
 
                         // This type may contain steps.
                         foreach (var method in type.GetMethods())
@@ -94,9 +102,7 @@ namespace AutoStep.Definitions
 
                             if (definition is object)
                             {
-                                anyDefinitions = true;
-
-                                logger.LogInformation("Found step method, declared as '{0} {1}' on '{2}'", definition.Type, definition.Declaration, method.Name);
+                                logger.LogInformation(DefinitionsLogMessages.AssemblyStepDefinitionSource_FoundStepMethod, definition.Type, definition.Declaration, method.Name);
 
                                 definitions.Add(new ClassStepDefinition(this, type, method, definition));
                             }

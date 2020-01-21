@@ -18,22 +18,16 @@ using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
-using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Tests.Utils
 {
-    public class CompilerTestBase
+    public class CompilerTestBase : LoggingTestBase
     {
-        protected ITestOutputHelper TestOutput { get; }
-
-        internal ILoggerFactory LogFactory { get; }
-
         protected string NewLine => Environment.NewLine;
 
-        protected CompilerTestBase(ITestOutputHelper output)
+        protected CompilerTestBase(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
-            TestOutput = output;
-            LogFactory = TestLogFactory.Create(output);
         }
 
         protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)

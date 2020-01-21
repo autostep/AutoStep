@@ -15,6 +15,7 @@ namespace AutoStep.Elements.Parts
         public ArgumentPart()
             : base(string.Empty)
         {
+            Name = string.Empty;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace AutoStep.Elements.Parts
         /// <summary>
         /// Gets the variable name, if we know it.
         /// </summary>
-        public string? Name { get; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the type hint for the argument, if we know it.
