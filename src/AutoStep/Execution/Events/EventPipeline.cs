@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Execution.Dependency;
-using AutoStep.Tracing;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Events
 {
     internal class EventPipeline : IEventPipeline
     {
-        private List<IEventHandler> handlers;
+        private IReadOnlyList<IEventHandler> handlers;
 
-        public EventPipeline(List<IEventHandler> handlers)
+        public EventPipeline(IReadOnlyList<IEventHandler> handlers)
         {
             this.handlers = handlers;
         }
@@ -38,7 +35,7 @@ namespace AutoStep.Execution
             }
 
             // Need to execute in reverse so we build up the 'next' properly.
-            for (int idx = handlers.Count - 1; idx >= 0; idx--)
+            for (var idx = handlers.Count - 1; idx >= 0; idx--)
             {
                 next = ChainHandler(next, handlers[idx], callback);
             }
@@ -51,11 +48,11 @@ namespace AutoStep.Execution
             IEventHandler innerHandler,
             Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, Task>, Task> callback)
         {
-            return (resolver, ctxt) =>
+            return async (resolver, ctxt) =>
             {
                 try
                 {
-                    return callback(innerHandler, resolver, ctxt, next);
+                    await callback(innerHandler, resolver, ctxt, next).ConfigureAwait(false);
                 }
                 catch (StepFailureException)
                 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Events
 {
     /// <summary>
     /// This is a granular version for hooking into events.

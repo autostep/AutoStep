@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Events
 {
     public interface IEventPipeline
     {

@@ -14,7 +14,7 @@ using AutoStep.Tracing;
 namespace AutoStep.Execution
 {
 
-    public class ThreadContext : ExecutionContext
+    public class ThreadContext : TestExecutionContext
     {
         public int TestThreadId { get; }
 

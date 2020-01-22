@@ -1,7 +1,7 @@
 ﻿namespace AutoStep.Execution
 {
 
-    public class RunContext : ExecutionContext
+    public class RunContext : TestExecutionContext
     {
     }
 }

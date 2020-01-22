@@ -55,6 +55,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
                 Given I have used '<argument1>'
                 Then this is <argument2>
+                 And this is <argument2>
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
@@ -80,6 +81,11 @@ namespace AutoStep.Tests.Compiler.Parsing
                         .Quote()
                     )
                     .Then("this is <argument2>", 8, 17, t => t
+                        .Text("this")
+                        .Text("is")
+                        .Variable("argument2")
+                    )
+                    .And("this is <argument2>", StepType.Then, 9, 18, a => a
                         .Text("this")
                         .Text("is")
                         .Variable("argument2")
@@ -138,7 +144,6 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     4, 17, 4, 45)
             );
         }
-
 
         [Fact]
         public async Task DefineStepUsingEmptyVariableGivesError()

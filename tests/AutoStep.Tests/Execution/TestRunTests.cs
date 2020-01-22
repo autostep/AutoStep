@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using AutoStep.Execution.Strategy;
 using AutoStep.Execution.Dependency;
 using Xunit.Abstractions;
+using AutoStep.Execution.Events;
 
 namespace AutoStep.Tests.Execution
 {

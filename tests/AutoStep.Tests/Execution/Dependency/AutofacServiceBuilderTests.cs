@@ -183,7 +183,7 @@ namespace AutoStep.Tests.Execution.Dependency
                 sharedCount.Should().Be(1);
             }
 
-            using (var stepScope = built.BeginLifetimeScope(ScopeTags.StepTag))
+            using (var stepScope = built.BeginLifetimeScope(ScopeTags.GeneralScopeTag))
             {
                 stepScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);

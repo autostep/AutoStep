@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Autofac;
 using Autofac.Util;
 
@@ -42,7 +43,7 @@ namespace AutoStep.Execution.Dependency
             else
             {
                 // TODO: message.
-                throw new DependencyException();
+                throw new DependencyException(string.Format(CultureInfo.CurrentCulture, "Cannot resolve service of type '{0}'; it is not assignable to '{1}'.", serviceType.Name, typeof(TServiceType).Name));
             }
         }
 
@@ -52,7 +53,7 @@ namespace AutoStep.Execution.Dependency
         }
 
         public IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
-            where TContext : ExecutionContext
+            where TContext : TestExecutionContext
         {
             return new AutofacServiceScope(scopeTag, scope.BeginLifetimeScope(scopeTag, cfg =>
             {
@@ -62,9 +63,9 @@ namespace AutoStep.Execution.Dependency
         }
 
         public IServiceScope BeginNewScope<TContext>(TContext contextInstance)
-            where TContext : ExecutionContext
+            where TContext : TestExecutionContext
         {
-            return new AutofacServiceScope(ScopeTags.StepTag, scope.BeginLifetimeScope(cfg =>
+            return new AutofacServiceScope(ScopeTags.GeneralScopeTag, scope.BeginLifetimeScope(cfg =>
             {
                 // Register the relevant context object.
                 cfg.RegisterInstance(contextInstance);

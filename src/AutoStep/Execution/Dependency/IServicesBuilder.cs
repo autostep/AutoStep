@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using AutoStep.Execution.Events;
 
 namespace AutoStep.Execution.Dependency
 {
@@ -11,14 +10,23 @@ namespace AutoStep.Execution.Dependency
         void RegisterConsumer(Type consumer);
 
         void RegisterPerFeatureService<TService, TComponent>();
+
         void RegisterPerFeatureService<TService>();
+
         void RegisterPerScenarioService<TService, TComponent>();
+
         void RegisterPerScenarioService<TService>();
+
         void RegisterPerScopeService<TService>();
+
         void RegisterPerScopeService<TService, TComponent>();
+
         void RegisterPerThreadService<TService>();
+
         void RegisterPerThreadService<TService, TComponent>();
-        void RegisterSingleInstance<TService>(TService instance) where TService : class;
+
+        void RegisterSingleInstance<TService>(TService instance) 
+            where TService : class;
 
         void RegisterEventHandler(IEventHandler eventHandler);
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AutoStep.Execution
 {
-    public abstract class ExecutionContext
+    public abstract class TestExecutionContext
     {
         private ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
 

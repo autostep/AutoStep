@@ -5,15 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Tracing;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Events
 {
 
     internal class EventPipelineBuilder : IEventPipelineBuilder
     {
-        public List<IEventHandler> handlers = new List<IEventHandler>();
+        private List<IEventHandler> handlers = new List<IEventHandler>();
 
         public IEventPipelineBuilder Add(IEventHandler handler)
         {
+            if (handler is null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             handlers.Add(handler);
 
             return this;

@@ -10,7 +10,7 @@ namespace AutoStep.Execution.Control
     /// </summary>
     public interface IExecutionStateManager
     {
-        Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, ExecutionContext context, TestThreadState starting);
+        Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, TestExecutionContext context, TestThreadState starting);
         Task<BreakResponseInstruction?> StepError(StepContext stepContext);
     }
 }

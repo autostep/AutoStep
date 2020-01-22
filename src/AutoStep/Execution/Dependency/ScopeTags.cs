@@ -7,6 +7,6 @@
         public const string ThreadTag = "__asThread";
         public const string FeatureTag = "__asFeature";
         public const string ScenarioTag = "__asScenario";
-        public const string StepTag = "__asStep";
+        public const string GeneralScopeTag = "__asStep";
     }
 }

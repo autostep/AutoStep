@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using AutoStep.Execution.Events;
 
 namespace AutoStep.Execution.Dependency
 {

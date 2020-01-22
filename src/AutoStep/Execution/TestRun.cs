@@ -11,6 +11,7 @@ using AutoStep.Elements;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Events;
 using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
 using AutoStep.Tracing;

@@ -3,7 +3,7 @@
 namespace AutoStep.Execution
 {
 
-    public class ErrorCapturingContext : ExecutionContext
+    public class ErrorCapturingContext : TestExecutionContext
     {
         public Exception? FailException { get; internal set; }
 

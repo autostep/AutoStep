@@ -43,7 +43,7 @@ namespace AutoStep.Execution.Control
         private readonly Task<HaltResponseInstruction?> CompletedHalt = Task.FromResult<HaltResponseInstruction?>(null);
         private readonly Task<BreakResponseInstruction?> CompletedBreak = Task.FromResult<BreakResponseInstruction?>(null);
 
-        public Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, ExecutionContext context, TestThreadState starting)
+        public Task<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, TestExecutionContext context, TestThreadState starting)
         {
             return CompletedHalt;
         }

@@ -5,6 +5,7 @@ using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Events;
 using AutoStep.Tracing;
 
 namespace AutoStep.Execution.Strategy

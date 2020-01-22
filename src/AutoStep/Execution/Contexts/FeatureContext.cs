@@ -3,7 +3,7 @@
 namespace AutoStep.Execution
 {
 
-    public class FeatureContext : ExecutionContext
+    public class FeatureContext : TestExecutionContext
     {
         internal FeatureContext(IFeatureInfo feature)
         {
