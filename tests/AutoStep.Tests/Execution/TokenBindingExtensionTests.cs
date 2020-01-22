@@ -295,5 +295,47 @@ namespace AutoStep.Tests.Execution
 
             text.Should().Be("?");
         }
+
+        [Fact]
+        public void CellBindWordAndIntValue()
+        {
+            var stepDef = new CellBuilder("value1", 1, 1, 7);
+            stepDef.Text("value").Int("1");
+
+            var fakeScope = new Mock<IServiceScope>().Object;
+
+            var text = stepDef.Built.GetFullText(fakeScope, VariableSet.Blank);
+
+            text.Should().Be("value1");
+        }
+
+
+        [Fact]
+        public void CellBindWhiteSpace()
+        {
+            var stepDef = new CellBuilder("value 1", 1, 1, 7);
+            stepDef.Text("value").Int("1");
+
+            var fakeScope = new Mock<IServiceScope>().Object;
+
+            var text = stepDef.Built.GetFullText(fakeScope, VariableSet.Blank);
+
+            text.Should().Be("value 1");
+        }
+
+        [Fact]
+        public void CellBindVariable()
+        {
+            var stepDef = new CellBuilder("value <var>", 1, 1, 7);
+            stepDef.Text("value").Variable("var");
+
+            var fakeScope = new Mock<IServiceScope>().Object;
+            var variables = new VariableSet();
+            variables.Set("var", "something");
+
+            var text = stepDef.Built.GetFullText(fakeScope, variables);
+
+            text.Should().Be("value something");
+        }
     }
 }

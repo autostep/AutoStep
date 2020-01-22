@@ -1,7 +1,7 @@
 ﻿using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Contexts
 {
 
     public class ScenarioContext : ErrorCapturingContext

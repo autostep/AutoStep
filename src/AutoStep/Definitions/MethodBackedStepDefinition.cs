@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions

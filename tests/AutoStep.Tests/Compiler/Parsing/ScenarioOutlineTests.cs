@@ -50,8 +50,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 36, 43)
                                 )
                                 .Row(12, 21,
-                                    ("something1", 23, 32, null),
-                                    ("something2", 36, 45, null)
+                                    ("something1", 23, 32, cfg => cfg.Text("something").Int("1")),
+                                    ("something2", 36, 45, cfg => cfg.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -64,8 +64,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 36, 43)
                                 )
                                 .Row(18, 21,
-                                    ("new1", 23, 26, null),
-                                    ("new2", 36, 39, null)
+                                    ("new1", 23, 26, cfg => cfg.Text("new").Int("1")),
+                                    ("new2", 36, 39, cfg => cfg.Text("new").Int("2"))
                                 )
                             )
                         )
@@ -110,8 +110,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32)),
-                                    ("something2", 37, 46, c => c.Word("something", 37).Int("2", 46))
+                                    ("something1", 23, 32, c => c.Text("something").Int("1")),
+                                    ("something2", 37, 46, c => c.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -147,7 +147,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, ("<variable1>", 28, 38, arg => arg
-                                    .Variable("variable1", 28)
+                                    .Variable("variable1")
                                 ))
                             )
                         )
@@ -158,8 +158,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    ("something1", 23, 32, null),
-                                    ("something2", 37, 46, null)
+                                    ("something1", 23, 32, cfg => cfg.Text("something").Int("1")),
+                                    ("something2", 37, 46, cfg => cfg.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -195,9 +195,9 @@ namespace AutoStep.Tests.Compiler.Parsing
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, ("<variable1> and <variable2>", 28, 54, c => c
-                                    .Variable("variable1", 28)
-                                    .Word("and", 40)
-                                    .Variable("variable2", 44)
+                                    .Variable("variable1")
+                                    .Text("and")
+                                    .Variable("variable2")
                                 ))
                             )
                         )
@@ -208,8 +208,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    ("something1", 23, 32, null),
-                                    ("something2", 37, 46, null)
+                                    ("something1", 23, 32, cfg => cfg.Text("something").Int("1")),
+                                    ("something2", 37, 46, cfg => cfg.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -245,7 +245,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                             .Table(7, 26, tab => tab
                                 .Headers(7, 26, ("heading1", 28, 35))
                                 .Row(8, 26, ("<not a variable>", 28, 43, arg => arg
-                                    .Variable("not a variable", 28)
+                                    .Variable("not a variable")
                                 ))
                             )
                         )
@@ -256,8 +256,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(12, 21,
-                                    ("something1", 23, 32, null),
-                                    ("something2", 37, 46, null)
+                                    ("something1", 23, 32, cfg => cfg.Text("something").Int("1")),
+                                    ("something2", 37, 46, cfg => cfg.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -307,8 +307,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32)),
-                                    ("something2", 37, 46, c => c.Word("something", 37).Int("2", 46))
+                                    ("something1", 23, 32, c => c.Text("something").Int("1")),
+                                    ("something2", 37, 46, c => c.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -359,7 +359,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable1", 23, 31)
                                 )
                                 .Row(10, 21,
-                                    ("something1", 23, 32, c => c.Word("something", 23).Int("1", 32))
+                                    ("something1", 23, 32, c => c.Text("something").Int("1"))
                                 )
                             )
                         )
@@ -369,7 +369,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 23, 31)
                                 )
                                 .Row(14, 21,
-                                    ("something2", 23, 32, c => c.Word("something", 23).Int("2", 32))
+                                    ("something2", 23, 32, c => c.Text("something").Int("2"))
                                 )
                             )
                         )
@@ -407,8 +407,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("variable2", 37, 45)
                                 )
                                 .Row(10, 21,
-                                    ("something1", 23, 32, null),
-                                    ("something2", 37, 46, null)
+                                    ("something1", 23, 32, cfg => cfg.Text("something").Int("1")),
+                                    ("something2", 37, 46, cfg => cfg.Text("something").Int("2"))
                                 )
                             )
                         )

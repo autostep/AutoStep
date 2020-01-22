@@ -1,12 +1,9 @@
 ﻿using System;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Contexts
 {
-
     public class ErrorCapturingContext : TestExecutionContext
     {
-        public Exception? FailException { get; internal set; }
-
         public TimeSpan Elapsed { get; internal set; }
     }
 }

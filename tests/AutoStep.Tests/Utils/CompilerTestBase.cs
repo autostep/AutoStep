@@ -147,19 +147,24 @@ namespace AutoStep.Tests.Utils
 
             try
             {
-                var spanType = typeof(ReadOnlySpan<StepToken>);
+                var typeSpan = typeof(ReadOnlySpan<StepToken>);
 
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
-                    .IncludingAllRuntimeProperties()                    
-                    .Excluding((IMemberInfo member) => spanType.IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                       (
-                                                       !includeStatementParts && 
-                                                        member.SelectedMemberInfo != null &&
-                                                        (typeof(StepToken).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                        typeof(IEnumerable<StepToken>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)
-                                                        )))
-                );
+                    .IncludingAllRuntimeProperties()
+                    .Using<StepReferenceElement>(ctx =>
+                    {
+                        ctx.Subject.Should().BeEquivalentTo(ctx.Expectation, opt => opt.Excluding((IMemberInfo x) => x.RuntimeType == typeSpan));
+                        if (includeStatementParts)
+                        {
+                            ctx.Subject.TokenSpan.Length.Should().Be(ctx.Expectation.TokenSpan.Length);
+                            for (var idx = 0; idx < ctx.Subject.TokenSpan.Length; idx++)
+                            {
+                                ctx.Subject.TokenSpan[idx].Should().BeEquivalentTo(ctx.Expectation.TokenSpan[idx], "subject[{0}] should match expectation[{0}]", idx);
+                            }
+                        }
+                    }).WhenTypeIs<StepReferenceElement>()
+                ); 
             }
             catch
             {

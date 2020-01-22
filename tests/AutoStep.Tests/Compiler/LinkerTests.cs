@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Compiler
 {

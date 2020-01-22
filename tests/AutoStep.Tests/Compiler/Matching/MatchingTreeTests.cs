@@ -11,6 +11,7 @@ using AutoStep.Tests.Builders;
 using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Compiler.Matching
 {

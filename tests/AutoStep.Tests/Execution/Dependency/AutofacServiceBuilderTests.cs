@@ -4,6 +4,7 @@ using System.Text;
 using Autofac;
 using Autofac.Core;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
 using Xunit;
@@ -22,13 +23,11 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterConsumer()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             serviceBuilder.RegisterConsumer<TestService>();
 
-            var built = container.Build();
+            var built = serviceBuilder.BuildRootScope();
 
             built.Resolve<TestService>();
 
@@ -42,13 +41,11 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterConsumerByType()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             serviceBuilder.RegisterConsumer(typeof(TestService));
 
-            var built = container.Build();
+            var built = serviceBuilder.BuildRootScope();
 
             built.Resolve<TestService>();
 
@@ -62,9 +59,7 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterSingleInstance()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             var instance = new TestService();
 
@@ -72,7 +67,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             serviceBuilder.RegisterSingleInstance(instance);
 
-            using var built = container.Build();
+            using var built = serviceBuilder.BuildRootScope();
 
             built.Resolve<TestService>();
 
@@ -82,7 +77,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             sharedCount.Should().Be(1);
 
-            using var nested = built.BeginLifetimeScope();
+            using var nested = built.BeginNewScope(new RunContext(new RunConfiguration()));
 
             nested.Resolve<TestService>();
 
@@ -92,38 +87,36 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterPerFeatureService()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             serviceBuilder.RegisterPerFeatureService<TestService>();
 
-            using var built = container.Build();
-            
-            built.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyResolutionException>();
+            using var built = serviceBuilder.BuildRootScope();
 
-            using (var featureScope = built.BeginLifetimeScope(ScopeTags.FeatureTag))
+            built.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyException>();
+
+            using (var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext()))
             {
                 featureScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
                 featureScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
 
-                using(var scenarioScope = featureScope.BeginLifetimeScope(ScopeTags.ScenarioTag))
+                using(var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
                 {
                     featureScope.Resolve<TestService>().Should().NotBeNull();
                     sharedCount.Should().Be(1);
                 }
             }
 
-            using (var featureScope = built.BeginLifetimeScope(ScopeTags.FeatureTag))
+            using (var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext()))
             {
                 featureScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
                 featureScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
 
-                using (var scenarioScope = featureScope.BeginLifetimeScope(ScopeTags.ScenarioTag))
+                using (var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
                 {
                     featureScope.Resolve<TestService>().Should().NotBeNull();
                     sharedCount.Should().Be(2);
@@ -134,19 +127,17 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterPerScenarioService()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             serviceBuilder.RegisterPerScenarioService<TestService>();
 
-            using var built = container.Build();
+            using var built = serviceBuilder.BuildRootScope();
 
-            using (var featureScope = built.BeginLifetimeScope(ScopeTags.FeatureTag))
+            using (var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext()))
             {
-                featureScope.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyResolutionException>();
+                featureScope.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyException>();
 
-                using (var scenarioScope = featureScope.BeginLifetimeScope(ScopeTags.ScenarioTag))
+                using (var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
                 {
                     scenarioScope.Resolve<TestService>().Should().NotBeNull();
                     sharedCount.Should().Be(1);
@@ -154,7 +145,7 @@ namespace AutoStep.Tests.Execution.Dependency
                     sharedCount.Should().Be(1);
                 }
 
-                using (var scenarioScope = featureScope.BeginLifetimeScope(ScopeTags.ScenarioTag))
+                using (var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
                 {
                     scenarioScope.Resolve<TestService>().Should().NotBeNull();
                     sharedCount.Should().Be(2);
@@ -167,15 +158,13 @@ namespace AutoStep.Tests.Execution.Dependency
         [Fact]
         public void CanRegisterPerScopeService()
         {
-            var container = new ContainerBuilder();
-
-            var serviceBuilder = new AutofacServiceBuilder(container);
+            var serviceBuilder = new AutofacServiceBuilder();
 
             serviceBuilder.RegisterPerScopeService<TestService>();
 
-            using var built = container.Build();
+            using var built = serviceBuilder.BuildRootScope();
 
-            using (var stepScope = built.BeginLifetimeScope())
+            using (var stepScope = built.BeginNewScope(new MyContext()))
             {
                 stepScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
@@ -183,7 +172,7 @@ namespace AutoStep.Tests.Execution.Dependency
                 sharedCount.Should().Be(1);
             }
 
-            using (var stepScope = built.BeginLifetimeScope(ScopeTags.GeneralScopeTag))
+            using (var stepScope = built.BeginNewScope(ScopeTags.GeneralScopeTag, new MyContext()))
             {
                 stepScope.Resolve<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
@@ -198,6 +187,10 @@ namespace AutoStep.Tests.Execution.Dependency
             {
                 sharedCount++;
             }
+        }
+
+        private class MyContext : TestExecutionContext
+        {
         }
     }
 }

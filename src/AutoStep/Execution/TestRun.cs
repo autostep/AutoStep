@@ -9,6 +9,7 @@ using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Execution.Binding;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
@@ -26,7 +27,7 @@ namespace AutoStep.Execution
     /// </summary>
     public class RunConfiguration
     {
-
+        public int ParallelCount { get; internal set; } = 1;
     }
 
     public class TestRun
@@ -84,7 +85,7 @@ namespace AutoStep.Execution
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
 
             // Create a top-level run context
-            var runContext = new RunContext();
+            var runContext = new RunContext(configuration);
 
             if (executionSet.Features.Count == 0)
             {
@@ -125,13 +126,9 @@ namespace AutoStep.Execution
         private IServiceScope PrepareContainer(EventPipeline events, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
-            // Go through all the step definitions and allow them to hook into services.
-            var serviceBuilder = new ContainerBuilder();
+            var exposedServiceRegistration = new AutofacServiceBuilder();
 
-            serviceBuilder.RegisterGeneric(typeof(LoggerWrapper<>)).As(typeof(ILogger<>));
-            serviceBuilder.RegisterInstance(logFactory);
-
-            var exposedServiceRegistration = new AutofacServiceBuilder(serviceBuilder);
+            exposedServiceRegistration.RegisterSingleInstance(logFactory);
 
             // Register our strategies.
             exposedServiceRegistration.RegisterSingleInstance(runExecutionStrategy);
@@ -162,9 +159,7 @@ namespace AutoStep.Execution
                 source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
-            var container = serviceBuilder.Build();
-
-            return new AutofacServiceScope(ScopeTags.Root, container);
+            return exposedServiceRegistration.BuildRootScope();
         }
 
     }

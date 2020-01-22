@@ -6,6 +6,7 @@ using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
 using Moq;

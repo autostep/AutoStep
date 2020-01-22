@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
+﻿using System.Collections.Generic;
 using AutoStep.Definitions;
-using AutoStep.Elements;
-using AutoStep.Projects;
-using AutoStep.Tracing;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Contexts
 {
-
     public class ThreadContext : TestExecutionContext
     {
         public int TestThreadId { get; }

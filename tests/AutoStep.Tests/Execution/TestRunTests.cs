@@ -13,6 +13,7 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Execution.Dependency;
 using Xunit.Abstractions;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Execution
 {

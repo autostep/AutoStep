@@ -2,11 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace AutoStep.Execution
+namespace AutoStep.Execution.Contexts
 {
     public abstract class TestExecutionContext
     {
         private ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
+
+        public Exception? FailException { get; set; }
 
         public TValue Get<TValue>(string name)
         {

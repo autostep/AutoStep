@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
@@ -21,14 +22,14 @@ namespace AutoStep.Execution.Strategy
             var executionManager = featureScope.Resolve<IExecutionStateManager>();
             var scenarioStrategy = featureScope.Resolve<IScenarioExecutionStrategy>();
 
-            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.Feature(sc, ctxt, next), async (sc, ctxt) =>
+            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.Feature(sc, ctxt, next), async (featureScope, featureContext) =>
             {
-                var haltInstruction = await executionManager.CheckforHalt(sc, ctxt, TestThreadState.StartingFeature).ConfigureAwait(false);
+                var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
                 // Go through each scenario.
                 foreach (var scenario in feature.Scenarios)
                 {
-                    foreach (var variableSet in ExpandScenario(scenario))
+                    foreach (var variableSet in ExpandScenario(scenario, featureScope))
                     {
                         await scenarioStrategy.Execute(
                             featureScope,
@@ -37,10 +38,11 @@ namespace AutoStep.Execution.Strategy
                             variableSet).ConfigureAwait(false);
                     }
                 }
+
             }).ConfigureAwait(false);
         }
 
-        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario)
+        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, IServiceScope scope)
         {
             if (scenario is IScenarioOutlineInfo outline)
             {
@@ -53,7 +55,7 @@ namespace AutoStep.Execution.Strategy
                         throw new LanguageEngineAssertException();
                     }
 
-                    foreach (var variableSet in VariableSet.CreateSet(example.Table))
+                    foreach (var variableSet in VariableSet.CreateSetsForRows(example.Table, scope, VariableSet.Blank))
                     {
                         yield return variableSet;
                     }

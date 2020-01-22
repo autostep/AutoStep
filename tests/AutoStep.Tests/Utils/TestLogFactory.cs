@@ -9,6 +9,7 @@ namespace AutoStep.Tests.Utils
         {
             return LoggerFactory.Create(cfg =>
             {
+                cfg.SetMinimumLevel(LogLevel.Debug);
                 cfg.AddProvider(new TestLogProvider(outputHelper));
             });
         }

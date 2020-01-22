@@ -90,6 +90,29 @@ namespace AutoStep.Definitions
         /// <param name="declaration">The step declaration.</param>
         /// <param name="callback">The callback to invoke.</param>
         /// <returns>Itself.</returns>
+        public CallbackDefinitionSource GivenAsync(string declaration, Func<Task> callback)
+        {
+            if (callback is null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            // Wrap the callback because it doesn't need a scope.
+            Func<IServiceScope, Task> actual = (_) => callback();
+
+            Add(new DelegateBackedStepDefinition(this, actual.Target, actual.Method, StepType.Given, declaration));
+
+            return this;
+        }
+
+
+        /// <summary>
+        /// Register a 'Given' step definition, with a callback to be invoked when that step is used in a test.
+        /// </summary>
+        /// <typeparam name="T1">Argument type 1.</typeparam>
+        /// <param name="declaration">The step declaration.</param>
+        /// <param name="callback">The callback to invoke.</param>
+        /// <returns>Itself.</returns>
         public CallbackDefinitionSource GivenAsync<T1>(string declaration, Func<T1, Task> callback)
         {
             if (callback is null)

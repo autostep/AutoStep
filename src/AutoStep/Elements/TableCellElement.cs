@@ -22,16 +22,15 @@ namespace AutoStep.Elements
         /// </summary>
         internal IReadOnlyList<StepToken> Tokens => tokens;
 
+        IReadOnlyList<StepToken> ITableCellInfo.Tokens => tokens;
+
         /// <summary>
         /// Adds a token to the cell.
         /// </summary>
         /// <param name="token">The token to add.</param>
         internal void AddToken(StepToken token)
         {
-            if (token is null)
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
+            token = token.ThrowIfNull(nameof(token));
 
             tokens.Add(token);
         }

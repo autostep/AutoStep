@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions

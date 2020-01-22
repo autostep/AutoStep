@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using FluentAssertions;
@@ -39,7 +40,7 @@ namespace AutoStep.Tests.Execution.Events
             var pipeline = new EventPipeline(new List<IEventHandler>());
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
             var callbackInvoked = false;
             var endOfPipelineInvoked = false;
 
@@ -69,7 +70,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
 
             var myHandler = new MyEventHandler(() => beforeCalled = true, () => afterCalled = true);
 
@@ -88,7 +89,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
 
             var myHandler = new MyEventHandler(() => order.Add(1), () => order.Add(4));
 
@@ -110,7 +111,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
 
             var myHandler = new MyEventHandler(() => order.Add(1), () => order.Add(8));
             var myHandler2 = new AsyncEventHandler(() => order.Add(2), () => order.Add(7));
@@ -132,7 +133,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
             var mockStepReference = new StepReferenceElement();
             Exception foundException = null;
 
@@ -153,7 +154,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();            
+            var context = new RunContext(new RunConfiguration());            
             Exception foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
@@ -172,7 +173,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext();
+            var context = new RunContext(new RunConfiguration());
             Exception foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);

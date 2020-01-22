@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Tests.Utils

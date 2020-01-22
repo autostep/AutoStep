@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Elements;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 using AutoStep.Tracing;

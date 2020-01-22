@@ -63,6 +63,49 @@ namespace AutoStep.Tests.Execution
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
         }
+        
+        [Fact]
+        public async Task StepHasAsyncOperation()
+        {
+            // Compile a file.
+            const string TestFile =
+            @"                
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have done something
+
+            ";
+
+            var project = new Project();
+
+            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+
+            var steps = new CallbackDefinitionSource();
+
+            var doneSomethingCalled = false;
+
+            steps.GivenAsync("I have done something", async () =>
+            {
+                await Task.Delay(10);
+                doneSomethingCalled = true;
+            });
+
+            project.Compiler.AddStaticStepDefinitionSource(steps);
+
+            var compileResult = await project.Compiler.Compile();
+
+            var linkResult = project.Compiler.Link();
+
+            var loggerFactory = new LoggerFactory();
+
+            var testRun = new TestRun(project, new RunConfiguration(), loggerFactory);
+
+            await testRun.Execute();
+
+            doneSomethingCalled.Should().BeTrue();
+        }
 
         [Fact]
         public async Task ReferencingAStepInMyFile()

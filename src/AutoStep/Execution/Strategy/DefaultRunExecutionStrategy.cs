@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Elements.ReadOnly;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -16,13 +18,18 @@ namespace AutoStep.Execution.Strategy
     {
         public async Task Execute(IServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet, IEventPipeline eventPipeline)
         {
+            runScope = runScope.ThrowIfNull(nameof(runScope));
+            runContext = runContext.ThrowIfNull(nameof(runContext));
+            executionSet = executionSet.ThrowIfNull(nameof(executionSet));
+            eventPipeline = eventPipeline.ThrowIfNull(nameof(eventPipeline));
+
             // Event handlers have all executed now.
 
             // Create a queue of all features.
             var featureQueue = new ConcurrentQueue<IFeatureInfo>(executionSet.Features);
 
             // Will need to come from config.
-            var parallelConfig = 1;
+            var parallelConfig = runContext.Configuration.ParallelCount;
 
             var parallelValue = Math.Min(featureQueue.Count, parallelConfig);
 
@@ -41,9 +48,11 @@ namespace AutoStep.Execution.Strategy
 
             for (int idx = 0; idx < parallelValue; idx++)
             {
+                var threadId = idx + 1;
+
                 // Initially we'll just go for a feature parallel, but eventually we will
                 // probably add support for a scenario parallel.
-                parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(runScope, idx, () => FeatureDeQueue(featureQueue), eventPipeline));
+                parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(runScope, threadId, () => FeatureDeQueue(featureQueue), eventPipeline));
             }
 
             // Wait for test threads to finish.
@@ -61,6 +70,7 @@ namespace AutoStep.Execution.Strategy
 
             var executionManager = threadScope.Resolve<IExecutionStateManager>();
             var featureStrategy = threadScope.Resolve<IFeatureExecutionStrategy>();
+            var logger = threadScope.Resolve<ILogger<DefaultRunExecutionStrategy>>();
 
             await events.InvokeEvent(
                 threadScope,
@@ -77,13 +87,15 @@ namespace AutoStep.Execution.Strategy
 
                         if (feature is object)
                         {
+                            logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
+
                             // We have a feature.
                             await featureStrategy.Execute(scope, events, feature).ConfigureAwait(false);
                         }
                         else
                         {
                             // TODO: Logging.
-                            //tracer.Debug("Test Thread ID {0}; no more features to run.", testThreadId);
+                            logger.LogDebug("Test Thread ID {0}; no more features to run.", testThreadId);
                             break;
                         }
                     }

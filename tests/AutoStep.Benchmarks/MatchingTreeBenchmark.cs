@@ -6,6 +6,7 @@ using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
 using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;

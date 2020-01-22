@@ -1,79 +1,87 @@
 ﻿using System;
 using Autofac;
 using AutoStep.Execution.Events;
+using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Dependency
 {
     internal class AutofacServiceBuilder : IServicesBuilder
     {
+        private readonly ContainerBuilder builder;
 
-        public AutofacServiceBuilder(ContainerBuilder builder)
+        public AutofacServiceBuilder()
         {
-            Builder = builder;
-        }
+            builder = new ContainerBuilder();
 
-        public ContainerBuilder Builder { get; }
+            builder.RegisterGeneric(typeof(LoggerWrapper<>)).As(typeof(ILogger<>));
+        }
 
         public void RegisterConsumer<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerDependency();
+            builder.RegisterType<TService>().InstancePerDependency();
         }
 
         public void RegisterConsumer(Type consumer)
         {
-            Builder.RegisterType(consumer).InstancePerDependency();
+            builder.RegisterType(consumer).InstancePerDependency();
         }
 
         public void RegisterSingleInstance<TService>(TService instance)
             where TService : class
         {
-            Builder.RegisterInstance(instance);
+            builder.RegisterInstance(instance);
         }
 
         public void RegisterPerFeatureService<TService, TComponent>()
         {
-            Builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
+            builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
         }
 
         public void RegisterPerFeatureService<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
+            builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
         }
 
         public void RegisterPerScenarioService<TService, TComponent>()
         {
-            Builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
+            builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
 
         public void RegisterPerScenarioService<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
+            builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
 
         public void RegisterPerScopeService<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerLifetimeScope();
+            builder.RegisterType<TService>().InstancePerLifetimeScope();
         }
 
         public void RegisterPerScopeService<TService, TComponent>()
         {
-            Builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
+            builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
         }
 
         public void RegisterPerThreadService<TService>()
         {
-            Builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
+            builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }
 
         public void RegisterPerThreadService<TService, TComponent>()
         {
-            Builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
+            builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }
 
         public void RegisterEventHandler(IEventHandler eventHandler)
         {
             // Only a single instance of event handlers.
-            Builder.RegisterInstance(eventHandler);
+            builder.RegisterInstance(eventHandler);
+        }
+
+        public IServiceScope BuildRootScope()
+        {
+            return new AutofacServiceScope(ScopeTags.Root, builder.Build());
         }
     }
 }
