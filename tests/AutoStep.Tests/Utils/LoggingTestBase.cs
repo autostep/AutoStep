@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using FluentAssertions;
+using System.Collections.Concurrent;
 
 namespace AutoStep.Tests.Utils
 {
@@ -25,7 +26,7 @@ namespace AutoStep.Tests.Utils
 
         protected class LogContainer : ILoggerProvider
         {
-            public List<(LogLevel lvl, string msg)> Messages { get; } = new List<(LogLevel lvl, string msg)>();
+            public ConcurrentBag<(LogLevel lvl, string msg)> Messages { get; } = new ConcurrentBag<(LogLevel lvl, string msg)>();
 
             public void LastShouldContain(LogLevel level, params string[] messageContents)
             {
@@ -37,7 +38,9 @@ namespace AutoStep.Tests.Utils
 
             public void ShouldContain(LogLevel level, params string[] messageContents)
             {
-                Messages.Should().Contain(p => p.lvl == level && messageContents.All(m => p.msg.Contains(m)));
+                var found = Messages.FirstOrDefault(p => p.lvl == level && messageContents.All(m => p.msg.Contains(m)));
+
+                found.Should().NotBeNull("messages ('{0}') should contain {1} - {2}", Messages, level, messageContents);
             }
 
             public ILogger CreateLogger(string categoryName)

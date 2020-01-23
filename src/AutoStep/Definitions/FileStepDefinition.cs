@@ -38,7 +38,7 @@ namespace AutoStep.Definitions
             return Type == def.Type && def.Declaration == def.Declaration;
         }
 
-        public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override async Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
             var nestedVariables = new VariableSet();
@@ -65,12 +65,19 @@ namespace AutoStep.Definitions
 
             var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
 
+            var fileStepContext = new FileDefinedStepContext(Definition);
+
             // TODO: Populate the variables from the binding arguments.
-            return collectionStrategy.Execute(
+            await collectionStrategy.Execute(
                 stepScope,
-                context,
+                fileStepContext,
                 Definition,
-                nestedVariables);
+                nestedVariables).ConfigureAwait(false);
+
+            if (fileStepContext.FailException is object)
+            {
+                context.FailException = fileStepContext.FailException;
+            }
         }
     }
 }

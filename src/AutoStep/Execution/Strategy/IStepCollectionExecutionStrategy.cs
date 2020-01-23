@@ -11,7 +11,7 @@ namespace AutoStep.Execution.Strategy
     {
         Task Execute(
             IServiceScope owningScope,
-            ErrorCapturingContext owningContext,
+            StepCollectionContext owningContext,
             IStepCollectionInfo stepCollection,
             VariableSet variables);
     }

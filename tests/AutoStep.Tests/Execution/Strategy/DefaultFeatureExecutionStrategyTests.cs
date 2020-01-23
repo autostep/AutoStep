@@ -141,7 +141,6 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             var threadContext = new ThreadContext(1);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
             var beforeFeat = 0;
             var afterFeat = 0;
             var eventHandler = new MyEventHandler((FeatureContext ctxt) =>

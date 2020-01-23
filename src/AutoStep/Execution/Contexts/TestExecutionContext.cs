@@ -8,8 +8,6 @@ namespace AutoStep.Execution.Contexts
     {
         private ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
 
-        public Exception? FailException { get; set; }
-
         public TValue Get<TValue>(string name)
         {
             if (contextValues.TryGetValue(name, out object foundValue))

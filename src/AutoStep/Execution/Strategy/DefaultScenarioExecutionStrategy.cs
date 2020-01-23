@@ -26,26 +26,40 @@ namespace AutoStep.Execution.Strategy
             // Halt before the scenario begins.
             var haltInstruction = await executionManager.CheckforHalt(scenarioScope, scenarioContext, TestThreadState.StartingScenario).ConfigureAwait(false);
 
-            await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.Scenario(sc, ctxt, next), async (scope, ctxt) =>
+            try
             {
-                if (featureContext.Feature.Background is object)
+                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.Scenario(sc, ctxt, next), async (scope, ctxt) =>
                 {
-                    // There is a background to execute.
+                    if (featureContext.Feature.Background is object)
+                    {
+                        // There is a background to execute.
+                        await collectionExecutor.Execute(
+                                scope,
+                                ctxt,
+                                featureContext.Feature.Background,
+                                variableSet).ConfigureAwait(false);
+
+                        if (ctxt.FailException is object)
+                        {
+                            // Something went wrong executing the background. Don't run the main scenario body.
+                            return;
+                        }
+                    }
+
+                    // Any errors will be udated on the scenario context.
                     await collectionExecutor.Execute(
-                        scope,
-                        ctxt,
-                        featureContext.Feature.Background,
-                        variableSet).ConfigureAwait(false);
-                }
+                            scenarioScope,
+                            scenarioContext,
+                            scenario,
+                            variableSet).ConfigureAwait(false);
 
-                // Any errors will be udated on the scenario context.
-                await collectionExecutor.Execute(
-                    scenarioScope,
-                    scenarioContext,
-                    scenario,
-                    variableSet).ConfigureAwait(false);
-
-            }).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+            }
+            catch (EventHandlingException ex)
+            {
+                // Something went wrong in the event handler, fail the scenario.
+                scenarioContext.FailException = ex;
+            }
         }
     }
 }

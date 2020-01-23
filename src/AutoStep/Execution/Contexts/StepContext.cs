@@ -1,11 +1,12 @@
-﻿using AutoStep.Elements.ReadOnly;
+﻿using System;
+using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Execution.Contexts
 {
 
-    public class StepContext : ErrorCapturingContext
+    public class StepContext : TestExecutionContext
     {
-        public StepContext(int stepIndex, ErrorCapturingContext parentContext, IStepReferenceInfo step, VariableSet variables)
+        public StepContext(int stepIndex, StepCollectionContext parentContext, IStepReferenceInfo step, VariableSet variables)
         {
             StepIndex = stepIndex;
             ParentContext = parentContext;
@@ -15,10 +16,14 @@ namespace AutoStep.Execution.Contexts
 
         public int StepIndex { get; }
 
-        public ErrorCapturingContext ParentContext { get; }
+        public StepCollectionContext ParentContext { get; }
 
         public IStepReferenceInfo Step { get; }
 
         public VariableSet Variables { get; }
+
+        public Exception? FailException { get; set; }
+
+        public TimeSpan Elapsed { get; internal set; }
     }
 }

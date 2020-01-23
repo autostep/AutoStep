@@ -36,7 +36,6 @@ namespace AutoStep.Tests.Execution.Strategy
             var features = Get2FeatureSet();
             var runContext = new RunContext(new RunConfiguration());
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
             var beforeThread = 0;
             var afterThread = 0;
             var eventHandler = new MyEventHandler((ThreadContext ctxt) =>
@@ -52,7 +51,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             builder.RegisterSingleInstance(LogFactory);
             builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IFeatureExecutionStrategy>(featureStrategy);  
+            builder.RegisterSingleInstance<IFeatureExecutionStrategy>(featureStrategy);
 
             var scope = builder.BuildRootScope();
 
