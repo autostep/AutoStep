@@ -38,7 +38,7 @@ namespace AutoStep.Definitions
             return Type == def.Type && def.Declaration == def.Declaration;
         }
 
-        public override async Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
             var nestedVariables = new VariableSet();

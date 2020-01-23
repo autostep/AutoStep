@@ -14,14 +14,14 @@ namespace AutoStep.Execution.Events
     {
         void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration);
 
-        Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next);
+        ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next);
 
-        Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next);
+        ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next);
 
-        Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next);
+        ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next);
 
-        Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next);
+        ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next);
 
-        Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next);
+        ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next);
     }
 }

@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
 
         [Fact]
-        public async Task ScenarioWithBackground()
+        public async ValueTask ScenarioWithBackground()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))
@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task BackgroundErrorStopsScenarioFromRunning()
+        public async ValueTask BackgroundErrorStopsScenarioFromRunning()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))
@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task ScenarioWithoutBackground()
+        public async ValueTask ScenarioWithoutBackground()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1, cfg => cfg.Given("I have done something else", 1, 1))
@@ -61,7 +61,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task UsesInstructedScenario()
+        public async ValueTask UsesInstructedScenario()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1, cfg => cfg.Given("I have done something else", 1, 1))
@@ -73,7 +73,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task VariableSetPassedThrough()
+        public async ValueTask VariableSetPassedThrough()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))
@@ -88,7 +88,7 @@ namespace AutoStep.Tests.Execution.Strategy
                          (feature.Scenarios[0], variables));
         }
 
-        private async Task DoTest(IFeatureInfo feature, IScenarioInfo scenario, VariableSet variables, bool raiseException, params (IStepCollectionInfo collection, VariableSet variables)[] collections)
+        private async ValueTask DoTest(IFeatureInfo feature, IScenarioInfo scenario, VariableSet variables, bool raiseException, params (IStepCollectionInfo collection, VariableSet variables)[] collections)
         {
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             var beforeFeat = 0;
@@ -135,7 +135,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
             
-            public Task Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+            public ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
             {
                 owningScope.Should().NotBeNull();
                 owningContext.Should().BeOfType<ScenarioContext>();
@@ -147,7 +147,7 @@ namespace AutoStep.Tests.Execution.Strategy
                     owningContext.FailException = new NullReferenceException();
                 }
 
-                return Task.CompletedTask;
+                return default;
             }
         }
 
@@ -171,18 +171,17 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-
-            public async Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next)
+            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next)
+            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next)
+            public ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -191,7 +190,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            public async Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next)
+            public async ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -214,7 +213,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 callAfter(ctxt);
             }
 
-            public Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next)
+            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

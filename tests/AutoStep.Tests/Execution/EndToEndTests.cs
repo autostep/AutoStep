@@ -86,7 +86,7 @@ namespace AutoStep.Tests.Execution
 
             var doneSomethingCalled = false;
 
-            steps.GivenAsync("I have done something", async () =>
+            steps.Given("I have done something", async () =>
             {
                 await Task.Delay(10);
                 doneSomethingCalled = true;

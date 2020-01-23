@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task SingleThreadedTest()
+        public async ValueTask SingleThreadedTest()
         {
             var features = Get2FeatureSet();
             var runContext = new RunContext(new RunConfiguration());
@@ -59,14 +59,14 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await strategy.Execute(scope, runContext, features, eventPipeline);
 
-            featureStrategy.AddedFeatures.Should().ContainInOrder(new[] { features.Features[0], features.Features[1] });
             beforeThread.Should().Be(1);
             afterThread.Should().Be(1);
+            featureStrategy.AddedFeatures.Should().ContainInOrder(new[] { features.Features[0], features.Features[1] });
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
         }
 
         [Fact]
-        public async Task MultiThreadedTest()
+        public async ValueTask MultiThreadedTest()
         {
             var features = Get2FeatureSet();
             var runContext = new RunContext(new RunConfiguration { ParallelCount = 2 });
@@ -112,7 +112,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
 
         [Fact]
-        public async Task DontUseMoreThreadsThanFeatures()
+        public async ValueTask DontUseMoreThreadsThanFeatures()
         {
             var features = Get2FeatureSet();
             // Say to use 3 threads, but we should still only use 2.
@@ -178,15 +178,15 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class MyFeatureStrategy : IFeatureExecutionStrategy
         {
-            public List<IFeatureInfo> AddedFeatures { get; } = new List<IFeatureInfo>();
+            public ConcurrentQueue<IFeatureInfo> AddedFeatures { get; } = new ConcurrentQueue<IFeatureInfo>();
 
-            public Task Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature)
+            public ValueTask Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature)
             {
                 threadScope.Tag.Should().Be(ScopeTags.ThreadTag);
 
-                AddedFeatures.Add(feature);
+                AddedFeatures.Enqueue(feature);
 
-                return Task.CompletedTask;
+                return default;
             }
         }
 
@@ -211,7 +211,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public async Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next)
+            public async ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -234,7 +234,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 callAfter(ctxt);
             }
 
-            public Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next)
+            public ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -244,17 +244,17 @@ namespace AutoStep.Tests.Execution.Strategy
                 throw new NotImplementedException();
             }
 
-            public Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next)
+            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next)
+            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next)
+            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Compiler
                 return ReferenceEquals(def, this);
             }
 
-            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }
@@ -54,6 +54,16 @@ namespace AutoStep.Tests.Compiler
             linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
 
             def.Definition.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void AddStepDefinitionSourceNullArgument()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+
+            var linker = new AutoStepLinker(compiler, LogFactory);
+
+            linker.Invoking(l => l.AddStepDefinitionSource(null)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -92,6 +102,64 @@ namespace AutoStep.Tests.Compiler
             // After linking, the step reference should have a definition assigned.
             binding.Definition.Should().Be(def);
             binding.Arguments.IsEmpty.Should().BeTrue();
+        }
+
+        [Fact]
+        public void CanRemoveDefinitionSource()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+
+            var linker = new AutoStepLinker(compiler, LogFactory);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            var source = new TestStepDefinitionSource(def);
+
+            linker.AddStepDefinitionSource(source);
+
+            def.Definition.Should().NotBeNull();
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                    )
+                ));
+
+            var file = fileBuilder.Built;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeTrue();
+            linkResult.Messages.Should().BeEmpty();
+
+            linker.RemoveStepDefinitionSource(source);
+            
+            // Relink after removing the source; linking should fail.
+            linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeFalse();
+            linkResult.Messages.Should().HaveCount(1);
+        }
+
+
+        [Fact]
+        public void CannotRemoveUnregisteredStepDefinition()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+
+            var linker = new AutoStepLinker(compiler, LogFactory);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            var source = new TestStepDefinitionSource(def);
+            
+            linker.Invoking(l => l.RemoveStepDefinitionSource(source)).Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

@@ -13,7 +13,7 @@ namespace AutoStep.Execution.Strategy
     internal class DefaultStepCollectionExecutionStrategy : IStepCollectionExecutionStrategy
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
-        public async Task Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+        public async ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
         {
             // Resolve the thread context, so we can access the stack of steps.
             var threadContext = owningScope.ThreadContext();
@@ -80,7 +80,6 @@ namespace AutoStep.Execution.Strategy
                                     timer.Stop();
                                     stepContext.Elapsed = timer.Elapsed;
                                 }
-
                             }).ConfigureAwait(false);
                     }
                     catch (EventHandlingException ex)

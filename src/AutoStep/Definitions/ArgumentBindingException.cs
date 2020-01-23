@@ -8,12 +8,6 @@ namespace AutoStep.Definitions
     /// </summary>
     public class ArgumentBindingException : Exception
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentBindingException"/> class.
-        /// </summary>
-        public ArgumentBindingException()
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentBindingException"/> class.
@@ -22,28 +16,15 @@ namespace AutoStep.Definitions
         /// <param name="expectedType">The type we were expecting to get from the binding.</param>
         /// <param name="innerException">The error thrown by the binder.</param>
         public ArgumentBindingException(string textValue, Type expectedType, Exception innerException)
-            : this(FormatMessage(textValue, expectedType), innerException)
+            : base(FormatMessage(textValue, expectedType), innerException)
         {
+            TextValue = textValue;
+            ExpectedType = expectedType;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentBindingException"/> class.
-        /// </summary>
-        /// <param name="message">The exception message.</param>
-        public ArgumentBindingException(string message)
-            : base(message)
-        {
-        }
+        public string TextValue { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentBindingException"/> class.
-        /// </summary>
-        /// <param name="message">The exception message.</param>
-        /// <param name="innerException">The underlying exception.</param>
-        public ArgumentBindingException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+        public Type ExpectedType { get; }
 
         private static string FormatMessage(string textValue, Type expectedType)
         {

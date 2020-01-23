@@ -7,7 +7,7 @@ namespace AutoStep.Execution.Strategy
 {
     internal class DefaultStepExecutionStrategy : IStepExecutionStrategy
     {
-        public Task ExecuteStep(
+        public ValueTask ExecuteStep(
             IServiceScope stepScope,
             StepContext context,
             VariableSet variables)

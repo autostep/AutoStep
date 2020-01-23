@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task RunsAllSteps()
+        public async ValueTask RunsAllSteps()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -55,7 +55,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task StopsTestIfStepFails()
+        public async ValueTask StopsTestIfStepFails()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -94,7 +94,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task StopsTestIfEventHandlerFails()
+        public async ValueTask StopsTestIfEventHandlerFails()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -141,7 +141,7 @@ namespace AutoStep.Tests.Execution.Strategy
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
                
-        private async Task DoTest(
+        private async ValueTask DoTest(
             IStepCollectionInfo stepCollection,
             int executionManagerInvokes,
             StepCollectionContext owningContext,
@@ -158,7 +158,7 @@ namespace AutoStep.Tests.Execution.Strategy
             await DoTest(stepCollection, executionManagerInvokes, owningContext, variables, eventHandler, stepCallback);
         }
 
-        private async Task DoTest(
+        private async ValueTask DoTest(
             IStepCollectionInfo stepCollection,
             int executionManagerInvokes,
             StepCollectionContext owningContext,
@@ -206,14 +206,14 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.stepCallback = stepCallback;
             }
             
-            public Task ExecuteStep(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public ValueTask ExecuteStep(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 stepScope.Should().NotBeNull();
                 stepScope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
 
                 stepCallback(stepScope, context, variables);
 
-                return Task.CompletedTask;
+                return default;
             }
         }
 
@@ -237,17 +237,17 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public async Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next)
+            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next)
+            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next)
+            public ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -256,12 +256,13 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            public async Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next)
+            
+            public  ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public async Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next)
+            public async ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 callBefore(ctxt);
 

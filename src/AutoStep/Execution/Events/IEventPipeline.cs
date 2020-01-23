@@ -6,10 +6,10 @@ namespace AutoStep.Execution.Events
 {
     public interface IEventPipeline
     {
-        Task InvokeEvent<TContext>(
-            IServiceScope scope,
-            TContext context,
-            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, Task>, Task> callback,
-            Func<IServiceScope, TContext, Task>? next = null);
+        ValueTask InvokeEvent<TContext>(
+                    IServiceScope scope,
+                    TContext context,
+                    Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback,
+                    Func<IServiceScope, TContext, ValueTask>? next = null);
     }
 }

@@ -9,10 +9,10 @@ namespace AutoStep.Execution.Strategy
 {
     public interface IScenarioExecutionStrategy
     {
-        Task Execute(
-            IServiceScope featureScope,
-            FeatureContext featureContext,
-            IScenarioInfo scenario,
-            VariableSet variables);
+        ValueTask Execute(
+                    IServiceScope featureScope,
+                    FeatureContext featureContext,
+                    IScenarioInfo scenario,
+                    VariableSet variables);
     }
 }

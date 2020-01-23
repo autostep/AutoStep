@@ -13,7 +13,7 @@ namespace AutoStep.Execution.Strategy
 {
     public class DefaultFeatureExecutionStrategy : IFeatureExecutionStrategy
     {
-        public async Task Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature)
+        public async ValueTask Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature)
         {
             var featureContext = new FeatureContext(feature);
 

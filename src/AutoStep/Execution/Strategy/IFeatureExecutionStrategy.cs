@@ -11,6 +11,6 @@ namespace AutoStep.Execution.Strategy
 {
     public interface IFeatureExecutionStrategy
     {
-        Task Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature);
+        ValueTask Execute(IServiceScope threadScope, IEventPipeline events, IFeatureInfo feature);
     }
 }

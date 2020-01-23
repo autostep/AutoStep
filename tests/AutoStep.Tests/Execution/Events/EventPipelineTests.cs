@@ -48,14 +48,14 @@ namespace AutoStep.Tests.Execution.Events
             {
                 callbackInvoked = true;
 
-                return Task.CompletedTask;
+                return default;
             }, (sc, ctxt) =>
             {
                 sc.Should().Be(scope);
                 ctxt.Should().Be(context);
                 endOfPipelineInvoked = true;
 
-                return Task.CompletedTask;
+                return default;
             });
 
             callbackInvoked.Should().BeFalse();
@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async Task AsyncTargetMethod()
+        public async ValueTask AsyncTargetMethod()
         {
             var order = new List<int>();
 
@@ -105,7 +105,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async Task EventHandlersInvokedInCorrectOrder()
+        public async ValueTask EventHandlersInvokedInCorrectOrder()
         {
             var order = new List<int>();
 
@@ -129,7 +129,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async Task StepFailuresThrownAsIs()
+        public async ValueTask StepFailuresThrownAsIs()
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
@@ -150,7 +150,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async Task FailuresFromOtherEventHandlerThrownAsIs()
+        public async ValueTask FailuresFromOtherEventHandlerThrownAsIs()
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
@@ -169,7 +169,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async Task RemainingExceptionsWrappedAsEventHandlingException()
+        public async ValueTask RemainingExceptionsWrappedAsEventHandlingException()
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.exception = exception;
             }
 
-            public async Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next)
+            public async ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -232,22 +232,22 @@ namespace AutoStep.Tests.Execution.Events
                 throw new NotImplementedException();
             }
 
-            public Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next)
+            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next)
+            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next)
+            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next)
+            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -264,7 +264,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.callAfter = callAfter;
             }
 
-            public async Task Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, Task> next)
+            public async ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -281,22 +281,22 @@ namespace AutoStep.Tests.Execution.Events
                 throw new NotImplementedException();
             }
 
-            public Task Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, Task> next)
+            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, Task> next)
+            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, Task> next)
+            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public Task Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, Task> next)
+            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

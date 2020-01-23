@@ -9,10 +9,10 @@ namespace AutoStep.Execution.Strategy
 {
     public interface IStepCollectionExecutionStrategy
     {
-        Task Execute(
-            IServiceScope owningScope,
-            StepCollectionContext owningContext,
-            IStepCollectionInfo stepCollection,
-            VariableSet variables);
+        ValueTask Execute(
+                    IServiceScope owningScope,
+                    StepCollectionContext owningContext,
+                    IStepCollectionInfo stepCollection,
+                    VariableSet variables);
     }
 }

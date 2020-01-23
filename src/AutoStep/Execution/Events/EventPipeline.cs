@@ -22,16 +22,16 @@ namespace AutoStep.Execution.Events
             }
         }
 
-        public Task InvokeEvent<TContext>(
+        public ValueTask InvokeEvent<TContext>(
             IServiceScope scope,
             TContext context,
-            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, Task>, Task> callback,
-            Func<IServiceScope, TContext, Task>? next = null)
+            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback,
+            Func<IServiceScope, TContext, ValueTask>? next = null)
         {
             if (next is null)
             {
                 // This means that there is nothing at the end of the pipeline, create a dummy terminator.
-                next = (s, c) => Task.CompletedTask;
+                next = (s, c) => default;
             }
 
             // Need to execute in reverse so we build up the 'next' properly.
@@ -43,10 +43,10 @@ namespace AutoStep.Execution.Events
             return next(scope, context);
         }
 
-        private Func<IServiceScope, TContext, Task> ChainHandler<TContext>(
-            Func<IServiceScope, TContext, Task> next,
+        private Func<IServiceScope, TContext, ValueTask> ChainHandler<TContext>(
+            Func<IServiceScope, TContext, ValueTask> next,
             IEventHandler innerHandler,
-            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, Task>, Task> callback)
+            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback)
         {
             return async (resolver, ctxt) =>
             {

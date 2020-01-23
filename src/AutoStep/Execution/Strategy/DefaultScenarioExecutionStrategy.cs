@@ -13,7 +13,7 @@ namespace AutoStep.Execution.Strategy
 {
     internal class DefaultScenarioExecutionStrategy : IScenarioExecutionStrategy
     {
-        public async Task Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
+        public async ValueTask Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
 

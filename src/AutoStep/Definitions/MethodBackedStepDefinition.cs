@@ -38,7 +38,7 @@ namespace AutoStep.Definitions
         /// <param name="context">The step context (including all binding information).</param>
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Need to convert the found arguments into actual type arguments.
             object[] arguments = BindArguments(stepScope, context, variables);
@@ -74,32 +74,25 @@ namespace AutoStep.Definitions
         /// <param name="target">The target object.</param>
         /// <param name="args">The method arguments.</param>
         /// <returns>A task that will completed when the method exits.</returns>
-        protected Task InvokeInstanceMethod(object target, object[] args)
+        protected ValueTask InvokeInstanceMethod(object target, object[] args)
         {
-            if (typeof(Task).IsAssignableFrom(Method.ReturnType))
+            if (typeof(ValueTask).IsAssignableFrom(Method.ReturnType))
+            {
+                return (ValueTask)Method.Invoke(target, args);
+            }
+            else if (typeof(Task).IsAssignableFrom(Method.ReturnType))
             {
                 // This is an async method.
                 var taskResult = (Task)Method.Invoke(target, args);
 
                 // Returning task directly, we don't need to do anything else with it here.
-                return taskResult;
-            }
-            else if (typeof(ValueTask).IsAssignableFrom(Method.ReturnType))
-            {
-                var taskResult = (ValueTask)Method.Invoke(target, args);
-
-                if (taskResult.IsCompleted)
-                {
-                    return Task.CompletedTask;
-                }
-
-                return taskResult.AsTask();
+                return new ValueTask(taskResult);
             }
             else
             {
                 Method.Invoke(target, args);
 
-                return Task.CompletedTask;
+                return default;
             }
         }
 
@@ -112,20 +105,9 @@ namespace AutoStep.Definitions
         /// <returns>A bound set of arguments to pass to the method.</returns>
         protected object[] BindArguments(IServiceScope scope, StepContext context, VariableSet variables)
         {
-            if (scope is null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (variables is null)
-            {
-                throw new ArgumentNullException(nameof(variables));
-            }
+            scope = scope.ThrowIfNull(nameof(scope));
+            context = context.ThrowIfNull(nameof(context));
+            variables = variables.ThrowIfNull(nameof(variables));
 
             if (context.Step.Binding is null)
             {

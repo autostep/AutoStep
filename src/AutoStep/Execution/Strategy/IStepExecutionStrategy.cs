@@ -7,9 +7,9 @@ namespace AutoStep.Execution.Strategy
 {
     public interface IStepExecutionStrategy
     {
-        Task ExecuteStep(
-            IServiceScope stepScope,
-            StepContext context,
-            VariableSet variables);
+        ValueTask ExecuteStep(
+                    IServiceScope stepScope,
+                    StepContext context,
+                    VariableSet variables);
     }
 }

@@ -22,7 +22,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async Task ExecutesStep()
+        public async ValueTask ExecutesStep()
         {
             var step = new StepReferenceBuilder("I have done something", StepType.Given, StepType.Given, 1, 1).Built;
 
@@ -47,6 +47,8 @@ namespace AutoStep.Tests.Execution.Strategy
             var strategy = new DefaultStepExecutionStrategy();
 
             await strategy.ExecuteStep(mockScope, stepContext, variables);
+
+            ranStep.Should().BeTrue();
         }
 
         [Fact]
@@ -84,11 +86,11 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.callback = callback;
             }
 
-            public override Task ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 callback(stepScope, context, variables);
 
-                return Task.CompletedTask;
+                return default;
             }
 
             public override bool IsSameDefinition(StepDefinition def)

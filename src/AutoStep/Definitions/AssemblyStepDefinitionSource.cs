@@ -54,10 +54,9 @@ namespace AutoStep.Definitions
         /// <param name="configuration">The run configuration.</param>
         public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
         {
-            if (servicesBuilder is null)
-            {
-                throw new ArgumentNullException(nameof(servicesBuilder));
-            }
+            servicesBuilder = servicesBuilder.ThrowIfNull(nameof(servicesBuilder));
+
+            EnsureDefinitionsLoaded();
 
             // All types providing steps should be registered.
             // We'll see about reloading DLLs later (TODO).
@@ -83,7 +82,14 @@ namespace AutoStep.Definitions
         /// <returns>The step definitions.</returns>
         public IEnumerable<StepDefinition> GetStepDefinitions()
         {
-            // If we've already loaded them, just return the existing set.
+            EnsureDefinitionsLoaded();
+
+            return definitions;
+        }
+
+        private void EnsureDefinitionsLoaded()
+        {
+            // Only load once.
             if (definitions.Count == 0)
             {
                 // Search for public types that are decorated with a Steps attribute.
@@ -93,6 +99,8 @@ namespace AutoStep.Definitions
                 {
                     if (type.GetCustomAttribute<StepsAttribute>(true) is object && !type.IsAbstract)
                     {
+                        var hasStep = false;
+
                         logger.LogInformation(DefinitionsLogMessages.AssemblyStepDefinitionSource_LookingInTypeForSteps, type.FullName);
 
                         // This type may contain steps.
@@ -105,13 +113,17 @@ namespace AutoStep.Definitions
                                 logger.LogInformation(DefinitionsLogMessages.AssemblyStepDefinitionSource_FoundStepMethod, definition.Type, definition.Declaration, method.Name);
 
                                 definitions.Add(new ClassStepDefinition(this, type, method, definition));
+                                hasStep = true;
                             }
+                        }
+
+                        if (hasStep)
+                        {
+                            definitionOwningTypes.Add(type);
                         }
                     }
                 }
             }
-
-            return definitions;
         }
     }
 }

@@ -117,7 +117,7 @@ namespace AutoStep.Execution
                 (handler, sc, ctxt, next) => handler.Execute(sc, ctxt, next),
                 (scope, ctxt) =>
                 {
-                    return runExecutionStrategy.Execute(scope, ctxt, executionSet, events);
+                    return new ValueTask(runExecutionStrategy.Execute(scope, ctxt, executionSet, events));
                 }).ConfigureAwait(false);
 
             return runContext;

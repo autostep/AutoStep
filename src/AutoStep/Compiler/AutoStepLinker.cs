@@ -50,10 +50,7 @@ namespace AutoStep.Compiler
         /// <param name="source">The source to add.</param>
         public void AddStepDefinitionSource(IStepDefinitionSource source)
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            source = source.ThrowIfNull(nameof(source));
 
             if (trackedSources.Remove(source.Uid, out var oldSource))
             {
