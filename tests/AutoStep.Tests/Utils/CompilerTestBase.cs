@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Tests.Builders;
-using AutoStep.Tests.Utils;
 using AutoStep.Elements;
-using AutoStep.Tracing;
 using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
@@ -34,10 +29,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -48,10 +43,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -66,10 +61,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -85,10 +80,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -96,10 +91,10 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
@@ -112,10 +107,10 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure there are 0 messages
             Assert.Empty(result.Messages);
@@ -129,10 +124,10 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure there are 0 messages
             Assert.Empty(result.Messages);

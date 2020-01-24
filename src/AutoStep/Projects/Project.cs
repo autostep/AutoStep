@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoStep.Execution;
+using AutoStep.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AutoStep.Projects
 {
@@ -11,6 +15,23 @@ namespace AutoStep.Projects
         private Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// </summary>
+        public Project()
+        {
+            Compiler = ProjectCompiler.CreateDefault(this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// </summary>
+        /// <param name="compiler">A custom project compiler.</param>
+        public Project(IProjectCompiler compiler)
+        {
+            Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+        }
+
+        /// <summary>
         /// Gets the set of all files in the project.
         /// </summary>
         public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
@@ -20,21 +41,10 @@ namespace AutoStep.Projects
         /// </summary>
         public ProjectConfiguration? Configuration { get; }
 
-        public IProjectCompiler Compiler { get; }
-
-        public Project()
-        {
-            Compiler = ProjectCompiler.CreateDefault(this);
-        }
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// Gets the project compiler.
         /// </summary>
-        /// <param name="compiler"></param>
-        public Project(IProjectCompiler compiler)
-        {
-            Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
-        }
+        public IProjectCompiler Compiler { get; }
 
         /// <summary>
         /// Attempts to add a file to the project (will return false if it's already in the project).
@@ -76,6 +86,36 @@ namespace AutoStep.Projects
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Create a test run with defaults.
+        /// </summary>
+        /// <returns>The test run.</returns>
+        public TestRun CreateTestRun()
+        {
+            return new TestRun(this, new RunConfiguration());
+        }
+
+        /// <summary>
+        /// Create a test run with the specified configuration.
+        /// </summary>
+        /// <param name="configuration">The run configuration.</param>
+        /// <returns>The test run.</returns>
+        public TestRun CreateTestRun(RunConfiguration configuration)
+        {
+            return new TestRun(this, configuration);
+        }
+
+        /// <summary>
+        /// Create a test run with the specified configuration and feature filter.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="filter">The feature filter.</param>
+        /// <returns>The test run.</returns>
+        public TestRun CreateTestRun(RunConfiguration configuration, IRunFilter filter)
+        {
+            return new TestRun(this, configuration, filter);
         }
     }
 }

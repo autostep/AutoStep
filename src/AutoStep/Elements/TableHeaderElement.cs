@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -15,6 +15,7 @@ namespace AutoStep.Elements
         /// </summary>
         public IReadOnlyList<TableHeaderCellElement> Headers => headers;
 
+        /// <inheritdoc/>
         IReadOnlyList<ITableHeaderCellInfo> ITableHeaderInfo.Headers => headers;
 
         /// <summary>

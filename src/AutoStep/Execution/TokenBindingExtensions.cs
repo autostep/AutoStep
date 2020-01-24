@@ -1,30 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoStep.Compiler;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution
 {
+    /// <summary>
+    /// Extension methods for retrieving text for entities that contain tokens.
+    /// </summary>
     public static class TokenBindingExtensions
     {
+        /// <summary>
+        /// Get the full text for a step argument.
+        /// </summary>
+        /// <param name="binding">The bound argument.</param>
+        /// <param name="scope">The current execution scope.</param>
+        /// <param name="rawText">The raw text of the step.</param>
+        /// <param name="variables">The variables currently in scope.</param>
+        /// <returns>The resolved text.</returns>
         public static string GetFullText(this ArgumentBinding binding, IServiceScope scope, string rawText, VariableSet variables)
         {
-            if (binding is null)
-            {
-                throw new ArgumentNullException(nameof(binding));
-            }
+            binding = binding.ThrowIfNull(nameof(binding));
+            variables = variables.ThrowIfNull(nameof(variables));
+            scope.ThrowIfNull(nameof(scope));
 
             if (string.IsNullOrEmpty(rawText))
             {
-                throw new ArgumentException("Text must be supplied.", nameof(rawText));
-            }
-
-            if (variables is null)
-            {
-                throw new ArgumentNullException(nameof(variables));
+                throw new ArgumentException(ExecutionText.TokenBindingExtensions_TextNotSupplied, nameof(rawText));
             }
 
             // Ok, so we need to go get the raw text from the matched tokens.
@@ -136,10 +139,18 @@ namespace AutoStep.Execution
             return createdString;
         }
 
+        /// <summary>
+        /// Get the full text for a table cell.
+        /// </summary>
+        /// <param name="cell">The bound argument.</param>
+        /// <param name="scope">The current execution scope.</param>
+        /// <param name="variables">The variables currently in scope.</param>
+        /// <returns>The resolved text.</returns>
         public static string GetFullText(this ITableCellInfo cell, IServiceScope scope, VariableSet variables)
         {
             cell = cell.ThrowIfNull(nameof(cell));
             variables = variables.ThrowIfNull(nameof(variables));
+            scope.ThrowIfNull(nameof(scope));
 
             // Ok, so we need to go get the raw text from the matched tokens.
             var tokens = cell.Tokens;

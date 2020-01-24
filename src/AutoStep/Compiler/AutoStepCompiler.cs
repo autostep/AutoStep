@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
 using AutoStep.Compiler.Parser;
-using AutoStep.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
@@ -28,14 +23,12 @@ namespace AutoStep.Compiler
     public partial class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
-        /// <param name="logFactory">A log factory for the compiler to create loggers from.</param>
-        public AutoStepCompiler(ILoggerFactory logFactory)
-            : this(CompilerOptions.Default, logFactory)
+        public AutoStepCompiler()
+            : this(CompilerOptions.Default)
         {
         }
 
@@ -43,11 +36,9 @@ namespace AutoStep.Compiler
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
-        /// <param name="logFactory">A log factory for the compiler to create loggers from.</param>
-        public AutoStepCompiler(CompilerOptions options, ILoggerFactory logFactory)
+        public AutoStepCompiler(CompilerOptions options)
         {
             this.options = options;
-            this.logger = logFactory.CreateLogger<LoggerFactory>();
         }
 
         /// <summary>
@@ -58,10 +49,21 @@ namespace AutoStep.Compiler
         /// <returns>The step definition parsing result (which may contain errors).</returns>
         public StepDefinitionFromBodyResult CompileStepDefinitionElementFromStatementBody(StepType stepType, string statementBody)
         {
-            if (statementBody is null)
-            {
-                throw new ArgumentNullException(nameof(statementBody));
-            }
+            using var nullLogger = new LoggerFactory();
+
+            return CompileStepDefinitionElementFromStatementBody(nullLogger, stepType, statementBody);
+        }
+
+        /// <summary>
+        /// Generates a step definition from a statement body/declaration.
+        /// </summary>
+        /// <param name="logFactory">A logger factory.</param>
+        /// <param name="stepType">The type of step.</param>
+        /// <param name="statementBody">The body of the step.</param>
+        /// <returns>The step definition parsing result (which may contain errors).</returns>
+        public StepDefinitionFromBodyResult CompileStepDefinitionElementFromStatementBody(ILoggerFactory logFactory, StepType stepType, string statementBody)
+        {
+            statementBody = statementBody.ThrowIfNull(nameof(statementBody));
 
             // Trim first, we don't want to worry about the whitespace at the end.
             statementBody = statementBody.Trim();
@@ -70,7 +72,7 @@ namespace AutoStep.Compiler
             var success = true;
 
             // Compile the text, specifying a starting lexical mode of 'statement'.
-            var parseContext = CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), out var tokenStream, out var parserErrors, AutoStepLexer.definition);
+            var parseContext = CompileEntryPoint(statementBody, null, p => p.stepDeclarationBody(), logFactory, out var tokenStream, out var parserErrors, AutoStepLexer.definition);
 
             if (parserErrors.Any(x => x.Level == CompilerMessageLevel.Error))
             {
@@ -106,15 +108,20 @@ namespace AutoStep.Compiler
         /// <inheritdoc/>
         public async ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            using var logFactory = new LoggerFactory();
+
+            return await CompileAsync(source, logFactory, cancelToken);
+        }
+
+        /// <inheritdoc/>
+        public async ValueTask<FileCompilerResult> CompileAsync(IContentSource source, ILoggerFactory logFactory, CancellationToken cancelToken = default)
+        {
+            source = source.ThrowIfNull(nameof(source));
 
             // Read from the content source.
             var sourceContent = await source.GetContentAsync(cancelToken);
 
-            var fileContext = CompileEntryPoint(sourceContent, source.SourceName, p => p.file(), out var tokenStream, out var parserMessages);
+            var fileContext = CompileEntryPoint(sourceContent, source.SourceName, p => p.file(), logFactory, out var tokenStream, out var parserMessages);
 
             // Allow the op to be cancelled before we jump into the tree walker.
             if (cancelToken.IsCancellationRequested)
@@ -145,6 +152,7 @@ namespace AutoStep.Compiler
         /// <param name="content">The text content to parse.</param>
         /// <param name="sourceName">The name of the source (used for any errors).</param>
         /// <param name="entryPoint">A function that invokes the relevant Antlr parser context method.</param>
+        /// <param name="logFactory">A logger factory.</param>
         /// <param name="tokenStream">The loaded token stream.</param>
         /// <param name="parserErrors">Any parser errors.</param>
         /// <param name="customLexerStartMode">An optional custom lexer mode to start parsing at.</param>
@@ -153,6 +161,7 @@ namespace AutoStep.Compiler
             string content,
             string? sourceName,
             Func<AutoStepParser, TContext> entryPoint,
+            ILoggerFactory logFactory,
             out ITokenStream tokenStream,
             out IEnumerable<CompilerMessage> parserErrors,
             int? customLexerStartMode = null)
@@ -161,6 +170,7 @@ namespace AutoStep.Compiler
             // Create the source stream, the lexer itself, and the resulting token stream.
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepLexer(inputStream);
+            var logger = logFactory.CreateLogger<AutoStepCompiler>();
 
             if (customLexerStartMode.HasValue)
             {

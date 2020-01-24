@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -15,6 +15,7 @@ namespace AutoStep.Elements
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
+        /// <inheritdoc/>
         IReadOnlyList<IAnnotationInfo> IFeatureInfo.Annotations => Annotations;
 
         /// <summary>
@@ -22,6 +23,7 @@ namespace AutoStep.Elements
         /// </summary>
         public string? Name { get; set; }
 
+        /// <inheritdoc/>
         string IFeatureInfo.Name => Name ?? throw new LanguageEngineAssertException();
 
         /// <summary>
@@ -34,6 +36,7 @@ namespace AutoStep.Elements
         /// </summary>
         public BackgroundElement? Background { get; set; }
 
+        /// <inheritdoc/>
         IBackgroundInfo? IFeatureInfo.Background => Background;
 
         /// <summary>
@@ -41,11 +44,13 @@ namespace AutoStep.Elements
         /// </summary>
         public List<ScenarioElement> Scenarios { get; } = new List<ScenarioElement>();
 
+        /// <inheritdoc/>
         IReadOnlyList<IScenarioInfo> IFeatureInfo.Scenarios => Scenarios;
 
         /// <summary>
         /// Creates a copy of this feature, with a filtered set of scenarios.
         /// </summary>
+        /// <param name="scenarioPredicate">A predicate that should return true to include a scenario + example combination.</param>
         /// <returns>A clone.</returns>
         public FeatureElement CloneWithFilteredScenarios(Func<ScenarioElement, ExampleElement?, bool> scenarioPredicate)
         {

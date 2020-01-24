@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Execution.Contexts;
+﻿using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Dependency
 {
+    /// <summary>
+    /// Provides extension methods on the service resolver (primarily to provide shortcuts for getting at useful services).
+    /// </summary>
     public static class ServiceResolverExtensions
     {
-        public static ThreadContext ThreadContext(this IServiceScope sc)
+        /// <summary>
+        /// Get the current thread context.
+        /// </summary>
+        /// <param name="scope">The current scope.</param>
+        /// <returns>The thread context.</returns>
+        public static ThreadContext ThreadContext(this IServiceScope scope)
         {
-            if (sc is null)
-            {
-                throw new ArgumentNullException(nameof(sc));
-            }
+            scope = scope.ThrowIfNull(nameof(scope));
 
-            return sc.Resolve<ThreadContext>();
+            return scope.Resolve<ThreadContext>();
         }
     }
 }

@@ -1,38 +1,48 @@
 ﻿using System;
 using System.Globalization;
 using Autofac;
+using Autofac.Core;
 using Autofac.Util;
 using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Dependency
 {
     /// <summary>
-    /// Inherit from the Autofac Disposable so we get the same semantics.
+    /// Implements the <see cref="IServiceScope"/> for Autofac.
     /// </summary>
+    /// <remarks>Inherit from the Autofac Disposable so we get the same semantics.</remarks>
     internal class AutofacServiceScope : Disposable, IServiceScope
     {
         private readonly ILifetimeScope scope;
 
-        public string Tag { get; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutofacServiceScope"/> class.
+        /// </summary>
+        /// <param name="tag">The scope tag.</param>
+        /// <param name="scope">The backing Autofac lifetime scope.</param>
         public AutofacServiceScope(string tag, ILifetimeScope scope)
         {
             this.scope = scope;
             Tag = tag;
         }
 
+        /// <inheritdoc/>
+        public string Tag { get; }
+
+        /// <inheritdoc/>
         public TService Resolve<TService>()
         {
             try
             {
                 return scope.Resolve<TService>();
             }
-            catch(Autofac.Core.DependencyResolutionException autofacEx)
+            catch (DependencyResolutionException autofacEx)
             {
-                throw new DependencyException("Dependency Resolution Error", autofacEx);
+                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError.FormatWith(typeof(TService).Name), autofacEx);
             }
         }
 
+        /// <inheritdoc/>
         public TServiceType Resolve<TServiceType>(Type serviceType)
         {
             var obj = Resolve(serviceType);
@@ -43,16 +53,24 @@ namespace AutoStep.Execution.Dependency
             }
             else
             {
-                // TODO: message.
-                throw new DependencyException(string.Format(CultureInfo.CurrentCulture, "Cannot resolve service of type '{0}'; it is not assignable to '{1}'.", serviceType.Name, typeof(TServiceType).Name));
+                throw new DependencyException(ExecutionText.AutofacServiceScope_NotAssignable.FormatWith(serviceType.Name, typeof(TServiceType).Name));
             }
         }
 
+        /// <inheritdoc/>
         public object Resolve(Type serviceType)
         {
-            return scope.Resolve(serviceType);
+            try
+            {
+                return scope.Resolve(serviceType);
+            }
+            catch (DependencyResolutionException autofacEx)
+            {
+                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError.FormatWith(serviceType.Name), autofacEx);
+            }
         }
 
+        /// <inheritdoc/>
         public IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
             where TContext : TestExecutionContext
         {
@@ -63,6 +81,7 @@ namespace AutoStep.Execution.Dependency
             }));
         }
 
+        /// <inheritdoc/>
         public IServiceScope BeginNewScope<TContext>(TContext contextInstance)
             where TContext : TestExecutionContext
         {
@@ -73,6 +92,7 @@ namespace AutoStep.Execution.Dependency
             }));
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -80,6 +100,5 @@ namespace AutoStep.Execution.Dependency
                 scope.Dispose();
             }
         }
-
     }
 }

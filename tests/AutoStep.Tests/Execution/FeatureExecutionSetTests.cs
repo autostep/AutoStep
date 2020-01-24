@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using AutoStep.Compiler;
 using AutoStep.Elements;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Projects;
 using AutoStep.Tests.Builders;
@@ -101,8 +101,8 @@ namespace AutoStep.Tests.Execution
             featureSet.Features.Should().HaveCount(1);
             featureSet.Features[0].Name.Should().Be("My Feature 1");
 
-            LoggedMessages.ShouldContain(LogLevel.Information, "Excluded", "/path2", "does not match filter");
-            LoggedMessages.ShouldContain(LogLevel.Information, "Included", "Scenario", "My Scenario 1");
+            LoggedMessages.ShouldContain(LogLevel.Debug, "Excluded", "/path2", "does not match filter");
+            LoggedMessages.ShouldContain(LogLevel.Debug, "Included", "Scenario", "My Scenario 1");
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace AutoStep.Tests.Execution
 
             featureSet.Features.Should().HaveCount(0);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "/path1", "does not have a feature");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "/path1", "does not have a feature");
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace AutoStep.Tests.Execution
 
             featureSet.Features.Should().HaveCount(0);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "My Feature 1", "/path1", "no scenarios");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "My Feature 1", "/path1", "no scenarios");
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace AutoStep.Tests.Execution
 
             var featureSet = FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "/path1", "compiled");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "/path1", "compiled");
 
             featureSet.Features.Should().HaveCount(0);
         }
@@ -172,7 +172,7 @@ namespace AutoStep.Tests.Execution
 
             var featureSet = FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "/path1", "compiled");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "/path1", "compiled");
 
             featureSet.Features.Should().HaveCount(0);
         }
@@ -190,7 +190,7 @@ namespace AutoStep.Tests.Execution
 
             var featureSet = FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "/path1", "linked");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "/path1", "linked");
 
             featureSet.Features.Should().HaveCount(0);
         }
@@ -210,7 +210,7 @@ namespace AutoStep.Tests.Execution
 
             var featureSet = FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
 
-            LoggedMessages.LastShouldContain(LogLevel.Information, "Excluded", "/path1", "linked");
+            LoggedMessages.LastShouldContain(LogLevel.Debug, "Excluded", "/path1", "linked");
 
             featureSet.Features.Should().HaveCount(0);
         }
@@ -241,8 +241,8 @@ namespace AutoStep.Tests.Execution
             featureSet.Features.Should().HaveCount(1);
             featureSet.Features[0].Name.Should().Be("My Feature 2");
 
-            LoggedMessages.ShouldContain(LogLevel.Information, "Included", "My Scenario 2");
-            LoggedMessages.ShouldContain(LogLevel.Information, "Excluded", "/path1", "excluded by the filter");
+            LoggedMessages.ShouldContain(LogLevel.Debug, "Included", "My Scenario 2");
+            LoggedMessages.ShouldContain(LogLevel.Debug, "Excluded", "/path1", "excluded by the filter");
         }
 
         private class FilterOutFeature : IRunFilter

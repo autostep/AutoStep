@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AutoStep.Compiler;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
@@ -37,6 +37,7 @@ namespace AutoStep.Elements
         /// </summary>
         public string? RawText { get; set; }
 
+        /// <inheritdoc/>
         string IStepReferenceInfo.Text => RawText ?? throw new LanguageEngineAssertException();
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace AutoStep.Elements
         /// </summary>
         internal ReadOnlySpan<StepToken> TokenSpan => frozenTokens ?? throw new InvalidOperationException(ElementExceptionMessages.TokensNotFrozen);
 
+        /// <inheritdoc/>
         ReadOnlySpan<StepToken> IStepReferenceInfo.TokenSpan => TokenSpan;
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace AutoStep.Elements
         /// </summary>
         public TableElement? Table { get; set; }
 
+        /// <inheritdoc/>
         ITableInfo? IStepReferenceInfo.Table => Table;
 
         /// <summary>

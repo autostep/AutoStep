@@ -28,7 +28,7 @@ namespace AutoStep.Tests.Execution
         {
             var project = new Project();
             
-            Action act = () => new TestRun(null, new RunConfiguration(), TestLogFactory.CreateNull());
+            Action act = () => new TestRun(null, new RunConfiguration());
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Execution
         {
             var project = new Project();
 
-            Action act = () => new TestRun(project, null, TestLogFactory.CreateNull());
+            Action act = () => new TestRun(project, null);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -59,12 +59,12 @@ namespace AutoStep.Tests.Execution
             var project = new Project(mockProjectCompiler.Object);
             project.TryAddFile(file);
 
-            var testRun = new TestRun(project, new RunConfiguration(), LogFactory);
+            var testRun = new TestRun(project, new RunConfiguration());
             var runStrategyInvoked = false;
 
             var mockRunStrategy = new Mock<IRunExecutionStrategy>();
-            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>(), It.IsAny<IEventPipeline>()))                
-                           .Callback((IServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet, IEventPipeline pipeline) =>
+            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>()))                
+                           .Callback((IServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet) =>
                            {
                                runStrategyInvoked = true;
 
@@ -73,12 +73,14 @@ namespace AutoStep.Tests.Execution
                                featureSet.Should().NotBeNull();
                                featureSet.Features.Should().HaveCount(1);
                                featureSet.Features[0].Scenarios[0].Name.Should().Be("My Scenario");
-                               pipeline.Should().NotBeNull();
                            });
 
             testRun.SetRunExecutionStrategy(mockRunStrategy.Object);
 
-            var runResult = await testRun.Execute();
+            var runResult = await testRun.Execute(logCfg =>
+            {
+                
+            });
 
             runResult.Should().NotBeNull();
             runStrategyInvoked.Should().BeTrue();

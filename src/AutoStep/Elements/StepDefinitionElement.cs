@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using AutoStep.Compiler.Matching;
+using AutoStep.Elements.Metadata;
 using AutoStep.Elements.Parts;
-using AutoStep.Elements.ReadOnly;
 
 namespace AutoStep.Elements
 {
@@ -12,14 +10,15 @@ namespace AutoStep.Elements
     /// </summary>
     public class StepDefinitionElement : StepCollectionElement, IAnnotatableElement, IStepDefinitionInfo
     {
-        private List<DefinitionPart> parts = new List<DefinitionPart>();
-        private List<ArgumentPart> arguments = new List<ArgumentPart>();
+        private readonly List<DefinitionPart> parts = new List<DefinitionPart>();
+        private readonly List<ArgumentPart> arguments = new List<ArgumentPart>();
 
         /// <summary>
         /// Gets the annotations applied to the step definition, in applied order.
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
+        /// <inheritdoc/>
         IReadOnlyList<IAnnotationInfo> IStepDefinitionInfo.Annotations => Annotations;
 
         /// <summary>
@@ -32,6 +31,7 @@ namespace AutoStep.Elements
         /// </summary>
         public string? Declaration { get; set; }
 
+        /// <inheritdoc/>
         string IStepDefinitionInfo.Declaration => Declaration ?? throw new LanguageEngineAssertException();
 
         /// <summary>
@@ -70,10 +70,7 @@ namespace AutoStep.Elements
         /// <param name="part">The part to add.</param>
         internal void AddPart(DefinitionPart part)
         {
-            if (part is null)
-            {
-                throw new ArgumentNullException(nameof(part));
-            }
+            part = part.ThrowIfNull(nameof(part));
 
             parts.Add(part);
 

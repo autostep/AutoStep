@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -171,17 +171,17 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
+            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
+            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -190,7 +190,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            public async ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
+            public async ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -213,7 +213,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 callAfter(ctxt);
             }
 
-            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
+            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

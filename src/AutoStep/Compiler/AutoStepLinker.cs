@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoStep.Compiler.Matching;
-using AutoStep.Compiler.Parser;
 using AutoStep.Definitions;
 using AutoStep.Elements;
-using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
-using AutoStep.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
@@ -24,19 +20,16 @@ namespace AutoStep.Compiler
     {
         private readonly IAutoStepCompiler compiler;
         private readonly IMatchingTree linkerTree;
-        private readonly ILogger logger;
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        /// <param name="logFactory">A log factory for creating a logger for the linker.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler, ILoggerFactory logFactory)
+        public AutoStepLinker(IAutoStepCompiler compiler)
         {
             this.compiler = compiler;
             linkerTree = new MatchingTree();
-            logger = logFactory.CreateLogger<AutoStepLinker>();
         }
 
         /// <summary>

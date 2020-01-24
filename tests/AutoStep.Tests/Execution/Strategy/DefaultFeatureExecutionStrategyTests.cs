@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Compiler;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -162,7 +162,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultFeatureExecutionStrategy();
 
-            await strategy.Execute(scope, eventPipeline, feature);
+            await strategy.Execute(scope, threadContext, feature);
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
@@ -205,7 +205,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
 
 
-            public async ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
+            public async ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -228,12 +228,12 @@ namespace AutoStep.Tests.Execution.Strategy
                 callAfter(ctxt);
             }
 
-            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
+            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -242,12 +242,12 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
+            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
+            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

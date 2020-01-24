@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Elements;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n));
+            pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
             beforeCalled.Should().BeTrue();
             afterCalled.Should().BeTrue();
@@ -95,7 +95,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n), async (scope, ctxt) => {
+            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), async (scope, ctxt) => {
                 order.Add(2);
                 await Task.Delay(10);
                 order.Add(3);
@@ -119,7 +119,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, myHandler2, myHandler3 });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n), async (scope, ctxt) => {
+            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), async (scope, ctxt) => {
                 order.Add(4);
                 await Task.Delay(10);
                 order.Add(5);
@@ -141,7 +141,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n), (scope, ctxt) => {
+            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), (scope, ctxt) => {
                 throw new StepFailureException(mockStepReference, new NullReferenceException());
             });
 
@@ -162,7 +162,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, errHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n));
+            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
             foundException.Should().BeOfType<EventHandlingException>();
             foundException.InnerException.Should().BeOfType<NullReferenceException>();
@@ -181,7 +181,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, errHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.Execute(s, c, n));
+            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
             foundException.Should().BeOfType<EventHandlingException>();
             foundException.InnerException.Should().BeOfType<NullReferenceException>();
@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.exception = exception;
             }
 
-            public async ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public async ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -232,22 +232,22 @@ namespace AutoStep.Tests.Execution.Events
                 throw new NotImplementedException();
             }
 
-            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
+            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
+            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
+            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
+            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
@@ -264,7 +264,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.callAfter = callAfter;
             }
 
-            public async ValueTask Execute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public async ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -281,22 +281,22 @@ namespace AutoStep.Tests.Execution.Events
                 throw new NotImplementedException();
             }
 
-            public ValueTask Feature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
+            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Scenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
+            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Step(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
+            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }
 
-            public ValueTask Thread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
+            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
             {
                 throw new NotImplementedException();
             }

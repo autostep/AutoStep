@@ -1,18 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoStep.Definitions;
-using AutoStep.Elements;
-using AutoStep.Elements.ReadOnly;
+﻿using System.Threading.Tasks;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
-using AutoStep.Tracing;
 
 namespace AutoStep.Execution.Strategy
 {
+    /// <summary>
+    /// Implements the default scenario execution strategy.
+    /// </summary>
     internal class DefaultScenarioExecutionStrategy : IScenarioExecutionStrategy
     {
+        /// <summary>
+        /// Execute the strategy.
+        /// </summary>
+        /// <param name="featureScope">The current service scope (which will be a feature scope).</param>
+        /// <param name="featureContext">The current feature context.</param>
+        /// <param name="scenario">The scenario metadata.</param>
+        /// <param name="variableSet">The set of variables currently in-scope.</param>
+        /// <returns>A task that should complete when the scenario has finished executing.</returns>
         public async ValueTask Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
@@ -28,8 +35,10 @@ namespace AutoStep.Execution.Strategy
 
             try
             {
-                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.Scenario(sc, ctxt, next), async (scope, ctxt) =>
+                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.OnScenario(sc, ctxt, next), async (scope, ctxt) =>
                 {
+                    scenarioContext.ScenarioRan = true;
+
                     if (featureContext.Feature.Background is object)
                     {
                         // There is a background to execute.
@@ -52,7 +61,6 @@ namespace AutoStep.Execution.Strategy
                             scenarioContext,
                             scenario,
                             variableSet).ConfigureAwait(false);
-
                 }).ConfigureAwait(false);
             }
             catch (EventHandlingException ex)

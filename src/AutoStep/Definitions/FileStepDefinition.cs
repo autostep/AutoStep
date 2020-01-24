@@ -38,6 +38,13 @@ namespace AutoStep.Definitions
             return Type == def.Type && def.Declaration == def.Declaration;
         }
 
+        /// <summary>
+        /// Executes the step.
+        /// </summary>
+        /// <param name="stepScope">The owning step scope.</param>
+        /// <param name="context">The current step context.</param>
+        /// <param name="variables">The set of all variables.</param>
+        /// <returns>Task completion.</returns>
         public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
@@ -67,7 +74,6 @@ namespace AutoStep.Definitions
 
             var fileStepContext = new FileDefinedStepContext(Definition);
 
-            // TODO: Populate the variables from the binding arguments.
             await collectionStrategy.Execute(
                 stepScope,
                 fileStepContext,

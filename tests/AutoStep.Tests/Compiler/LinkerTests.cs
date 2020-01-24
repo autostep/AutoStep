@@ -45,9 +45,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void SourceLoadPopulatesDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -59,9 +59,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void AddStepDefinitionSourceNullArgument()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             linker.Invoking(l => l.AddStepDefinitionSource(null)).Should().Throw<ArgumentNullException>();
         }
@@ -69,9 +69,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinksStepToDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -107,9 +107,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CanRemoveDefinitionSource()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -151,9 +151,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void CannotRemoveUnregisteredStepDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -165,9 +165,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinkingErrorOnOneStepAllowsContinue()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -218,9 +218,9 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinkingErrorMultipleDefinitions()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var src1 = new TestStepDefinitionSource("src1");
 
@@ -805,9 +805,9 @@ namespace AutoStep.Tests.Compiler
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, LogFactory);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler, LogFactory);
+            var linker = new AutoStepLinker(compiler);
 
             var def = new TestDef(type, defText);
 

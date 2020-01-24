@@ -117,10 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AssemblyStepDefinitionSource_FoundStepMethod" xml:space="preserve">
-    <value>Found step method, declared as '{0} {1}' on '{2}'</value>
-  </data>
   <data name="AssemblyStepDefinitionSource_LookingInTypeForSteps" xml:space="preserve">
     <value>Looking in type '{0}' for steps.</value>
+  </data>
+  <data name="ClassBackedStepDefinitionSource_FoundStepMethod" xml:space="preserve">
+    <value>Found step method, declared as '{0} {1}' on '{2}'</value>
+  </data>
+  <data name="ClassBackedStepDefinitionSource_ProvidedTypeMustBeClass" xml:space="preserve">
+    <value>Provided type must be a class.</value>
+  </data>
+  <data name="ClassStepDefinitionSource_ProvidedTypeCannotBeAbstract" xml:space="preserve">
+    <value>Provided type '{0}' cannot be abstract.</value>
+  </data>
+  <data name="ClassStepDefinitionSource_TypeAlreadyProvided" xml:space="preserve">
+    <value>Provided type '{0}' has already been added.</value>
   </data>
 </root>

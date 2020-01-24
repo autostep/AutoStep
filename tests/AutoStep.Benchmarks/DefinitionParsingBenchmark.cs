@@ -13,7 +13,7 @@ namespace AutoStep.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            compiler = new AutoStepCompiler(new LoggerFactory());
+            compiler = new AutoStepCompiler();
         }
         
         [Benchmark]

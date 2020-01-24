@@ -22,7 +22,7 @@ namespace AutoStep.Benchmarks
         [Benchmark]
         public void CompileFile()
         {
-            var compiler = new AutoStepCompiler(logFactory);
+            var compiler = new AutoStepCompiler();
 
             var compileResult = compiler.CompileAsync(new StringContentSource(fileContent)).Result;
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -13,6 +13,9 @@ namespace AutoStep.Elements
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
+        /// <summary>
+        /// Gets any annotations attached to the example (read-only).
+        /// </summary>
         IReadOnlyList<IAnnotationInfo> IExampleInfo.Annotations => Annotations;
 
         /// <summary>
@@ -20,6 +23,9 @@ namespace AutoStep.Elements
         /// </summary>
         public TableElement? Table { get; set; }
 
-        ITableInfo IExampleInfo.Table => Table;
+        /// <summary>
+        /// Gets the read-only table information.
+        /// </summary>
+        ITableInfo IExampleInfo.Table => Table ?? throw new LanguageEngineAssertException();
     }
 }

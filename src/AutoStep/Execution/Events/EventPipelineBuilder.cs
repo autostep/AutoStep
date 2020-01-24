@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoStep.Tracing;
 
 namespace AutoStep.Execution.Events
 {
-
+    /// <summary>
+    /// Event Pipeline Creator.
+    /// </summary>
     internal class EventPipelineBuilder : IEventPipelineBuilder
     {
         private List<IEventHandler> handlers = new List<IEventHandler>();
 
+        /// <inheritdoc/>
         public IEventPipelineBuilder Add(IEventHandler handler)
         {
-            if (handler is null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            handlers.Add(handler);
+            handlers.Add(handler.ThrowIfNull(nameof(handler)));
 
             return this;
         }
 
+        /// <summary>
+        /// Builds the pipeline.
+        /// </summary>
+        /// <returns>A new event pipeline.</returns>
         public EventPipeline Build()
         {
             // Clone the event handler set so subsequent builder changes don't affect

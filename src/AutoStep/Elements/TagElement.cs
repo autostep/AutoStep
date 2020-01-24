@@ -1,4 +1,4 @@
-﻿using AutoStep.Elements.ReadOnly;
+﻿using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -7,6 +7,10 @@ namespace AutoStep.Elements
     /// </summary>
     public class TagElement : AnnotationElement, ITagInfo
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TagElement"/> class.
+        /// </summary>
+        /// <param name="tag">The tag value.</param>
         public TagElement(string tag)
         {
             Tag = tag;

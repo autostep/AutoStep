@@ -36,15 +36,10 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="project">The project to work against.</param>
         /// <returns>A project compiler.</returns>
-        public static ProjectCompiler CreateDefault(Project project, ILoggerFactory logFactory)
-        {
-            var compiler = new AutoStepCompiler(CompilerOptions.Default, logFactory);
-            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler, logFactory));
-        }
-
         public static ProjectCompiler CreateDefault(Project project)
         {
-            return CreateDefault(project, new LoggerFactory());
+            var compiler = new AutoStepCompiler(CompilerOptions.Default);
+            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler));
         }
 
         /// <summary>
@@ -52,8 +47,21 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         public async Task<ProjectCompilerResult> Compile(CancellationToken cancelToken = default)
+        {
+            using var logFactory = new LoggerFactory();
+
+            return await Compile(logFactory, cancelToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Compile the project. Goes through all the project files and compiles those that need compilation.
+        /// </summary>
+        /// <param name="loggerFactory">A logger factory.</param>
+        /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
+        /// <returns>The overall project compilation result.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
+        public async Task<ProjectCompilerResult> Compile(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
             var allMessages = new List<CompilerMessage>();
 
@@ -76,7 +84,7 @@ namespace AutoStep.Projects
                     // Add as a new step definition source to the linker if the file defines any step definitions.
                     if (file.LastCompileTime < file.ContentSource.GetLastContentModifyTime())
                     {
-                        var fileResult = await DoProjectFileCompile(file, cancelToken).ConfigureAwait(false);
+                        var fileResult = await DoProjectFileCompile(file, loggerFactory, cancelToken).ConfigureAwait(false);
 
                         allMessages.AddRange(fileResult.Messages);
                     }
@@ -99,9 +107,9 @@ namespace AutoStep.Projects
             return new ProjectCompilerResult(true, allMessages, project);
         }
 
-        private async Task<FileCompilerResult> DoProjectFileCompile(ProjectFile file, CancellationToken cancelToken)
+        private async Task<FileCompilerResult> DoProjectFileCompile(ProjectFile file, ILoggerFactory loggerFactory, CancellationToken cancelToken)
         {
-            var compileResult = await compiler.CompileAsync(file.ContentSource, cancelToken).ConfigureAwait(false);
+            var compileResult = await compiler.CompileAsync(file.ContentSource, loggerFactory, cancelToken).ConfigureAwait(false);
 
             file.UpdateLastCompileResult(compileResult);
 
@@ -114,26 +122,28 @@ namespace AutoStep.Projects
             return compileResult;
         }
 
+        /// <summary>
+        /// Add a static step definition source (i.e. one that cannot change after it is registered).
+        /// </summary>
+        /// <param name="source">The step definition source.</param>
         public void AddStaticStepDefinitionSource(IStepDefinitionSource source)
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            linker.AddStepDefinitionSource(source);
+            linker.AddStepDefinitionSource(source.ThrowIfNull(nameof(source)));
         }
 
+        /// <summary>
+        /// Add an updateable step definition source (i.e. one that can change dynamically).
+        /// </summary>
+        /// <param name="source">The step definition source.</param>
         public void AddUpdatableStepDefinitionSource(IUpdatableStepDefinitionSource source)
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            linker.AddOrUpdateStepDefinitionSource(source);
+            linker.AddOrUpdateStepDefinitionSource(source.ThrowIfNull(nameof(source)));
         }
 
+        /// <summary>
+        /// Retrieve the set of all step definition sources.
+        /// </summary>
+        /// <returns>The set of registered step definition sources.</returns>
         public IEnumerable<IStepDefinitionSource> EnumerateStepDefinitionSources()
         {
             return linker.AllStepDefinitionSources;

@@ -20,7 +20,7 @@ namespace AutoStep.Definitions
         /// <param name="owner">The owning type.</param>
         /// <param name="method">The method info representing the method to bind against.</param>
         /// <param name="declaringAttribute">The attribute that declared the step definition.</param>
-        public ClassStepDefinition(AssemblyStepDefinitionSource source, Type owner, MethodInfo method, StepDefinitionAttribute declaringAttribute)
+        public ClassStepDefinition(IStepDefinitionSource source, Type owner, MethodInfo method, StepDefinitionAttribute declaringAttribute)
             : base(source, method, declaringAttribute?.Type ?? throw new ArgumentNullException(nameof(declaringAttribute)), declaringAttribute.Declaration)
         {
             this.owner = owner;
@@ -33,10 +33,7 @@ namespace AutoStep.Definitions
         /// <returns>An instance of the class.</returns>
         protected override object GetMethodTarget(IServiceScope scope)
         {
-            if (scope is null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            scope = scope.ThrowIfNull(nameof(scope));
 
             // Resolve an instance of the service. It will let it access any services.
             return scope.Resolve<object>(owner);

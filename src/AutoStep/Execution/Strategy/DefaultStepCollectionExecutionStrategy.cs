@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using AutoStep.Elements;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
@@ -10,8 +9,19 @@ using AutoStep.Execution.Events;
 
 namespace AutoStep.Execution.Strategy
 {
+    /// <summary>
+    /// Implements the default step collection execution strategy.
+    /// </summary>
     internal class DefaultStepCollectionExecutionStrategy : IStepCollectionExecutionStrategy
     {
+        /// <summary>
+        /// Execute the strategy.
+        /// </summary>
+        /// <param name="owningScope">The owning scope.</param>
+        /// <param name="owningContext">The owning context.</param>
+        /// <param name="stepCollection">The step collection metadata.</param>
+        /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <returns>A task that should complete when the step collection has finished executing.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
         public async ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
         {
@@ -38,6 +48,10 @@ namespace AutoStep.Execution.Strategy
                     // Halt before the step begins.
                     var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, stepContext, TestThreadState.StartingStep).ConfigureAwait(false);
 
+                    var stepRan = false;
+                    var timer = new Stopwatch();
+                    timer.Start();
+
                     try
                     {
                         // Halt instruction for step collections can include:
@@ -47,15 +61,13 @@ namespace AutoStep.Execution.Strategy
                         await events.InvokeEvent(
                             stepScope,
                             stepContext,
-                            (handler, sc, ctxt, next) => handler.Step(sc, ctxt, next),
+                            (handler, sc, ctxt, next) => handler.OnStep(sc, ctxt, next),
                             async (scope, ctxt) =>
                             {
-                                var timer = new Stopwatch();
-
-                                timer.Start();
-
                                 try
                                 {
+                                    stepRan = true;
+
                                     // Execute the step.
                                     await stepExecutionStrategy.ExecuteStep(
                                             scope,
@@ -75,17 +87,18 @@ namespace AutoStep.Execution.Strategy
                                     // Wrap the context.
                                     stepContext.FailException = new StepFailureException(stepContext.Step, ex);
                                 }
-                                finally
-                                {
-                                    timer.Stop();
-                                    stepContext.Elapsed = timer.Elapsed;
-                                }
                             }).ConfigureAwait(false);
                     }
                     catch (EventHandlingException ex)
                     {
                         // Error in an event handler; fail the step.
                         stepContext.FailException = ex;
+                    }
+                    finally
+                    {
+                        timer.Stop();
+                        stepContext.Elapsed = timer.Elapsed;
+                        stepContext.StepExecuted = stepRan;
                     }
 
                     if (stepContext.FailException is object)

@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Execution.Dependency
         {
             var serviceBuilder = new AutofacServiceBuilder();
 
-            serviceBuilder.RegisterConsumer<TestService>();
+            serviceBuilder.RegisterPerResolveService<TestService>();
 
             var built = serviceBuilder.BuildRootScope();
 
@@ -43,7 +43,7 @@ namespace AutoStep.Tests.Execution.Dependency
         {
             var serviceBuilder = new AutofacServiceBuilder();
 
-            serviceBuilder.RegisterConsumer(typeof(TestService));
+            serviceBuilder.RegisterPerResolveService(typeof(TestService));
 
             var built = serviceBuilder.BuildRootScope();
 

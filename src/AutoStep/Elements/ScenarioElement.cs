@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -13,6 +13,7 @@ namespace AutoStep.Elements
         /// </summary>
         public List<AnnotationElement> Annotations { get; } = new List<AnnotationElement>();
 
+        /// <inheritdoc/>
         IReadOnlyList<IAnnotationInfo> IScenarioInfo.Annotations => Annotations;
 
         /// <summary>
@@ -20,6 +21,7 @@ namespace AutoStep.Elements
         /// </summary>
         public string? Name { get; set; }
 
+        /// <inheritdoc/>
         string IScenarioInfo.Name => Name ?? throw new LanguageEngineAssertException();
 
         /// <summary>

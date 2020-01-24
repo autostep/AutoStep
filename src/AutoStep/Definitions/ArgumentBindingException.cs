@@ -8,7 +8,6 @@ namespace AutoStep.Definitions
     /// </summary>
     public class ArgumentBindingException : Exception
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentBindingException"/> class.
         /// </summary>
@@ -22,8 +21,14 @@ namespace AutoStep.Definitions
             ExpectedType = expectedType;
         }
 
+        /// <summary>
+        /// Gets the text value that failed binding.
+        /// </summary>
         public string TextValue { get; }
 
+        /// <summary>
+        /// Gets the type we tried to bind to.
+        /// </summary>
         public Type ExpectedType { get; }
 
         private static string FormatMessage(string textValue, Type expectedType)

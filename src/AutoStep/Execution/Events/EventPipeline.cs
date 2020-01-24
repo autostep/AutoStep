@@ -5,15 +5,27 @@ using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Events
 {
+    /// <summary>
+    /// Provides the functionality to manage a pipeline of event handlers.
+    /// </summary>
     internal class EventPipeline : IEventPipeline
     {
         private IReadOnlyList<IEventHandler> handlers;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventPipeline"/> class.
+        /// </summary>
+        /// <param name="handlers">The set of handlers.</param>
         public EventPipeline(IReadOnlyList<IEventHandler> handlers)
         {
             this.handlers = handlers;
         }
 
+        /// <summary>
+        /// Allows each handler to configure its own services.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="configuration">The run configuration.</param>
         public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
         {
             foreach (var handler in handlers)
@@ -22,25 +34,26 @@ namespace AutoStep.Execution.Events
             }
         }
 
+        /// <inheritdoc/>
         public ValueTask InvokeEvent<TContext>(
             IServiceScope scope,
             TContext context,
             Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback,
-            Func<IServiceScope, TContext, ValueTask>? next = null)
+            Func<IServiceScope, TContext, ValueTask>? final = null)
         {
-            if (next is null)
+            if (final is null)
             {
                 // This means that there is nothing at the end of the pipeline, create a dummy terminator.
-                next = (s, c) => default;
+                final = (s, c) => default;
             }
 
             // Need to execute in reverse so we build up the 'next' properly.
             for (var idx = handlers.Count - 1; idx >= 0; idx--)
             {
-                next = ChainHandler(next, handlers[idx], callback);
+                final = ChainHandler(final, handlers[idx], callback);
             }
 
-            return next(scope, context);
+            return final(scope, context);
         }
 
         private Func<IServiceScope, TContext, ValueTask> ChainHandler<TContext>(

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using AutoStep.Elements;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Projects;
-using AutoStep.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution
 {
+    /// <summary>
+    /// Represents the set of all features that will be executed as part of a test run.
+    /// </summary>
     public class FeatureExecutionSet
     {
         private readonly Project project;
@@ -30,22 +31,23 @@ namespace AutoStep.Execution
             this.logger = logFactory.CreateLogger<FeatureExecutionSet>();
         }
 
+        /// <summary>
+        /// Gets the list of all features to execute (and their filtered set of scenarios).
+        /// </summary>
+        public IReadOnlyList<IFeatureInfo> Features => features;
+
+        /// <summary>
+        /// Create a new feature execution set.
+        /// </summary>
+        /// <param name="project">The project to take files from.</param>
+        /// <param name="filter">A filter to apply that determines the final state.</param>
+        /// <param name="logFactory">A logger factory.</param>
+        /// <returns>The execution.</returns>
         public static FeatureExecutionSet Create(Project project, IRunFilter filter, ILoggerFactory logFactory)
         {
-            if (project is null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (filter is null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-
-            if (logFactory is null)
-            {
-                throw new ArgumentNullException(nameof(logFactory));
-            }
+            project = project.ThrowIfNull(nameof(project));
+            filter = filter.ThrowIfNull(nameof(filter));
+            logFactory = logFactory.ThrowIfNull(nameof(logFactory));
 
             var order = new FeatureExecutionSet(project, filter, logFactory);
 
@@ -53,8 +55,6 @@ namespace AutoStep.Execution
 
             return order;
         }
-
-        public IReadOnlyList<IFeatureInfo> Features => features;
 
         private void Populate()
         {
@@ -66,7 +66,7 @@ namespace AutoStep.Execution
                 }
                 else
                 {
-                    logger.LogInformation("Excluded File '{0}', does not match filter.", file.Path);
+                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFile, file.Path);
                 }
             }
         }
@@ -79,12 +79,12 @@ namespace AutoStep.Execution
             if (lastCompile is null || !lastCompile.Success)
             {
                 // Trace skip event.
-                logger.LogInformation("Excluded File '{0}' from the test run because it has not been successfully compiled.", file.Path);
+                logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFileNotCompiled, file.Path);
             }
             else if (lastLinkResult is null || !lastLinkResult.Success)
             {
                 // Trace skip event.
-                logger.LogInformation("Excluded File '{0}' from the test run because it has not been successfully linked.", file.Path);
+                logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFileNotLinked, file.Path);
             }
             else
             {
@@ -101,11 +101,11 @@ namespace AutoStep.Execution
                             {
                                 if (example is null)
                                 {
-                                    logger.LogInformation("Included Scenario '{0}' for Feature '{1}'", scen.Name, built.Feature.Name);
+                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_IncludedScenario, scen.Name, built.Feature.Name);
                                 }
                                 else
                                 {
-                                    logger.LogInformation("Included Example Set for Scenario '{0}', for Feature '{1}'", scen.Name, built.Feature.Name);
+                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_IncludedExample, scen.Name, built.Feature.Name);
                                 }
 
                                 return true;
@@ -114,11 +114,11 @@ namespace AutoStep.Execution
                             {
                                 if (example is null)
                                 {
-                                    logger.LogInformation("Excluded Scenario '{0}' in Feature '{1}' because it is not matched by the filter.", scen.Name, built.Feature.Name);
+                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedScenario, scen.Name, built.Feature.Name);
                                 }
                                 else
                                 {
-                                    logger.LogInformation("Excluded Example Set for Scenario '{0}', in Feature '{1}', because it is not matched by the filter.", scen.Name, built.Feature.Name);
+                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedExample, scen.Name, built.Feature.Name);
                                 }
 
                                 return false;
@@ -132,18 +132,18 @@ namespace AutoStep.Execution
                         }
                         else
                         {
-                            logger.LogInformation("Excluded Feature '{0}' in the file '{1}' because no scenarios were matched by the filter.", clonedFeature.Name, file.Path);
+                            logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFeatureNoScenarios, clonedFeature.Name, file.Path);
                         }
                     }
                     else
                     {
-                        logger.LogInformation("Excluded File '{0}' from the test run because the feature is excluded by the filter.", file.Path);
+                        logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFileFeatureFilter, file.Path);
                     }
                 }
                 else
                 {
                     // Trace skip event.
-                    logger.LogInformation("Excluded File '{0}' from the test run because it does not have a feature.", file.Path);
+                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedFileNoFeature, file.Path);
                 }
             }
         }

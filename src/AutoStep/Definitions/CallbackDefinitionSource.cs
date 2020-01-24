@@ -12,7 +12,7 @@ namespace AutoStep.Definitions
     /// </summary>
     public class CallbackDefinitionSource : IStepDefinitionSource
     {
-        private List<DelegateBackedStepDefinition> stepDefs = new List<DelegateBackedStepDefinition>();
+        private readonly List<DelegateBackedStepDefinition> stepDefs = new List<DelegateBackedStepDefinition>();
 
         /// <summary>
         /// Gets the unique identifier for the source.
@@ -40,9 +40,13 @@ namespace AutoStep.Definitions
             return stepDefs;
         }
 
+        /// <summary>
+        /// Add a delegate-backed step definition.
+        /// </summary>
+        /// <param name="stepDef">The definition.</param>
         public void Add(DelegateBackedStepDefinition stepDef)
         {
-            stepDefs.Add(stepDef);
+            stepDefs.Add(stepDef.ThrowIfNull(nameof(stepDef)));
         }
     }
 }

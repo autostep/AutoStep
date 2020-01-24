@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -13,8 +13,13 @@ namespace AutoStep.Elements
         /// </summary>
         public List<StepReferenceElement> Steps { get; private set; } = new List<StepReferenceElement>();
 
+        /// <inheritdoc/>
         IReadOnlyList<IStepReferenceInfo> IStepCollectionInfo.Steps => Steps;
 
+        /// <summary>
+        /// Instructs this element to directly reference the step collection from another element.
+        /// </summary>
+        /// <param name="other">The step collection whose steps should be used.</param>
         public void UseStepsFrom(StepCollectionElement other)
         {
             if (other is null)

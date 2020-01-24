@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AutoStep.Execution.Control
+﻿namespace AutoStep.Execution.Control
 {
+    /// <summary>
+    /// Enum for the state of execution for a test thread.
+    /// </summary>
     public enum TestThreadState
     {
+        /// <summary>
+        /// Thread starting.
+        /// </summary>
         Starting,
+
+        /// <summary>
+        /// Feature starting.
+        /// </summary>
         StartingFeature,
-        StartingStep,
+
+        /// <summary>
+        /// Scenario starting.
+        /// </summary>
         StartingScenario,
-        StartingScenarioStep,
-        StartingStepCollection
+
+        /// <summary>
+        /// Step starting.
+        /// </summary>
+        StartingStep,
     }
 }

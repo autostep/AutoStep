@@ -116,9 +116,6 @@ namespace AutoStep.Definitions
 
             var boundArgs = context.Step.Binding.Arguments;
 
-            // Get the argument bind registry.
-            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
-
             var methodArgs = Method.GetParameters().AsSpan();
 
             if (methodArgs.Length == 0)
@@ -127,6 +124,8 @@ namespace AutoStep.Definitions
                 return Array.Empty<object>();
             }
 
+            // Get the argument bind registry.
+            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
             var bindResult = new object[methodArgs.Length];
             var sourceArgPosition = 0;
 

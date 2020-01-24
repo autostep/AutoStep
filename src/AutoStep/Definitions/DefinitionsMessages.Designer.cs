@@ -22,14 +22,14 @@ namespace AutoStep.Definitions {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DefinitionsLogMessages {
+    internal class DefinitionsMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DefinitionsLogMessages() {
+        internal DefinitionsMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace AutoStep.Definitions {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Definitions.DefinitionsLogMessages", typeof(DefinitionsLogMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Definitions.DefinitionsMessages", typeof(DefinitionsMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,20 +61,47 @@ namespace AutoStep.Definitions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Found step method, declared as &apos;{0} {1}&apos; on &apos;{2}&apos;.
-        /// </summary>
-        internal static string AssemblyStepDefinitionSource_FoundStepMethod {
-            get {
-                return ResourceManager.GetString("AssemblyStepDefinitionSource_FoundStepMethod", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Looking in type &apos;{0}&apos; for steps..
         /// </summary>
         internal static string AssemblyStepDefinitionSource_LookingInTypeForSteps {
             get {
                 return ResourceManager.GetString("AssemblyStepDefinitionSource_LookingInTypeForSteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found step method, declared as &apos;{0} {1}&apos; on &apos;{2}&apos;.
+        /// </summary>
+        internal static string ClassBackedStepDefinitionSource_FoundStepMethod {
+            get {
+                return ResourceManager.GetString("ClassBackedStepDefinitionSource_FoundStepMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provided type must be a class..
+        /// </summary>
+        internal static string ClassBackedStepDefinitionSource_ProvidedTypeMustBeClass {
+            get {
+                return ResourceManager.GetString("ClassBackedStepDefinitionSource_ProvidedTypeMustBeClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provided type &apos;{0}&apos; cannot be abstract..
+        /// </summary>
+        internal static string ClassStepDefinitionSource_ProvidedTypeCannotBeAbstract {
+            get {
+                return ResourceManager.GetString("ClassStepDefinitionSource_ProvidedTypeCannotBeAbstract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provided type &apos;{0}&apos; has already been added..
+        /// </summary>
+        internal static string ClassStepDefinitionSource_TypeAlreadyProvided {
+            get {
+                return ResourceManager.GetString("ClassStepDefinitionSource_TypeAlreadyProvided", resourceCulture);
             }
         }
     }

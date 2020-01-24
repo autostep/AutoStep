@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
@@ -19,6 +20,37 @@ namespace AutoStep.Tests.Definition
 {
     public class DelegateBackedStepDefinitionTests
     {
+        [Fact]
+        public void DelegateDefinitionSameForSameCallback()
+        {
+            var source = new Mock<IStepDefinitionSource>();
+            var mockScope = new Mock<IServiceScope>();
+
+            Action<IServiceScope> callback = sc => { };
+
+            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+
+            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+
+            delDefinition1.IsSameDefinition(delDefinition2).Should().BeTrue();
+        }
+
+        [Fact]
+        public void DelegateDefinitionDifferentForDifferentCallback()
+        {
+            var source = new Mock<IStepDefinitionSource>();
+            var mockScope = new Mock<IServiceScope>();
+
+            Action<IServiceScope> callback = sc => { };
+            Action<IServiceScope> callback2 = sc => { };
+
+            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+
+            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback2.Target, callback2.Method, StepType.Given, "I test");
+
+            delDefinition1.IsSameDefinition(delDefinition2).Should().BeFalse();
+        }
+
         [Fact]
         public async Task CanInvokeDelegateDefinition()
         {

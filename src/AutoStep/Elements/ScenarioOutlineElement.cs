@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Elements.ReadOnly;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
@@ -16,6 +16,7 @@ namespace AutoStep.Elements
         /// </summary>
         public IReadOnlyList<ExampleElement> Examples => examples;
 
+        /// <inheritdoc/>
         IReadOnlyList<IExampleInfo> IScenarioOutlineInfo.Examples => examples;
 
         /// <summary>
