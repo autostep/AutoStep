@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
     /// <summary>
     /// Represents a table built from autostep source.
     /// </summary>
-    public class TableElement : BuiltElement
+    public class TableElement : BuiltElement, ITableInfo
     {
         private List<TableRowElement> rows = new List<TableRowElement>();
 
@@ -13,6 +14,9 @@ namespace AutoStep.Elements
         /// Gets the header row.
         /// </summary>
         public TableHeaderElement Header { get; } = new TableHeaderElement();
+
+        /// <inheritdoc/>
+        ITableHeaderInfo ITableInfo.Header => Header;
 
         /// <summary>
         /// Gets the number of columns expected in the table (based on the number of headers).
@@ -23,6 +27,9 @@ namespace AutoStep.Elements
         /// Gets the non-header rows in the table.
         /// </summary>
         public IReadOnlyList<TableRowElement> Rows => rows;
+
+        /// <inheritdoc/>
+        IReadOnlyList<ITableRowInfo> ITableInfo.Rows => rows;
 
         /// <summary>
         /// Adds a row to the table.

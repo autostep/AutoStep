@@ -52,7 +52,7 @@ namespace AutoStep.Tests.Builders
                 }
                 else if(item.rawValue is string)
                 {
-                    cell.Word(item.rawValue, item.startColumn);
+                    cell.Text(item.rawValue);
                 }
                 
                 row.AddCell(cell.Built);

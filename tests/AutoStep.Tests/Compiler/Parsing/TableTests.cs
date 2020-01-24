@@ -38,12 +38,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 42, 49)
                                 )
                                 .Row(8, 29,
-                                    ("r1.c1", 31, 35, null),
-                                    ("r1.c2", 42, 46, null)
+                                    ("r1.c1", 31, 35, c => c.Text("r").Float("1.").Text("c").Int("1")),
+                                    ("r1.c2", 42, 46, c => c.Text("r").Float("1.").Text("c").Int("2"))
                                 )
                                 .Row(9, 29,
-                                    ("r2.c1", 31, 35, null),
-                                    ("r2.c2", 42, 46, null)
+                                    ("r2.c1", 31, 35, c => c.Text("r").Float("2.").Text("c").Int("1")),
+                                    ("r2.c2", 42, 46, c => c.Text("r").Float("2.").Text("c").Int("2"))
                                 )
                             )
                         )
@@ -78,12 +78,12 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading2", 39, 46)
                                 )
                                 .Row(8, 29,
-                                    ("r1.c1", 30, 34, null),
-                                    ("r1.c2", 36, 40, null)
+                                    ("r1.c1", 30, 34, c => c.Text("r").Float("1.").Text("c").Int("1")),
+                                    ("r1.c2", 36, 40, c => c.Text("r").Float("1.").Text("c").Int("2"))
                                 )
                                 .Row(9, 29,
-                                    ("r2.c1", 30, 34, null),
-                                    ("r2.c2", 36, 40, null)
+                                    ("r2.c1", 30, 34, c => c.Text("r").Float("2.").Text("c").Int("1")),
+                                    ("r2.c2", 36, 40, c => c.Text("r").Float("2.").Text("c").Int("2"))
                                 )
                             )
                         )
@@ -122,8 +122,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     (null, 41, 50, null)
                                 )
                                 .Row(9, 29,
-                                    ("r2.c1", 31, 35, null),
-                                    ("r2.c2", 42, 46, null)
+                                    ("r2.c1", 31, 35, c => c.Text("r").Float("2.").Text("c").Int("1")),
+                                    ("r2.c2", 42, 46, c => c.Text("r").Float("2.").Text("c").Int("2"))
                                 )
                             )
                         )
@@ -166,16 +166,16 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading1", 31, 38)
                                 )
                                 .Row(8, 29,
-                                    ("123", 31, 33, c => c.Int("123", 31))
+                                    ("123", 31, 33, c => c.Int("123"))
                                 )
                                 .Row(9, 29,
-                                    ("123.50", 31, 36, c => c.Float("123.50", 31))
+                                    ("123.50", 31, 36, c => c.Float("123.50"))
                                 )
                                 .Row(10, 29,
-                                    ("£123.50", 31, 37, c => c.Word("£", 31).Float("123.50", 32))
+                                    ("£123.50", 31, 37, c => c.Text("£").Float("123.50"))
                                 )
                                 .Row(11, 29,
-                                    (":interpolated", 31, 43, c => c.InterpolateStart(":", 31).Word("interpolated", 32))
+                                    (":interpolated", 31, 43, c => c.InterpolateStart().Text("interpolated"))
                                 )
                                 .Row(12, 29,
                                     ("text", 31, 34, null)
@@ -240,8 +240,8 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     (null, 41, 50)
                                 )
                                 .Row(8, 29,
-                                    ("r1.c1", 31, 35, null),
-                                    ("r1.c2", 42, 46, null)
+                                    ("r1.c1", 31, 35, c => c.Text("r").Float("1.").Text("c").Int("1")),
+                                    ("r1.c2", 42, 46, c => c.Text("r").Float("1.").Text("c").Int("2"))
                                 )
                             )
                         )
@@ -386,10 +386,10 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading1", 31, 38)
                                 )
                                 .Row(9, 29,
-                                    ("123", 31, 33, c => c.Int("123", 31))
+                                    ("123", 31, 33, c => c.Int("123"))
                                 )
                                 .Row(11, 29,
-                                    ("123.50", 31, 36, c => c.Float("123.50", 31))
+                                    ("123.50", 31, 36, c => c.Float("123.50"))
                                 )
                             )
                         )
@@ -433,7 +433,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                                     ("heading1", 31, 38)
                                 )
                                 .Row(8, 29,
-                                    ("this: 1", 31, 37, c => c.Word("this", 31).Colon(35).Int("1", 37))
+                                    ("this: 1", 31, 37, c => c.Text("this").Colon().Int("1"))
                                 )
                             )
                         )

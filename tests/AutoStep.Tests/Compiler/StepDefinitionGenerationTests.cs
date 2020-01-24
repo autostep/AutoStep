@@ -19,9 +19,9 @@ namespace AutoStep.Tests.Compiler
         {
             const string TestStep = "I have done something";
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
             matched.Output.Should().NotBeNull();
 
@@ -39,9 +39,9 @@ namespace AutoStep.Tests.Compiler
         {
             const string TestStep = "I have {argument1}";
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
             matched.Output.Should().NotBeNull();
 
@@ -58,9 +58,9 @@ namespace AutoStep.Tests.Compiler
         {
             const string TestStep = "I have done something with {}";
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
@@ -76,9 +76,9 @@ namespace AutoStep.Tests.Compiler
         {
             const string TestStep = "I have done something with 'value <insert>'";
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
@@ -95,9 +95,9 @@ namespace AutoStep.Tests.Compiler
         {
             const string TestStep = "I have done something with ':interpolate'";
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
-            var matched = compiler.CompileStepDefinitionElementFromStatementBody(StepType.Given, TestStep);
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);

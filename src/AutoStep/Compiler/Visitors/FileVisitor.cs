@@ -106,7 +106,7 @@ namespace AutoStep.Compiler
 
             var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
 
-            currentAnnotatable.Annotations.Add(LineInfo(new TagElement { Tag = tagBody }, tag));
+            currentAnnotatable.Annotations.Add(LineInfo(new TagElement(tagBody), tag));
 
             return Result;
         }
@@ -549,10 +549,10 @@ namespace AutoStep.Compiler
             {
                 if (type == StepType.And)
                 {
-                    if (currentStepDefinition is object)
+                    if (currentStepDefinition is object && currentStepSet is null)
                     {
                         // We are in the step declaration, which does not permit 'And'.
-                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword);
+                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword, type);
                     }
                     else if (currentStepSetLastConcrete is null)
                     {
@@ -567,7 +567,7 @@ namespace AutoStep.Compiler
                 {
                     bindingType = type;
 
-                    if (currentStepDefinition is null)
+                    if (currentStepSet is object)
                     {
                         currentStepSetLastConcrete = step;
                     }

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
     /// <summary>
     /// A built scenario outline.
     /// </summary>
-    public class ScenarioOutlineElement : ScenarioElement
+    public class ScenarioOutlineElement : ScenarioElement, IScenarioOutlineInfo
     {
         private readonly List<ExampleElement> examples = new List<ExampleElement>();
         private HashSet<string> allExampleVariables = new HashSet<string>();
@@ -14,6 +15,9 @@ namespace AutoStep.Elements
         /// Gets the contained example blocks.
         /// </summary>
         public IReadOnlyList<ExampleElement> Examples => examples;
+
+        /// <inheritdoc/>
+        IReadOnlyList<IExampleInfo> IScenarioOutlineInfo.Examples => examples;
 
         /// <summary>
         /// Adds an example to the scenario outline.

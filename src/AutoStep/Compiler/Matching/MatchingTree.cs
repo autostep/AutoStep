@@ -11,12 +11,12 @@ namespace AutoStep.Compiler.Matching
     /// </summary>
     internal class MatchingTree : IMatchingTree
     {
-        private LinkedList<StepDefinition> allGivenDefinitions;
-        private MatchingTreeNode rootGivenNode;
-        private LinkedList<StepDefinition> allWhenDefinitions;
-        private MatchingTreeNode rootWhenNode;
-        private LinkedList<StepDefinition> allThenDefinitions;
-        private MatchingTreeNode rootThenNode;
+        private readonly LinkedList<StepDefinition> allGivenDefinitions;
+        private readonly MatchingTreeNode rootGivenNode;
+        private readonly LinkedList<StepDefinition> allWhenDefinitions;
+        private readonly MatchingTreeNode rootWhenNode;
+        private readonly LinkedList<StepDefinition> allThenDefinitions;
+        private readonly MatchingTreeNode rootThenNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingTree"/> class.
@@ -40,15 +40,12 @@ namespace AutoStep.Compiler.Matching
         /// <param name="definition">The step definition.</param>
         public void AddOrUpdateDefinition(StepDefinition definition)
         {
-            if (definition is null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            definition = definition.ThrowIfNull(nameof(definition));
 
             if (definition.Definition is null)
             {
                 // Can't add it without metadata.
-                return;
+                throw new ArgumentException(MatchingTreeMessages.NoDefinitionMetadata, nameof(definition));
             }
 
             var allParts = definition.Definition.Parts;
@@ -56,7 +53,7 @@ namespace AutoStep.Compiler.Matching
             if (allParts.Count == 0)
             {
                 // Can't add a definition with no matching parts.
-                return;
+                throw new ArgumentException(MatchingTreeMessages.NoMatchingParts, nameof(definition));
             }
 
             var root = GetRootNodeForDefinition(definition);
@@ -71,10 +68,7 @@ namespace AutoStep.Compiler.Matching
         /// <param name="definition">The definition being removed.</param>
         public void RemoveDefinition(StepDefinition definition)
         {
-            if (definition is null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            definition = definition.ThrowIfNull(nameof(definition));
 
             if (definition.Definition is null)
             {

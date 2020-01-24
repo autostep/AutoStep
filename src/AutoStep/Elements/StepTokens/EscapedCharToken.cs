@@ -1,6 +1,4 @@
-﻿using AutoStep.Compiler;
-
-namespace AutoStep.Elements.StepTokens
+﻿namespace AutoStep.Elements.StepTokens
 {
     /// <summary>
     /// Represents an escape character within the step reference.

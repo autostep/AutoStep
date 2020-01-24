@@ -8,6 +8,9 @@ using AutoStep.Definitions;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Compiler
 {
@@ -32,12 +35,17 @@ namespace AutoStep.Tests.Compiler
             {
                 return ReferenceEquals(def, this);
             }
+
+            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]
         public void SourceLoadPopulatesDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
             var linker = new AutoStepLinker(compiler);
 
@@ -49,9 +57,19 @@ namespace AutoStep.Tests.Compiler
         }
 
         [Fact]
+        public void AddStepDefinitionSourceNullArgument()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+
+            var linker = new AutoStepLinker(compiler);
+
+            linker.Invoking(l => l.AddStepDefinitionSource(null)).Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void LinksStepToDefinition()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
             var linker = new AutoStepLinker(compiler);
 
@@ -87,9 +105,67 @@ namespace AutoStep.Tests.Compiler
         }
 
         [Fact]
+        public void CanRemoveDefinitionSource()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+
+            var linker = new AutoStepLinker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            var source = new TestStepDefinitionSource(def);
+
+            linker.AddStepDefinitionSource(source);
+
+            def.Definition.Should().NotBeNull();
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                    )
+                ));
+
+            var file = fileBuilder.Built;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeTrue();
+            linkResult.Messages.Should().BeEmpty();
+
+            linker.RemoveStepDefinitionSource(source);
+            
+            // Relink after removing the source; linking should fail.
+            linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeFalse();
+            linkResult.Messages.Should().HaveCount(1);
+        }
+
+
+        [Fact]
+        public void CannotRemoveUnregisteredStepDefinition()
+        {
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+
+            var linker = new AutoStepLinker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            var source = new TestStepDefinitionSource(def);
+            
+            linker.Invoking(l => l.RemoveStepDefinitionSource(source)).Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
         public void LinkingErrorOnOneStepAllowsContinue()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
             var linker = new AutoStepLinker(compiler);
 
@@ -142,7 +218,7 @@ namespace AutoStep.Tests.Compiler
         [Fact]
         public void LinkingErrorMultipleDefinitions()
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
             var linker = new AutoStepLinker(compiler);
 
@@ -729,7 +805,7 @@ namespace AutoStep.Tests.Compiler
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
 
             var linker = new AutoStepLinker(compiler);
 

@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Elements;
+using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
+using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Strategy;
 
 namespace AutoStep.Definitions
 {
@@ -31,6 +36,54 @@ namespace AutoStep.Definitions
         public override bool IsSameDefinition(StepDefinition def)
         {
             return Type == def.Type && def.Declaration == def.Declaration;
+        }
+
+        /// <summary>
+        /// Executes the step.
+        /// </summary>
+        /// <param name="stepScope">The owning step scope.</param>
+        /// <param name="context">The current step context.</param>
+        /// <param name="variables">The set of all variables.</param>
+        /// <returns>Task completion.</returns>
+        public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        {
+            // Extract the arguments, and invoke the collection executor.
+            var nestedVariables = new VariableSet();
+
+            if (context.Step.Binding is null)
+            {
+                throw new LanguageEngineAssertException();
+            }
+
+            if (Definition is null || Definition.Arguments.Count != context.Step.Binding.Arguments.Length)
+            {
+                throw new LanguageEngineAssertException();
+            }
+
+            // TODO: Do this once per row of the table in the step reference, or just once if there's no table.
+            for (var argIdx = 0; argIdx < Definition.Arguments.Count; argIdx++)
+            {
+                var argValue = context.Step.Binding.Arguments[argIdx];
+
+                var argText = argValue.GetFullText(stepScope, context.Step.Text, variables);
+
+                nestedVariables.Set(Definition.Arguments[argIdx].Name, argText);
+            }
+
+            var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
+
+            var fileStepContext = new FileDefinedStepContext(Definition);
+
+            await collectionStrategy.Execute(
+                stepScope,
+                fileStepContext,
+                Definition,
+                nestedVariables).ConfigureAwait(false);
+
+            if (fileStepContext.FailException is object)
+            {
+                context.FailException = fileStepContext.FailException;
+            }
         }
     }
 }

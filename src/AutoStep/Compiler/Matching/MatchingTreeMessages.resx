@@ -123,6 +123,12 @@
   <data name="InvalidStepReferenceBindingType" xml:space="preserve">
     <value>Invalid step reference binding type.</value>
   </data>
+  <data name="NoDefinitionMetadata" xml:space="preserve">
+    <value>Provided step definition has no attached definition element metadata.</value>
+  </data>
+  <data name="NoMatchingParts" xml:space="preserve">
+    <value>Provided step definition element data has no matching parts.</value>
+  </data>
   <data name="StepReferenceMustHaveKnownBindingType" xml:space="preserve">
     <value>Step reference must have a known binding type.</value>
   </data>

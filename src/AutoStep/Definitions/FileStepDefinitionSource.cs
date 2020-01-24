@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 
 namespace AutoStep.Definitions
@@ -53,6 +55,12 @@ namespace AutoStep.Definitions
         {
             return File.LastCompileResult?.Output?.StepDefinitions.Select(d => new FileStepDefinition(this, d))
                    ?? Enumerable.Empty<FileStepDefinition>();
+        }
+
+        /// <inheritdoc/>
+        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
+        {
+            // No additional services needed for these.
         }
     }
 }

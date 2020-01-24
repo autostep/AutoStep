@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Tests.Builders;
-using AutoStep.Tests.Utils;
 using AutoStep.Elements;
-using AutoStep.Tracing;
 using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
@@ -21,29 +16,23 @@ using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Tests.Utils
 {
-    public class CompilerTestBase
+    public class CompilerTestBase : LoggingTestBase
     {
-        protected ITestOutputHelper TestOutput { get; }
-
-        internal ITracer TestTracer { get; }
-
         protected string NewLine => Environment.NewLine;
 
-        protected CompilerTestBase(ITestOutputHelper output)
+        protected CompilerTestBase(ITestOutputHelper outputHelper)
+            : base(outputHelper)
         {
-            TestOutput = output;
-
-            TestTracer = new TestTracer(output);
         }
 
         protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -54,10 +43,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -72,10 +61,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -91,10 +80,10 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -102,10 +91,10 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
@@ -118,10 +107,10 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure there are 0 messages
             Assert.Empty(result.Messages);
@@ -135,10 +124,10 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics, TestTracer);
+            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
-            var result = await compiler.CompileAsync(source);
+            var result = await compiler.CompileAsync(source, LogFactory);
 
             // Make sure there are 0 messages
             Assert.Empty(result.Messages);
@@ -153,19 +142,24 @@ namespace AutoStep.Tests.Utils
 
             try
             {
-                var spanType = typeof(ReadOnlySpan<StepToken>);
+                var typeSpan = typeof(ReadOnlySpan<StepToken>);
 
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
-                    .IncludingAllRuntimeProperties()                    
-                    .Excluding((IMemberInfo member) => spanType.IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                       (
-                                                       !includeStatementParts && 
-                                                        member.SelectedMemberInfo != null &&
-                                                        (typeof(StepToken).IsAssignableFrom(member.SelectedMemberInfo.MemberType) ||
-                                                        typeof(IEnumerable<StepToken>).IsAssignableFrom(member.SelectedMemberInfo.MemberType)
-                                                        )))
-                );
+                    .IncludingAllRuntimeProperties()
+                    .Using<StepReferenceElement>(ctx =>
+                    {
+                        ctx.Subject.Should().BeEquivalentTo(ctx.Expectation, opt => opt.Excluding((IMemberInfo x) => x.RuntimeType == typeSpan));
+                        if (includeStatementParts)
+                        {
+                            ctx.Subject.TokenSpan.Length.Should().Be(ctx.Expectation.TokenSpan.Length);
+                            for (var idx = 0; idx < ctx.Subject.TokenSpan.Length; idx++)
+                            {
+                                ctx.Subject.TokenSpan[idx].Should().BeEquivalentTo(ctx.Expectation.TokenSpan[idx], "subject[{0}] should match expectation[{0}]", idx);
+                            }
+                        }
+                    }).WhenTypeIs<StepReferenceElement>()
+                ); 
             }
             catch
             {

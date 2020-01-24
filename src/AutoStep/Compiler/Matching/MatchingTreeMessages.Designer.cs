@@ -79,6 +79,24 @@ namespace AutoStep.Compiler.Matching {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provided step definition has no attached definition element metadata..
+        /// </summary>
+        internal static string NoDefinitionMetadata {
+            get {
+                return ResourceManager.GetString("NoDefinitionMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provided step definition element data has no matching parts..
+        /// </summary>
+        internal static string NoMatchingParts {
+            get {
+                return ResourceManager.GetString("NoMatchingParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Step reference must have a known binding type..
         /// </summary>
         internal static string StepReferenceMustHaveKnownBindingType {

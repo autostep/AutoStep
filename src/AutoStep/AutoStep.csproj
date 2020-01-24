@@ -32,13 +32,14 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="Autofac" Version="4.9.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.113">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -51,12 +52,27 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AutoStepLinkerMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Compiler\CompilerLogMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CompilerLogMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Compiler\CompilerMessageCodeText.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerMessageCodeText.resx</DependentUpon>
     </Compile>
-    <Compile Update="Compiler\LanguageEngineExceptionMessages.Designer.cs">
+    <Compile Update="Definitions\DefinitionsMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefinitionsMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Execution\ExecutionText.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExecutionText.resx</DependentUpon>
+    </Compile>
+    <Compile Update="LanguageEngineExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>LanguageEngineExceptionMessages.resx</DependentUpon>
@@ -83,11 +99,23 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AutoStepLinkerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Compiler\CompilerLogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Compiler\CompilerMessageCodeText.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerMessageCodeText.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Compiler\LanguageEngineExceptionMessages.resx">
+    <EmbeddedResource Update="Definitions\DefinitionsMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefinitionsMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Execution\ExecutionText.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExecutionText.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LanguageEngineExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LanguageEngineExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

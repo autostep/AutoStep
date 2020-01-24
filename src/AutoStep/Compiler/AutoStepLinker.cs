@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoStep.Compiler.Matching;
-using AutoStep.Compiler.Parser;
 using AutoStep.Definitions;
 using AutoStep.Elements;
-using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
-using AutoStep.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
 {
@@ -24,7 +21,6 @@ namespace AutoStep.Compiler
         private readonly IAutoStepCompiler compiler;
         private readonly IMatchingTree linkerTree;
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
-        private readonly ITracer? tracer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
@@ -37,15 +33,9 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLinker"/> class, providing a custom matcher tree.
+        /// Gets the set of all known step definition sources.
         /// </summary>
-        /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        /// <param name="tracer">A tracer for the operations of the linker.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler, ITracer tracer)
-            : this(compiler)
-        {
-            this.tracer = tracer;
-        }
+        public IEnumerable<IStepDefinitionSource> AllStepDefinitionSources => trackedSources.Values.Select(x => x.Source);
 
         /// <summary>
         /// Adds a source of step definitions to the linker.
@@ -53,10 +43,7 @@ namespace AutoStep.Compiler
         /// <param name="source">The source to add.</param>
         public void AddStepDefinitionSource(IStepDefinitionSource source)
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            source = source.ThrowIfNull(nameof(source));
 
             if (trackedSources.Remove(source.Uid, out var oldSource))
             {
@@ -136,7 +123,7 @@ namespace AutoStep.Compiler
             {
                 var matches = linkerTree.Match(stepRef, true, out var _);
 
-                if (matches.Count == 0)
+                if (matches.Count == 0 || !matches.First.Value.IsExact)
                 {
                     // No matches.
                     messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));

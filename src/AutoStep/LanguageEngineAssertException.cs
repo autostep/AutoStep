@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoStep.Compiler
+namespace AutoStep
 {
     /// <summary>
     /// Represents an internal language excepion, when the compilation system hits a point that shouldn't be possible due to the parser specification.

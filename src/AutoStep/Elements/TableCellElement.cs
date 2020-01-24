@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements
@@ -7,7 +8,7 @@ namespace AutoStep.Elements
     /// <summary>
     /// Represents a table cell. A cell's value is treated as a statement argument.
     /// </summary>
-    public class TableCellElement : PositionalElement
+    public class TableCellElement : PositionalElement, ITableCellInfo
     {
         private List<StepToken> tokens = new List<StepToken>();
 
@@ -21,16 +22,16 @@ namespace AutoStep.Elements
         /// </summary>
         internal IReadOnlyList<StepToken> Tokens => tokens;
 
+        /// <inheritdoc/>
+        IReadOnlyList<StepToken> ITableCellInfo.Tokens => tokens;
+
         /// <summary>
         /// Adds a token to the cell.
         /// </summary>
         /// <param name="token">The token to add.</param>
         internal void AddToken(StepToken token)
         {
-            if (token is null)
-            {
-                throw new ArgumentNullException(nameof(token));
-            }
+            token = token.ThrowIfNull(nameof(token));
 
             tokens.Add(token);
         }

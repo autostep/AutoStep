@@ -6,6 +6,8 @@ namespace AutoStep.Tests.Builders
 {
     public class CellBuilder : BaseBuilder<TableCellElement>
     {
+        private int nextTokenIdx = 0;
+
         public CellBuilder(string body, int line, int start, int end)
         {
             Built = new TableCellElement
@@ -17,63 +19,70 @@ namespace AutoStep.Tests.Builders
             };            
         }
 
-        public CellBuilder Word(string text, int start)
+        public CellBuilder Text(string text)
         {
-            return Part(text, start, (s, l) => new TextToken(s, l));
+            return Part(text, (s, l) => new TextToken(s, l));
         }
 
-        public CellBuilder EscapeChar(string text, string escapedText, int start)
+        public CellBuilder EscapeChar(string text, string escapedText)
         {
-            return Part(text, start, (s, l) => new EscapedCharToken(escapedText, s, l));
+            return Part(text, (s, l) => new EscapedCharToken(escapedText, s, l));
         }
 
-        public CellBuilder Variable(string varName, int start)
+        public CellBuilder Variable(string varName)
         {
-            return Part("<" + varName + ">", start, (s, l) => new VariableToken(varName, s, l));
+            return Part("<" + varName + ">", (s, l) => new VariableToken(varName, s, l));
         }
 
-        public CellBuilder Int(string text, int start)
+        public CellBuilder Int(string text)
         {
-            return Part(text, start, (s, l) => new IntToken(s, l));
+            return Part(text, (s, l) => new IntToken(s, l));
         }
 
-        public CellBuilder Float(string text, int start)
+        public CellBuilder Float(string text)
         {
-            return Part(text, start, (s, l) => new FloatToken(s, l));
+            return Part(text, (s, l) => new FloatToken(s, l));
         }
 
-        public CellBuilder InterpolateStart(string text, int start)
+        public CellBuilder InterpolateStart()
         {
-            return Part(text, start, (s, l) => new InterpolateStartToken(s));
+            return Part(":", (s, l) => new InterpolateStartToken(s));
         }
 
-        public CellBuilder Colon(int column)
+        public CellBuilder Colon()
         {
-            return Part(":", column, (s, l) => new TextToken(s, l));
+            return Part(":", (s, l) => new TextToken(s, l));
         }
 
-        public CellBuilder Quote(int column)
+        public CellBuilder Quote()
         {
-            return Part("'", column, (s, l) => new QuoteToken(false, s));
+            return Part("'", (s, l) => new QuoteToken(false, s));
         }
 
-        public CellBuilder DoubleQuote(int column)
+        public CellBuilder DoubleQuote()
         {
-            return Part("\"", column, (s, l) => new QuoteToken(true, s));
+            return Part("\"", (s, l) => new QuoteToken(true, s));
         }
 
-        private CellBuilder Part<TPartType>(string text, int start, Func<int, int, TPartType> creator)
+        private CellBuilder Part<TPartType>(string text, Func<int, int, TPartType> creator)
             where TPartType : StepToken
         {
-            var startIdx = start - Built.StartColumn;
+            var startIdx = Built.Text.IndexOf(text, nextTokenIdx);
+
+            if (startIdx == -1)
+            {
+                throw new ArgumentException("Bad text; not present in cell.");
+            }
 
             var part = creator(startIdx, text.Length);
 
             part.SourceLine = Built.SourceLine;
-            part.StartColumn = start;
-            part.EndColumn = start + (text.Length - 1);
+            part.StartColumn = Built.StartColumn + startIdx;
+            part.EndColumn = part.StartColumn + (text.Length - 1);
 
             Built.AddToken(part);
+
+            nextTokenIdx = startIdx + text.Length;
 
             return this;
         }

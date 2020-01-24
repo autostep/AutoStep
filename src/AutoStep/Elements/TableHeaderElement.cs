@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements
 {
     /// <summary>
     /// Represents the header of a table.
     /// </summary>
-    public class TableHeaderElement : BuiltElement
+    public class TableHeaderElement : BuiltElement, ITableHeaderInfo
     {
         private List<TableHeaderCellElement> headers = new List<TableHeaderCellElement>();
 
@@ -13,6 +14,9 @@ namespace AutoStep.Elements
         /// Gets the list of headers.
         /// </summary>
         public IReadOnlyList<TableHeaderCellElement> Headers => headers;
+
+        /// <inheritdoc/>
+        IReadOnlyList<ITableHeaderCellInfo> ITableHeaderInfo.Headers => headers;
 
         /// <summary>
         /// Add a header.

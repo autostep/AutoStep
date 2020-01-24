@@ -55,6 +55,7 @@ namespace AutoStep.Tests.Compiler.Parsing
                 
                 Given I have used '<argument1>'
                 Then this is <argument2>
+                 And this is <argument2>
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
@@ -80,6 +81,11 @@ namespace AutoStep.Tests.Compiler.Parsing
                         .Quote()
                     )
                     .Then("this is <argument2>", 8, 17, t => t
+                        .Text("this")
+                        .Text("is")
+                        .Variable("argument2")
+                    )
+                    .And("this is <argument2>", StepType.Then, 9, 18, a => a
                         .Text("this")
                         .Text("is")
                         .Variable("argument2")
@@ -110,7 +116,7 @@ namespace AutoStep.Tests.Compiler.Parsing
         {
             const string TestFile =
             @"                
-              Step: Given I have passed 'arg' to this
+              Step: Given I have passed {arg} to this
                 
                 Given I have referenced another '<not an arg>'
             ";
@@ -119,6 +125,23 @@ namespace AutoStep.Tests.Compiler.Parsing
                 new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared,
                                     "You have specified a Step parameter variable to insert, 'not an arg', but you have not declared the variable in the step declaration. This value will always be blank when the test runs.",
                                     4, 50, 4, 61)
+            );
+        }
+        
+        [Fact]
+        public async Task DefineStepBodyHasUnBoundAndGivesError()
+        {
+            const string TestFile =
+            @"                
+              Step: Given I have passed {arg} to this
+                
+                And I have referenced another
+            ";
+
+            await CompileAndAssertWarnings(TestFile,
+                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep,
+                                    "An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.",
+                                    4, 17, 4, 45)
             );
         }
 

@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
+using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
+using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using BenchmarkDotNet.Attributes;
@@ -155,7 +159,7 @@ namespace AutoStep.Benchmarks
                 refBuilder.Text(item);
             }
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -166,7 +170,7 @@ namespace AutoStep.Benchmarks
 
             builder(refBuilder);
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -184,6 +188,11 @@ namespace AutoStep.Benchmarks
             {
                 this.stepId = stepId;
                 Definition = definition;
+            }
+
+            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            {
+                throw new NotImplementedException();
             }
 
             public override bool IsSameDefinition(StepDefinition def)

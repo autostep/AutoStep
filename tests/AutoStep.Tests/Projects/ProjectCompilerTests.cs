@@ -9,6 +9,7 @@ using AutoStep.Elements;
 using AutoStep.Projects;
 using AutoStep.Tests.Builders;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -48,7 +49,7 @@ namespace AutoStep.Tests.Projects
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.Today);
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
@@ -67,7 +68,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void CompilesMultipleFilesWithErrors()
+        public async Task CompilesMultipleFilesWithErrors()
         {
             var project = new Project();
             var mockSource1 = new Mock<IContentSource>();
@@ -81,12 +82,12 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IAutoStepCompiler>();
 
             // First compile result
-            mockCompiler.Setup(x => x.CompileAsync(mockSource1.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource1.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new[] { new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
             ));
 
             // Second compile result
-            mockCompiler.Setup(x => x.CompileAsync(mockSource2.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource2.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new[] { new CompilerMessage("/file2", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
             ));
 
@@ -99,7 +100,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.Compile().GetAwaiter().GetResult();
+            var result = await projectCompiler.Compile();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -113,7 +114,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void DoesNotCompileFileThatHasNotBeenChanged()
+        public async Task DoesNotCompileFileThatHasNotBeenChanged()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -121,7 +122,7 @@ namespace AutoStep.Tests.Projects
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
@@ -132,19 +133,19 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            projectCompiler.Compile().GetAwaiter().GetResult();
+            await projectCompiler.Compile();
 
             var originalCompilationresult = projFile.LastCompileResult;
 
             // Just do it again.
-            projectCompiler.Compile().GetAwaiter().GetResult();
+            await projectCompiler.Compile();
 
             // Result should be the same.
             projFile.LastCompileResult.Should().BeSameAs(originalCompilationresult);
         }
                
         [Fact]
-        public void ReCompilesFileThatHasBeenChanged()
+        public async Task ReCompilesFileThatHasBeenChanged()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -155,7 +156,7 @@ namespace AutoStep.Tests.Projects
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new FileElement())
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
@@ -166,7 +167,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            projectCompiler.Compile().GetAwaiter().GetResult();
+            await projectCompiler.Compile();
 
             var originalCompilationresult = projFile.LastCompileResult;
 
@@ -174,14 +175,14 @@ namespace AutoStep.Tests.Projects
             changeTime = projFile.LastCompileTime.AddMinutes(1);
 
             // Run it again.
-            projectCompiler.Compile().GetAwaiter().GetResult();
+            await projectCompiler.Compile();
 
             // Result should have changed.
             projFile.Should().NotBeSameAs(originalCompilationresult);
         }
 
         [Fact]
-        public void AddsCompilationMessagesToProjectMessages()
+        public async Task AddsCompilationMessagesToProjectMessages()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -191,7 +192,7 @@ namespace AutoStep.Tests.Projects
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, new[] { fileMessage })
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
@@ -202,7 +203,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.Compile().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.Compile();
 
             overallResult.Messages.Should().Contain(fileMessage);
         }
@@ -217,7 +218,7 @@ namespace AutoStep.Tests.Projects
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Throws(new IOException("IO Error"));
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Throws(new IOException("IO Error"));
 
             var mockLinker = new Mock<IAutoStepLinker>();
 
@@ -245,7 +246,7 @@ namespace AutoStep.Tests.Projects
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Throws(new ApplicationException("Unknown Error"));
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Throws(new ApplicationException("Unknown Error"));
 
             var mockLinker = new Mock<IAutoStepLinker>();
 
@@ -294,7 +295,7 @@ namespace AutoStep.Tests.Projects
                                 .Built;
 
             // Compilation will return a compilation result (with an empty file).
-            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, default)).Returns(new ValueTask<FileCompilerResult>(
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
                 new FileCompilerResult(true, compiledFile)
             ));
 

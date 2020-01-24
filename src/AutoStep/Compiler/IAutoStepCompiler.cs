@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
 using AutoStep.Compiler.Parser;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler
 {
@@ -19,6 +20,15 @@ namespace AutoStep.Compiler
         /// <param name="cancelToken">A cancellation token to allow source loading or compilation to be cancelled.</param>
         /// <returns>A compilation result that indicates success or failure, and contains the built content.</returns>
         ValueTask<FileCompilerResult> CompileAsync(IContentSource source, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Compile a source of AutoStep content (e.g. a file) and output the result.
+        /// </summary>
+        /// <param name="source">The source of the content to load.</param>
+        /// <param name="logFactory">A logger factory.</param>
+        /// <param name="cancelToken">A cancellation token to allow source loading or compilation to be cancelled.</param>
+        /// <returns>A compilation result that indicates success or failure, and contains the built content.</returns>
+        ValueTask<FileCompilerResult> CompileAsync(IContentSource source, ILoggerFactory logFactory, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Generates a step definition from a statement body/declaration.

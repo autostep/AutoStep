@@ -8,6 +8,10 @@ using AutoStep.Compiler.Matching;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 using AutoStep.Tests.Builders;
+using System.Threading.Tasks;
+using AutoStep.Execution;
+using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Compiler.Matching
 {
@@ -360,7 +364,7 @@ namespace AutoStep.Tests.Compiler.Matching
                 refBuilder.Text(item);
             }
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -371,7 +375,7 @@ namespace AutoStep.Tests.Compiler.Matching
 
             builder(refBuilder);
 
-            refBuilder.Built.FreezeParts();
+            refBuilder.Built.FreezeTokens();
 
             return refBuilder.Built;
         }
@@ -389,6 +393,11 @@ namespace AutoStep.Tests.Compiler.Matching
             {
                 this.stepId = stepId;
                 Definition = definition;
+            }
+
+            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            {
+                throw new NotImplementedException();
             }
 
             public override bool IsSameDefinition(StepDefinition def)

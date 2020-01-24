@@ -7,6 +7,7 @@ namespace AutoStep.Tests.Builders
     public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
         private int nextTokenIdx = 0;
+        private int startTokenIdx = 0;
 
         public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {
@@ -18,6 +19,8 @@ namespace AutoStep.Tests.Builders
                 StartColumn = column,
                 RawText = body
             };
+
+            startTokenIdx = column + type.ToString().Length;
         }
 
         public StepReferenceBuilder Text(string text)
@@ -78,12 +81,12 @@ namespace AutoStep.Tests.Builders
             var part = creator(startIdx, text.Length);
 
             part.SourceLine = Built.SourceLine;
-            part.StartColumn = Built.StartColumn + startIdx;
-            part.EndColumn = part.StartColumn + text.Length;
+            part.StartColumn = startTokenIdx + startIdx + 1;
+            part.EndColumn = part.StartColumn + (text.Length - 1);
 
             Built.AddToken(part);
             
-            nextTokenIdx = startIdx + 1;
+            nextTokenIdx = startIdx + text.Length;
 
             return this;
         }
