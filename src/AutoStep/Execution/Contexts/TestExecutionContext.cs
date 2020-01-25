@@ -60,6 +60,30 @@ namespace AutoStep.Execution.Contexts
         }
 
         /// <summary>
+        /// Try to retrieve a value from the context.
+        /// </summary>
+        /// <typeparam name="TValue">The expected type of the value.</typeparam>
+        /// <param name="name">The name of the value.</param>
+        /// <param name="valueToAddWhenNotPresent">A function that will return a new value to return.</param>
+        /// <returns>True if the value exists and is of the correct type.</returns>
+        public TValue GetOrAdd<TValue>(string name, Func<TValue> valueToAddWhenNotPresent)
+            where TValue : notnull
+        {
+            valueToAddWhenNotPresent = valueToAddWhenNotPresent.ThrowIfNull(nameof(valueToAddWhenNotPresent));
+
+            var foundValue = contextValues.GetOrAdd(name, k => valueToAddWhenNotPresent());
+
+            if (foundValue is TValue result)
+            {
+                return result;
+            }
+            else
+            {
+                throw new InvalidOperationException(ExecutionText.TextExecutionContext_NotExpectedType.FormatWith(name, foundValue.GetType().Name));
+            }
+        }
+
+        /// <summary>
         /// Set a value in the context.
         /// </summary>
         /// <typeparam name="TValue">The type of the value.</typeparam>

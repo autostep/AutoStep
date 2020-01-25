@@ -35,7 +35,12 @@ namespace AutoStep.Definitions
         /// <returns>True if the same, false otherwise.</returns>
         public override bool IsSameDefinition(StepDefinition def)
         {
-            return Type == def.Type && def.Declaration == def.Declaration;
+            if (def is FileStepDefinition)
+            {
+                return Source.Uid == def.Source.Uid && Type == def.Type && Declaration == def.Declaration;
+            }
+
+            return false;
         }
 
         /// <summary>

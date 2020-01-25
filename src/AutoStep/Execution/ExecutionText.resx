@@ -123,6 +123,9 @@
   <data name="AutofacServiceScope_NotAssignable" xml:space="preserve">
     <value>Cannot resolve service of type '{0}'; it is not assignable to '{1}'.</value>
   </data>
+  <data name="CircularStepReferenceException_Message" xml:space="preserve">
+    <value>A circular step reference has been detected.</value>
+  </data>
   <data name="EventHandlingException_Message" xml:space="preserve">
     <value>An error occurred in an event handler. See inner exception for details.</value>
   </data>
