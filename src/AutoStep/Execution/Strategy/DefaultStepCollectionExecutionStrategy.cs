@@ -25,9 +25,6 @@ namespace AutoStep.Execution.Strategy
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
         public async ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
         {
-            // Resolve the thread context, so we can access the stack of steps.
-            var threadContext = owningScope.ThreadContext();
-
             var stepExecutionStrategy = owningScope.Resolve<IStepExecutionStrategy>();
             var executionManager = owningScope.Resolve<IExecutionStateManager>();
             var events = owningScope.Resolve<IEventPipeline>();

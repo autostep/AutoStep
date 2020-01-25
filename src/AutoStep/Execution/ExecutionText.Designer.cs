@@ -79,6 +79,15 @@ namespace AutoStep.Execution {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A circular step reference has been detected..
+        /// </summary>
+        internal static string CircularStepReferenceException_Message {
+            get {
+                return ResourceManager.GetString("CircularStepReferenceException_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred in an event handler. See inner exception for details..
         /// </summary>
         internal static string EventHandlingException_Message {

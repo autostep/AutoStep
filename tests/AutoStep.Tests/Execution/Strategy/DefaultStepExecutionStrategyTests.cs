@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
@@ -40,6 +41,8 @@ namespace AutoStep.Tests.Execution.Strategy
                 ctxt.Should().Be(stepContext);
                 vars.Should().Be(variables);
                 scope.Should().Be(mockScope);
+
+                return default;
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null));
@@ -67,35 +70,129 @@ namespace AutoStep.Tests.Execution.Strategy
             var stepDef = new TestStepDef((scope, ctxt, vars) =>
             {
                 ranStep = true;
+
+                return default;
             });
 
             var strategy = new DefaultStepExecutionStrategy();
 
-            strategy.Invoking(s => s.ExecuteStep(mockScope, stepContext, variables)).Should().Throw<UnboundStepException>();
+            strategy.Awaiting(s => s.ExecuteStep(mockScope, stepContext, variables)).Should().Throw<UnboundStepException>();
 
             ranStep.Should().BeFalse();
         }
 
+        [Fact]
+        public async Task CircularReferenceDetection()
+        {
+            var step = new StepReferenceBuilder("I have done something", StepType.Given, StepType.Given, 1, 1).Built;
+
+            var variables = new VariableSet();
+
+            var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
+
+            var threadContext = new ThreadContext(1);
+
+            var builder = new AutofacServiceBuilder();
+            builder.RegisterSingleInstance(threadContext);
+            var scope = builder.BuildRootScope();
+
+            var ranStepCount = 0;
+
+            var strategy = new DefaultStepExecutionStrategy();
+
+            var stepDef = new TestStepDef(async (scope, ctxt, vars) =>
+            {
+                ranStepCount++;
+
+                // Execute the same step inside itself to trigger a circular reference.
+                await strategy.ExecuteStep(scope, ctxt, vars);
+            });
+
+            step.Bind(new StepReferenceBinding(stepDef, null));
+
+            var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
+                             .Should().ThrowAsync<CircularStepReferenceException>();
+
+            ex.Which.StepDefinition.Should().Be(stepDef);
+            ex.Which.StepExecutionStack.Should().HaveCount(1);
+            ex.Which.StepExecutionStack.Should().Contain(step);
+
+            ranStepCount.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task IndirectCircularReferenceDetection()
+        {
+            var step = new StepReferenceBuilder("I have done something", StepType.Given, StepType.Given, 1, 1).Built;
+
+            var loopbackStep = new StepReferenceBuilder("I have called done something", StepType.Given, StepType.Given, 1, 1).Built;
+
+            var variables = new VariableSet();
+
+            var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
+            var loopbackStepContext = new StepContext(0, new StepCollectionContext(), loopbackStep, variables);
+
+            var threadContext = new ThreadContext(1);
+
+            var builder = new AutofacServiceBuilder();
+            builder.RegisterSingleInstance(threadContext);
+            var scope = builder.BuildRootScope();
+
+            var ranStepCount = 0;
+
+            var strategy = new DefaultStepExecutionStrategy();
+
+            var stepDef = new TestStepDef("step", async (scope, ctxt, vars) =>
+            {
+                ranStepCount++;
+
+                // Execute the same step inside itself to trigger a circular reference.
+                await strategy.ExecuteStep(scope, loopbackStepContext, vars);
+            });
+
+            var loopBackStepDef = new TestStepDef("loopbackStep", async (scope, ctxt, vars) =>
+            {
+                // Execute the same step inside itself to trigger a circular reference.
+                await strategy.ExecuteStep(scope, stepContext, vars);
+            });
+
+            step.Bind(new StepReferenceBinding(stepDef, null));
+            loopbackStep.Bind(new StepReferenceBinding(loopBackStepDef, null));
+
+            var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
+                             .Should().ThrowAsync<CircularStepReferenceException>();
+
+            ex.Which.StepDefinition.Should().Be(stepDef);
+            ex.Which.StepExecutionStack.Should().HaveCount(2);
+            ex.Which.StepExecutionStack.Should().ContainInOrder(new[] { loopbackStep, step });
+
+            ranStepCount.Should().Be(1);
+        }
+
         private class TestStepDef : StepDefinition
         {
-            private readonly Action<IServiceScope, StepContext, VariableSet> callback;
+            private readonly Func<IServiceScope, StepContext, VariableSet, ValueTask> callback;
 
-            public TestStepDef(Action<IServiceScope, StepContext, VariableSet> callback)
+            public TestStepDef(Func<IServiceScope, StepContext, VariableSet, ValueTask> callback)
                 : base(TestStepDefinitionSource.Blank, StepType.Given, "something")
             {
                 this.callback = callback;
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public TestStepDef(string name, Func<IServiceScope, StepContext, VariableSet, ValueTask> callback)
+                : base(TestStepDefinitionSource.Blank, StepType.Given, name)
             {
-                callback(stepScope, context, variables);
+                this.callback = callback;
+            }
 
-                return default;
+            public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            {
+                await callback(stepScope, context, variables);
             }
 
             public override bool IsSameDefinition(StepDefinition def)
             {
-                throw new NotImplementedException();
+                return def == this;
             }
         }
     }

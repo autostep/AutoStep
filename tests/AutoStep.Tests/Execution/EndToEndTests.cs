@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Definitions;
+using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
+using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Events;
 using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
@@ -227,6 +232,82 @@ namespace AutoStep.Tests.Execution
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
+        }
+
+        [Fact]
+        public async Task CircularReferenceDetection()
+        {
+            // Compile a file.
+            const string TestFile =
+            @"                
+              Step: Given I have called my defined step with {arg}
+
+                    Given I have done something
+                      And I have called my defined step with <arg>
+                      And I have passed <arg> to something
+
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have called my defined step with argument1
+
+            ";
+
+            var project = new Project();
+
+            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+
+            var steps = new CallbackDefinitionSource();
+
+            var doneSomethingCalled = false;
+            string argumentValue = null;
+
+            steps.Given("I have done something", () =>
+            {
+                doneSomethingCalled = true;
+            });
+
+            steps.Given("I have passed {arg} to something", (string arg1) =>
+            {
+                argumentValue = arg1;
+            });
+
+            project.Compiler.AddStaticStepDefinitionSource(steps);
+
+            var compileResult = await project.Compiler.Compile(LogFactory);
+
+            var linkResult = project.Compiler.Link();
+
+            var testRun = project.CreateTestRun();
+            var errorCollector = new StepExceptionCollector();
+            
+            testRun.Events.Add(errorCollector);
+
+            await testRun.Execute(LogFactory);
+
+            doneSomethingCalled.Should().BeTrue();
+            argumentValue.Should().BeNull();
+
+            errorCollector.FoundException.Should().BeOfType<StepFailureException>()
+                    .Which.InnerException.Should().BeOfType<CircularStepReferenceException>()
+                    .Which.StepDefinition.Declaration.Should().Be("I have called my defined step with {arg}");
+        }
+
+        private class StepExceptionCollector : BaseEventHandler
+        {
+            public Exception FoundException { get; set; }
+
+            public override async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
+            {
+                
+                await nextHandler(scope, ctxt);
+                
+                if(ctxt.FailException is object)
+                {
+                    FoundException = ctxt.FailException;
+                }
+            }
         }
 
         [Fact]
