@@ -88,10 +88,10 @@ statementBlock: WS? statement STATEMENT_NEWLINE NEWLINE* tableBlock #statementWi
               | WS? statement WS? EOF                               #statementEofTerminated
               ;
 
-statement: GIVEN statementBody #given
-         | WHEN statementBody  #when
-         | THEN statementBody  #then
-         | AND statementBody   #and
+statement: GIVEN STATEMENT_WS statementBody #given
+         | WHEN STATEMENT_WS statementBody  #when
+         | THEN STATEMENT_WS statementBody  #then
+         | AND STATEMENT_WS statementBody   #and
          ;
 
 statementBody: statementSection+;
@@ -159,3 +159,25 @@ line: WS? text? NEWLINE;
 description: NEWLINE*
              line+
              NEWLINE*;
+
+
+// This parser rule is only used for line tokenisation
+// it doesn't natively understand more context than a single line.
+// It is also more forgiving than the normal parser.
+onlyLine: WS? TAG lineTerm                  #lineTag
+        | WS? OPTION lineTerm               #lineOpt
+        | WS? STEP_DEFINE DEF_WS? stepDeclaration DEF_NEWLINE #lineStepDefine
+        | WS? FEATURE WS? text? lineTerm     #lineFeature
+        | WS? BACKGROUND lineTerm           #lineBackground
+        | WS? SCENARIO WS? text? lineTerm            #lineScenario
+        | WS? SCENARIO_OUTLINE WS? text? lineTerm    #lineScenarioOutline
+        | WS? EXAMPLES NEWLINE lineTerm             #lineExamples
+        | WS? tableRowCell+ CELL_DELIMITER ROW_NL   # lineTableRow
+        | WS? GIVEN statementBody? STATEMENT_NEWLINE        #lineGiven
+        | WS? WHEN statementBody? STATEMENT_NEWLINE         #lineWhen
+        | WS? THEN statementBody? STATEMENT_NEWLINE         #lineThen
+        | WS? AND statementBody? STATEMENT_NEWLINE          #lineAnd        
+        | WS? text? lineTerm                                #lineText
+        ;
+
+lineTerm: NEWLINE | WS? EOF;

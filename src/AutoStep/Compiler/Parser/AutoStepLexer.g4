@@ -46,17 +46,18 @@ STEP_DEFINE: S T E P ':' -> pushMode(definition);
 BACKGROUND: 'Background:';
 TAG: '@' ~[ \t\r\n] ~[#\r\n]*;
 OPTION: '$' ~[ \t\r\n] ~[#\r\n]*;
+
+GIVEN: 'Given' -> pushMode(statement);
+WHEN: 'When' -> pushMode(statement);
+THEN: 'Then' -> pushMode(statement);
+AND: 'And' -> pushMode(statement);
+
 NEWLINE: NL;
 WORD: ~[ #\t\r\n|]+;
 WS: SPACE+;
-TEXT_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
+TEXT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 ESCAPED_TABLE_DELIMITER: '\\|';
 TABLE_START: '|' -> pushMode(tableRow);
-
-GIVEN: 'Given ' -> pushMode(statement);
-WHEN: 'When ' -> pushMode(statement);
-THEN: 'Then ' -> pushMode(statement);
-AND: 'And ' -> pushMode(statement);
 
 mode statement;
 STATEMENT_ESCAPED_QUOTE: '\\\'';
@@ -73,7 +74,7 @@ STATEMENT_INT: INT;
 STATEMENT_COLON: ':';
 STATEMENT_WS: SPACE+;
 STATEMENT_WORD: ~[ :\\\t#<>\r\n'"0-9]+;
-STATEMENT_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
+STATEMENT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 
 mode definition;
 DEF_GIVEN: 'Given ';
@@ -87,7 +88,7 @@ DEF_NEWLINE: DEF_WS* (NL|EOF) -> popMode;
 DEF_WS: SPACE+;
 DEF_COLON: ':';
 DEF_WORD: ~[ :\\\t#{}\r\n]+;
-DEF_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
+DEF_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 
 mode tableRow;
 CELL_ESCAPED_VARSTART: '\\<';
@@ -101,5 +102,5 @@ CELL_COLON: ':';
 CELL_ESCAPED_DELIMITER: '\\|';
 CELL_DELIMITER: '|';
 CELL_WS: SPACE+;
-ROW_COMMENT: SPACE* '#' ~[\r\n]* -> skip;
+ROW_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 ROW_NL: NL -> popMode;
