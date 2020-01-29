@@ -50,5 +50,7 @@ namespace AutoStep.Projects
         /// <param name="cancelToken">A cancellation token for the linker process.</param>
         /// <returns>The overall project link result.</returns>
         ProjectCompilerResult Link(CancellationToken cancelToken = default);
+
+        LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default);
     }
 }
