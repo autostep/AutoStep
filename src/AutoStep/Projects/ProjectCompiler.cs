@@ -17,6 +17,7 @@ namespace AutoStep.Projects
         private readonly Project project;
         private readonly IAutoStepCompiler compiler;
         private readonly IAutoStepLinker linker;
+        private readonly AutoStepLineTokeniser lineTokeniser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
@@ -29,6 +30,7 @@ namespace AutoStep.Projects
             this.project = project ?? throw new ArgumentNullException(nameof(project));
             this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
+            this.lineTokeniser = new AutoStepLineTokeniser(linker);
         }
 
         /// <summary>
@@ -212,6 +214,11 @@ namespace AutoStep.Projects
             }
 
             return false;
+        }
+
+        public LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
+        {
+            return lineTokeniser.Tokenise(line, lastTokeniserState);
         }
     }
 }

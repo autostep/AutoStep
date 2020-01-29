@@ -85,7 +85,7 @@ namespace AutoStep
         public LineTokenSubCategory SubCategory { get; }
     }
 
-    public class AutoStepLineTokeniser
+    internal class AutoStepLineTokeniser
     {
         private readonly IAutoStepLinker linker;
 
