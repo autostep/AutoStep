@@ -403,6 +403,7 @@ namespace AutoStep
                                 {
                                     // Move to the next argument as well.
                                     currentArgumentIdx++;
+                                    currentArgumentTokenIdx = 0;
                                 }
                             }
                         }

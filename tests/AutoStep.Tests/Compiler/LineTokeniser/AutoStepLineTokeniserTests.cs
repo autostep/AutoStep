@@ -2,8 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AutoStep.Compiler;
 using AutoStep.Compiler.Parser;
+using AutoStep.Definitions;
+using AutoStep.Elements;
+using AutoStep.Elements.Parts;
+using AutoStep.Execution;
+using AutoStep.Execution.Contexts;
+using AutoStep.Execution.Dependency;
+using AutoStep.Tests.Builders;
+using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -132,6 +141,68 @@ namespace AutoStep.Tests.Compiler.LineTokeniser
             result.Tokens.Should().HaveCount(1);
             result.EndState.Should().Be(LineTokeniserState.Default);
             result.AssertToken(0, 0, LineTokenCategory.Annotation, LineTokenSubCategory.Option);
+        }
+
+        [Fact]
+        public void TokenisesBoundStep()
+        {
+            const string Test = "Given I have entered 'My Name' into 'Name'";
+
+            var compiler = new AutoStepCompiler();
+            var linker = new AutoStepLinker(compiler);
+
+            var source = new CallbackDefinitionSource();
+            source.Given("I have entered {arg1} into {arg2}", () => { });
+
+            linker.AddStepDefinitionSource(source);
+
+            var lineTokeniser = new AutoStepLineTokeniser(linker);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Default);
+
+            result.Tokens.Should().HaveCount(12);
+            result.EndState.Should().Be(LineTokeniserState.Given);
+            result.AssertToken(0, 0, LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.Given);
+            result.AssertToken(1, 6, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(2, 8, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(3, 13, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(4, 21, LineTokenCategory.BoundArgument);
+            result.AssertToken(5, 22, LineTokenCategory.BoundArgument);
+            result.AssertToken(6, 25, LineTokenCategory.BoundArgument);
+            result.AssertToken(7, 29, LineTokenCategory.BoundArgument);
+            result.AssertToken(8, 31, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(9, 36, LineTokenCategory.BoundArgument);
+            result.AssertToken(10, 37, LineTokenCategory.BoundArgument);
+            result.AssertToken(11, 41, LineTokenCategory.BoundArgument);
+        }
+
+        [Fact]
+        public void TokenisesBoundAndFollowingAGiven()
+        {
+            const string Test = "And I have entered 'My Name'";
+
+            var compiler = new AutoStepCompiler();
+            var linker = new AutoStepLinker(compiler);
+
+            var source = new CallbackDefinitionSource();
+            source.Given("I have entered {arg1}", () => { });
+
+            linker.AddStepDefinitionSource(source);
+
+            var lineTokeniser = new AutoStepLineTokeniser(linker);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Given);
+
+            result.Tokens.Should().HaveCount(8);
+            result.EndState.Should().Be(LineTokeniserState.Given);
+            result.AssertToken(0, 0, LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.And);
+            result.AssertToken(1, 4, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(2, 6, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(3, 11, LineTokenCategory.StepText, LineTokenSubCategory.Bound);
+            result.AssertToken(4, 19, LineTokenCategory.BoundArgument);
+            result.AssertToken(5, 20, LineTokenCategory.BoundArgument);
+            result.AssertToken(6, 23, LineTokenCategory.BoundArgument);
+            result.AssertToken(7, 27, LineTokenCategory.BoundArgument);
         }
     }
 
