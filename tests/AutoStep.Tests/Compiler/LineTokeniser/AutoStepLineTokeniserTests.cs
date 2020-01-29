@@ -73,7 +73,66 @@ namespace AutoStep.Tests.Compiler.LineTokeniser
             result.AssertToken(0, 1, LineTokenCategory.Comment);
         }
 
+        [Fact]
+        public void TokenisesThenWithArg()
+        {
+            const string Test = "    Then the 'Client Management - Client Location' page should be displayed";
 
+            var mockLinker = new Mock<IAutoStepLinker>();
+
+            var lineTokeniser = new AutoStepLineTokeniser(mockLinker.Object);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Default);
+
+            result.EndState.Should().Be(LineTokeniserState.Then);
+        }
+
+        [Fact]
+        public void TokenisesGivenWithArgAndComment()
+        {
+            const string Test = "    Given I have logged in to my app as 'USER', password 'PWD' # scenario has no description, this is a comment";
+
+            var mockLinker = new Mock<IAutoStepLinker>();
+
+            var lineTokeniser = new AutoStepLineTokeniser(mockLinker.Object);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Default);
+
+            result.Tokens.Should().HaveCount(18);
+            result.EndState.Should().Be(LineTokeniserState.Given);
+        }
+
+        [Fact]
+        public void TokenisesTag()
+        {
+            const string Test = "@Tag2";
+
+            var mockLinker = new Mock<IAutoStepLinker>();
+
+            var lineTokeniser = new AutoStepLineTokeniser(mockLinker.Object);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Default);
+
+            result.Tokens.Should().HaveCount(1);
+            result.EndState.Should().Be(LineTokeniserState.Default);
+            result.AssertToken(0, 0, LineTokenCategory.Annotation, LineTokenSubCategory.Tag);
+        }
+
+        [Fact]
+        public void TokenisesOption()
+        {
+            const string Test = "$Option2: Setting 1";
+
+            var mockLinker = new Mock<IAutoStepLinker>();
+
+            var lineTokeniser = new AutoStepLineTokeniser(mockLinker.Object);
+
+            var result = lineTokeniser.Tokenise(Test, LineTokeniserState.Default);
+
+            result.Tokens.Should().HaveCount(1);
+            result.EndState.Should().Be(LineTokeniserState.Default);
+            result.AssertToken(0, 0, LineTokenCategory.Annotation, LineTokenSubCategory.Option);
+        }
     }
 
     static class ResultExtensions

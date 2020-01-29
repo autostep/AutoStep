@@ -86,14 +86,18 @@ namespace AutoStep
 
         public override LineTokeniserState VisitLineTag(LineTagContext context)
         {
-            lineTokens!.Add(new LineToken(context.TAG().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Tag));
+            lineTokens = new List<LineToken>(2);
+
+            lineTokens.Add(new LineToken(context.TAG().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Tag));
 
             return default;
         }
 
         public override LineTokeniserState VisitLineOpt(LineOptContext context)
         {
-            lineTokens!.Add(new LineToken(context.OPTION().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Option));
+            lineTokens = new List<LineToken>(2);
+
+            lineTokens.Add(new LineToken(context.OPTION().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Option));
 
             return default;
         }
