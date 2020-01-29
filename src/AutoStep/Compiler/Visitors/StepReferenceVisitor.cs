@@ -78,6 +78,31 @@ namespace AutoStep.Compiler
         }
 
         /// <summary>
+        /// Builds a step, taking the Step Type, and the statement body Antlr context.
+        /// </summary>
+        /// <param name="type">The step type.</param>
+        /// <param name="statementContext">The statement body context.</param>
+        /// <returns>A generated step reference.</returns>
+        public StepReferenceElement BuildStep(StepType type, AutoStepParser.StatementBodyContext statementContext)
+        {
+            var step = new StepReferenceElement
+            {
+                Type = type,
+            };
+
+            Result = step;
+
+            LineInfo(step, statementContext);
+
+            Visit(statementContext);
+
+            // No more parts, convert to array for performance.
+            step.FreezeTokens();
+
+            return Result;
+        }
+
+        /// <summary>
         /// Visits the statement body.
         /// </summary>
         /// <param name="context">The parser context.</param>

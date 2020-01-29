@@ -103,4 +103,4 @@ CELL_ESCAPED_DELIMITER: '\\|';
 CELL_DELIMITER: '|';
 CELL_WS: SPACE+;
 ROW_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
-ROW_NL: NL -> popMode;
+ROW_NL: (NL|EOF) -> popMode;

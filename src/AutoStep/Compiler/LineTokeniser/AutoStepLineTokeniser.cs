@@ -30,7 +30,12 @@ namespace AutoStep
         /// </summary>
         TextDeclaration,
         Comment,
-        EntityName
+        EntityName,
+        TableBorder,
+        Text,
+        Variable,
+        StepText,
+        BoundArgument
     }
 
     public enum LineTokenSubCategory
@@ -47,12 +52,21 @@ namespace AutoStep
         Given,
         When,
         Then,
-        And
+        And,
+        Cell,
+        Header,
+        Unbound,
+        Bound,
+        ArgumentVariable
     }
 
     public enum LineTokeniserState
     {
-        Default
+        Default,
+        TableRow,
+        Given,
+        When,
+        Then
     }
 
     public struct LineToken
@@ -83,23 +97,26 @@ namespace AutoStep
         public LineTokeniseResult Tokenise(string text, LineTokeniserState lastState)
         {
             var parseTree = CompileLine(text, out var tokenStream);
-            var visitor = new AutoStepLineVisitor();
 
-            return parseTree switch
+            if (parseTree is object)
             {
-                OnlyLineContext ctxt => visitor.Visit(ctxt),
+                return VisitParseTree(parseTree, tokenStream, lastState);
+            }
+            else
+            {
                 // null means that the parser really had no idea, so yield an empty token set.
-                null => new LineTokeniseResult(0, Enumerable.Empty<LineToken>()),
-                _ => throw new InvalidOperationException("Unknown parse context")
-            };
+                return new LineTokeniseResult(0, Enumerable.Empty<LineToken>());
+            }
         }
 
-        private LineTokeniseResult ProcessLineStepDefine(LineStepDefineContext lineStepDef)
+        private LineTokeniseResult VisitParseTree(OnlyLineContext ctxt, CommonTokenStream tokenStream, LineTokeniserState lastState)
         {
-            
+            var visitor = new AutoStepLineVisitor(linker, ctxt, tokenStream, lastState);
+
+            return visitor.BuildLineResult();
         }
 
-        internal AutoStepParser.OnlyLineContext CompileLine(string line, out CommonTokenStream tokenStream)
+        private OnlyLineContext CompileLine(string line, out CommonTokenStream tokenStream)
         {
             var inputStream = new AntlrInputStream(line);
             var lexer = new AutoStepLexer(inputStream);

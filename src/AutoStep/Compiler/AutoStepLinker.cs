@@ -121,50 +121,83 @@ namespace AutoStep.Compiler
             // Go through all the steps and link them.
             foreach (var stepRef in file.AllStepReferences)
             {
-                var matches = linkerTree.Match(stepRef, true, out var _);
+                if (BindSingleStep(stepRef, file.SourceName, messages))
+                {
+                    var defSource = stepRef.Binding!.Definition.Source;
 
-                if (matches.Count == 0 || !matches.First.Value.IsExact)
-                {
-                    // No matches.
-                    messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
-                    stepRef.Unbind();
-                    success = false;
-                }
-                else if (matches.Count > 1)
-                {
-                    messages.Add(CompilerMessageFactory.Create(file.SourceName, stepRef, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
-                    stepRef.Unbind();
-                    success = false;
+                    allFoundStepSources.TryAdd(defSource.Uid, defSource);
                 }
                 else
                 {
-                    var foundMatch = matches.First.Value;
-
-                    // Link successful, bind the reference.
-                    if (foundMatch.ArgumentSet is object)
-                    {
-                        // Run argument validation on the step (doesn't prevent it binding).
-                        if (!ValidateArgumentBinding(file.SourceName, foundMatch.ArgumentSet, messages))
-                        {
-                            success = false;
-                        }
-                    }
-
-                    // Needs to materialise the argument set here. Assign the reference binding.
-                    var referenceBinding = new StepReferenceBinding(foundMatch.Definition, foundMatch.ArgumentSet?.ToArray());
-
-                    stepRef.Bind(referenceBinding);
-
-                    var defSource = foundMatch.Definition.Source;
-
-                    allFoundStepSources.TryAdd(defSource.Uid, defSource);
+                    success = false;
                 }
             }
 
             return new LinkResult(success, messages, allFoundStepSources.Values, file);
         }
 
-        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, List<CompilerMessage> messages)
+        /// <summary>
+        /// Bind a single step.
+        /// </summary>
+        /// <param name="stepReference">The step reference.</param>
+        /// <param name="sourceName">The relevant source for any messages.</param>
+        /// <param name="messages">An optional set to add messages to.</param>
+        /// <returns>True if binding is successful, false otherwise.</returns>
+        public bool BindSingleStep(StepReferenceElement stepReference, string? sourceName = null, IList<CompilerMessage>? messages = null)
+        {
+            if (stepReference is null)
+            {
+                throw new ArgumentNullException(nameof(stepReference));
+            }
+
+            var matches = linkerTree.Match(stepReference, true, out var _);
+            var success = true;
+
+            if (matches.Count == 0 || !matches.First.Value.IsExact)
+            {
+                // No matches.
+                if (messages is object)
+                {
+                    messages.Add(CompilerMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
+                }
+
+                stepReference.Unbind();
+                success = false;
+            }
+            else if (matches.Count > 1)
+            {
+                if (messages is object)
+                {
+                    messages.Add(CompilerMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
+                }
+
+                stepReference.Unbind();
+                success = false;
+            }
+            else
+            {
+                var foundMatch = matches.First.Value;
+
+                // Link successful, bind the reference.
+                if (foundMatch.ArgumentSet is object && messages is object)
+                {
+                    // Run argument validation on the step (doesn't prevent it binding).
+                    if (!ValidateArgumentBinding(sourceName, foundMatch.ArgumentSet, messages))
+                    {
+                        success = false;
+                    }
+                }
+
+                // Needs to materialise the argument set here. Assign the reference binding.
+                var referenceBinding = new StepReferenceBinding(foundMatch.Definition, foundMatch.ArgumentSet?.ToArray());
+
+                stepReference.Bind(referenceBinding);
+            }
+
+            return success;
+        }
+
+        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, IList<CompilerMessage> messages)
         {
             var success = true;
 
