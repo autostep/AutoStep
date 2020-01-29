@@ -50,9 +50,9 @@ namespace AutoStep
             // Create a parser and register our error listener.
             var parser = new AutoStepParser(tokenStream);
 
-            // We don't want to do anything with errors 
-            // (yes, I know that sounds odd, but tokenisation should just quitely return empty contexts, rather than generating useful error messages).
-            parser.ErrorListeners.Clear();
+            // We don't want to do anything with errors
+            // (yes, I know that sounds odd, but tokenisation should just quietly return empty contexts, rather than generating useful error messages).
+            parser.RemoveErrorListeners();
 
             return parser.onlyLine();
         }
