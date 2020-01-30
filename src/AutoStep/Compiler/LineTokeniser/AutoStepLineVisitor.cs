@@ -213,7 +213,7 @@ namespace AutoStep
                 new LineToken(context.BACKGROUND().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Background),
             };
 
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
         /// <inheritdoc/>
@@ -242,7 +242,7 @@ namespace AutoStep
                 lineTokens.Add(new LineToken(scenarioText.Start.Column, LineTokenCategory.EntityName, LineTokenSubCategory.Scenario));
             }
 
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
         /// <inheritdoc/>
@@ -259,7 +259,7 @@ namespace AutoStep
                 lineTokens.Add(new LineToken(scenarioText.Start.Column, LineTokenCategory.EntityName, LineTokenSubCategory.ScenarioOutline));
             }
 
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
         /// <inheritdoc/>

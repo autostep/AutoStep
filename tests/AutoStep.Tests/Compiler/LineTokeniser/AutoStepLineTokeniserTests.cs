@@ -96,7 +96,7 @@ namespace AutoStep.Tests.Compiler.LineTokeniser
 
             var result = CaptureDiagnostics(() => lineTokeniser.Tokenise(Test, LineTokeniserState.Default));
 
-            result.EndState.Should().Be(LineTokeniserState.Default);
+            result.EndState.Should().Be(LineTokeniserState.EntryBlock);
 
             result.Tokens.Should().HaveCount(2);
 
@@ -115,7 +115,7 @@ namespace AutoStep.Tests.Compiler.LineTokeniser
 
             var result = CaptureDiagnostics(() => lineTokeniser.Tokenise(Test, LineTokeniserState.Default));
 
-            result.EndState.Should().Be(LineTokeniserState.Default);
+            result.EndState.Should().Be(LineTokeniserState.EntryBlock);
 
             result.Tokens.Should().HaveCount(2);
 
@@ -153,7 +153,7 @@ namespace AutoStep.Tests.Compiler.LineTokeniser
 
             var result = CaptureDiagnostics(() => lineTokeniser.Tokenise(Test, LineTokeniserState.Default));
 
-            result.EndState.Should().Be(LineTokeniserState.Default);
+            result.EndState.Should().Be(LineTokeniserState.EntryBlock);
 
             result.Tokens.Should().HaveCount(1);
 
