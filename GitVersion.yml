@@ -2,3 +2,5 @@ mode: ContinuousDeployment
 branches:
   master:
     mode: ContinuousDelivery
+  develop:
+    tag: useBranchName

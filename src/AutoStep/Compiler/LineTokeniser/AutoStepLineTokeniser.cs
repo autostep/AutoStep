@@ -5,19 +5,37 @@ using System.Text;
 using Antlr4.Runtime;
 using AutoStep.Compiler;
 using AutoStep.Compiler.Parser;
+using Microsoft.Extensions.Logging;
 using static AutoStep.Compiler.Parser.AutoStepParser;
 
 namespace AutoStep
 {
+    /// <summary>
+    /// Provides line tokenisation. Outputs a set of line tokens, optimised for syntax highlighting rather than full compilation.
+    /// The line tokeniser is much more forgiving of errors, and generally strives to extract as much info as it can.
+    /// </summary>
     internal class AutoStepLineTokeniser
     {
         private readonly IAutoStepLinker linker;
+        private readonly bool enableDiagnosticException;
 
-        public AutoStepLineTokeniser(IAutoStepLinker linker)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoStepLineTokeniser"/> class.
+        /// </summary>
+        /// <param name="linker">The linker to use for step reference binding.</param>
+        /// <param name="enableDiagnosticException">Set to true to enable the throwing of a diagnostic exception if tokenisation cannot parse the input.</param>
+        public AutoStepLineTokeniser(IAutoStepLinker linker, bool enableDiagnosticException = false)
         {
             this.linker = linker;
+            this.enableDiagnosticException = enableDiagnosticException;
         }
 
+        /// <summary>
+        /// Tokenises a given line of text.
+        /// </summary>
+        /// <param name="text">The text to tokenise (no line terminators expected).</param>
+        /// <param name="lastState">The state of the tokeniser as returned from this method for the previous line in a file.</param>
+        /// <returns>The result of tokenisation.</returns>
         public LineTokeniseResult Tokenise(string text, LineTokeniserState lastState)
         {
             var parseTree = CompileLine(text, out var tokenStream);
@@ -28,8 +46,8 @@ namespace AutoStep
             }
             else
             {
-                // null means that the parser really had no idea, so yield an empty token set.
-                return new LineTokeniseResult(0, Enumerable.Empty<LineToken>());
+                // null means that the parser really had no idea, so yield an empty token set, still in the previous state.
+                return new LineTokeniseResult(lastState, Enumerable.Empty<LineToken>());
             }
         }
 
@@ -54,7 +72,23 @@ namespace AutoStep
             // (yes, I know that sounds odd, but tokenisation should just quietly return empty contexts, rather than generating useful error messages).
             parser.RemoveErrorListeners();
 
-            return parser.onlyLine();
+            ParserErrorListener? diagnosticParser = null;
+
+            if (enableDiagnosticException)
+            {
+                // Ok, so if we are in tests, we want to be able to collect those errors.
+                diagnosticParser = new ParserErrorListener(null, tokenStream);
+                parser.AddErrorListener(diagnosticParser);
+            }
+
+            var parseTree = parser.onlyLine();
+
+            if (diagnosticParser is object && diagnosticParser.ParserErrors.Any())
+            {
+                throw new CompilerDiagnosticException(diagnosticParser.ParserErrors, tokenStream.GetTokenDebugText(parser.Vocabulary));
+            }
+
+            return parseTree;
         }
     }
 }

@@ -77,9 +77,9 @@ STATEMENT_WORD: ~[ :\\\t#<>\r\n'"0-9]+;
 STATEMENT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 
 mode definition;
-DEF_GIVEN: 'Given ';
-DEF_WHEN: 'When ';
-DEF_THEN: 'Then ';
+DEF_GIVEN: 'Given';
+DEF_WHEN: 'When';
+DEF_THEN: 'Then';
 DEF_ESCAPED_LCURLY: '\\{';
 DEF_ESCAPED_RCURLY: '\\}';
 DEF_LCURLY: '{';
@@ -103,4 +103,4 @@ CELL_ESCAPED_DELIMITER: '\\|';
 CELL_DELIMITER: '|';
 CELL_WS: SPACE+;
 ROW_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
-ROW_NL: (NL|EOF) -> popMode;
+ROW_NL: SPACE* (NL|EOF) -> popMode;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using AutoStep.Compiler;
@@ -11,7 +10,9 @@ using static AutoStep.Compiler.Parser.AutoStepParser;
 
 namespace AutoStep
 {
-
+    /// <summary>
+    /// Provides a visitor for handling single-line tokenisation.
+    /// </summary>
     internal class AutoStepLineVisitor : AutoStepParserBaseVisitor<LineTokeniserState>
     {
         private readonly IAutoStepLinker linker;
@@ -20,6 +21,13 @@ namespace AutoStep
         private readonly LineTokeniserState lastState;
         private List<LineToken>? lineTokens;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoStepLineVisitor"/> class.
+        /// </summary>
+        /// <param name="linker">The linker to use for binding step lines (for better tokenisation).</param>
+        /// <param name="lineContext">The parsed line context.</param>
+        /// <param name="tokenStream">The parsed token stream.</param>
+        /// <param name="lastState">The last state of the tokeniser (i.e. the state of the previous line).</param>
         public AutoStepLineVisitor(IAutoStepLinker linker, OnlyLineContext lineContext, CommonTokenStream tokenStream, LineTokeniserState lastState)
         {
             this.linker = linker;
@@ -28,6 +36,10 @@ namespace AutoStep
             this.lastState = lastState;
         }
 
+        /// <summary>
+        /// Build a line result from the information provided in the constructor.
+        /// </summary>
+        /// <returns>A line tokenisation result.</returns>
         public LineTokeniseResult BuildLineResult()
         {
             lineTokens = null;
@@ -84,24 +96,29 @@ namespace AutoStep
             return new LineTokeniseResult(finalState, lineTokens);
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineTag(LineTagContext context)
         {
-            lineTokens = new List<LineToken>(2);
-
-            lineTokens.Add(new LineToken(context.TAG().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Tag));
+            lineTokens = new List<LineToken>(2)
+            {
+                new LineToken(context.TAG().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Tag),
+            };
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineOpt(LineOptContext context)
         {
-            lineTokens = new List<LineToken>(2);
-
-            lineTokens.Add(new LineToken(context.OPTION().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Option));
+            lineTokens = new List<LineToken>(2)
+            {
+                new LineToken(context.OPTION().Symbol.Column, LineTokenCategory.Annotation, LineTokenSubCategory.Option),
+            };
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineStepDefine(LineStepDefineContext context)
         {
             // We'll assume an initial token capacity of 10 (that's a lot of arguments/text combos).
@@ -114,9 +131,10 @@ namespace AutoStep
 
             VisitChildren(context);
 
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitDeclareGiven(DeclareGivenContext context)
         {
             lineTokens!.Add(new LineToken(context.DEF_GIVEN().Symbol.Column, LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.Given));
@@ -126,6 +144,7 @@ namespace AutoStep
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitDeclareWhen(DeclareWhenContext context)
         {
             lineTokens!.Add(new LineToken(context.DEF_WHEN().Symbol.Column, LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.When));
@@ -135,6 +154,7 @@ namespace AutoStep
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitDeclareThen(DeclareThenContext context)
         {
             lineTokens!.Add(new LineToken(context.DEF_THEN().Symbol.Column, LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.Then));
@@ -144,57 +164,71 @@ namespace AutoStep
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitDeclarationArgument(DeclarationArgumentContext context)
         {
-            lineTokens!.Add(new LineToken(context.Start.Column, LineTokenCategory.ArgumentDeclaration));
+            lineTokens!.Add(new LineToken(context.Start.Column, LineTokenCategory.BoundArgument, LineTokenSubCategory.Declaration));
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitDeclarationSection(DeclarationSectionContext context)
         {
-            lineTokens!.Add(new LineToken(context.Start.Column, LineTokenCategory.TextDeclaration));
+            var bodyType = context.stepDeclarationSectionContent();
+
+            if (!(bodyType is DeclarationWsContext))
+            {
+                lineTokens!.Add(new LineToken(context.Start.Column, LineTokenCategory.StepText, LineTokenSubCategory.Declaration));
+            }
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineFeature(LineFeatureContext context)
         {
             var featureText = context.text();
 
             // Feature items can have up to 2 tokens, plus the possible comment.
-            lineTokens = new List<LineToken>(3);
-
-            lineTokens.Add(new LineToken(context.FEATURE().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Feature));
+            lineTokens = new List<LineToken>(3)
+            {
+                new LineToken(context.FEATURE().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Feature),
+            };
 
             if (featureText is object)
             {
                 lineTokens.Add(new LineToken(featureText.Start.Column, LineTokenCategory.EntityName, LineTokenSubCategory.Feature));
             }
 
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineBackground(LineBackgroundContext context)
         {
             // One marker, plus possible comment.
-            lineTokens = new List<LineToken>(2);
-
-            lineTokens.Add(new LineToken(context.BACKGROUND().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Background));
+            lineTokens = new List<LineToken>(2)
+            {
+                new LineToken(context.BACKGROUND().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Background),
+            };
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineExamples(LineExamplesContext context)
         {
             // One marker, plus possible comment.
-            lineTokens = new List<LineToken>(2);
+            lineTokens = new List<LineToken>(2)
+            {
+                new LineToken(context.EXAMPLES().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Examples),
+            };
 
-            lineTokens.Add(new LineToken(context.EXAMPLES().Symbol.Column, LineTokenCategory.EntryMarker, LineTokenSubCategory.Examples));
-
-            return default;
+            return LineTokeniserState.EntryBlock;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineScenario(LineScenarioContext context)
         {
             lineTokens = new List<LineToken>(3);
@@ -211,6 +245,7 @@ namespace AutoStep
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineScenarioOutline(LineScenarioOutlineContext context)
         {
             lineTokens = new List<LineToken>(3);
@@ -221,12 +256,13 @@ namespace AutoStep
 
             if (scenarioText is object)
             {
-                lineTokens.Add(new LineToken(scenarioText.Start.Column, LineTokenCategory.EntityName, LineTokenSubCategory.Scenario));
+                lineTokens.Add(new LineToken(scenarioText.Start.Column, LineTokenCategory.EntityName, LineTokenSubCategory.ScenarioOutline));
             }
 
             return default;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineTableRow(LineTableRowContext context)
         {
             // Go for number of tokens equal to the interval width
@@ -245,6 +281,7 @@ namespace AutoStep
             return LineTokeniserState.TableRow;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitTableRowCell(TableRowCellContext context)
         {
             var cellStart = context.TABLE_START() ?? context.CELL_DELIMITER();
@@ -254,9 +291,12 @@ namespace AutoStep
                 lineTokens!.Add(new LineToken(cellStart.Symbol.Column, LineTokenCategory.TableBorder));
             }
 
+            VisitChildren(context);
+
             return LineTokeniserState.TableRow;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitTableRowCellContent(TableRowCellContentContext context)
         {
             var contentBlocks = context.cellContentBlock();
@@ -270,11 +310,11 @@ namespace AutoStep
                 if (lastState == LineTokeniserState.TableRow)
                 {
                     subCategory = LineTokenSubCategory.Cell;
-                }
 
-                if (block is CellVariableContext)
-                {
-                    tokenType = LineTokenCategory.Variable;
+                    if (block is CellVariableContext)
+                    {
+                        tokenType = LineTokenCategory.Variable;
+                    }
                 }
 
                 lineTokens!.Add(new LineToken(block.Start.Column, tokenType, subCategory));
@@ -283,6 +323,7 @@ namespace AutoStep
             return LineTokeniserState.TableRow;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineGiven(LineGivenContext context)
         {
             AddTokensForStatement(StepType.Given, LineTokenSubCategory.Given, context.GIVEN(), context.statementBody());
@@ -290,6 +331,7 @@ namespace AutoStep
             return LineTokeniserState.Given;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineWhen(LineWhenContext context)
         {
             AddTokensForStatement(StepType.When, LineTokenSubCategory.When, context.WHEN(), context.statementBody());
@@ -297,6 +339,7 @@ namespace AutoStep
             return LineTokeniserState.When;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineThen(LineThenContext context)
         {
             AddTokensForStatement(StepType.Then, LineTokenSubCategory.Then, context.THEN(), context.statementBody());
@@ -304,6 +347,7 @@ namespace AutoStep
             return LineTokeniserState.Then;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineAnd(LineAndContext context)
         {
             AddTokensForStatement(StepType.And, LineTokenSubCategory.And, context.AND(), context.statementBody());
@@ -311,6 +355,7 @@ namespace AutoStep
             return lastState;
         }
 
+        /// <inheritdoc/>
         public override LineTokeniserState VisitLineText(LineTextContext context)
         {
             var text = context.text();
@@ -324,10 +369,13 @@ namespace AutoStep
             // One for the text, one for the potential comment.
             lineTokens = new List<LineToken>(2);
 
-            // Just add free text.
-            lineTokens.Add(new LineToken(text.Start.Column, LineTokenCategory.Text));
+            if (lastState == LineTokeniserState.EntryBlock)
+            {
+                // Descriptive text.
+                lineTokens.Add(new LineToken(text.Start.Column, LineTokenCategory.Text, LineTokenSubCategory.Description));
+            }
 
-            return default;
+            return lastState;
         }
 
         private void AddTokensForStatement(StepType type, LineTokenSubCategory stepCategory, ITerminalNode marker, StatementBodyContext? statementContext)
@@ -340,9 +388,10 @@ namespace AutoStep
 
                 // Use the number of built reference tokens for the size of the line token set, plus 1 for the
                 // marker and 1 for the potential comment.
-                lineTokens = new List<LineToken>(stepRef.TokenSpan.Length + 2);
-
-                lineTokens.Add(new LineToken(marker.Symbol.Column, LineTokenCategory.StepTypeKeyword, stepCategory));
+                lineTokens = new List<LineToken>(stepRef.TokenSpan.Length + 2)
+                {
+                    new LineToken(marker.Symbol.Column, LineTokenCategory.StepTypeKeyword, stepCategory),
+                };
 
                 if (type == StepType.And)
                 {
@@ -445,9 +494,10 @@ namespace AutoStep
             else
             {
                 // One item for the marker, one for a potential comment.
-                lineTokens = new List<LineToken>(2);
-
-                lineTokens.Add(new LineToken(marker.Symbol.Column, LineTokenCategory.StepTypeKeyword, stepCategory));
+                lineTokens = new List<LineToken>(2)
+                {
+                    new LineToken(marker.Symbol.Column, LineTokenCategory.StepTypeKeyword, stepCategory),
+                };
             }
         }
     }

@@ -126,21 +126,6 @@ namespace AutoStep.Benchmarks
             }
         }
 
-        private StepDefinitionElement CreateSimpleDef(StepType type, string declaration)
-        {
-            var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
-
-            var position = 1;
-
-            foreach (var item in declaration.Split(' '))
-            {
-                defBuilder.WordPart(item, position);
-                position += item.Length + 1;
-            }
-
-            return defBuilder.Built;
-        }
-
         private StepDefinitionElement CreateDef(StepType type, string declaration, Action<StepDefinitionBuilder> builder)
         {
             var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
@@ -163,21 +148,10 @@ namespace AutoStep.Benchmarks
 
             return refBuilder.Built;
         }
-
-        private StepReferenceElement CreateRef(StepType type, string text, Action<StepReferenceBuilder> builder)
-        {
-            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-
-            builder(refBuilder);
-
-            refBuilder.Built.FreezeTokens();
-
-            return refBuilder.Built;
-        }
-
+        
         private class TestDef : StepDefinition
         {
-            private string stepId;
+            private readonly string stepId;
 
             public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
             {

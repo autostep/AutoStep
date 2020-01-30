@@ -8,7 +8,7 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableRowElement : BuiltElement, ITableRowInfo
     {
-        private List<TableCellElement> cells = new List<TableCellElement>();
+        private readonly List<TableCellElement> cells = new List<TableCellElement>();
 
         /// <summary>
         /// Gets the set of cells in the row.

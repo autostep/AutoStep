@@ -1,40 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Antlr4.Runtime;
-using AutoStep.Compiler;
-using AutoStep.Compiler.Parser;
-using static AutoStep.Compiler.Parser.AutoStepParser;
+﻿using System.Collections.Generic;
 
 namespace AutoStep
 {
+    /// <summary>
+    /// Represents the result of a line tokenisation.
+    /// </summary>
     public class LineTokeniseResult
     {
-        public LineTokeniserState EndState { get; }
-
-        public IEnumerable<LineToken> Tokens { get; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineTokeniseResult"/> class for an IEnumerable.
+        /// </summary>
+        /// <param name="endState">The end state of the tokeniser.</param>
+        /// <param name="tokens">The set of tokens.</param>
         public LineTokeniseResult(LineTokeniserState endState, IEnumerable<LineToken> tokens)
         {
             EndState = endState;
             Tokens = tokens;
         }
 
-        public LineTokeniseResult(IEnumerable<LineToken> tokens)
-        {
-            Tokens = tokens;
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineTokeniseResult"/> class for a fixed array.
+        /// </summary>
+        /// <param name="endState">The end state of the tokeniser.</param>
+        /// <param name="tokens">The set of tokens.</param>
         public LineTokeniseResult(LineTokeniserState endState, params LineToken[] tokens)
         {
             EndState = endState;
             Tokens = tokens;
         }
 
-        public LineTokeniseResult(params LineToken[] tokens)
-        {
-            Tokens = tokens;
-        }
+        /// <summary>
+        /// Gets the end state of the tokeniser.
+        /// </summary>
+        public LineTokeniserState EndState { get; }
+
+        /// <summary>
+        /// Gets the set of tokens.
+        /// </summary>
+        public IEnumerable<LineToken> Tokens { get; }
     }
 }

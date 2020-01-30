@@ -216,6 +216,15 @@ namespace AutoStep.Projects
             return false;
         }
 
+        /// <summary>
+        /// Tokenises a line of text, returning a set of line tokens. Used mostly for syntax highlighting; faster than a regular compile.
+        /// </summary>
+        /// <param name="line">The line of text to tokenise.</param>
+        /// <param name="lastTokeniserState">
+        /// The value of <see cref="LineTokeniseResult.EndState"/> from
+        /// the previous call to this method for the same file.
+        /// </param>
+        /// <returns>The tokenisation result.</returns>
         public LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
         {
             return lineTokeniser.Tokenise(line, lastTokeniserState);

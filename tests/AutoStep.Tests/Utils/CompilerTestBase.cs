@@ -201,7 +201,7 @@ namespace AutoStep.Tests.Utils
 
         private class PolymorphicWriteOnlyJsonConverter<T> : JsonConverter<T>
         {
-            JsonSerializerOptions myOptions = new JsonSerializerOptions { WriteIndented = true };
+            readonly JsonSerializerOptions myOptions = new JsonSerializerOptions { WriteIndented = true };
 
             public PolymorphicWriteOnlyJsonConverter()
             {

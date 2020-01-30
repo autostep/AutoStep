@@ -10,7 +10,7 @@ namespace AutoStep.Tests.Utils
 {
     public class TestStepDefinitionSource : IStepDefinitionSource
     {
-        public readonly static TestStepDefinitionSource Blank = new TestStepDefinitionSource();
+        public static readonly TestStepDefinitionSource Blank = new TestStepDefinitionSource();
 
         private readonly List<StepDefinition> defs;
 

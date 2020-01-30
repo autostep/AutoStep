@@ -10,7 +10,7 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableCellElement : PositionalElement, ITableCellInfo
     {
-        private List<StepToken> tokens = new List<StepToken>();
+        private readonly List<StepToken> tokens = new List<StepToken>();
 
         /// <summary>
         /// Gets or sets the text of the cell.
