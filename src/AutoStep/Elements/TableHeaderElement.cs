@@ -8,7 +8,7 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableHeaderElement : BuiltElement, ITableHeaderInfo
     {
-        private List<TableHeaderCellElement> headers = new List<TableHeaderCellElement>();
+        private readonly List<TableHeaderCellElement> headers = new List<TableHeaderCellElement>();
 
         /// <summary>
         /// Gets the list of headers.

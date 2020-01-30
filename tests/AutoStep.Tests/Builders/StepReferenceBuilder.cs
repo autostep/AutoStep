@@ -7,7 +7,7 @@ namespace AutoStep.Tests.Builders
     public class StepReferenceBuilder : BaseBuilder<StepReferenceElement>
     {
         private int nextTokenIdx = 0;
-        private int startTokenIdx = 0;
+        private readonly int startTokenIdx = 0;
 
         public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {

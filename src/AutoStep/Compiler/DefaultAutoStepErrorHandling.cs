@@ -77,6 +77,7 @@ namespace AutoStep.Compiler
         {
             if (Exception is InputMismatchException &&
                 Context is StepDeclarationContext &&
+                !ContextStartedWithOneOf(DEF_GIVEN, DEF_WHEN, DEF_THEN) &&
                 ExpectingTokens(DEF_GIVEN, DEF_WHEN, DEF_THEN))
             {
                 ChangeError(CompilerMessageCode.InvalidStepDefineKeyword, OffendingSymbol.Text);

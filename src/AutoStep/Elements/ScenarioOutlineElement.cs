@@ -9,7 +9,7 @@ namespace AutoStep.Elements
     public class ScenarioOutlineElement : ScenarioElement, IScenarioOutlineInfo
     {
         private readonly List<ExampleElement> examples = new List<ExampleElement>();
-        private HashSet<string> allExampleVariables = new HashSet<string>();
+        private readonly HashSet<string> allExampleVariables = new HashSet<string>();
 
         /// <summary>
         /// Gets the contained example blocks.

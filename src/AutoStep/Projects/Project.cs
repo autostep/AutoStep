@@ -12,7 +12,7 @@ namespace AutoStep.Projects
     /// </summary>
     public class Project
     {
-        private Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
+        private readonly Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.

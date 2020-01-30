@@ -38,5 +38,14 @@ namespace AutoStep.Compiler
         /// </summary>
         /// <param name="stepDefinitionSource">The step definition source to remove.</param>
         void RemoveStepDefinitionSource(IStepDefinitionSource stepDefinitionSource);
+
+        /// <summary>
+        /// Bind a single step.
+        /// </summary>
+        /// <param name="stepReference">The step reference.</param>
+        /// <param name="sourceName">The relevant source for any messages.</param>
+        /// <param name="messages">An optional set to add messages to.</param>
+        /// <returns>True if binding is successful, false otherwise.</returns>
+        bool BindSingleStep(StepReferenceElement stepReference, string? sourceName = null, IList<CompilerMessage>? messages = null);
     }
 }

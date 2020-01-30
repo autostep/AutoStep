@@ -1001,6 +1001,214 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitDescription([NotNull] AutoStepParser.DescriptionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineTag</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineTag([NotNull] AutoStepParser.LineTagContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineTag</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineTag([NotNull] AutoStepParser.LineTagContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineOpt</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineOpt([NotNull] AutoStepParser.LineOptContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineOpt</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineOpt([NotNull] AutoStepParser.LineOptContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineStepDefine</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineStepDefine([NotNull] AutoStepParser.LineStepDefineContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineStepDefine</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineStepDefine([NotNull] AutoStepParser.LineStepDefineContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineFeature</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineFeature([NotNull] AutoStepParser.LineFeatureContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineFeature</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineFeature([NotNull] AutoStepParser.LineFeatureContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineBackground</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineBackground([NotNull] AutoStepParser.LineBackgroundContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineBackground</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineBackground([NotNull] AutoStepParser.LineBackgroundContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineScenario</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineScenario([NotNull] AutoStepParser.LineScenarioContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineScenario</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineScenario([NotNull] AutoStepParser.LineScenarioContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineScenarioOutline</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineScenarioOutline([NotNull] AutoStepParser.LineScenarioOutlineContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineScenarioOutline</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineScenarioOutline([NotNull] AutoStepParser.LineScenarioOutlineContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineExamples</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineExamples([NotNull] AutoStepParser.LineExamplesContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineExamples</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineExamples([NotNull] AutoStepParser.LineExamplesContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineTableRow</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineTableRow([NotNull] AutoStepParser.LineTableRowContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineTableRow</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineTableRow([NotNull] AutoStepParser.LineTableRowContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineGiven([NotNull] AutoStepParser.LineGivenContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineGiven([NotNull] AutoStepParser.LineGivenContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineWhen([NotNull] AutoStepParser.LineWhenContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineWhen([NotNull] AutoStepParser.LineWhenContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineThen([NotNull] AutoStepParser.LineThenContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineThen([NotNull] AutoStepParser.LineThenContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineAnd</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineAnd([NotNull] AutoStepParser.LineAndContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineAnd</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineAnd([NotNull] AutoStepParser.LineAndContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineText</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineText([NotNull] AutoStepParser.LineTextContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineText</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineText([NotNull] AutoStepParser.LineTextContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.lineTerm"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterLineTerm([NotNull] AutoStepParser.LineTermContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.lineTerm"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitLineTerm([NotNull] AutoStepParser.LineTermContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

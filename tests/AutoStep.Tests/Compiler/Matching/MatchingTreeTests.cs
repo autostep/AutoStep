@@ -369,20 +369,9 @@ namespace AutoStep.Tests.Compiler.Matching
             return refBuilder.Built;
         }
 
-        private StepReferenceElement CreateRef(StepType type, string text, Action<StepReferenceBuilder> builder)
-        {
-            var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-
-            builder(refBuilder);
-
-            refBuilder.Built.FreezeTokens();
-
-            return refBuilder.Built;
-        }
-
         private class TestDef : StepDefinition
         {
-            private string stepId;
+            private readonly string stepId;
 
             public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
             {

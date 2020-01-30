@@ -8,7 +8,7 @@ namespace AutoStep.Elements
     /// </summary>
     public class TableElement : BuiltElement, ITableInfo
     {
-        private List<TableRowElement> rows = new List<TableRowElement>();
+        private readonly List<TableRowElement> rows = new List<TableRowElement>();
 
         /// <summary>
         /// Gets the header row.

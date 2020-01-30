@@ -140,10 +140,27 @@ namespace AutoStep.Compiler
         /// Indicates whether the set of expected tokens contains any of the specified token types.
         /// </summary>
         /// <param name="tokens">The token types to look for.</param>
-        /// <returns>True if one of specified token types is expected by the parser.</returns>
+        /// <returns>True if one of the specified token types is expected by the parser.</returns>
         protected bool ExpectingTokens(params int[] tokens)
         {
             return !Parser.GetExpectedTokens().Or(new IntervalSet(tokens)).IsNil;
+        }
+
+        /// <summary>
+        /// Indicates whether the current parse context started with one of the specified token types.
+        /// </summary>
+        /// <param name="tokens">The token types to look for.</param>
+        /// <returns>True of one of the specified token types was the start token for the current context.</returns>
+        protected bool ContextStartedWithOneOf(params int[] tokens)
+        {
+            var startToken = (Context as ParserRuleContext)?.Start;
+
+            if (startToken is null)
+            {
+                return false;
+            }
+
+            return Array.IndexOf(tokens, startToken.Type) > -1;
         }
 
         /// <summary>

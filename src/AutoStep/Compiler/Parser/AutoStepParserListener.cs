@@ -849,6 +849,184 @@ internal interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitDescription([NotNull] AutoStepParser.DescriptionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineTag</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineTag([NotNull] AutoStepParser.LineTagContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineTag</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineTag([NotNull] AutoStepParser.LineTagContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineOpt</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineOpt([NotNull] AutoStepParser.LineOptContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineOpt</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineOpt([NotNull] AutoStepParser.LineOptContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineStepDefine</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineStepDefine([NotNull] AutoStepParser.LineStepDefineContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineStepDefine</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineStepDefine([NotNull] AutoStepParser.LineStepDefineContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineFeature</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineFeature([NotNull] AutoStepParser.LineFeatureContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineFeature</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineFeature([NotNull] AutoStepParser.LineFeatureContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineBackground</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineBackground([NotNull] AutoStepParser.LineBackgroundContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineBackground</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineBackground([NotNull] AutoStepParser.LineBackgroundContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineScenario</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineScenario([NotNull] AutoStepParser.LineScenarioContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineScenario</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineScenario([NotNull] AutoStepParser.LineScenarioContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineScenarioOutline</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineScenarioOutline([NotNull] AutoStepParser.LineScenarioOutlineContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineScenarioOutline</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineScenarioOutline([NotNull] AutoStepParser.LineScenarioOutlineContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineExamples</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineExamples([NotNull] AutoStepParser.LineExamplesContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineExamples</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineExamples([NotNull] AutoStepParser.LineExamplesContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineTableRow</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineTableRow([NotNull] AutoStepParser.LineTableRowContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineTableRow</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineTableRow([NotNull] AutoStepParser.LineTableRowContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineGiven([NotNull] AutoStepParser.LineGivenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineGiven</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineGiven([NotNull] AutoStepParser.LineGivenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineWhen([NotNull] AutoStepParser.LineWhenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineWhen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineWhen([NotNull] AutoStepParser.LineWhenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineThen([NotNull] AutoStepParser.LineThenContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineThen</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineThen([NotNull] AutoStepParser.LineThenContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineAnd</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineAnd([NotNull] AutoStepParser.LineAndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineAnd</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineAnd([NotNull] AutoStepParser.LineAndContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>lineText</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineText([NotNull] AutoStepParser.LineTextContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>lineText</c>
+	/// labeled alternative in <see cref="AutoStepParser.onlyLine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineText([NotNull] AutoStepParser.LineTextContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.lineTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLineTerm([NotNull] AutoStepParser.LineTermContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.lineTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLineTerm([NotNull] AutoStepParser.LineTermContext context);
 }
 } // namespace AutoStep.Compiler.Parser
 

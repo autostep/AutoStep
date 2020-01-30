@@ -13,14 +13,14 @@ stepDefinitionBlock: annotations
                      stepDefinition
                      stepDefinitionBody;
 
-stepDefinition: WS? STEP_DEFINE DEF_WS? stepDeclaration DEF_NEWLINE
+stepDefinition: WS? STEP_DEFINE DEF_WS? stepDeclaration (DEF_NEWLINE | EOF)
                     description?;
 
 stepDefinitionBody: stepCollectionBodyLine*;
 
-stepDeclaration: DEF_GIVEN stepDeclarationBody #declareGiven
-               | DEF_WHEN stepDeclarationBody  #declareWhen
-               | DEF_THEN stepDeclarationBody  #declareThen
+stepDeclaration: DEF_GIVEN DEF_WS? stepDeclarationBody #declareGiven
+               | DEF_WHEN DEF_WS? stepDeclarationBody  #declareWhen
+               | DEF_THEN DEF_WS? stepDeclarationBody  #declareThen
                ;
 
 stepDeclarationBody: stepDeclarationSection+;
@@ -35,10 +35,10 @@ stepDeclarationArgumentName: DEF_WORD;
 
 stepDeclarationTypeHint: DEF_WORD;
 
-stepDeclarationSectionContent: DEF_WORD   # declarationWord
-                             | (DEF_ESCAPED_LCURLY | DEF_ESCAPED_RCURLY) # declarationEscaped
-                             | DEF_WS                 # declarationWs
-                             | DEF_COLON              # declarationColon
+stepDeclarationSectionContent: (DEF_WORD | DEF_GIVEN | DEF_WHEN | DEF_THEN)   # declarationWord
+                             | (DEF_ESCAPED_LCURLY | DEF_ESCAPED_RCURLY)      # declarationEscaped
+                             | DEF_WS                                         # declarationWs
+                             | DEF_COLON                                      # declarationColon
                              ;
 
 featureBlock: annotations 
@@ -88,10 +88,10 @@ statementBlock: WS? statement STATEMENT_NEWLINE NEWLINE* tableBlock #statementWi
               | WS? statement WS? EOF                               #statementEofTerminated
               ;
 
-statement: GIVEN statementBody #given
-         | WHEN statementBody  #when
-         | THEN statementBody  #then
-         | AND statementBody   #and
+statement: GIVEN STATEMENT_WS statementBody #given
+         | WHEN STATEMENT_WS statementBody  #when
+         | THEN STATEMENT_WS statementBody  #then
+         | AND STATEMENT_WS statementBody   #and
          ;
 
 statementBody: statementSection+;
@@ -127,11 +127,11 @@ exampleBlock: annotations
 tableBlock: WS? tableHeader
             (WS? tableRow | NEWLINE)*;
 
-tableHeader: tableHeaderCell+ CELL_DELIMITER ROW_NL;
+tableHeader: tableHeaderCell+ CELL_DELIMITER (ROW_NL | EOF);
 
 tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? cellVariableName? CELL_WS?;
 
-tableRow: tableRowCell+ CELL_DELIMITER ROW_NL;
+tableRow: tableRowCell+ CELL_DELIMITER (ROW_NL | EOF);
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_WS?;
 
@@ -159,3 +159,28 @@ line: WS? text? NEWLINE;
 description: NEWLINE*
              line+
              NEWLINE*;
+
+
+// This parser rule is only used for line tokenisation
+// it doesn't natively understand more context than a single line.
+// It is also more forgiving than the normal parser.
+onlyLine: WS? TAG lineTerm                                    #lineTag
+        | WS? OPTION lineTerm                                 #lineOpt
+        | WS? STEP_DEFINE DEF_WS? stepDeclaration? lineTerm   #lineStepDefine
+        | WS? FEATURE WS? text? lineTerm                      #lineFeature
+        | WS? BACKGROUND lineTerm                             #lineBackground
+        | WS? SCENARIO WS? text? lineTerm                     #lineScenario
+        | WS? SCENARIO_OUTLINE WS? text? lineTerm             #lineScenarioOutline
+        | WS? EXAMPLES lineTerm                               #lineExamples
+        | WS? tableRowCell+ CELL_DELIMITER                    #lineTableRow
+        | WS? GIVEN statementBody? lineTerm                   #lineGiven
+        | WS? WHEN statementBody? lineTerm                    #lineWhen
+        | WS? THEN statementBody? lineTerm                    #lineThen
+        | WS? AND statementBody? lineTerm                     #lineAnd
+        | WS? text? lineTerm                                  #lineText
+        ;
+
+lineTerm: STATEMENT_NEWLINE 
+        | DEF_NEWLINE
+        | ROW_NL
+        | WS? EOF;
