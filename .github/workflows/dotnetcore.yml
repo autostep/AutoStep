@@ -32,13 +32,28 @@ jobs:
     - name: Run tests
       run: dotnet test
       
+    - name: Install DocFx
+      uses: crazy-max/ghaction-chocolatey@v1.0.2
+      with:
+        # Arguments to pass to Chocolatey
+        args: install docfx
+        
+    - name: Build Metadata
+      working-directory: docs
+      run: docfx metadata
+    
+    - name: Build Docs
+      working-directory: docs
+      run: docfx build
+  
+    - name: Store Docs
+      uses: actions/upload-artifact@v1
+      with:
+        name: docs
+        path: docs/_site
+
     - name: Pack
       run:  dotnet pack ./src/AutoStep/AutoStep.csproj --no-build -o artifacts -c Release --version-suffix  ${{ steps.gitversion.outputs.PreReleaseTag }}
-  
-    - name: Docs Build
-      uses: nikeee/docfx-action@master
-      with:
-        args: docs/docfx.json
-  
+
     - name: Push
       run: dotnet nuget push artifacts/* -s https://f.feedz.io/autostep/ci/nuget/index.json -k ${{ secrets.FEEDZ_IO_KEY }}
