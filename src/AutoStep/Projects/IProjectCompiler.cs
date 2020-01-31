@@ -29,14 +29,14 @@ namespace AutoStep.Projects
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        Task<ProjectCompilerResult> Compile(ILoggerFactory logFactory, CancellationToken cancelToken = default);
+        Task<ProjectCompilerResult> CompileAsync(ILoggerFactory logFactory, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        Task<ProjectCompilerResult> Compile(CancellationToken cancelToken = default);
+        Task<ProjectCompilerResult> CompileAsync(CancellationToken cancelToken = default);
 
         /// <summary>
         /// Retrieve the set of all step definition sources.

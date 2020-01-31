@@ -49,11 +49,11 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        public async Task<ProjectCompilerResult> Compile(CancellationToken cancelToken = default)
+        public async Task<ProjectCompilerResult> CompileAsync(CancellationToken cancelToken = default)
         {
             using var logFactory = new LoggerFactory();
 
-            return await Compile(logFactory, cancelToken).ConfigureAwait(false);
+            return await CompileAsync(logFactory, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace AutoStep.Projects
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
-        public async Task<ProjectCompilerResult> Compile(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
+        public async Task<ProjectCompilerResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
             var allMessages = new List<CompilerMessage>();
 

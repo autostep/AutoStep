@@ -180,6 +180,9 @@ namespace AutoStep.Tests.Projects
 
             projectCompiler.Link();
 
+            // Sleep for a moment to indicate a delay before the next compile.
+            Thread.Sleep(1);
+
             // Update the compile results.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 

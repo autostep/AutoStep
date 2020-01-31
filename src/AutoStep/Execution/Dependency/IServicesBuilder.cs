@@ -12,7 +12,8 @@ namespace AutoStep.Execution.Dependency
         /// Register a type that is resolved fresh each time it is requested.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerResolveService<TService>();
+        void RegisterPerResolveService<TService>()
+            where TService : class;
 
         /// <summary>
         /// Register a type that is resolved fresh each time it is requested.
@@ -25,52 +26,64 @@ namespace AutoStep.Execution.Dependency
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TComponent">The implementing type.</typeparam>
-        void RegisterPerFeatureService<TService, TComponent>();
+        void RegisterPerFeatureService<TService, TComponent>()
+            where TService : class
+            where TComponent : class;
 
         /// <summary>
         /// Register a service that has one instance for each feature.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerFeatureService<TService>();
+        void RegisterPerFeatureService<TService>()
+            where TService : class;
 
         /// <summary>
         /// Register a service that has one instance for each scenario.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TComponent">The implementing type.</typeparam>
-        void RegisterPerScenarioService<TService, TComponent>();
+        void RegisterPerScenarioService<TService, TComponent>()
+            where TService : class
+            where TComponent : class;
 
         /// <summary>
         /// Register a service that has one instance for each scenario.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerScenarioService<TService>();
+        void RegisterPerScenarioService<TService>()
+            where TService : class;
 
         /// <summary>
         /// Register a service that has one instance for each scope (typically this is per-step).
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TComponent">The implementing type.</typeparam>
-        void RegisterPerScopeService<TService, TComponent>();
+        void RegisterPerScopeService<TService, TComponent>()
+            where TService : class
+            where TComponent : class;
 
         /// <summary>
         /// Register a service that has one instance for each scope (typically this is per-step).
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerScopeService<TService>();
+        void RegisterPerScopeService<TService>()
+            where TService : class;
 
         /// <summary>
         /// Register a service that has one instance for each test execution thread.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerThreadService<TService>();
+        void RegisterPerThreadService<TService>()
+            where TService : class;
 
         /// <summary>
         /// Register a service that has one instance for each test execution thread.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TComponent">The implementing type.</typeparam>
-        void RegisterPerThreadService<TService, TComponent>();
+        void RegisterPerThreadService<TService, TComponent>()
+            where TService : class
+            where TComponent : class;
 
         /// <summary>
         /// Register a singleton instance (the same object will always be returned, whenever it is resolved.

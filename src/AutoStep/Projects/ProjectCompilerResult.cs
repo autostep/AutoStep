@@ -4,7 +4,7 @@ using AutoStep.Compiler;
 namespace AutoStep.Projects
 {
     /// <summary>
-    /// Represents the outcome of a project compilation, by <see cref="ProjectCompiler.Compile(System.Threading.CancellationToken)"/>.
+    /// Represents the outcome of a project compilation, by <see cref="ProjectCompiler.CompileAsync(System.Threading.CancellationToken)"/>.
     /// </summary>
     public class ProjectCompilerResult : CompilerResult<Project>
     {

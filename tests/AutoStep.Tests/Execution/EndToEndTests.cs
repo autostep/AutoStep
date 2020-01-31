@@ -58,7 +58,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -111,7 +111,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -169,7 +169,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -222,7 +222,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -275,7 +275,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -354,7 +354,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 

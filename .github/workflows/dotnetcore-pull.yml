@@ -1,4 +1,4 @@
-name: AutoStep Pull Request
+name: AutoStep Build
 
 on: [pull_request]
 
@@ -14,14 +14,31 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.100
-      
+                 
     - name: Build with dotnet
       run: dotnet build --configuration Release
     
     - name: Run tests
       run: dotnet test
 
-    - name: Docs Build
-      uses: nikeee/docfx-action@master
-      with:
-        args: docs/docfx.json
+  build-docs:
+    
+    runs-on: windows-latest
+    
+    steps:
+      
+      - uses: actions/checkout@v1
+        
+      - name: Install Docfx
+        uses: crazy-max/ghaction-chocolatey@v1.0.2
+        with:
+          # Arguments to pass to Chocolatey
+          args: install docfx -y
+          
+      - name: Build Metadata
+        working-directory: docs
+        run: docfx metadata
+
+      - name: Build Docs
+        working-directory: docs
+        run: docfx build
