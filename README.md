@@ -2,7 +2,10 @@
 
 # AutoStep
 
-AutoStep is a compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard gherkin that add useful functionality.
+AutoStep is a new compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard Gherkin that add useful functionality.
+Unlike some existing BDD tools, there is no test code generation or separate code compilation process. The tests compile and execute directly inside AutoStep.
+
+This repository contains the core .NET library that provides compilation and execution behaviour.
 
 ---
 
@@ -15,7 +18,85 @@ At the moment the compiler and linker is relatively stable, with work starting o
 
 Get the 'alpha' pre-release for latest develop.
 
+This library will soon be wrapped by both command-line and visual tooling to make writing and running tests a breeze!
+
 ---
+
+# Using It
+
+As a basic introduction, here is a test I want to execute in Gherkin:
+
+```cucumber
+  
+  Feature: My Feature 
+
+    Scenario: My Scenario
+      
+      # This will run my defined step below, twice!
+      Given I have added an order for 100.0
+        And I have added an order for 200.0
+
+      Then I should have 2 orders
+
+  # You can define steps inside your test files
+  Step: Given I have added an order for {arg}
+  
+      Given I have entered <arg> into 'Order Value'
+      
+      When I click 'Submit'
+
+      Then the 'Order Success' page should be displayed
+```
+
+```csharp
+
+// Create a project
+var project = new Project();
+
+// Define some steps in code.
+var steps = new CallbackDefinitionSource();
+
+steps.Given("I have done something", () =>
+{
+    doneSomethingCalled = true;
+});
+
+steps.Given("I have passed {arg} to something", (string arg1) =>
+{
+    argumentValue = arg1;
+});
+
+// Read a file that you want to run
+string content = new File.ReadAllText("testfile.as");
+
+// Add your file to the project.
+project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+
+var steps = new CallbackDefinitionSource();
+
+steps.Given("I have done something", () =>
+{
+    doneSomethingCalled = true;
+});
+
+steps.Given("I have passed {arg} to something", (string arg1) =>
+{
+    argumentValue = arg1;
+});
+
+project.Compiler.AddStaticStepDefinitionSource(steps);
+
+var compileResult = await project.Compiler.CompileAsync(LogFactory);
+
+var linkResult = project.Compiler.Link();
+
+var testRun = project.CreateTestRun();
+
+await testRun.Execute(LogFactory);
+
+doneSomethingCalled.Should().BeTrue();
+argumentValue.Should().Be("argument1");
+```
 
 # Why AutoStep
 

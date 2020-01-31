@@ -72,4 +72,11 @@ Invoking the <xref:AutoStep.Compiler.AutoStepCompiler.CompileAsync(AutoStep.Comp
 
 ## Linking
 
-Linking is the act of mapping compiled step references to known step definitions.
+Linking is the act of mapping compiled step references to known step definitions. The <xref:AutoStep.Compiler.AutoStepLinker> is responsible for
+matching step references to step definitions.
+
+Unlike the compiler, the linker **has state**. It retains a tree structure of registered step definitions that it uses to determine which definition
+is suitable for which step. 
+
+It can also do partial searches over this tree, which will be used later for intellisense, allowing us to determine the list of likely steps as 
+someone is typing them.
