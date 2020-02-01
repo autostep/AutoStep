@@ -34,6 +34,9 @@ namespace AutoStep.Tests.Execution
 
                     Given I have done something
                       And I have passed argument1 to something
+                    
+                    When I do this
+                    Then it should be true
 
             ";
 
@@ -45,6 +48,8 @@ namespace AutoStep.Tests.Execution
 
             var doneSomethingCalled = false;
             string argumentValue = null;
+            var whenCalled = false;
+            var thenCalled = false;
 
             steps.Given("I have done something", () =>
             {
@@ -54,6 +59,17 @@ namespace AutoStep.Tests.Execution
             steps.Given("I have passed {arg} to something", (string arg1) =>
             {
                 argumentValue = arg1;
+            });
+
+            steps.When("I do this", (IServiceScope scope) =>
+            {
+                scope.Should().NotBeNull();
+                whenCalled = true;
+            });
+
+            steps.Then("it should be true", async () =>
+            {
+                thenCalled = true;
             });
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
@@ -68,6 +84,8 @@ namespace AutoStep.Tests.Execution
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
+            whenCalled.Should().BeTrue();
+            thenCalled.Should().BeTrue();
         }
 
         [Fact]

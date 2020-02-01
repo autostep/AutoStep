@@ -24,7 +24,7 @@ This library will soon be wrapped by both command-line and visual tooling to mak
 
 # Using It
 
-As a basic introduction, here is a test I want to execute in Gherkin:
+As a basic introduction, here is a BDD test I want to execute in AutoStep:
 
 ```cucumber
   
@@ -48,6 +48,8 @@ As a basic introduction, here is a test I want to execute in Gherkin:
       Then the 'Order Success' page should be displayed
 ```
 
+In order to run this test, I can use the following C# code:
+
 ```csharp
 
 // Create a project
@@ -56,46 +58,55 @@ var project = new Project();
 // Define some steps in code.
 var steps = new CallbackDefinitionSource();
 
-steps.Given("I have done something", () =>
+// You can put arguments in curly braces:
+steps.Given("I have entered {value} into {field}", (string val, string field) =>
 {
-    doneSomethingCalled = true;
+    // Run the selenium/manipulation code as needed
 });
 
-steps.Given("I have passed {arg} to something", (string arg1) =>
+// You can inject a DI scope and resolve services:
+steps.When("I click {button}", (IServiceScope scope, string buttonName) =>
 {
-    argumentValue = arg1;
+    // Click the button
 });
 
-// Read a file that you want to run
-string content = new File.ReadAllText("testfile.as");
-
-// Add your file to the project.
-project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
-
-var steps = new CallbackDefinitionSource();
-
-steps.Given("I have done something", () =>
+// Step methods can be async:
+steps.Then("the {title} page should be displayed", async (string title) => 
 {
-    doneSomethingCalled = true;
+    // Check for the title page
 });
 
-steps.Given("I have passed {arg} to something", (string arg1) =>
+// You can do type hinting.
+// Test compilation will give an error if someone tries to pass a string as count.
+steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) => 
 {
-    argumentValue = arg1;
 });
 
 project.Compiler.AddStaticStepDefinitionSource(steps);
 
-var compileResult = await project.Compiler.CompileAsync(LogFactory);
+// Read a file that you want to run
+var content = new File.ReadAllText("testfile.as");
 
-var linkResult = project.Compiler.Link();
+var file = new ProjectFile("/test", new StringContentSource(TestFile)); 
 
+// Add your file to the project (you can have as many files as you like)
+// Steps defined in one project file can be used in any other.
+project.TryAddFile(file);
+
+// Compile the project (will return any errors).
+// After compilation, file.LastCompilationResult will be set.
+await project.Compiler.CompileAsync();
+
+// Link the project.
+// After linking, file.LastLinkResult will be set.
+project.Compiler.Link();
+
+// Create a test run.
 var testRun = project.CreateTestRun();
 
-await testRun.Execute(LogFactory);
+// The test will run:
+await testRun.Execute();
 
-doneSomethingCalled.Should().BeTrue();
-argumentValue.Should().Be("argument1");
 ```
 
 # Why AutoStep
