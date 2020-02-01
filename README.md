@@ -12,11 +12,14 @@ This repository contains the core .NET library that provides compilation and exe
 **Status**
 
 AutoStep is currently under development (in alpha). You can grab the CI package
-from our feedz.io package feed: https://f.feedz.io/autostep/ci/nuget/index.json. 
+from our feedz.io package feed: https://f.feedz.io/autostep/ci/nuget/index.json.
+Get the 'develop' tagged pre-release package for latest develop. 
 
-At the moment the compiler and linker is relatively stable, with work starting on test execution.
+At the moment the compiler and linker is mostly stable (but need a couple of extra features), and tests can be executed.
 
-Get the 'alpha' pre-release for latest develop.
+We're about to add our own results collector, at the moment you would have to add an event handler to do that.
+Shouldn't be too long though.
+
 
 This library will soon be wrapped by both command-line and visual tooling to make writing and running tests a breeze!
 
@@ -55,7 +58,9 @@ In order to run this test, I can use the following C# code:
 // Create a project
 var project = new Project();
 
-// Define some steps in code.
+// Define some steps based on callbacks.
+// You can actually define anything as a source of steps if you
+// want to!
 var steps = new CallbackDefinitionSource();
 
 // You can put arguments in curly braces:
@@ -82,6 +87,7 @@ steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) 
 {
 });
 
+// Add your source to the project compiler.
 project.Compiler.AddStaticStepDefinitionSource(steps);
 
 // Read a file that you want to run
