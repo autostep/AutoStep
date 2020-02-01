@@ -59,7 +59,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.Compile().GetAwaiter().GetResult();
+            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -100,7 +100,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = await projectCompiler.Compile();
+            var result = await projectCompiler.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -133,12 +133,12 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            await projectCompiler.Compile();
+            await projectCompiler.CompileAsync();
 
             var originalCompilationresult = projFile.LastCompileResult;
 
             // Just do it again.
-            await projectCompiler.Compile();
+            await projectCompiler.CompileAsync();
 
             // Result should be the same.
             projFile.LastCompileResult.Should().BeSameAs(originalCompilationresult);
@@ -167,7 +167,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            await projectCompiler.Compile();
+            await projectCompiler.CompileAsync();
 
             var originalCompilationresult = projFile.LastCompileResult;
 
@@ -175,7 +175,7 @@ namespace AutoStep.Tests.Projects
             changeTime = projFile.LastCompileTime.AddMinutes(1);
 
             // Run it again.
-            await projectCompiler.Compile();
+            await projectCompiler.CompileAsync();
 
             // Result should have changed.
             projFile.Should().NotBeSameAs(originalCompilationresult);
@@ -203,7 +203,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = await projectCompiler.Compile();
+            var overallResult = await projectCompiler.CompileAsync();
 
             overallResult.Messages.Should().Contain(fileMessage);
         }
@@ -228,7 +228,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.Compile().GetAwaiter().GetResult();
+            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
             var expectedMessage = new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
@@ -256,7 +256,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.Compile().GetAwaiter().GetResult();
+            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
             var expectedMessage = new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,                                                      
                                                       "Internal Error: Unknown Error", 0, 0);
@@ -279,7 +279,7 @@ namespace AutoStep.Tests.Projects
             var cancelledToken = new CancellationToken(true);
 
             // Compile once.
-            var overallResult = projectCompiler.Invoking(c => c.Compile(cancelledToken)).Should().Throw<OperationCanceledException>();
+            var overallResult = projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
         [Fact]
@@ -312,7 +312,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.Compile().GetAwaiter().GetResult();
+            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
             projFile.StepDefinitionSource.Should().NotBeNull();
             // Linker was called.

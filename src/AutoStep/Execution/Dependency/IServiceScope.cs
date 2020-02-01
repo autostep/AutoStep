@@ -19,7 +19,8 @@ namespace AutoStep.Execution.Dependency
         /// <typeparam name="TService">The service type.</typeparam>
         /// <returns>An instance of the type.</returns>
         /// <exception cref="DependencyException">Thrown if the service cannot be resolved.</exception>
-        TService Resolve<TService>();
+        TService Resolve<TService>()
+            where TService : class;
 
         /// <summary>
         /// Resolves a typed service.

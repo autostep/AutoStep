@@ -20,7 +20,7 @@ namespace AutoStep.Compiler
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    public partial class AutoStepCompiler : IAutoStepCompiler
+    public class AutoStepCompiler : IAutoStepCompiler
     {
         private readonly CompilerOptions options;
 

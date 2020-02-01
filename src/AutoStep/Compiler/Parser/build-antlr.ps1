@@ -1,15 +1,14 @@
-#${env:PATH} = "D:\Program Files\Java\jdk1.8.0_172\bin;";
-
 $ErrorActionPreference = "Stop";
+$antlrVersion = "4.8";
 
-if(!(Test-Path "${PSScriptRoot}\antlr-4.7.2-complete.jar"))
+if(!(Test-Path "${PSScriptRoot}\antlr-$antlrVersion-complete.jar"))
 {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest "https://www.antlr.org/download/antlr-4.7.2-complete.jar" -OutFile "${PSScriptRoot}\antlr-4.7.2-complete.jar"
+    Invoke-WebRequest "https://www.antlr.org/download/antlr-$antlrVersion-complete.jar" -OutFile "${PSScriptRoot}\antlr-$antlrVersion-complete.jar"
 }
 
-java -jar $PSScriptRoot\antlr-4.7.2-complete.jar .\AutoStepLexer.g4 -Dlanguage=CSharp -package AutoStep.Compiler.Parser
-java -jar $PSScriptRoot\antlr-4.7.2-complete.jar .\AutoStepParser.g4 -Dlanguage=CSharp -package AutoStep.Compiler.Parser -visitor
+java -jar $PSScriptRoot\antlr-$antlrVersion-complete.jar .\AutoStepLexer.g4 -Dlanguage=CSharp -package AutoStep.Compiler.Parser
+java -jar $PSScriptRoot\antlr-$antlrVersion-complete.jar .\AutoStepParser.g4 -Dlanguage=CSharp -package AutoStep.Compiler.Parser -visitor
 
 $files = Get-Item "*.cs";
 

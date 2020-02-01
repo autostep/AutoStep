@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
-using AutoStep.Compiler.Parser;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Compiler

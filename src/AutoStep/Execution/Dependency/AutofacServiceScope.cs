@@ -31,6 +31,7 @@ namespace AutoStep.Execution.Dependency
 
         /// <inheritdoc/>
         public TService Resolve<TService>()
+            where TService : class
         {
             try
             {

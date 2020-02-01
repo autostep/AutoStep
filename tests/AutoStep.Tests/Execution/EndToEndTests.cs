@@ -34,6 +34,9 @@ namespace AutoStep.Tests.Execution
 
                     Given I have done something
                       And I have passed argument1 to something
+                    
+                    When I do this
+                    Then it should be true
 
             ";
 
@@ -45,6 +48,8 @@ namespace AutoStep.Tests.Execution
 
             var doneSomethingCalled = false;
             string argumentValue = null;
+            var whenCalled = false;
+            var thenCalled = false;
 
             steps.Given("I have done something", () =>
             {
@@ -56,9 +61,20 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
+            steps.When("I do this", (IServiceScope scope) =>
+            {
+                scope.Should().NotBeNull();
+                whenCalled = true;
+            });
+
+            steps.Then("it should be true", async () =>
+            {
+                thenCalled = true;
+            });
+
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -68,6 +84,8 @@ namespace AutoStep.Tests.Execution
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
+            whenCalled.Should().BeTrue();
+            thenCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -111,7 +129,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -169,7 +187,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -222,7 +240,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -275,7 +293,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 
@@ -354,7 +372,7 @@ namespace AutoStep.Tests.Execution
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.Compile(LogFactory);
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             var linkResult = project.Compiler.Link();
 

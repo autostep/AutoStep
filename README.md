@@ -2,20 +2,117 @@
 
 # AutoStep
 
-AutoStep is a compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard gherkin that add useful functionality.
+AutoStep is a new compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard Gherkin that add useful functionality.
+Unlike some existing BDD tools, there is no test code generation or separate code compilation process. The tests compile and execute directly inside AutoStep.
+
+This repository contains the core .NET library that provides compilation and execution behaviour.
 
 ---
 
 **Status**
 
 AutoStep is currently under development (in alpha). You can grab the CI package
-from our feedz.io package feed: https://f.feedz.io/autostep/ci/nuget/index.json. 
+from our feedz.io package feed: https://f.feedz.io/autostep/ci/nuget/index.json.
+Get the 'develop' tagged pre-release package for latest develop. 
 
-At the moment the compiler and linker is relatively stable, with work starting on test execution.
+At the moment the compiler and linker is mostly stable (but need a couple of extra features), and tests can be executed.
 
-Get the 'alpha' pre-release for latest develop.
+We're about to add our own results collector, at the moment you would have to add an event handler to do that.
+Shouldn't be too long though.
+
+
+This library will soon be wrapped by both command-line and visual tooling to make writing and running tests a breeze!
 
 ---
+
+# Using It
+
+As a basic introduction, here is a BDD test I want to execute in AutoStep:
+
+```cucumber
+Feature: My Feature 
+
+  Scenario: My Scenario
+    
+    # This will run my defined step below, twice!
+    Given I have added an order for 100.0
+      And I have added an order for 200.0
+
+    Then I should have 2 orders
+
+# You can define steps inside your test files
+Step: Given I have added an order for {arg}
+
+    Given I have entered <arg> into 'Order Value'
+    
+    When I click 'Submit'
+
+    Then the 'Order Success' page should be displayed
+```
+
+In order to run this test, I can use the following C# code:
+
+```csharp
+
+// Create a project
+var project = new Project();
+
+// Define some steps based on callbacks.
+// You can actually define anything as a source of steps if you
+// want to!
+var steps = new CallbackDefinitionSource();
+
+// You can put arguments in curly braces:
+steps.Given("I have entered {value} into {field}", (string val, string field) =>
+{
+    // Run the selenium/manipulation code as needed
+});
+
+// You can inject a DI scope and resolve services:
+steps.When("I click {button}", (IServiceScope scope, string buttonName) =>
+{
+    // Click the button
+});
+
+// Step methods can be async:
+steps.Then("the {title} page should be displayed", async (string title) => 
+{
+    // Check for the title page
+});
+
+// You can do type hinting.
+// Test compilation will give an error if someone tries to pass a string as count.
+steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) => 
+{
+});
+
+// Add your source to the project compiler.
+project.Compiler.AddStaticStepDefinitionSource(steps);
+
+// Read a file that you want to run
+var content = new File.ReadAllText("testfile.as");
+
+var file = new ProjectFile("/test", new StringContentSource(TestFile)); 
+
+// Add your file to the project (you can have as many files as you like)
+// Steps defined in one project file can be used in any other.
+project.TryAddFile(file);
+
+// Compile the project (will return any errors).
+// After compilation, file.LastCompilationResult will be set.
+await project.Compiler.CompileAsync();
+
+// Link the project.
+// After linking, file.LastLinkResult will be set.
+project.Compiler.Link();
+
+// Create a test run.
+var testRun = project.CreateTestRun();
+
+// The test will run:
+await testRun.Execute();
+
+```
 
 # Why AutoStep
 
@@ -70,7 +167,6 @@ To this end, AutoStep allows you to define steps in the **same language as the t
 
 ```gherkin
 Step: Given I have placed an order for {value:float}
-
    This step will place an order for the specified value.
     
     Given I have clicked on the 'Orders' menu item
@@ -79,7 +175,6 @@ Step: Given I have placed an order for {value:float}
       And I have clicked 'Confirm'
 
 Step: Given I have shipped an order for {value:float}
-
     This step ships the order with the specified value.
 
     Given I have clicked on the 'Shipping' menu item
@@ -88,8 +183,8 @@ Step: Given I have shipped an order for {value:float}
       And I have pressed 'Confirm'
 ```
 
-Step definitions can have descriptions, just like scenarios, which act
-like documentation 
+Step definitions can have descriptions, just like scenarios.
+Descriptions act like documentation for the step.
 
 You can nest the references too, so we could wrap both of those again:
 
@@ -121,6 +216,38 @@ AutoStep 1.0 will ship with its own mini-IDE designed for writing BDD tests, tha
 removes a lot of the complexity of using Visual Studio or similar IDEs, making the experience much more straightforward for test writers/readers.
 
 Eventually we are going to add support for writing tests in the popular IDEs, but our priority is getting people who don't already use one writing tests first.
+
+## Tags vs Options
+
+When we have built our tests in Gherkin in the past, and we want to add some automatic functionality to a test (for example, spinning up a database), we have
+ended up horribly mis-using tags to achieve this:
+
+```gherkin
+
+@fresh-database-per-scenario
+@use-db-backup:customer-setup
+@orders
+Feature: Customer Orders
+
+  Scenario: Enter an Order
+  
+```
+
+In this test, we want to tell our before-feature handlers what *options* we want to use for the feature; but this is now mixed in with
+the actual tags for the Feature, that is how we group, find and report on tests.
+
+So, in AutoStep, we differentiate *tags* from *options*, by having a different character to indicate options:
+
+```gherkin
+
+$fresh-database-per-scenario
+$use-db-backup:customer-setup
+@orders
+Feature: Customer Orders
+
+  Scenario: Enter an Order
+  
+```
 
 ## Sourcing Steps from Anywhere
 

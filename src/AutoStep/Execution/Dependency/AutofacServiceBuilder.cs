@@ -25,6 +25,7 @@ namespace AutoStep.Execution.Dependency
 
         /// <inheritdoc/>
         public void RegisterPerResolveService<TService>()
+            where TService : class
         {
             builder.RegisterType<TService>().InstancePerDependency();
         }
@@ -44,48 +45,60 @@ namespace AutoStep.Execution.Dependency
 
         /// <inheritdoc/>
         public void RegisterPerFeatureService<TService, TComponent>()
+            where TService : class
+            where TComponent : class
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
         }
 
         /// <inheritdoc/>
         public void RegisterPerFeatureService<TService>()
+            where TService : class
         {
             builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
         }
 
         /// <inheritdoc/>
         public void RegisterPerScenarioService<TService, TComponent>()
+            where TService : class
+            where TComponent : class
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
 
         /// <inheritdoc/>
         public void RegisterPerScenarioService<TService>()
+            where TService : class
         {
             builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
 
         /// <inheritdoc/>
         public void RegisterPerScopeService<TService>()
+            where TService : class
         {
             builder.RegisterType<TService>().InstancePerLifetimeScope();
         }
 
         /// <inheritdoc/>
         public void RegisterPerScopeService<TService, TComponent>()
+            where TService : class
+            where TComponent : class
         {
             builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
         }
 
         /// <inheritdoc/>
         public void RegisterPerThreadService<TService>()
+            where TService : class
         {
             builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }
 
         /// <inheritdoc/>
         public void RegisterPerThreadService<TService, TComponent>()
+            where TService : class
+            where TComponent : class
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }

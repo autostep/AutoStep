@@ -25,6 +25,8 @@
         "files": [
           "writing-tests/**.md",
           "writing-tests/**/toc.yml",
+          "design/**.md",
+          "design/**/toc.yml",
           "toc.yml",
           "*.md"
         ]
