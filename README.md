@@ -167,7 +167,6 @@ To this end, AutoStep allows you to define steps in the **same language as the t
 
 ```gherkin
 Step: Given I have placed an order for {value:float}
-
    This step will place an order for the specified value.
     
     Given I have clicked on the 'Orders' menu item
@@ -176,7 +175,6 @@ Step: Given I have placed an order for {value:float}
       And I have clicked 'Confirm'
 
 Step: Given I have shipped an order for {value:float}
-
     This step ships the order with the specified value.
 
     Given I have clicked on the 'Shipping' menu item
@@ -185,8 +183,8 @@ Step: Given I have shipped an order for {value:float}
       And I have pressed 'Confirm'
 ```
 
-Step definitions can have descriptions, just like scenarios, which act
-like documentation 
+Step definitions can have descriptions, just like scenarios.
+Descriptions act like documentation for the step.
 
 You can nest the references too, so we could wrap both of those again:
 
