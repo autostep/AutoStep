@@ -30,25 +30,24 @@ This library will soon be wrapped by both command-line and visual tooling to mak
 As a basic introduction, here is a BDD test I want to execute in AutoStep:
 
 ```cucumber
-  
-  Feature: My Feature 
+Feature: My Feature 
 
-    Scenario: My Scenario
-      
-      # This will run my defined step below, twice!
-      Given I have added an order for 100.0
-        And I have added an order for 200.0
+  Scenario: My Scenario
+    
+    # This will run my defined step below, twice!
+    Given I have added an order for 100.0
+      And I have added an order for 200.0
 
-      Then I should have 2 orders
+    Then I should have 2 orders
 
-  # You can define steps inside your test files
-  Step: Given I have added an order for {arg}
-  
-      Given I have entered <arg> into 'Order Value'
-      
-      When I click 'Submit'
+# You can define steps inside your test files
+Step: Given I have added an order for {arg}
 
-      Then the 'Order Success' page should be displayed
+    Given I have entered <arg> into 'Order Value'
+    
+    When I click 'Submit'
+
+    Then the 'Order Success' page should be displayed
 ```
 
 In order to run this test, I can use the following C# code:
@@ -219,6 +218,38 @@ AutoStep 1.0 will ship with its own mini-IDE designed for writing BDD tests, tha
 removes a lot of the complexity of using Visual Studio or similar IDEs, making the experience much more straightforward for test writers/readers.
 
 Eventually we are going to add support for writing tests in the popular IDEs, but our priority is getting people who don't already use one writing tests first.
+
+## Tags vs Options
+
+When we have built our tests in Gherkin in the past, and we want to add some automatic functionality to a test (for example, spinning up a database), we have
+ended up horribly mis-using tags to achieve this:
+
+```gherkin
+
+@fresh-database-per-scenario
+@use-db-backup:customer-setup
+@orders
+Feature: Customer Orders
+
+  Scenario: Enter an Order
+  
+```
+
+In this test, we want to tell our before-feature handlers what *options* we want to use for the feature; but this is now mixed in with
+the actual tags for the Feature, that is how we group, find and report on tests.
+
+So, in AutoStep, we differentiate *tags* from *options*, by having a different character to indicate options:
+
+```gherkin
+
+$fresh-database-per-scenario
+$use-db-backup:customer-setup
+@orders
+Feature: Customer Orders
+
+  Scenario: Enter an Order
+  
+```
 
 ## Sourcing Steps from Anywhere
 
