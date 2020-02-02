@@ -34,6 +34,11 @@ namespace AutoStep.Tests.Utils
 
             var result = await compiler.CompileAsync(source, LogFactory);
 
+            foreach (var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
+
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
             Assert.False(result.Success);
@@ -47,6 +52,11 @@ namespace AutoStep.Tests.Utils
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
+
+            foreach(var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -65,6 +75,11 @@ namespace AutoStep.Tests.Utils
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
+
+            foreach (var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
 
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
@@ -85,6 +100,11 @@ namespace AutoStep.Tests.Utils
 
             var result = await compiler.CompileAsync(source, LogFactory);
 
+            foreach (var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
+
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
         }
@@ -95,6 +115,11 @@ namespace AutoStep.Tests.Utils
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
+
+            foreach (var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
 
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
