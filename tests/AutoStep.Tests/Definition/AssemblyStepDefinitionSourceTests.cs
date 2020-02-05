@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using AutoStep.Compiler.Tests.DefinedSteps;
+using AutoStep.Language.Tests.DefinedSteps;
 using AutoStep.Definitions;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Utils;

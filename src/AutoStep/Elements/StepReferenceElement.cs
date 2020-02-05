@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Compiler;
-using AutoStep.Compiler.Matching;
-using AutoStep.Definitions;
+using AutoStep.Language;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 

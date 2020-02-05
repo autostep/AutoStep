@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -70,6 +70,7 @@ namespace AutoStep.Tests.Execution
             steps.Then("it should be true", async () =>
             {
                 thenCalled = true;
+                await Task.Delay(1);
             });
 
             project.Compiler.AddStaticStepDefinitionSource(steps);

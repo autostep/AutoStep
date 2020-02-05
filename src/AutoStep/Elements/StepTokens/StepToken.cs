@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using AutoStep.Compiler.Matching;
-using AutoStep.Definitions;
-
-namespace AutoStep.Elements.StepTokens
+﻿namespace AutoStep.Elements.StepTokens
 {
     /// <summary>
     /// Defines the notion of a step token; a range of characters within the defined step text. Similar to the internal Antlr tokens, but slightly simpler,

@@ -3,7 +3,7 @@ using FluentAssertions;
 using AutoStep.Execution;
 using AutoStep.Projects;
 using Moq;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using Xunit;
 using AutoStep.Tests.Utils;
 using AutoStep.Tests.Builders;

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using AutoStep.Compiler;
-using AutoStep.Compiler.Matching;
-using AutoStep.Definitions;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts

@@ -1,5 +1,5 @@
 ﻿using System;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using AutoStep.Tests.Builders;
 using AutoStep.Elements;
 using FluentAssertions;
@@ -13,6 +13,7 @@ using FluentAssertions.Equivalency;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Utils
 {

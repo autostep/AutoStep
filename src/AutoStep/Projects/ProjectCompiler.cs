@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using AutoStep.Definitions;
 using Microsoft.Extensions.Logging;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Projects
 {
