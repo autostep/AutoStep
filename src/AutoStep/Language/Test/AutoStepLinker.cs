@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Definitions;
-using AutoStep.Elements;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Elements.Test;
 using AutoStep.Language.Test.Matching;
 using Microsoft.Extensions.Logging;
 

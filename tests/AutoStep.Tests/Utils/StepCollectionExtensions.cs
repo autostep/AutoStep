@@ -1,5 +1,5 @@
 ﻿using System;
-using AutoStep.Elements;
+using AutoStep.Elements.Test;
 using AutoStep.Tests.Builders;
 
 namespace AutoStep.Tests.Utils

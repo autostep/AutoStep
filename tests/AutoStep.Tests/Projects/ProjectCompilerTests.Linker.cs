@@ -5,12 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Definitions;
-using AutoStep.Elements;
 using AutoStep.Projects;
 using AutoStep.Tests.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Projects
 {

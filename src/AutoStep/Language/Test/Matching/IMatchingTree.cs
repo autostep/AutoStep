@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Definitions;
-using AutoStep.Elements;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Language.Test.Matching
 {

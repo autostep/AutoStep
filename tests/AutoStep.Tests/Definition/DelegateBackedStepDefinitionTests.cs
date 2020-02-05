@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Definitions;
-using AutoStep.Elements;
 using AutoStep.Elements.Parts;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
@@ -15,6 +14,7 @@ using AutoStep.Tests.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Definition
 {

@@ -4,7 +4,7 @@ using AutoStep.Language;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Represents a reference to a Step inside a written test.
@@ -20,7 +20,7 @@ namespace AutoStep.Elements
 
         /// <summary>
         /// Gets or sets the determined <see cref="StepType"/> used to bind against a declared Step. This will usually only differ
-        /// from <see cref="StepReferenceElement.Type"/> when the step is of the <see cref="StepType.And"/> type, and the binding is determined by a preceding step.
+        /// from <see cref="Type"/> when the step is of the <see cref="StepType.And"/> type, and the binding is determined by a preceding step.
         /// A null value indicates there was no preceding step, so a compilation error probably occurred anyway.
         /// </summary>
         public StepType? BindingType { get; set; }

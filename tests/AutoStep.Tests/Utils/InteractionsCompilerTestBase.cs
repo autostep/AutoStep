@@ -14,6 +14,7 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Interaction;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Utils
 {

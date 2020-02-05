@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoStep.Language;
-using AutoStep.Elements;
 using AutoStep.Projects;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Utils
 {

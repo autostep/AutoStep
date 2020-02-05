@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoStep.Elements;
+using AutoStep.Elements.Test;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;

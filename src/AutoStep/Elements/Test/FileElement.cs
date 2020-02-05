@@ -1,4 +1,4 @@
-﻿namespace AutoStep.Elements
+﻿namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Defines a built file (which is a defined set of autostep content, with a known source).

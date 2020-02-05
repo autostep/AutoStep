@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Definitions;
-using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Definition
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Elements.Metadata;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Represents a table built from autostep source.

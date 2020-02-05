@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Represents a table cell. A cell's value is treated as a statement argument.

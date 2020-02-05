@@ -1,6 +1,6 @@
 ﻿using System;
-using AutoStep.Elements;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {

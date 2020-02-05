@@ -1,6 +1,6 @@
 ﻿using AutoStep.Elements.Metadata;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// A built background block.

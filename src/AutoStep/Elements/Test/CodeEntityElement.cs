@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Defines the built content of an AutoStep content source (i.e. a raw file becomes a set of built content).

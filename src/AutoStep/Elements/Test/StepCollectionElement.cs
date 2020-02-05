@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Elements.Metadata;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Defines an element that can contain a list of steps.

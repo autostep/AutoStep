@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AutoStep.Elements {
+namespace AutoStep.Elements.Test {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace AutoStep.Elements {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Elements.ElementExceptionMessages", typeof(ElementExceptionMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Elements.Test.ElementExceptionMessages", typeof(ElementExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

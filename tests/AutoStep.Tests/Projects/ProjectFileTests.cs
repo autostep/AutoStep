@@ -6,6 +6,7 @@ using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Projects
 {

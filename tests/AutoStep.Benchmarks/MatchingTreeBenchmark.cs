@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
+using AutoStep.Elements.Test;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;

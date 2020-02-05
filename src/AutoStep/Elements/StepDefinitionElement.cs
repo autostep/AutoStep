@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.Parts;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Elements
 {

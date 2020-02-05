@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep.Elements
+namespace AutoStep.Elements.Test
 {
     /// <summary>
     /// Indicates that a built element can have annotations applied to it.

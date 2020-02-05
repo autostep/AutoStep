@@ -92,7 +92,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TokenStreamExtensionsMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Elements\ElementExceptionMessages.Designer.cs">
+    <Compile Update="Elements\Test\ElementExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
@@ -136,7 +136,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>TokenStreamExtensionsMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Elements\ElementExceptionMessages.resx">
+    <EmbeddedResource Update="Elements\Test\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

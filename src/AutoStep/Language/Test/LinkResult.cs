@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Definitions;
-using AutoStep.Elements;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Language
 {

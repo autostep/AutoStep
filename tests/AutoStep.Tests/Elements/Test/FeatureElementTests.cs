@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoStep.Elements;
+using AutoStep.Elements.Test;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
 
-namespace AutoStep.Tests.Elements
+namespace AutoStep.Tests.Elements.Test
 {
     public class FeatureElementTests
     {
@@ -32,7 +33,7 @@ namespace AutoStep.Tests.Elements
             cloned.Background.Should().NotBeNull();
             cloned.SourceLine.Should().Be(10);
             cloned.StartColumn.Should().Be(12);
-            
+
             cloned.Annotations.Should().ContainInOrder(new[] { featureElement.Annotations[0] });
             cloned.Scenarios[0].Should().BeSameAs(featureElement.Scenarios[0]);
             cloned.Scenarios[1].Should().BeSameAs(featureElement.Scenarios[1]);
@@ -41,11 +42,11 @@ namespace AutoStep.Tests.Elements
         [Fact]
         public void CloneIncludesSingleScenarioOutlineInstance()
         {
-            var featureElement = new FeatureBuilder("My Feature", 1, 1)                                     
+            var featureElement = new FeatureBuilder("My Feature", 1, 1)
                                      .ScenarioOutline("Scenario Outline 1", 1, 1, cfg => cfg
                                         .Examples(1, 1, ex => ex
                                             .Tag("valid", 1, 1)
-                                            .Table(1 , 1, t => { })
+                                            .Table(1, 1, t => { })
                                         )
                                      )
                                      .Built;
@@ -78,8 +79,8 @@ namespace AutoStep.Tests.Elements
             var cloned = featureElement.CloneWithFilteredScenarios((scen, ex) => ex.Annotations.OfType<TagElement>().Any(t => t.Tag != "notvalid"));
 
             var originalScenario = (ScenarioOutlineElement)featureElement.Scenarios[0];
-            var clonedScenario = (ScenarioOutlineElement) cloned.Scenarios[0];
-            
+            var clonedScenario = (ScenarioOutlineElement)cloned.Scenarios[0];
+
             clonedScenario.Should().NotBeSameAs(originalScenario);
             clonedScenario.Name.Should().Be("Scenario Outline 1");
             clonedScenario.Description.Should().Be("Desc");

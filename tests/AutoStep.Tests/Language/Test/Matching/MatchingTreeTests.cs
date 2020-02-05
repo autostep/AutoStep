@@ -12,6 +12,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Test.Matching;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Language.Test.Matching
 {

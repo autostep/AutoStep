@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using AutoStep.Elements;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {
