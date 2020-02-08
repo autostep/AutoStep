@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Test;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Interaction

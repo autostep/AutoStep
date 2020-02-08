@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Test.Parser;
+using AutoStep.Language.Test.Visitors;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Test
@@ -91,7 +92,7 @@ namespace AutoStep.Language.Test
                 success = false;
             }
 
-            errors.AddRange(stepReferenceVisitor.Messages);
+            errors.AddRange(stepReferenceVisitor.MessageSet.Messages);
 
             if (stepDefinition.Arguments is object)
             {
@@ -142,7 +143,7 @@ namespace AutoStep.Language.Test
             var builtFile = compilerVisitor.Visit(fileContext);
 
             // Compile the file.
-            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.Messages, compilerVisitor.Success ? builtFile : null);
+            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.MessageSet.Messages, compilerVisitor.Success ? builtFile : null);
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Linq;
 using AutoStep.Definitions;
 using AutoStep.Elements.Test;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Defines a linking operation result.

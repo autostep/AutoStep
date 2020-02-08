@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 using AutoStep.Definitions;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Represents a step reference binding from reference -> definition, with any associated arguments.

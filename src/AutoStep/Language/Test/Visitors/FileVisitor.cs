@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using AutoStep.Language.Test.Parser;
 using AutoStep.Elements;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test.Visitors
 {
     /// <summary>
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
     /// and builts a <see cref="FileElement"/> from that tree.
     /// </summary>
-    internal class FileVisitor : BaseAutoStepVisitor<FileElement>
+    internal class FileVisitor : BaseAutoStepTestVisitor<FileElement>
     {
         private readonly StepReferenceVisitor stepVisitor;
         private readonly TableVisitor tableVisitor;
@@ -69,7 +66,7 @@ namespace AutoStep.Language
             if (Result.Feature != null)
             {
                 // We already have a feature, don't go any deeper, add an error.
-                AddMessage(context.featureDefinition().featureTitle(), CompilerMessageLevel.Error, CompilerMessageCode.OnlyOneFeatureAllowed);
+                MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Error, CompilerMessageCode.OnlyOneFeatureAllowed);
                 return Result;
             }
 
@@ -82,7 +79,7 @@ namespace AutoStep.Language
             if (Result.Feature.Scenarios.Count == 0)
             {
                 // Warning should be associated to the title.
-                AddMessage(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result.Feature.Name ?? "unknown");
+                MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result.Feature.Name ?? "unknown");
             }
 
             return Result;
@@ -99,7 +96,7 @@ namespace AutoStep.Language
 
             if (currentAnnotatable == null)
             {
-                AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
+                MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
                 return Result;
             }
 
@@ -107,7 +104,7 @@ namespace AutoStep.Language
 
             var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
 
-            currentAnnotatable.Annotations.Add(LineInfo(new TagElement(tagBody), tag));
+            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(tag));
 
             return Result;
         }
@@ -123,7 +120,7 @@ namespace AutoStep.Language
 
             if (currentAnnotatable == null)
             {
-                AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
+                MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
                 return Result;
             }
 
@@ -138,7 +135,7 @@ namespace AutoStep.Language
             var positionOfColon = optBody.IndexOf(':', StringComparison.CurrentCulture);
 
             string? setting = null;
-            string name = optBody;
+            var name = optBody;
 
             if (positionOfColon != -1)
             {
@@ -153,16 +150,16 @@ namespace AutoStep.Language
 
                 if (string.IsNullOrEmpty(setting))
                 {
-                    AddMessage(option, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
+                    MessageSet.Add(option, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
                     return Result;
                 }
             }
 
-            currentAnnotatable.Annotations.Add(LineInfo(
+            currentAnnotatable.Annotations.Add(
                 new OptionElement(name)
                 {
                     Setting = setting,
-                }, option));
+                }.AddLineInfo(option));
 
             return Result;
         }
@@ -185,7 +182,7 @@ namespace AutoStep.Language
             // here and give more useful errors.
             if (featureKeyWordText != "Feature:")
             {
-                AddMessage(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
+                MessageSet.Add(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
             }
 
             var title = titleTree.text().GetText();
@@ -194,7 +191,7 @@ namespace AutoStep.Language
             // Past this point, annotations aren't valid.
             currentAnnotatable = null;
 
-            LineInfo(Result.Feature!, titleTree);
+            Result.Feature!.AddLineInfo(titleTree);
 
             Result.Feature!.Name = title;
             Result.Feature.Description = string.IsNullOrWhiteSpace(description) ? null : description;
@@ -213,7 +210,7 @@ namespace AutoStep.Language
 
             var background = new BackgroundElement();
 
-            LineInfo(background, context.BACKGROUND());
+            background.AddLineInfo(context.BACKGROUND());
 
             Result.Feature!.Background = background;
 
@@ -309,7 +306,7 @@ namespace AutoStep.Language
                 // here and give more useful errors.
                 if (scenarioKeyWordText != "Scenario:")
                 {
-                    AddMessage(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
+                    MessageSet.Add(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
                     return Result;
                 }
 
@@ -325,7 +322,7 @@ namespace AutoStep.Language
                 // here and give more useful errors.
                 if (scenarioOutlineKeyWordText != "Scenario Outline:")
                 {
-                    AddMessage(scenarioOutlineToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioOutlineKeyword, scenarioOutlineKeyWordText);
+                    MessageSet.Add(scenarioOutlineToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioOutlineKeyword, scenarioOutlineKeyWordText);
                     return Result;
                 }
 
@@ -350,7 +347,7 @@ namespace AutoStep.Language
 
             var description = ExtractDescription(definition.description());
 
-            LineInfo(scenario, title);
+            scenario.AddLineInfo(title);
 
             scenario.Name = titleText;
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
@@ -471,13 +468,13 @@ namespace AutoStep.Language
 
             if (exampleTokenText != "Examples:")
             {
-                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
+                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
                 return Result;
             }
 
             if (outline == null)
             {
-                AddMessage(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario.Name!);
+                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario.Name!);
                 return Result;
             }
 
@@ -485,7 +482,7 @@ namespace AutoStep.Language
 
             currentAnnotatable = example;
 
-            LineInfo(example, context.EXAMPLES());
+            example.AddLineInfo(context.EXAMPLES());
 
             Visit(context.annotations());
 
@@ -509,7 +506,7 @@ namespace AutoStep.Language
                 // We are inside a step definition body, so insertions will be references to step parameters defined on the step definition.
                 if (!currentStepDefinition.ContainsArgument(insertionName))
                 {
-                    return CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared, insertionName);
+                    return MessageSet.CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared, insertionName);
                 }
             }
             else if (currentScenario is ScenarioOutlineElement outline)
@@ -517,13 +514,13 @@ namespace AutoStep.Language
                 if (!outline.ContainsVariable(insertionName))
                 {
                     // Referencing an undeclared examples variable
-                    return CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared, insertionName);
+                    return MessageSet.CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared, insertionName);
                 }
             }
             else if (currentScenario is object)
             {
                 // Example variable in a regular scenario
-                return CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario, insertionName);
+                return MessageSet.CreateMessage(context, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario, insertionName);
             }
 
             return null;
@@ -535,7 +532,7 @@ namespace AutoStep.Language
 
             if (currentStepSet is null && currentStepDefinition is null)
             {
-                AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.StepNotExpected);
+                MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.StepNotExpected);
                 return;
             }
 
@@ -553,11 +550,11 @@ namespace AutoStep.Language
                     if (currentStepDefinition is object && currentStepSet is null)
                     {
                         // We are in the step declaration, which does not permit 'And'.
-                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword, type);
+                        MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword, type);
                     }
                     else if (currentStepSetLastConcrete is null)
                     {
-                        AddMessage(context, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep);
+                        MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep);
                     }
                     else
                     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Elements;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Defines the result of a step definition compilation, returned from

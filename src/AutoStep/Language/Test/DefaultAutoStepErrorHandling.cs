@@ -3,7 +3,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     using static AutoStepParser;
 

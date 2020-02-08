@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Projects
 {

@@ -180,16 +180,23 @@ namespace AutoStep.Language
         /// </summary>
         ArgumentTypeNotCompatible = 20004,
 
+
         //// Errors from Exceptions ////
 
         /// <summary>
         /// IO Problem occurred while compiling.
         /// </summary>
-        IOException = 30001,
+        IOException = 90001,
 
         /// <summary>
         /// Unknown error category (the catch-all).
         /// </summary>
-        UncategorisedException = 30002,
+        UncategorisedException = 90002,
+
+        //// Errors from the Interaction Language ////
+
+        InteractionNameAlreadySet = 30001,
+
+        InteractionConstantNotDefined = 30002,
     }
 }

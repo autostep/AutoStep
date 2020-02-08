@@ -6,7 +6,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Provides extensions to assist in rendering debug data inside the compiler.

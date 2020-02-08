@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using AutoStep.Language.Test.Parser;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test.Visitors
 {
     /// <summary>
     /// Generates table elements from table parse contexts.
     /// </summary>
-    internal class TableVisitor : BaseAutoStepVisitor<TableElement>
+    internal class TableVisitor : BaseAutoStepTestVisitor<TableElement>
     {
         private readonly Func<ParserRuleContext, string, CompilerMessage?> insertionNameValidator;
         private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]
@@ -48,7 +47,7 @@ namespace AutoStep.Language
         {
             Result = new TableElement();
 
-            LineInfo(Result, bodyContext.tableHeader());
+            Result.AddLineInfo(bodyContext.tableHeader());
 
             Visit(bodyContext);
 
@@ -64,7 +63,7 @@ namespace AutoStep.Language
         {
             Debug.Assert(Result is object);
 
-            LineInfo(Result.Header, context);
+            Result.Header.AddLineInfo(context);
 
             base.VisitTableHeader(context);
 
@@ -93,16 +92,16 @@ namespace AutoStep.Language
 
                 if (cellWs is object)
                 {
-                    PositionalLineInfo(header, cellWs);
+                    header.AddPositionalLineInfo(cellWs);
                 }
                 else
                 {
-                    PositionalLineInfo(header, context);
+                    header.AddPositionalLineInfo(context);
                 }
             }
             else
             {
-                PositionalLineInfo(header, variableName);
+                header.AddPositionalLineInfo(variableName);
             }
 
             Result.Header.AddHeader(header);
@@ -119,14 +118,14 @@ namespace AutoStep.Language
         {
             Debug.Assert(Result is object);
 
-            currentRow = LineInfo(new TableRowElement(), context);
+            currentRow = new TableRowElement().AddLineInfo(context);
 
             base.VisitTableRow(context);
 
             // Check if the number of cells in the row doesn't match the headings.
             if (currentRow.Cells.Count != Result.ColumnCount)
             {
-                AddMessageStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result.ColumnCount);
+                MessageSet.AddStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result.ColumnCount);
             }
 
             Result.AddRow(currentRow);
@@ -155,11 +154,11 @@ namespace AutoStep.Language
                 if (cellWs == null)
                 {
                     // If there's no whitespace, we'll just have to use the start of the table delimiter.
-                    PositionalLineInfo(cell, context);
+                    cell.AddPositionalLineInfo(context);
                 }
                 else
                 {
-                    PositionalLineInfo(cell, cellWs);
+                    cell.AddPositionalLineInfo(cellWs);
                 }
 
                 currentRow.AddCell(cell);
@@ -170,7 +169,7 @@ namespace AutoStep.Language
 
                 currentCell = cell;
 
-                PositionalLineInfo(currentCell, cellContent);
+                cell.AddPositionalLineInfo(cellContent);
 
                 try
                 {
@@ -259,7 +258,7 @@ namespace AutoStep.Language
 
                 if (additionalError is object)
                 {
-                    AddMessage(additionalError);
+                    MessageSet.Add(additionalError);
                 }
             }
 
@@ -311,12 +310,12 @@ namespace AutoStep.Language
             Debug.Assert(currentCell is object);
 
             var offset = currentCell.StartColumn;
-            var start = (ctxt.Start.Column + 1) - offset;
+            var start = ctxt.Start.Column + 1 - offset;
             var startIndex = ctxt.Start.StartIndex;
 
-            var part = creator(start, (ctxt.Stop.StopIndex - startIndex) + 1);
+            var part = creator(start, ctxt.Stop.StopIndex - startIndex + 1);
 
-            PositionalLineInfo(part, ctxt);
+            part.AddPositionalLineInfo(ctxt);
 
             return part;
         }
@@ -327,12 +326,12 @@ namespace AutoStep.Language
             Debug.Assert(currentCell is object);
 
             var offset = currentCell.StartColumn;
-            var start = (ctxt.Symbol.Column + 1) - offset;
+            var start = ctxt.Symbol.Column + 1 - offset;
             var startIndex = ctxt.Symbol.StartIndex;
 
-            var part = creator(start, (ctxt.Symbol.StopIndex - startIndex) + 1);
+            var part = creator(start, ctxt.Symbol.StopIndex - startIndex + 1);
 
-            PositionalLineInfo(part, ctxt);
+            part.AddPositionalLineInfo(ctxt);
 
             return part;
         }

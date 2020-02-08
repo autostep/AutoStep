@@ -314,6 +314,60 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFloatArg([NotNull] AutoStepInteractionsParser.FloatArgContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodStr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodStr([NotNull] AutoStepInteractionsParser.MethodStrContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodStr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodStr([NotNull] AutoStepInteractionsParser.MethodStrContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>methodStrContent</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodStrContent([NotNull] AutoStepInteractionsParser.MethodStrContentContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>methodStrContent</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodStrContent([NotNull] AutoStepInteractionsParser.MethodStrContentContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>methodStrEscape</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodStrEscape([NotNull] AutoStepInteractionsParser.MethodStrEscapeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>methodStrEscape</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodStrEscape([NotNull] AutoStepInteractionsParser.MethodStrEscapeContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>methodStrVariable</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodStrVariable([NotNull] AutoStepInteractionsParser.MethodStrVariableContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>methodStrVariable</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodStrVariable([NotNull] AutoStepInteractionsParser.MethodStrVariableContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinition"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

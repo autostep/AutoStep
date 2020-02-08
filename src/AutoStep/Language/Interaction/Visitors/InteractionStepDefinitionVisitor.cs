@@ -1,81 +1,101 @@
 ﻿using System.Diagnostics;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using AutoStep.Elements;
+using Antlr4.Runtime.Tree;
+using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
-using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language.Test.Visitors
+namespace AutoStep.Language.Interaction.Visitors
 {
+    using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
+
     /// <summary>
-    /// Handles generating step definitions from the Antlr parse context.
+    /// Handles generating interaction step definitions from the Antlr parse context.
     /// </summary>
-    internal class StepDefinitionVisitor : BaseAutoStepTestVisitor<StepDefinitionElement>
+    internal class InteractionStepDefinitionVisitor : InteractionMethodHoldingVisitor<InteractionStepDefinitionElement>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StepDefinitionVisitor"/> class.
-        /// </summary>
-        /// <param name="sourceName">The name of the source.</param>
-        /// <param name="tokenStream">The token stream.</param>
-        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream)
-            : base(sourceName, tokenStream)
-        {
-        }
+        private readonly InteractionConstantSet constants;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StepDefinitionVisitor"/> class.
+        /// Initializes a new instance of the <see cref="InteractionStepDefinitionVisitor"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
-        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        public InteractionStepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionConstantSet constants)
             : base(sourceName, tokenStream, rewriter)
         {
+            this.constants = constants;
+        }
+
+        protected override void ValidateConstant(ParserRuleContext constantToken, string constantName)
+        {
+            if (!constants.ContainsConstant(constantName))
+            {
+                MessageSet.Add(constantToken, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, constantName);
+            }
+        }
+
+        protected override void ValidateArgumentVariable(ParserRuleContext nameRefToken, string variableName, bool isArrayRef)
+        {
+            // We need a variable state this tracked down the call chain.
+            throw new System.NotImplementedException();
+        }
+
+        protected override InteractionMethodChainVariables GetInitialMethodChainVariables()
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
         /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
         /// </summary>
         /// <param name="type">The step type.</param>
-        /// <param name="declarationContext">The step declaration context.</param>
-        /// <param name="bodyContext">The statement body context.</param>
+        /// <param name="definitionContext">The step declaration context.</param>
         /// <returns>A generated step reference.</returns>
-        public StepDefinitionElement BuildStepDefinition(StepType type, AutoStepParser.StepDeclarationContext declarationContext, AutoStepParser.StepDeclarationBodyContext bodyContext)
+        public InteractionStepDefinitionElement BuildStepDefinition(StepDefinitionBodyContext definitionContext)
         {
-            var step = new StepDefinitionElement
-            {
-                Type = type,
-                Declaration = bodyContext.GetText(),
-            };
+            Result = new InteractionStepDefinitionElement();
 
-            Result = step;
+            Result.AddLineInfo(definitionContext);
 
-            step.AddLineInfo(declarationContext);
-
-            VisitChildren(bodyContext);
+            VisitChildren(definitionContext);
 
             return Result;
         }
 
-        /// <summary>
-        /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
-        /// </summary>
-        /// <param name="type">The step type.</param>
-        /// <param name="bodyContext">The statement body context.</param>
-        /// <returns>A generated step reference.</returns>
-        public StepDefinitionElement BuildStepDefinition(StepType type, AutoStepParser.StepDeclarationBodyContext bodyContext)
+        public override InteractionStepDefinitionElement VisitDeclareGiven([NotNull] DeclareGivenContext context)
         {
-            var step = new StepDefinitionElement
-            {
-                Type = type,
-                Declaration = bodyContext.GetText(),
-            };
+            Result!.Type = StepType.Given;
 
-            Result = step;
+            VisitChildren(context);
 
-            step.AddLineInfo(bodyContext);
+            return Result;
+        }
 
-            VisitChildren(bodyContext);
+        public override InteractionStepDefinitionElement VisitDeclareWhen([NotNull] DeclareWhenContext context)
+        {
+            Result!.Type = StepType.When;
+
+            VisitChildren(context);
+
+            return Result;
+        }
+
+        public override InteractionStepDefinitionElement VisitDeclareThen([NotNull] DeclareThenContext context)
+        {
+            Result!.Type = StepType.Then;
+
+            VisitChildren(context);
+
+            return Result;
+        }
+
+        public override InteractionStepDefinitionElement VisitStepDeclarationBody([NotNull] StepDeclarationBodyContext context)
+        {
+            Result!.Declaration = context.GetText();
+
+            VisitChildren(context);
 
             return Result;
         }
@@ -85,7 +105,7 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="context">The parser context.</param>
         /// <returns>The step definition element.</returns>
-        public override StepDefinitionElement VisitDeclarationArgument([NotNull] AutoStepParser.DeclarationArgumentContext context)
+        public override InteractionStepDefinitionElement VisitDeclarationArgument([NotNull] DeclarationArgumentContext context)
         {
             Debug.Assert(Result is object);
 
@@ -126,7 +146,7 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="context">The partser context.</param>
         /// <returns>The step definition.</returns>
-        public override StepDefinitionElement VisitDeclarationWord([NotNull] AutoStepParser.DeclarationWordContext context)
+        public override InteractionStepDefinitionElement VisitDeclarationWord([NotNull] DeclarationWordContext context)
         {
             AddPart(new WordDefinitionPart(context.GetText()).AddPositionalLineInfo(context));
 
@@ -138,7 +158,7 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="context">The partser context.</param>
         /// <returns>The step definition.</returns>
-        public override StepDefinitionElement VisitDeclarationEscaped([NotNull] AutoStepParser.DeclarationEscapedContext context)
+        public override InteractionStepDefinitionElement VisitDeclarationEscaped(DeclarationEscapedContext context)
         {
             var part = new WordDefinitionPart(context.GetText()).AddPositionalLineInfo(context);
 
@@ -154,7 +174,7 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="context">The parser context.</param>
         /// <returns>The step definition.</returns>
-        public override StepDefinitionElement VisitDeclarationColon([NotNull] AutoStepParser.DeclarationColonContext context)
+        public override InteractionStepDefinitionElement VisitDeclarationColon(DeclarationColonContext context)
         {
             AddPart(new WordDefinitionPart(context.GetText()).AddPositionalLineInfo(context));
 

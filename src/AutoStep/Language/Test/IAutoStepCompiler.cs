@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Provides the autostep compiler as a service, and allows text content to be turned into a built structure of AutoStep content.

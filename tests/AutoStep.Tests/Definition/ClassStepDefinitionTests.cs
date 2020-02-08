@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -12,6 +11,7 @@ using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Definition
 {

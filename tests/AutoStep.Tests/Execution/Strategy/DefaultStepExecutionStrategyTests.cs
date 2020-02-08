@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -13,6 +12,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Execution.Strategy
 {

@@ -4,7 +4,7 @@ options { tokenVocab=AutoStepInteractionsLexer; }
 
 file: entityDefinition*;
 
-entityDefinition: traitDefinition 
+entityDefinition: traitDefinition
                 | componentDefinition
                 | appDefinition;
                 
@@ -33,12 +33,19 @@ methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 
 methodCallArgs: methodCallArg (LIST_SEPARATOR methodCallArg)*;
 
-methodCallArg: STRING   #stringArg
+methodCallArg: METHOD_STRING_START methodStr METHOD_STRING_END  #stringArg
              | NAME_REF #variableRef
              | NAME_REF ARR_LEFT STRING ARR_RIGHT #variableArrRef
              | CONSTANT #constantRef
              | INT      #intArg
              | FLOAT    #floatArg;
+
+methodStr: methodStrPart+;
+
+methodStrPart: STR_CONTENT                                 #methodStrContent
+             | METHOD_STR_ESCAPE_QUOTE                     #methodStrEscape
+             | STR_ANGLE_LEFT STR_NAME_REF STR_ANGLE_RIGHT #methodStrVariable
+             ;
 
 componentDefinition: COMPONENT_DEFINITION NAME_REF
                      componentItem*;

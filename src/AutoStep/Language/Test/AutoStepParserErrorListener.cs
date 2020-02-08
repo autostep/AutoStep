@@ -4,7 +4,7 @@ using System.IO;
 using Antlr4.Runtime;
 using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     internal class AutoStepParserErrorListener : ParserErrorListener<AutoStepParser>
     {

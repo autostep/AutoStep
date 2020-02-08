@@ -10,10 +10,9 @@ FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
 
 INT : DIGIT+;
 
-
-STRING: '\'' (.| '\\\'')+? '\'';
-
 APP_DEFINITION: 'App:';
+
+STRING: '"' (.| '\\"')+? '"';
 
 // Exact match first
 TRAIT_DEFINITION: 'Trait:';
@@ -30,13 +29,8 @@ STEP_DEFINE: 'Step:' -> pushMode(definition);
 LIST_SEPARATOR: ',';
 DEF_SEPARATOR: ':';
 
-METHOD_OPEN: '(';
-METHOD_CLOSE: ')';
+METHOD_OPEN: '(' -> pushMode(methodArgs);
 NAME_REF: [a-zA-Z-]+;
-
-ARR_LEFT: '[';
-ARR_RIGHT: ']';
-
 PLUS: '+';
 
 COMPONENT_INSERT: '$component$';
@@ -49,6 +43,24 @@ NEWLINE: NL -> channel(HIDDEN);
 TEXT_DOC_COMMENT: SPACE* '##' ~[\r\n]* -> channel(HIDDEN);
 TEXT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 WS: SPACE+ -> channel(HIDDEN);
+
+mode methodArgs;
+METHOD_STRING_START: '"' -> pushMode(stringArg);
+PARAM_NAME: [a-zA-Z-]+;
+ARR_LEFT: '[';
+ARR_RIGHT: ']';
+PARAM_SEPARATOR: ',';
+METHOD_CLOSE: ')' -> popMode;
+
+mode stringArg;
+STR_ANGLE_LEFT: '<' -> pushMode(stringVariable);
+METHOD_STR_ESCAPE_QUOTE: '\\"';
+METHOD_STRING_END: '"';
+STR_CONTENT: .+?;
+
+mode stringVariable;
+STR_NAME_REF: NAME_REF;
+STR_ANGLE_RIGHT: '>' -> popMode;
 
 mode definition;
 DEF_GIVEN: 'Given';

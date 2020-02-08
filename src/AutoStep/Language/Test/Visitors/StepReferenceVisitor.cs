@@ -4,16 +4,16 @@ using System.Globalization;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using AutoStep.Language.Test.Parser;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test.Parser;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test.Visitors
 {
     /// <summary>
     /// Handles generating step references from the Antlr parse context.
     /// </summary>
-    internal class StepReferenceVisitor : BaseAutoStepVisitor<StepReferenceElement>
+    internal class StepReferenceVisitor : BaseAutoStepTestVisitor<StepReferenceElement>
     {
         private readonly (int TokenType, string Replace)[] escapeReplacements = new[]
         {
@@ -67,7 +67,7 @@ namespace AutoStep.Language
 
             Result = step;
 
-            LineInfo(step, statementContext);
+            step.AddLineInfo(statementContext);
 
             VisitChildren(statementContext);
 
@@ -92,7 +92,7 @@ namespace AutoStep.Language
 
             Result = step;
 
-            LineInfo(step, statementContext);
+            step.AddLineInfo(statementContext);
 
             Visit(statementContext);
 
@@ -211,7 +211,7 @@ namespace AutoStep.Language
 
                 if (additionalError is object)
                 {
-                    AddMessage(additionalError);
+                    MessageSet.Add(additionalError);
                 }
             }
 
@@ -276,9 +276,9 @@ namespace AutoStep.Language
             var start = ctxt.Start.Column - offset;
             var startIndex = ctxt.Start.StartIndex;
 
-            var part = creator(start, (ctxt.Stop.StopIndex - startIndex) + 1);
+            var part = creator(start, ctxt.Stop.StopIndex - startIndex + 1);
 
-            PositionalLineInfo(part, ctxt);
+            part.AddPositionalLineInfo(ctxt);
 
             return part;
         }
@@ -290,9 +290,9 @@ namespace AutoStep.Language
             var start = ctxt.Symbol.Column - offset;
             var startIndex = ctxt.Symbol.StartIndex;
 
-            var part = creator(start, (ctxt.Symbol.StopIndex - startIndex) + 1);
+            var part = creator(start, ctxt.Symbol.StopIndex - startIndex + 1);
 
-            PositionalLineInfo(part, ctxt);
+            part.AddPositionalLineInfo(ctxt);
 
             return part;
         }

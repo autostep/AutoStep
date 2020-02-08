@@ -172,6 +172,33 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitFloatArg([NotNull] AutoStepInteractionsParser.FloatArgContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodStr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodStr([NotNull] AutoStepInteractionsParser.MethodStrContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>methodStrContent</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodStrContent([NotNull] AutoStepInteractionsParser.MethodStrContentContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>methodStrEscape</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodStrEscape([NotNull] AutoStepInteractionsParser.MethodStrEscapeContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>methodStrVariable</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodStrPart"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodStrVariable([NotNull] AutoStepInteractionsParser.MethodStrVariableContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinition"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

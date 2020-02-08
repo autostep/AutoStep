@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Projects
 {

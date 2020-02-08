@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// The available Compiler Options.

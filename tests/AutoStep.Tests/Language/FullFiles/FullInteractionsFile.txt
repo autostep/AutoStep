@@ -2,19 +2,9 @@
 # Define App Context
 App: my-app
 
-  name: 'My App'
+  name: "My App"
   components: button, text, checkbox
 
-Trait: clickable + named + enable-disable
-  
-  Step: Given I have clicked the {name} $component$
-
-    ## This step will click the $component$.    
-
-    locateNamed(name)
-    -> first()
-    -> assertEnabled()
-    -> click()
 
 Trait: enable-disable
   
@@ -25,7 +15,7 @@ Trait: named
 
   default(name): locateNamed(name)
 
-  locateNamed(name): undefined()
+  locateNamed(name): select("input[name='<name>']")
 
 Trait: named + enable-disable
 
@@ -38,6 +28,17 @@ Trait: named + enable-disable
     locateNamed(name)
     -> first()
     -> assertEnabled()
+    
+Trait: clickable + named + enable-disable
+  
+  Step: Given I have clicked the {name} $component$
+
+    ## This step will click the $component$.    
+
+    locateNamed(name)
+    -> first()
+    -> assertEnabled()
+    -> click()
 
 # The singular trait implies there is only one 
 # on the page.
@@ -45,7 +46,7 @@ Trait: singular
 
 Trait: has-value
 
-  getValue(): getAttribute('value')
+  getValue(): getAttribute("value")
 
 Trait: has-value + named
 
@@ -79,12 +80,12 @@ Trait: scannable + named
   Step: Given I have scanned the following values into {name}
     locateNamed(name)
     -> forEachTableRow()
-    -> type(row['value'])
+    -> type(row["value"])
     -> typeEscape()
 
 Trait: scannable-list + named
 
-  selectListItems(): select('li')
+  selectListItems(): select("li")
 
   Step: Then {value} should be in the {name} $component$
     locateNamed(name)
@@ -94,7 +95,7 @@ Trait: scannable-list + named
 
 Trait: editable + named
 
-  isReadOnly(): getAttribute('readonly') -> equals('readonly')
+  isReadOnly(): getAttribute("readonly") -> equals("readonly")
 
   assertReadOnly(): isReadOnly() -> assertTrue()
   assertNotReadOnly(): isReadOnly() -> assertFalse()
@@ -140,7 +141,7 @@ Component: button
 
   traits: clickable, enable-disable, named
   based-on: control
-  locateNamed(name): select('input[type=button], button') -> with-text(name)
+  locateNamed(name): select("input[type=button], button") -> with-text(name)
       
 
 # Example of overriding locate for a default control
@@ -148,30 +149,30 @@ Component: button
 
   ## This component is the override for buttons
   
-  locateNamed(name): select('input.bootstrap-btn') -> with-text(name)
+  locateNamed(name): select("input.bootstrap-btn") -> with-text(name)
   based-on: button
 
 Component: kendo-button
 
-  name: 'kendo button'
+  name: "kendo button"
 
-# Defining the 'field'
+# Defining the "field"
 Component: field
 
   traits: clickable, enable-disable, named, scannable, has-value
-  locateAll(): select('input[type=text]')
+  locateAll(): select("input[type=text]")
   locateNamed(name): label(name) -> linkedComponent()
  
 # Page Example
 Component: page
 
   Step: Then the {title} page should be displayed
-    select('head title') 
+    select("head title") 
     -> get-text()
     -> assertEqualTo(title)
 
   Step: Then a page with {partialTitle} in the title should be displayed
-    select('head title')
+    select("head title")
     -> get-text()
     -> assert-contains(partialTitle)
 
@@ -188,16 +189,16 @@ Component: page
 
 Component: kendo-grid
   
-  name: 'kendo grid'
+  name: "kendo grid"
  
-  locate(): select('k-grid') -> displayed()
-  locateNamed(name): label(name) -> linkedComponent() -> withClass('k-grid') -> displayed()
+  locate(): select("k-grid") -> displayed()
+  locateNamed(name): label(name) -> linkedComponent() -> withClass("k-grid") -> displayed()
   
-  getGridRow(): select('k-grid')
+  getGridRow(): select("k-grid")
 
   Step: Given I have clicked the {linkName} in the kendo grid where {column} equals {columnValue}
     locate()
-    -> getRowByColumn(column, columnValue) # Defined in code, because it can't be done here
+    -> getRowByColumn(column, columnValue) # Defined in code, because it can"t be done here
     -> link(linkName)
     -> click()
     
@@ -214,16 +215,16 @@ Component: kendo-grid
 
   Step: Then the kendo grid should have {count:int} rows
     locate()
-    -> remember('grid') # Stores the grid as a local variable
-    -> waitForNo('k-loading-mask')
-    -> select('tr[role=row]')
+    -> remember("grid") # Stores the grid as a local variable
+    -> waitForNo("k-loading-mask")
+    -> select("tr[role=row]")
     -> assertCountIs(count)
         
   Step: Then the kendo grid should have at least {count:int} rows
     locate()
-    -> remember('grid') # Stores the grid as a local variable
-    -> waitForNo('k-loading-mask')
-    -> select('tr[role=row]')
+    -> remember("grid") # Stores the grid as a local variable
+    -> waitForNo("k-loading-mask")
+    -> select("tr[role=row]")
     -> assertCountIsAtLeast(count)
     
 
@@ -231,11 +232,11 @@ Component: label
   
   traits: named
 
-  locateNamed(name): select('label') -> with-text(name);
+  locateNamed(name): select("label") -> with-text(name);
 
 Component: heading
 
-  locateNamed(name): select('h1,h2,h3') -> with-text(name)
+  locateNamed(name): select("h1,h2,h3") -> with-text(name)
 
   traits: named, displayable
 
@@ -243,4 +244,4 @@ Component: link
   
   traits: named, displayable, clickable, enable-disable
 
-  locateNamed(name): select('a') -> with-text(name)
+  locateNamed(name): select("a") -> with-text(name)

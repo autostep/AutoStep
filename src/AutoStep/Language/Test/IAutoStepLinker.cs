@@ -2,7 +2,7 @@
 using AutoStep.Definitions;
 using AutoStep.Elements.Test;
 
-namespace AutoStep.Language
+namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Defines the interface for the AutoStep Linker, responsible for linking an individual file.

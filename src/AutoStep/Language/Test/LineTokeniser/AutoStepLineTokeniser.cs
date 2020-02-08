@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using AutoStep.Language;
+using AutoStep.Language.Test;
 using AutoStep.Language.Test.Parser;
 using Microsoft.Extensions.Logging;
 using static AutoStep.Language.Test.Parser.AutoStepParser;
