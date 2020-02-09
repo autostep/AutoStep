@@ -27,15 +27,16 @@ traitItem: NAME_KEYWORD STRING #traitName
 methodDefinition: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE DEF_SEPARATOR
                   methodCall (FUNC_PASS_MARKER methodCall)*;
 
-methodDefArgs: NAME_REF (NAME_REF LIST_SEPARATOR)*;
+methodDefArgs: PARAM_NAME (PARAM_NAME LIST_SEPARATOR)*;
 
 methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 
-methodCallArgs: methodCallArg (LIST_SEPARATOR methodCallArg)*;
+methodCallArgs: methodCallArg (PARAM_SEPARATOR methodCallArg)*;
 
 methodCallArg: METHOD_STRING_START methodStr METHOD_STRING_END  #stringArg
-             | NAME_REF #variableRef
-             | NAME_REF ARR_LEFT STRING ARR_RIGHT #variableArrRef
+             | PARAM_NAME #variableRef
+             | PARAM_NAME ARR_LEFT PARAM_NAME ARR_RIGHT #variableArrRef
+             | PARAM_NAME ARR_LEFT METHOD_STRING_START methodStr METHOD_STRING_END ARR_RIGHT #variableArrStrRef
              | CONSTANT #constantRef
              | INT      #intArg
              | FLOAT    #floatArg;

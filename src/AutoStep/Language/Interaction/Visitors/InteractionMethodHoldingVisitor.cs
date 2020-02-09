@@ -88,7 +88,7 @@ namespace AutoStep.Language.Interaction.Visitors
             var variableRefElement = new VariableRefMethodArgumentElement();
             variableRefElement.AddPositionalLineInfo(context);
 
-            variableRefElement.VariableName = context.NAME_REF().GetText();
+            variableRefElement.VariableName = context.PARAM_NAME().GetText();
 
             currentMethodCall!.Arguments.Add(variableRefElement);
 
@@ -102,8 +102,8 @@ namespace AutoStep.Language.Interaction.Visitors
             var varArrElement = new VariableArrayRefMethodArgument();
             varArrElement.AddPositionalLineInfo(context);
 
-            varArrElement.VariableName = context.NAME_REF().GetText();
-            varArrElement.ArrayIndex = GetTextFromStringToken(context.STRING());
+            varArrElement.VariableName = context.PARAM_NAME(0).GetText();
+            varArrElement.ArrayIndex = context.PARAM_NAME(1).GetText();
 
             currentMethodCall!.Arguments.Add(varArrElement);
 

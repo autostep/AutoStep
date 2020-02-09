@@ -151,6 +151,13 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitVariableArrRef([NotNull] AutoStepInteractionsParser.VariableArrRefContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>variableArrStrRef</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVariableArrStrRef([NotNull] AutoStepInteractionsParser.VariableArrStrRefContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>constantRef</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
 	/// </summary>

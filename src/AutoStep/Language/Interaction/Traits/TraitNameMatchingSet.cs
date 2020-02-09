@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace AutoStep.Tests.Language.Interaction
+namespace AutoStep.Language.Interaction.Traits
 {
     [DebuggerDisplay("{DebuggerToString()}")]
     public class TraitNameMatchingSet
     {
         private ulong finishedMask;
         private string[] myTraits;
-        
+
         public TraitNameMatchingSet(params string[] names)
         {
             Array.Sort(names);
@@ -24,12 +24,12 @@ namespace AutoStep.Tests.Language.Interaction
 
         public bool ConsumeIfContains(string name, ref ulong currentMask)
         {
-            for(int idx = 0; idx < myTraits.Length; idx++)
+            for (var idx = 0; idx < myTraits.Length; idx++)
             {
                 ulong consumeFlag = 1u << idx;
 
                 // Check if this has already been consumed (rather than do a string compare).
-                if((consumeFlag & currentMask) == 0 && myTraits[idx] == name)
+                if ((consumeFlag & currentMask) == 0 && myTraits[idx] == name)
                 {
                     currentMask |= consumeFlag;
 
@@ -43,16 +43,16 @@ namespace AutoStep.Tests.Language.Interaction
         public bool ConsumeIfContains(string[] sortedNames, ref ulong currentMask)
         {
             ulong foundMask = 0;
-            int myTraitIdx = 0;
-            int foundCount = 0;
+            var myTraitIdx = 0;
+            var foundCount = 0;
 
             // For each name, check if that name exists in the set (and has not been consumed).
-            for(int idx = 0; idx < sortedNames.Length; idx++)
-            {                
+            for (var idx = 0; idx < sortedNames.Length; idx++)
+            {
                 // Because everything is sorted, the next value in the sortedNames
                 // list is going to come after the last match in the myTraits. More efficient than searching from the beginning 
                 // each time.
-                while(myTraitIdx < myTraits.Length)
+                while (myTraitIdx < myTraits.Length)
                 {
                     ulong thisMask = 1u << myTraitIdx;
 
@@ -75,7 +75,7 @@ namespace AutoStep.Tests.Language.Interaction
                 }
             }
 
-            if(foundCount == sortedNames.Length)
+            if (foundCount == sortedNames.Length)
             {
                 currentMask |= foundMask;
                 return true;

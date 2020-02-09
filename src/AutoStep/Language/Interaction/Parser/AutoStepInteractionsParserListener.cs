@@ -232,6 +232,18 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitVariableArrRef([NotNull] AutoStepInteractionsParser.VariableArrRefContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>variableArrStrRef</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterVariableArrStrRef([NotNull] AutoStepInteractionsParser.VariableArrStrRefContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>variableArrStrRef</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitVariableArrStrRef([NotNull] AutoStepInteractionsParser.VariableArrStrRefContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>constantRef</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
 	/// </summary>

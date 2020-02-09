@@ -4,15 +4,7 @@ fragment SPACE: [ \t];
 fragment NL: SPACE* '\r'? '\n';
 fragment DIGIT : [0-9] ; // match single digit
 
-FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
-               | '.' DIGIT+ // match .1 .14159
-               ;
-
-INT : DIGIT+;
-
 APP_DEFINITION: 'App:';
-
-STRING: '"' (.| '\\"')+? '"';
 
 // Exact match first
 TRAIT_DEFINITION: 'Trait:';
@@ -37,7 +29,7 @@ COMPONENT_INSERT: '$component$';
 
 FUNC_PASS_MARKER: '->';
 
-CONSTANT: [A-Z]+;
+STRING: '"' (.| '\\"')+? '"';
 
 NEWLINE: NL -> channel(HIDDEN);
 TEXT_DOC_COMMENT: SPACE* '##' ~[\r\n]* -> channel(HIDDEN);
@@ -50,12 +42,18 @@ PARAM_NAME: [a-zA-Z-]+;
 ARR_LEFT: '[';
 ARR_RIGHT: ']';
 PARAM_SEPARATOR: ',';
+FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
+               | '.' DIGIT+ // match .1 .14159
+               ;
+
+INT : DIGIT+;
+CONSTANT: [A-Z]+;
 METHOD_CLOSE: ')' -> popMode;
 
 mode stringArg;
 STR_ANGLE_LEFT: '<' -> pushMode(stringVariable);
 METHOD_STR_ESCAPE_QUOTE: '\\"';
-METHOD_STRING_END: '"';
+METHOD_STRING_END: '"' -> popMode;
 STR_CONTENT: .+?;
 
 mode stringVariable;

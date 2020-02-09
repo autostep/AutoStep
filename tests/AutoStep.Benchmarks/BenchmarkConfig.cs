@@ -13,7 +13,7 @@ namespace AutoStep.Benchmarks
         {
             Add(DefaultConfig.Instance);
 
-            ArtifactsPath = Path.Combine(AppContext.BaseDirectory, "artifacts", DateTime.Now.ToString("yyyy-mm-dd_hh-MM-ss"));
+            ArtifactsPath = Path.Combine(AppContext.BaseDirectory, "artifacts", DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss"));
 
             Add(MemoryDiagnoser.Default);
         }

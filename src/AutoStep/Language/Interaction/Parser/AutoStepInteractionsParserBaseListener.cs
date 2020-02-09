@@ -272,6 +272,20 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitVariableArrRef([NotNull] AutoStepInteractionsParser.VariableArrRefContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>variableArrStrRef</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterVariableArrStrRef([NotNull] AutoStepInteractionsParser.VariableArrStrRefContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>variableArrStrRef</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitVariableArrStrRef([NotNull] AutoStepInteractionsParser.VariableArrStrRefContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>constantRef</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.methodCallArg"/>.
 	/// <para>The default implementation does nothing.</para>
