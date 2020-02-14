@@ -27,7 +27,8 @@ namespace AutoStep.Tests.Builders
                     HeaderName = item.headerName,
                     SourceLine = lineNo,
                     StartColumn = item.startColumn,
-                    EndColumn = item.endColumn
+                    EndColumn = item.endColumn,                    
+                    EndLine = lineNo,
                 });
             }
 

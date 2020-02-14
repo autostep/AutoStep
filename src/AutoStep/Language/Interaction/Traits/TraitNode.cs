@@ -1,15 +1,14 @@
 ﻿using System.Diagnostics;
+using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction.Traits
 {
     [DebuggerDisplay("{DebuggerToString()}")]
-    public struct TraitNode
+    internal struct TraitNode
     {
         public TraitRef Ref { get; set; }
 
-        public Trait Trait { get; set; }
-
-        public bool HaveDeterminedParents => ApplicableTraitSet is object;
+        public TraitDefinitionElement Trait { get; set; }
 
         public int NumberOfReferencedTraits => Ref.NumberOfReferencedTraits;
 
@@ -18,17 +17,14 @@ namespace AutoStep.Language.Interaction.Traits
             return Ref.DebuggerToString();
         }
 
-        public FlattenedTraitSet ApplicableTraitSet { get; set; }
-
-        public bool ConsumeIfEntirelyContainedIn(TraitNameMatchingSet traits, ref ulong consumedMask)
+        public bool EntirelyContainedIn(TraitNameMatchingSet traits)
         {
             if (Ref.TopLevelName is object)
             {
-                // If this method returns true, the set will have consumed that 
-                return traits.ConsumeIfContains(Ref.TopLevelName, ref consumedMask);
+                return traits.Contains(Ref.TopLevelName);
             }
 
-            return traits.ConsumeIfContains(Ref.ReferencedTraits, ref consumedMask);
+            return traits.Contains(Ref.ReferencedTraits);
         }
     }
 }

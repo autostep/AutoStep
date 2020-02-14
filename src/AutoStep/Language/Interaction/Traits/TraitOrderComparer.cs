@@ -2,7 +2,7 @@
 
 namespace AutoStep.Language.Interaction.Traits
 {
-    public class TraitOrderComparer : IComparer<TraitNode>
+    internal class TraitOrderComparer : IComparer<TraitNode>
     {
         public int Compare(TraitNode x, TraitNode y)
         {

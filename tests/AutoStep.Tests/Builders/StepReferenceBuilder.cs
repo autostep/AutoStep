@@ -83,6 +83,7 @@ namespace AutoStep.Tests.Builders
             part.SourceLine = Built.SourceLine;
             part.StartColumn = startTokenIdx + startIdx + 1;
             part.EndColumn = part.StartColumn + (text.Length - 1);
+            part.EndLine = Built.SourceLine;
 
             Built.AddToken(part);
             

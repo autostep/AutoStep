@@ -49,6 +49,7 @@ namespace AutoStep.Language
             element.SourceLine = start.Line;
             element.StartColumn = start.Column + 1;
             element.EndColumn = stop.Column + (stop.StopIndex - stop.StartIndex) + 1;
+            element.EndLine = stop.Line;
 
             return element;
         }

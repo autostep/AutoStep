@@ -61,7 +61,7 @@ Trait: named + displayable
     -> assertOneExists()
 
   Step: Then the {name} $component$ should not exist
-    locateNamed(<name>)
+    locateNamed('name')
     -> assertNoneExist()
 
 

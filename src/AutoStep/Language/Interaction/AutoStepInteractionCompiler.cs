@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Interaction.Visitors;
 using AutoStep.Language.Test;
 using Microsoft.Extensions.Logging;
 
@@ -42,14 +44,14 @@ namespace AutoStep.Language.Interaction
                 throw new OperationCanceledException();
             }
 
-            // Inspect the errors.
-            if (parserMessages.Any())
-            {
-                // Parser failed.
-                return new InteractionsFileCompilerResult(false, parserMessages);
-            }
+            var fileVisitor = new InteractionsFileVisitor(source.SourceName, tokenStream);
 
-            return new InteractionsFileCompilerResult(true, new BuiltInteractionsFile());
+            var result = fileVisitor.Visit(fileContext);
+
+            var success = parserMessages.All(x => x.Level != CompilerMessageLevel.Error) && !fileVisitor.MessageSet.AnyErrorMessages;
+            var allMessages = parserMessages.Concat(fileVisitor.MessageSet.Messages);
+
+            return new InteractionsFileCompilerResult(success, allMessages, result);
         }
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace AutoStep.Language.Interaction
             // Create the source stream, the lexer itself, and the resulting token stream.
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepInteractionsLexer(inputStream);
+
             var logger = logFactory.CreateLogger<AutoStepInteractionCompiler>();
 
             if (customLexerStartMode.HasValue)

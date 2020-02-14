@@ -85,6 +85,12 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitTraitDefinition([NotNull] AutoStepInteractionsParser.TraitDefinitionContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>traitName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
 	/// </summary>
@@ -111,6 +117,12 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitMethodDefinition([NotNull] AutoStepInteractionsParser.MethodDefinitionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodDeclaration([NotNull] AutoStepInteractionsParser.MethodDeclarationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodDefArgs"/>.
 	/// </summary>

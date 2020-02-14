@@ -12,39 +12,17 @@ namespace AutoStep.Language.Interaction.Visitors
     /// <summary>
     /// Handles generating interaction step definitions from the Antlr parse context.
     /// </summary>
-    internal class InteractionStepDefinitionVisitor : InteractionMethodHoldingVisitor<InteractionStepDefinitionElement>
+    internal class InteractionStepDefinitionVisitor : InteractionMethodDeclarationVisitor<InteractionStepDefinitionElement>
     {
-        private readonly InteractionConstantSet constants;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionStepDefinitionVisitor"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
-        public InteractionStepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionConstantSet constants)
+        public InteractionStepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
-            this.constants = constants;
-        }
-
-        protected override void ValidateConstant(ParserRuleContext constantToken, string constantName)
-        {
-            if (!constants.ContainsConstant(constantName))
-            {
-                MessageSet.Add(constantToken, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, constantName);
-            }
-        }
-
-        protected override void ValidateArgumentVariable(ParserRuleContext nameRefToken, string variableName, bool isArrayRef)
-        {
-            // We need a variable state this tracked down the call chain.
-            throw new System.NotImplementedException();
-        }
-
-        protected override InteractionMethodChainVariables GetInitialMethodChainVariables()
-        {
-            throw new System.NotImplementedException();
         }
 
         /// <summary>
@@ -94,7 +72,7 @@ namespace AutoStep.Language.Interaction.Visitors
         public override InteractionStepDefinitionElement VisitStepDeclarationBody([NotNull] StepDeclarationBodyContext context)
         {
             Result!.Declaration = context.GetText();
-
+            
             VisitChildren(context);
 
             return Result;
@@ -177,6 +155,13 @@ namespace AutoStep.Language.Interaction.Visitors
         public override InteractionStepDefinitionElement VisitDeclarationColon(DeclarationColonContext context)
         {
             AddPart(new WordDefinitionPart(context.GetText()).AddPositionalLineInfo(context));
+
+            return Result!;
+        }
+
+        public override InteractionStepDefinitionElement VisitDeclarationComponentInsert([NotNull] DeclarationComponentInsertContext context)
+        {
+            AddPart(new ComponentMatchPart().AddPositionalLineInfo(context));
 
             return Result!;
         }

@@ -16,16 +16,20 @@ appItem: NAME_KEYWORD STRING #appName
        | methodDefinition    #appMethod
        | stepDefinitionBody  #appStep;
 
-traitDefinition:  TRAIT_DEFINITION NAME_REF (PLUS NAME_REF)*
+traitDefinition:  TRAIT_DEFINITION traitRefList
                   traitItem*;
+
+traitRefList: NAME_REF (PLUS NAME_REF)*;
 
 traitItem: NAME_KEYWORD STRING #traitName
          | methodDefinition    #traitMethod
          | stepDefinitionBody  #traitStep;
 
 // method(): callee() -> callee()
-methodDefinition: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE DEF_SEPARATOR
+methodDefinition: methodDeclaration DEF_SEPARATOR
                   methodCall (FUNC_PASS_MARKER methodCall)*;
+
+methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 
 methodDefArgs: PARAM_NAME (PARAM_NAME LIST_SEPARATOR)*;
 

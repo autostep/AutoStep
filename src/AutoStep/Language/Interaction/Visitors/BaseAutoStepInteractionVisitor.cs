@@ -86,7 +86,7 @@ namespace AutoStep.Language.Interaction.Visitors
         /// </summary>
         /// <typeparam name="TOtherVisitorResult">Type of the other visitor.</typeparam>
         /// <param name="other">The message.</param>
-        protected void MergeVisitorAndReset<TOtherVisitorResult>(BaseAutoStepTestVisitor<TOtherVisitorResult> other)
+        protected void MergeVisitorAndReset<TOtherVisitorResult>(BaseAutoStepInteractionVisitor<TOtherVisitorResult> other)
             where TOtherVisitorResult : class
         {
             MessageSet.AddRange(other.MessageSet.Messages);

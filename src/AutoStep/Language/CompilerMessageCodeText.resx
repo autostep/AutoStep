@@ -144,6 +144,24 @@
   <data name="ExampleVariableNotDeclared" xml:space="preserve">
     <value>You have specified an Example variable to insert, '{0}', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.</value>
   </data>
+  <data name="InteractionConstantNotDefined" xml:space="preserve">
+    <value>The {0} constant is not defined.</value>
+  </data>
+  <data name="InteractionDuplicateTrait" xml:space="preserve">
+    <value>Duplicate trait specified.</value>
+  </data>
+  <data name="InteractionMissingExpectedName" xml:space="preserve">
+    <value>A name is required.</value>
+  </data>
+  <data name="InteractionNameAlreadySet" xml:space="preserve">
+    <value>A name has already been provided for this entity.</value>
+  </data>
+  <data name="InteractionVariableNotAnArray" xml:space="preserve">
+    <value>The {0} variable is not a collection, so you cannot access it as one.</value>
+  </data>
+  <data name="InteractionVariableNotDefined" xml:space="preserve">
+    <value>The {0} variable is not defined.</value>
+  </data>
   <data name="InvalidExamplesKeyword" xml:space="preserve">
     <value>The 'Examples' keyword is case-sensitive, so '{0}' should be 'Examples:'</value>
   </data>

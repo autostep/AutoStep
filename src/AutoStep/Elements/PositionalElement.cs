@@ -9,5 +9,7 @@
         /// Gets or sets the column position at which the element ends.
         /// </summary>
         public int EndColumn { get; set; }
+
+        public int EndLine { get; set; }
     }
 }

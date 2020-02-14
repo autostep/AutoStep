@@ -30,15 +30,19 @@ COMPONENT_INSERT: '$component$';
 FUNC_PASS_MARKER: '->';
 
 STRING: '"' (.| '\\"')+? '"';
+STRING_SINGLE: '\'' (.| '\\\'')+? '\'' -> type(STRING);
 
 NEWLINE: NL -> channel(HIDDEN);
 TEXT_DOC_COMMENT: SPACE* '##' ~[\r\n]* -> channel(HIDDEN);
 TEXT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 WS: SPACE+ -> channel(HIDDEN);
+ERR_CHAR: .;
 
 mode methodArgs;
 METHOD_STRING_START: '"' -> pushMode(stringArg);
-PARAM_NAME: [a-zA-Z-]+;
+METHOD_STRING_SINGLE_START: '\'' -> type(METHOD_STRING_START), pushMode(stringArgSingle);
+CONSTANT: [A-Z]+;
+PARAM_NAME: [\-a-zA-Z]+;
 ARR_LEFT: '[';
 ARR_RIGHT: ']';
 PARAM_SEPARATOR: ',';
@@ -47,18 +51,26 @@ FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
                ;
 
 INT : DIGIT+;
-CONSTANT: [A-Z]+;
 METHOD_CLOSE: ')' -> popMode;
+METH_WS: SPACE+ -> channel(HIDDEN);
+ERR_CHAR_METHOD: . -> type(ERR_CHAR);
 
 mode stringArg;
 STR_ANGLE_LEFT: '<' -> pushMode(stringVariable);
 METHOD_STR_ESCAPE_QUOTE: '\\"';
 METHOD_STRING_END: '"' -> popMode;
-STR_CONTENT: .+?;
+STR_CONTENT: ~[<\\"]+;
+
+mode stringArgSingle;
+SINGLE_STR_ANGLE_LEFT: '<' -> type(STR_ANGLE_LEFT), pushMode(stringVariable);
+SINGLE_METHOD_STR_ESCAPE_QUOTE: '\\\'' -> type(METHOD_STR_ESCAPE_QUOTE);
+SINGLE_METHOD_STRING_END: '\'' -> type(METHOD_STRING_END), popMode;
+SINGLE_STR_CONTENT: ~[<\\']+ -> type(STR_CONTENT);
 
 mode stringVariable;
 STR_NAME_REF: NAME_REF;
 STR_ANGLE_RIGHT: '>' -> popMode;
+ERR_CHAR_STR_VAR: . -> type(ERR_CHAR);
 
 mode definition;
 DEF_GIVEN: 'Given';
@@ -69,7 +81,7 @@ DEF_ESCAPED_RCURLY: '\\}';
 DEF_LCURLY: '{';
 DEF_RCURLY: '}';
 DEF_NEWLINE: DEF_WS* (NL|EOF) -> popMode;
-DEF_WS: SPACE+ -> channel(HIDDEN);
+DEF_WS: SPACE+;
 DEF_COLON: ':';
 DEF_COMPONENT_INSERT: '$component$';
 DEF_WORD: ~[ :\\\t#{}\r\n]+;

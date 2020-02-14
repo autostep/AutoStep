@@ -180,7 +180,17 @@ namespace AutoStep.Language
         /// </summary>
         ArgumentTypeNotCompatible = 20004,
 
+        //// Errors from the Interaction Language ////
 
+        InteractionNameAlreadySet = 30001,
+
+        InteractionConstantNotDefined = 30002,
+
+        InteractionDuplicateTrait = 30003,
+
+        InteractionVariableNotDefined = 30004,
+
+        InteractionVariableNotAnArray = 30005,
         //// Errors from Exceptions ////
 
         /// <summary>
@@ -192,11 +202,6 @@ namespace AutoStep.Language
         /// Unknown error category (the catch-all).
         /// </summary>
         UncategorisedException = 90002,
-
-        //// Errors from the Interaction Language ////
-
-        InteractionNameAlreadySet = 30001,
-
-        InteractionConstantNotDefined = 30002,
+        InteractionMissingExpectedName = 90003,
     }
 }

@@ -44,7 +44,7 @@ namespace AutoStep.Language.Interaction
             {
                 var description = context switch
                 {
-                    TraitDefinitionContext t => "Trait: " + t.NAME_REF(),
+                    TraitDefinitionContext t => "Trait: " + t.traitRefList().GetText(),
                     _ => context.ToString()
                 };
 

@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var testContent = FullFiles.Files.FullInteractionsFile;
 
-            await CompileAndAssertSuccess(testContent, cfg => { });
+            await CompileAndAssertSuccess(testContent);
         }
     }
 }

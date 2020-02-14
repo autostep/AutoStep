@@ -120,6 +120,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTraitDefinition([NotNull] AutoStepInteractionsParser.TraitDefinitionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>traitName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
 	/// </summary>
@@ -165,6 +175,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitMethodDefinition([NotNull] AutoStepInteractionsParser.MethodDefinitionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodDeclaration([NotNull] AutoStepInteractionsParser.MethodDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodDeclaration([NotNull] AutoStepInteractionsParser.MethodDeclarationContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodDefArgs"/>.
 	/// </summary>

@@ -15,7 +15,8 @@ namespace AutoStep.Tests.Builders
                 Text = body,
                 SourceLine = line,
                 StartColumn = start,
-                EndColumn = end
+                EndColumn = end, 
+                EndLine = line
             };            
         }
 
@@ -79,6 +80,7 @@ namespace AutoStep.Tests.Builders
             part.SourceLine = Built.SourceLine;
             part.StartColumn = Built.StartColumn + startIdx;
             part.EndColumn = part.StartColumn + (text.Length - 1);
+            part.EndLine = part.SourceLine;
 
             Built.AddToken(part);
 

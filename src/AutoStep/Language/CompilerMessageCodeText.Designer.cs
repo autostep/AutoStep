@@ -142,6 +142,60 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} constant is not defined..
+        /// </summary>
+        internal static string InteractionConstantNotDefined {
+            get {
+                return ResourceManager.GetString("InteractionConstantNotDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate trait specified..
+        /// </summary>
+        internal static string InteractionDuplicateTrait {
+            get {
+                return ResourceManager.GetString("InteractionDuplicateTrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A name is required..
+        /// </summary>
+        internal static string InteractionMissingExpectedName {
+            get {
+                return ResourceManager.GetString("InteractionMissingExpectedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A name has already been provided for this entity..
+        /// </summary>
+        internal static string InteractionNameAlreadySet {
+            get {
+                return ResourceManager.GetString("InteractionNameAlreadySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} variable is not a collection, so you cannot access it as one..
+        /// </summary>
+        internal static string InteractionVariableNotAnArray {
+            get {
+                return ResourceManager.GetString("InteractionVariableNotAnArray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} variable is not defined..
+        /// </summary>
+        internal static string InteractionVariableNotDefined {
+            get {
+                return ResourceManager.GetString("InteractionVariableNotDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;Examples&apos; keyword is case-sensitive, so &apos;{0}&apos; should be &apos;Examples:&apos;.
         /// </summary>
         internal static string InvalidExamplesKeyword {

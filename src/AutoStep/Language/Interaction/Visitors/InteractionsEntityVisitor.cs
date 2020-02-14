@@ -16,9 +16,14 @@ namespace AutoStep.Language.Interaction.Visitors
     {
         protected bool ExplicitNameProvided { get; set; }
 
-        public InteractionDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter) 
+        private InteractionStepDefinitionVisitor stepVisitor;
+        private MethodDefinitionVisitor methodVisitor;
+
+        public InteractionDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
+            stepVisitor = new InteractionStepDefinitionVisitor(sourceName, tokenStream, rewriter);
+            methodVisitor = new MethodDefinitionVisitor(sourceName, tokenStream, rewriter);
         }
 
         public TResult? Build(ParserRuleContext owningContext)
@@ -28,8 +33,25 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        public override TResult VisitMethodDefinition([NotNull] MethodDefinitionContext context)
+        {
+            var methodDef = methodVisitor.Build(context);
+
+            MergeVisitorAndReset(methodVisitor);
+
+            Result!.Methods.Add(methodDef);
+
+            return Result;
+        }
+
         public override TResult VisitStepDefinitionBody([NotNull] StepDefinitionBodyContext context)
         {
+            var stepDef = stepVisitor.BuildStepDefinition(context);
+
+            MergeVisitorAndReset(stepVisitor);
+
+            Result!.Steps.Add(stepDef);
+
             return base.VisitStepDefinitionBody(context);
         }
 
@@ -54,30 +76,6 @@ namespace AutoStep.Language.Interaction.Visitors
             base.Reset();
 
             ExplicitNameProvided = false;
-        }
-    }
-
-    internal class TraitDefinitionVisitor : InteractionDefinitionVisitor<TraitDefinitionElement>
-    {
-        public TraitDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
-        {
-        }
-
-        public override TraitDefinitionElement VisitTraitDefinition([NotNull] TraitDefinitionContext context)
-        {
-            Result = new TraitDefinitionElement();
-
-            VisitChildren(context);
-
-            return Result!;
-        }
-
-        public override TraitDefinitionElement VisitTraitName(TraitNameContext context)
-        {
-            ProvideName(GetTextFromStringToken(context.STRING()), context);
-
-            return Result!;
         }
     }
 }

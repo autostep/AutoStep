@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction.Traits
 {
     [DebuggerDisplay("{DebuggerToString()}")]
-    public struct TraitRef : IEquatable<TraitRef>
+    internal struct TraitRef : IEquatable<TraitRef>
     {
-        public TraitRef(string singleComponent)
+        public TraitRef(NameRefElement singleComponent)
         {
             TopLevelName = singleComponent;
-            ReferencedTraits = Array.Empty<string>();
+            ReferencedTraits = Array.Empty<NameRefElement>();
         }
 
-        public TraitRef(string[] sortedComponents)
+        public TraitRef(NameRefElement[] sortedComponents)
         {
             if (sortedComponents.Length > 1)
             {
@@ -24,19 +26,19 @@ namespace AutoStep.Language.Interaction.Traits
             else
             {
                 TopLevelName = sortedComponents[0];
-                ReferencedTraits = Array.Empty<string>();
+                ReferencedTraits = Array.Empty<NameRefElement>();
             }
         }
 
         public int NumberOfReferencedTraits => ReferencedTraits.Length;
 
-        public string TopLevelName { get; set; }
+        public NameRefElement TopLevelName { get; set; }
 
-        public string[] ReferencedTraits { get; set; }
+        public NameRefElement[] ReferencedTraits { get; private set; }
 
         public string DebuggerToString()
         {
-            return TopLevelName ?? string.Join(" + ", ReferencedTraits);
+            return TopLevelName?.Name ?? string.Join(" + ", ReferencedTraits.Select(n => n.Name));
         }
 
         public override bool Equals(object obj)
@@ -47,12 +49,20 @@ namespace AutoStep.Language.Interaction.Traits
         public bool Equals([AllowNull] TraitRef other)
         {
             return TopLevelName == other.TopLevelName &&
-                   EqualityComparer<string[]>.Default.Equals(ReferencedTraits, other.ReferencedTraits);
+                   ReferencedTraits.SequenceEqual(other.ReferencedTraits);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(TopLevelName, ReferencedTraits);
+            HashCode myHash = default;
+            myHash.Add(TopLevelName);
+
+            foreach (var trait in ReferencedTraits)
+            {
+                myHash.Add(trait);
+            }
+
+            return myHash.ToHashCode();
         }
 
         public static bool operator ==(TraitRef left, TraitRef right)

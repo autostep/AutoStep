@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Interaction;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Interaction.Traits;
 
 namespace AutoStep.Tests.Utils
 {
@@ -111,7 +112,7 @@ namespace AutoStep.Tests.Utils
             Assert.Equal(expectedMessages, result.Messages);
         }
 
-        protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
+        protected async Task CompileAndAssert(string content, Action<InteractionFileBuilder> cfg)
         {
             var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
@@ -123,17 +124,14 @@ namespace AutoStep.Tests.Utils
                 TestOutput.WriteLine(message.ToString());
             }
 
-            //var expectedBuilder = new FileBuilder();
-            //cfg(expectedBuilder);
-
-            //AssertElementComparison(expectedBuilder.Built, result.Output, false);
-        }
-
-        protected async Task CompileAndAssertSuccess(string content, Action<FileBuilder> cfg)
-        {
-            var expectedBuilder = new FileBuilder();
+            var expectedBuilder = new InteractionFileBuilder();
             cfg(expectedBuilder);
 
+            AssertElementComparison(expectedBuilder.Built, result.Output, false);
+        }
+
+        protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder> cfg = null)
+        {   
             var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
@@ -143,7 +141,14 @@ namespace AutoStep.Tests.Utils
             Assert.Empty(result.Messages);
             Assert.True(result.Success);
 
-            //AssertElementComparison(expectedBuilder.Built, result.Output, false);
+            if (cfg is object)
+            {
+                var expectedBuilder = new InteractionFileBuilder();
+
+                cfg(expectedBuilder);
+
+                AssertElementComparison(expectedBuilder.Built, result.Output, false);
+            }
         }
 
         protected void AssertElementComparison(BuiltElement expected, BuiltElement actual, bool includeStatementParts)
@@ -156,19 +161,9 @@ namespace AutoStep.Tests.Utils
 
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
+                    .AllowingInfiniteRecursion()
                     .IncludingAllRuntimeProperties()
-                    .Using<StepReferenceElement>(ctx =>
-                    {
-                        ctx.Subject.Should().BeEquivalentTo(ctx.Expectation, opt => opt.Excluding((IMemberInfo x) => x.RuntimeType == typeSpan));
-                        if (includeStatementParts)
-                        {
-                            ctx.Subject.TokenSpan.Length.Should().Be(ctx.Expectation.TokenSpan.Length);
-                            for (var idx = 0; idx < ctx.Subject.TokenSpan.Length; idx++)
-                            {
-                                ctx.Subject.TokenSpan[idx].Should().BeEquivalentTo(ctx.Expectation.TokenSpan[idx], "subject[{0}] should match expectation[{0}]", idx);
-                            }
-                        }
-                    }).WhenTypeIs<StepReferenceElement>()
+                    .ComparingByMembers<TraitNode>()
                 ); 
             }
             catch

@@ -1,58 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
+using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
     using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
 
-    internal class InteractionMethodChainVariables
-    {
-        private class MethodChainVariable
-        {
-            public string Name { get; }
-
-            public string KnownTypeHint { get; }
-        }
-
-        Dictionary<string, MethodChainVariable> activeVariables;
-    }
-
-    internal abstract class InteractionMethodHoldingVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
+    internal abstract class InteractionMethodDeclarationVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
         where TElement : class, IMethodCallSource
     {
         private MethodCallElement? currentMethodCall;
-        private MethodCallElement? previousMethodCall;
-        private InteractionMethodChainVariables? variableChain;
 
-        public InteractionMethodHoldingVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        public InteractionMethodDeclarationVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
         }
 
         public override void Reset()
         {
-            previousMethodCall = null;
             currentMethodCall = null;
         }
-
-        protected abstract void ValidateArgumentVariable(ParserRuleContext nameRefToken, string variableName, bool isArrayRef);
-
-        protected abstract void ValidateConstant(ParserRuleContext constantToken, string constantName);
-
-        protected abstract InteractionMethodChainVariables GetInitialMethodChainVariables();
-
+        
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
-            if (previousMethodCall is null)
-            {
-                
-            }
-
             currentMethodCall = new MethodCallElement();
 
             currentMethodCall.AddPositionalLineInfo(context);
@@ -63,7 +39,6 @@ namespace AutoStep.Language.Interaction.Visitors
 
             Result!.MethodCallChain.Add(currentMethodCall);
 
-            previousMethodCall = currentMethodCall;
             currentMethodCall = null;
 
             return Result;
@@ -74,13 +49,47 @@ namespace AutoStep.Language.Interaction.Visitors
             var stringMethodArgument = new StringMethodArgumentElement();
 
             stringMethodArgument.AddPositionalLineInfo(context);
-            stringMethodArgument.Text = context.methodStr().GetText();
+
+            var methodStr = context.methodStr();
+
+            stringMethodArgument.Text = methodStr.GetText();
 
             // TODO - determine the set of tokens.
+            var parts = methodStr.methodStrPart();
+            var initialOffset = context.Start.Column + 1;
+            var tokenSet = new List<StepToken>();
+
+            foreach (var p in parts)
+            {
+                StepToken token = p switch
+                {
+                    MethodStrContentContext strContent => CreateToken(strContent, initialOffset, (s, l) => new TextToken(s, l)),
+                    MethodStrEscapeContext strEscContent => CreateToken(strEscContent, initialOffset, (s, l) => new TextToken(s, l)),
+                    MethodStrVariableContext strVarContent => CreateToken(strVarContent, initialOffset, (s, l) => new VariableToken(strVarContent.STR_NAME_REF().GetText(), s, l)),
+                    _ => throw new LanguageEngineAssertException()
+                };
+
+                tokenSet.Add(token);
+            }
+
+            stringMethodArgument.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
 
             currentMethodCall!.Arguments.Add(stringMethodArgument);
 
             return Result!;
+        }
+
+        private static TToken CreateToken<TToken>(ParserRuleContext ctxt, int offset, Func<int, int, TToken> creator)
+            where TToken : StepToken
+        {
+            var start = ctxt.Start.Column - offset;
+            var startIndex = ctxt.Start.StartIndex;
+
+            var part = creator(start, ctxt.Stop.StopIndex - startIndex + 1);
+
+            part.AddPositionalLineInfo(ctxt);
+
+            return part;
         }
 
         public override TElement VisitVariableRef([NotNull] VariableRefContext context)
@@ -91,8 +100,6 @@ namespace AutoStep.Language.Interaction.Visitors
             variableRefElement.VariableName = context.PARAM_NAME().GetText();
 
             currentMethodCall!.Arguments.Add(variableRefElement);
-
-            ValidateArgumentVariable(context, variableRefElement.VariableName, false);
 
             return Result!;
         }
@@ -107,7 +114,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             currentMethodCall!.Arguments.Add(varArrElement);
 
-            ValidateArgumentVariable(context, varArrElement.VariableName, true);
+            //variableChain.ValidateVariable(context, varArrElement.VariableName, true);
 
             return Result!;
         }
@@ -120,9 +127,6 @@ namespace AutoStep.Language.Interaction.Visitors
             constantRefElement.ConstantName = context.GetText();
 
             currentMethodCall!.Arguments.Add(constantRefElement);
-
-            // TODO: Validate the provided constant.
-            ValidateConstant(context, constantRefElement.ConstantName);
 
             return Result;
         }

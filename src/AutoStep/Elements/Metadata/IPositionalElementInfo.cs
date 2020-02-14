@@ -9,5 +9,7 @@
         /// Gets the end column position (1-based).
         /// </summary>
         int EndColumn { get; }
+
+        int EndLine { get; }
     }
 }

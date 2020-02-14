@@ -119,6 +119,16 @@ internal partial class AutoStepInteractionsParserBaseVisitor<Result> : AbstractP
 	/// <return>The visitor result.</return>
 	public virtual Result VisitTraitDefinition([NotNull] AutoStepInteractionsParser.TraitDefinitionContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>traitName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
 	/// <para>
@@ -161,6 +171,16 @@ internal partial class AutoStepInteractionsParserBaseVisitor<Result> : AbstractP
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitMethodDefinition([NotNull] AutoStepInteractionsParser.MethodDefinitionContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodDeclaration"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitMethodDeclaration([NotNull] AutoStepInteractionsParser.MethodDeclarationContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodDefArgs"/>.
 	/// <para>

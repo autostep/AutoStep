@@ -102,7 +102,7 @@ namespace AutoStep.Language
         /// <returns>The created message.</returns>
         public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, StepToken start, StepToken stop, params object[] args)
         {
-            return Create(sourceName, level, code, start.SourceLine, start.StartColumn, stop.SourceLine, stop.EndColumn, args);
+            return Create(sourceName, level, code, start.SourceLine, start.StartColumn, stop.EndLine, stop.EndColumn, args);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace AutoStep.Language
         /// <returns>The created message.</returns>
         public static CompilerMessage Create(string? sourceName, PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
-            return Create(sourceName, level, code, element.SourceLine, element.StartColumn, element.SourceLine, element.EndColumn, args);
+            return Create(sourceName, level, code, element.SourceLine, element.StartColumn, element.EndLine, element.EndColumn, args);
         }
 
         /// <summary>
