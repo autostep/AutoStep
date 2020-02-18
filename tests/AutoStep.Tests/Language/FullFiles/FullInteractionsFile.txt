@@ -220,7 +220,7 @@ Component: kendo-grid
     -> select("tr[role=row]")
     -> assertCountIs(count)
         
-  Step: Then the kendo grid $component$ should have at least {count:int} rows
+  Step: Then the kendo grid should have at least {count:int} rows
     locate()
     -> remember("grid") # Stores the grid as a local variable
     -> waitForNo("k-loading-mask")

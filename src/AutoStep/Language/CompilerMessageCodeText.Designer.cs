@@ -142,6 +142,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps..
+        /// </summary>
+        internal static string InteractionComponentStepDefinitionCannotHaveComponentMarker {
+            get {
+                return ResourceManager.GetString("InteractionComponentStepDefinitionCannotHaveComponentMarker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} constant is not defined..
         /// </summary>
         internal static string InteractionConstantNotDefined {

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using Antlr4.Runtime;
 using AutoStep.Elements;
 using AutoStep.Elements.StepTokens;
@@ -149,7 +150,14 @@ namespace AutoStep.Language
 
         private static string GetMessageText(CompilerMessageCode code, object[] args)
         {
-            return string.Format(CultureInfo.CurrentCulture, CompilerMessageCodeText.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture), args);
+            var resourceText = CompilerMessageCodeText.ResourceManager.GetString(code.ToString(), CultureInfo.CurrentCulture);
+
+            if (resourceText is null)
+            {
+                throw new InvalidOperationException($"Missing compiler message text for {code}.");
+            }
+
+            return string.Format(CultureInfo.CurrentCulture, resourceText, args);
         }
     }
 }

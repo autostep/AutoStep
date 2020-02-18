@@ -144,6 +144,9 @@
   <data name="ExampleVariableNotDeclared" xml:space="preserve">
     <value>You have specified an Example variable to insert, '{0}', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.</value>
   </data>
+  <data name="InteractionComponentStepDefinitionCannotHaveComponentMarker" xml:space="preserve">
+    <value>Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps.</value>
+  </data>
   <data name="InteractionConstantNotDefined" xml:space="preserve">
     <value>The {0} constant is not defined.</value>
   </data>
