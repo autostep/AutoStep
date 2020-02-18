@@ -341,12 +341,12 @@ namespace AutoStep.Language.Test
 
         private class StepSourceWithTracking
         {
-            private readonly Dictionary<(StepType Type, string Declaration), StepDefinition> trackedSteps;
+            private readonly Dictionary<object, StepDefinition> trackedSteps;
 
             public StepSourceWithTracking(IStepDefinitionSource source)
             {
                 Source = source;
-                trackedSteps = new Dictionary<(StepType Type, string Declaration), StepDefinition>();
+                trackedSteps = new Dictionary<object, StepDefinition>();
             }
 
             public IStepDefinitionSource Source { get; }
@@ -360,7 +360,7 @@ namespace AutoStep.Language.Test
                     throw new ArgumentNullException(nameof(replaceDefinitions));
                 }
 
-                var keysToRemove = new List<(StepType Type, string Declaration)>(trackedSteps.Keys);
+                var keysToRemove = new List<object>(trackedSteps.Keys);
 
                 foreach (var compiledStepDef in replaceDefinitions)
                 {
@@ -370,7 +370,7 @@ namespace AutoStep.Language.Test
                         continue;
                     }
 
-                    var key = (compiledStepDef.Type, compiledStepDef.Declaration);
+                    var key = compiledStepDef.GetSignature();
 
                     // There are some step definitions.
                     // Look at the declaration and see if we need to update a definition.
@@ -385,7 +385,7 @@ namespace AutoStep.Language.Test
                     else
                     {
                         // Need to add a new one.
-                        trackedSteps.Add((compiledStepDef.Type, compiledStepDef.Declaration), compiledStepDef);
+                        trackedSteps.Add(key, compiledStepDef);
 
                         // Update the matching tree.
                         tree.AddOrUpdateDefinition(compiledStepDef);

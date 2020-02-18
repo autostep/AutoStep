@@ -3,6 +3,7 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -61,6 +62,20 @@ namespace AutoStep.Language.Interaction.Visitors
             ProvideName(GetTextFromStringToken(context.STRING()), context);
 
             return Result!;
+        }
+
+        protected override bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext parserContext)
+        {
+            if (!stepDef.Parts.OfType<ComponentMatchPart>().Any())
+            {
+                // Trait step definitions must have at least one component match part, to ensure they
+                // can be differentiated from each other later.
+                MessageSet.Add(parserContext.stepDefinition(), CompilerMessageLevel.Error, CompilerMessageCode.InteractionTraitStepDefinitionMustHaveComponent);
+
+                return false;
+            }
+
+            return true;
         }
     }
 }

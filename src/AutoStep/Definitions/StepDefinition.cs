@@ -52,6 +52,11 @@ namespace AutoStep.Definitions
         /// <returns>True if the definition is semantically the same.</returns>
         public abstract bool IsSameDefinition(StepDefinition def);
 
+        public virtual object GetSignature()
+        {
+            return (Type, Declaration);
+        }
+
         /// <summary>
         /// This method is invoked when the step definition should be executed.
         /// </summary>

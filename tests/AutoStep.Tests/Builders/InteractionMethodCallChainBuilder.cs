@@ -3,7 +3,7 @@ using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Builders
 {
-    public class InteractionMethodCallChainBuilder<TMethodCallSource> : BaseBuilder<TMethodCallSource>
+    internal class InteractionMethodCallChainBuilder<TMethodCallSource> : BaseBuilder<TMethodCallSource>
         where TMethodCallSource : IMethodCallSource
     {
         public InteractionMethodCallChainBuilder(TMethodCallSource methodSource)

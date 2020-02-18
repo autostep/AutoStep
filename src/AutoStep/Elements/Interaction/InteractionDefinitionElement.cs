@@ -12,6 +12,8 @@ namespace AutoStep.Elements.Interaction
 
         public string Name { get; set; }
 
+        public string? SourceName { get; set; }
+
         public List<MethodDefinitionElement> Methods { get; } = new List<MethodDefinitionElement>();
 
         public List<InteractionStepDefinitionElement> Steps { get; } = new List<InteractionStepDefinitionElement>();

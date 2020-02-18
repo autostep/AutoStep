@@ -27,7 +27,9 @@ traitItem: NAME_KEYWORD STRING #traitName
 
 // method(): callee() -> callee()
 methodDefinition: methodDeclaration DEF_SEPARATOR
-                  methodCall (FUNC_PASS_MARKER methodCall)*;
+                  (NEEDS_DEFINING | 
+                     methodCall (FUNC_PASS_MARKER methodCall)*
+                  );
 
 methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 

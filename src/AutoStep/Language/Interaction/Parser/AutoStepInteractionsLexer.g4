@@ -21,6 +21,8 @@ STEP_DEFINE: 'Step:' -> pushMode(definition);
 LIST_SEPARATOR: ',';
 DEF_SEPARATOR: ':';
 
+NEEDS_DEFINING: 'needs-defining';
+
 METHOD_OPEN: '(' -> pushMode(methodArgs);
 NAME_REF: [a-zA-Z-]+;
 PLUS: '+';

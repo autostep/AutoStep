@@ -160,6 +160,24 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified interaction method &apos;{0}&apos; is not available. It must be declared with an associated expression, e.g. &apos;{0}: method()&apos;..
+        /// </summary>
+        internal static string InteractionMethodNotAvailable {
+            get {
+                return ResourceManager.GetString("InteractionMethodNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified interaction method &apos;{0}&apos; is not available. It should be either be declared with an associated expression, or with &apos;needs-defining&apos;. E.g. &apos;{0}: method()&apos; or &apos;{0}: needs-defining&apos;..
+        /// </summary>
+        internal static string InteractionMethodNotAvailablePermitUndefined {
+            get {
+                return ResourceManager.GetString("InteractionMethodNotAvailablePermitUndefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A name is required..
         /// </summary>
         internal static string InteractionMissingExpectedName {
@@ -174,6 +192,15 @@ namespace AutoStep.Language {
         internal static string InteractionNameAlreadySet {
             get {
                 return ResourceManager.GetString("InteractionNameAlreadySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interaction Step Definitions inside traits must contain at least one $component$ marker, so that the component can be identified..
+        /// </summary>
+        internal static string InteractionTraitStepDefinitionMustHaveComponent {
+            get {
+                return ResourceManager.GetString("InteractionTraitStepDefinitionMustHaveComponent", resourceCulture);
             }
         }
         

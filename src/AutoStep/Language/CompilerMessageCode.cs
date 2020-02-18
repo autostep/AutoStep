@@ -203,5 +203,12 @@ namespace AutoStep.Language
         /// </summary>
         UncategorisedException = 90002,
         InteractionMissingExpectedName = 90003,
+        InteractionMethodRequiredButNotDefined = 90004,
+        InteractionMethodNotAvailable = 90005,
+        InteractionMethodArgumentMismatch = 90006,
+        InteractionMethodCircularReference = 90007,
+        InteractionTraitStepDefinitionMustHaveComponent = 90008,
+        InteractionComponentStepDefinitionCannotHaveComponentMarker = 90009,
+        InteractionMethodNotAvailablePermitUndefined = 90010,
     }
 }

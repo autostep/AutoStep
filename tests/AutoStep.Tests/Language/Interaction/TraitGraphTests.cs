@@ -85,6 +85,52 @@ namespace AutoStep.Tests.Language.Interaction
                                                 traitF, traitE, traitC, traitB, traitA);
         }
 
+        [Fact]
+        public void SearchMiddleOfGraph()
+        {
+            var traitGraph = new TraitGraph();
+
+            var traitA = CreateTrait("A");
+            var traitB = CreateTrait("B");
+            var traitC = CreateTrait("C");
+            var traitD = CreateTrait("D");
+            var traitE = CreateTrait("E");
+            var traitF = CreateTrait("F");
+            var traitG = CreateTrait("G");
+
+            var traitAB = CreateTrait("A", "B");
+            var traitBD = CreateTrait("B", "D");
+            var traitCD = CreateTrait("C", "D");
+            var traitCE = CreateTrait("C", "E");
+            var traitEF = CreateTrait("E", "F");
+            var traitABC = CreateTrait("A", "B", "C");
+            var traitCDE = CreateTrait("C", "D", "E");
+            var traitABCD = CreateTrait("A", "B", "C", "D");
+            var traitABCE = CreateTrait("A", "B", "C", "E");
+
+            traitGraph.AddOrExtendTrait(traitA);
+            traitGraph.AddOrExtendTrait(traitB);
+            traitGraph.AddOrExtendTrait(traitC);
+            traitGraph.AddOrExtendTrait(traitD);
+            traitGraph.AddOrExtendTrait(traitE);
+            traitGraph.AddOrExtendTrait(traitF);
+            traitGraph.AddOrExtendTrait(traitG);
+            traitGraph.AddOrExtendTrait(traitAB);
+            traitGraph.AddOrExtendTrait(traitBD);
+            traitGraph.AddOrExtendTrait(traitCD);
+            traitGraph.AddOrExtendTrait(traitCE);
+            traitGraph.AddOrExtendTrait(traitEF);
+            traitGraph.AddOrExtendTrait(traitABC);
+            traitGraph.AddOrExtendTrait(traitCDE);
+            traitGraph.AddOrExtendTrait(traitABCD);
+            traitGraph.AddOrExtendTrait(traitABCE);
+
+            // Find all traits.
+            var result = traitGraph.MatchTraits(GetNameParts(new string[] { "A", "B" }));
+
+            result.OrderedTraits.Should().Equal(traitAB, traitB, traitA);
+        }
+
 
         [Fact]
         public void MergeGraph()

@@ -1,21 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction.Parser
 {
-    public class InteractionMethod
-    {
-        public string Name { get; set; }
-    }
-
-    public class FileDefinedInteractionMethod : InteractionMethod
-    {
-        public MethodDefinitionElement MethodDefinition { get; set; }
-    }
-
-
     public class MethodTable
     {
         private Dictionary<string, InteractionMethod>? copyFrom;
@@ -33,16 +22,27 @@ namespace AutoStep.Language.Interaction.Parser
 
         public void Set(string name, MethodDefinitionElement methodDef)
         {
-            if (methods == null)
+            if (methodDef is null)
             {
-                methods = new Dictionary<string, InteractionMethod>(copyFrom);
+                throw new ArgumentNullException(nameof(methodDef));
             }
 
-            methods[name] = new FileDefinedInteractionMethod
+            Set(new FileDefinedInteractionMethod(name)
             {
-                Name = name,
+                NeedsDefining = methodDef.NeedsDefining,
                 MethodDefinition = methodDef,
-            };
+            });
+        }
+
+        public void Set(InteractionMethod predefinedMethod)
+        {
+            if (methods is null)
+            {
+                methods = new Dictionary<string, InteractionMethod>(copyFrom);
+                copyFrom = null;
+            }
+
+            methods[predefinedMethod.Name] = predefinedMethod;
         }
 
         public bool TryGetMethod(string name, out InteractionMethod method)
@@ -51,13 +51,3 @@ namespace AutoStep.Language.Interaction.Parser
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

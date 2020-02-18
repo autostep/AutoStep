@@ -12,7 +12,5 @@ namespace AutoStep.Elements.Interaction
         public List<NameRefElement> Traits { get; } = new List<NameRefElement>();
 
         public NameRefElement? BasedOn { get; set; }
-
-        public ComponentDefinitionElement? BoundBasedOn { get; set; }
     }
 }

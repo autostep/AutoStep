@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AutoStep.Language;
+using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Elements.Interaction
 {
@@ -11,5 +12,7 @@ namespace AutoStep.Elements.Interaction
         public string MethodName { get; set; }
 
         public List<MethodArgumentElement> Arguments { get; } = new List<MethodArgumentElement>();
+
+        public InteractionMethod BoundMethod { get; set; }
     }
 }

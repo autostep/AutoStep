@@ -5,7 +5,7 @@ using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Builders
 {
-    public class InteractionStepDefinitionBuilder : BaseBuilder<InteractionStepDefinitionElement>
+    internal class InteractionStepDefinitionBuilder : BaseBuilder<InteractionStepDefinitionElement>
     {
         public InteractionStepDefinitionBuilder(StepType type, string declaration, int line, int column)
         {

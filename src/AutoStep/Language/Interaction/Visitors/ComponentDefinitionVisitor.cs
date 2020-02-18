@@ -3,6 +3,7 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -26,7 +27,26 @@ namespace AutoStep.Language.Interaction.Visitors
 
             VisitChildren(context);
 
+            // Apply the known name to each step.
+            foreach (var step in Result.Steps)
+            {
+                step.FixedComponentName = Result.Name;
+            }
+
             return Result;
+        }
+
+        protected override bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext bodyContext)
+        {
+            if (stepDef.Parts.OfType<ComponentMatchPart>().Any())
+            {
+                // Component step definitions cannot have a component marker.
+                MessageSet.Add(bodyContext.stepDefinition(), CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentStepDefinitionCannotHaveComponentMarker);
+
+                return false;
+            }
+
+            return true;
         }
 
         public override ComponentDefinitionElement VisitComponentName([NotNull] ComponentNameContext context)

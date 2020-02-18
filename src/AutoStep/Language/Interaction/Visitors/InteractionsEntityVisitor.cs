@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements.Interaction;
+using AutoStep.Elements.Parts;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -30,6 +32,11 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             Visit(owningContext);
 
+            if (Result is object)
+            {
+                Result.SourceName = SourceName;
+            }
+
             return Result;
         }
 
@@ -50,9 +57,17 @@ namespace AutoStep.Language.Interaction.Visitors
 
             MergeVisitorAndReset(stepVisitor);
 
-            Result!.Steps.Add(stepDef);
+            if (ValidateAddedStepDefinition(stepDef, context))
+            {
+                Result!.Steps.Add(stepDef);
+            }
 
             return base.VisitStepDefinitionBody(context);
+        }
+
+        protected virtual bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext bodyContext)
+        {
+            return true;
         }
 
         protected void ProvideName(string name, ParserRuleContext nameItemContext)

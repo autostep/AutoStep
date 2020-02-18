@@ -50,7 +50,7 @@ Trait: has-value
 
 Trait: has-value + named
 
-  Step: Then {name} should have the value {value}
+  Step: Then the {name} $component$ should have the value {value}
     locateNamed(name)
     -> getValue()
     
@@ -71,13 +71,13 @@ Trait: named + displayable
 
 Trait: scannable + named
 
-  Step: Given I have scanned {value:list} into {name}
+  Step: Given I have scanned {value:list} into the {name} $component$
     locateNamed(name)
     -> forEachItemIn(value)
     -> type(item)
     -> typeEscape()
 
-  Step: Given I have scanned the following values into {name}
+  Step: Given I have scanned the following values into the {name} $component$
     locateNamed(name)
     -> forEachTableRow()
     -> type(row["value"])
@@ -100,16 +100,16 @@ Trait: editable + named
   assertReadOnly(): isReadOnly() -> assertTrue()
   assertNotReadOnly(): isReadOnly() -> assertFalse()
 
-  Step: When I press Tab in {name}
+  Step: When I press Tab in the {name} $component$
     locateNamed(name)
     -> type(TAB)
     
-  Step: When I press Escape in {name}
+  Step: When I press Escape in the {name} $component$
     locateNamed(name)
     -> type(TAB)
 
-  Step: Then the {name} control should be readonly
-    locateNamed()
+  Step: Then the {name} $component$ should be readonly
+    locateNamed(name)
     -> assertReadOnly()
 
 Trait: selectable + named
@@ -122,11 +122,11 @@ Trait: selectable + named
 
 Trait: checkable + named
 
-  Step: Given I have checked the {name} checkbox
+  Step: Given I have checked the {name} $component$
     locateNamed(name)
     -> check()
 
-  Step: Given I have un-checked the {name} checkbox
+  Step: Given I have un-checked the {name} $component$
     locateNamed(name)
     -> uncheck()
     
@@ -220,7 +220,7 @@ Component: kendo-grid
     -> select("tr[role=row]")
     -> assertCountIs(count)
         
-  Step: Then the kendo grid should have at least {count:int} rows
+  Step: Then the kendo grid $component$ should have at least {count:int} rows
     locate()
     -> remember("grid") # Stores the grid as a local variable
     -> waitForNo("k-loading-mask")

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -35,6 +36,7 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             Result = new InteractionStepDefinitionElement();
 
+            Result.SourceName = SourceName;
             Result.AddLineInfo(definitionContext);
 
             VisitChildren(definitionContext);

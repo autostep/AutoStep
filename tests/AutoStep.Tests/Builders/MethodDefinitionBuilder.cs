@@ -2,10 +2,16 @@
 
 namespace AutoStep.Tests.Builders
 {
-    public class MethodDefinitionBuilder : InteractionMethodCallChainBuilder<MethodDefinitionElement>
+    internal class MethodDefinitionBuilder : InteractionMethodCallChainBuilder<MethodDefinitionElement>
     {
         public MethodDefinitionBuilder(MethodDefinitionElement element) : base(element)
         {
+        }
+
+        public MethodDefinitionBuilder NeedsDefining()
+        {
+            Built.NeedsDefining = true;
+            return this;
         }
 
         public MethodDefinitionBuilder Argument(string name, int line, int column)

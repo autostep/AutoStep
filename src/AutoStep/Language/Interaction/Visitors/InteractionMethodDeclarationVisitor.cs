@@ -26,7 +26,7 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             currentMethodCall = null;
         }
-        
+
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
             currentMethodCall = new MethodCallElement();
@@ -114,8 +114,6 @@ namespace AutoStep.Language.Interaction.Visitors
 
             currentMethodCall!.Arguments.Add(varArrElement);
 
-            //variableChain.ValidateVariable(context, varArrElement.VariableName, true);
-
             return Result!;
         }
 
@@ -128,7 +126,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             currentMethodCall!.Arguments.Add(constantRefElement);
 
-            return Result;
+            return Result!;
         }
 
         public override TElement VisitIntArg([NotNull] IntArgContext context)

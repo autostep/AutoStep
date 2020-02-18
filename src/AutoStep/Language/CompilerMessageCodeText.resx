@@ -150,11 +150,20 @@
   <data name="InteractionDuplicateTrait" xml:space="preserve">
     <value>Duplicate trait specified.</value>
   </data>
+  <data name="InteractionMethodNotAvailable" xml:space="preserve">
+    <value>The specified interaction method '{0}' is not available. It must be declared with an associated expression, e.g. '{0}: method()'.</value>
+  </data>
+  <data name="InteractionMethodNotAvailablePermitUndefined" xml:space="preserve">
+    <value>The specified interaction method '{0}' is not available. It should be either be declared with an associated expression, or with 'needs-defining'. E.g. '{0}: method()' or '{0}: needs-defining'.</value>
+  </data>
   <data name="InteractionMissingExpectedName" xml:space="preserve">
     <value>A name is required.</value>
   </data>
   <data name="InteractionNameAlreadySet" xml:space="preserve">
     <value>A name has already been provided for this entity.</value>
+  </data>
+  <data name="InteractionTraitStepDefinitionMustHaveComponent" xml:space="preserve">
+    <value>Interaction Step Definitions inside traits must contain at least one $component$ marker, so that the component can be identified.</value>
   </data>
   <data name="InteractionVariableNotAnArray" xml:space="preserve">
     <value>The {0} variable is not a collection, so you cannot access it as one.</value>

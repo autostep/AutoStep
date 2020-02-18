@@ -23,10 +23,17 @@ namespace AutoStep.Language.Interaction.Visitors
             var decl = context.methodDeclaration();
 
             Result.AddPositionalLineInfo(decl);
+            Result.SourceName = SourceName;
 
             Result.Name = decl.NAME_REF().GetText();
 
             VisitChildren(context);
+
+            if (context.NEEDS_DEFINING() is object)
+            {
+                // Method is marked as needs defining
+                Result.NeedsDefining = true;
+            }
 
             return Result;
         }

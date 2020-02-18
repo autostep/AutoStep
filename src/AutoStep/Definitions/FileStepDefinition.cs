@@ -65,7 +65,7 @@ namespace AutoStep.Definitions
                 throw new LanguageEngineAssertException();
             }
 
-            // TODO: Do this once per row of the table in the step reference, or just once if there's no table.
+            // TODO: Do this once per row of the table in the step reference, or just once if there's no table?
             for (var argIdx = 0; argIdx < Definition.Arguments.Count; argIdx++)
             {
                 var argValue = context.Step.Binding.Arguments[argIdx];

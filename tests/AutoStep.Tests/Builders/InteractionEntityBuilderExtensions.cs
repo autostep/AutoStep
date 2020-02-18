@@ -5,7 +5,7 @@ using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Builders
 {
-    public static class InteractionEntityBuilderExtensions
+    internal static class InteractionEntityBuilderExtensions
     {
         public static TEntityBuilder StepDefinition<TEntityBuilder>(this TEntityBuilder entityBuilder, StepType type, string declaration, int line, int column, Action<InteractionStepDefinitionBuilder> cfg = null)
             where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
@@ -15,6 +15,12 @@ namespace AutoStep.Tests.Builders
             if (cfg is object)
             {
                 cfg(stepDefinitionBuilder);
+            }
+
+            if (entityBuilder is InteractionComponentBuilder)
+            {
+                // Mark the fixed name.
+                stepDefinitionBuilder.Built.FixedComponentName = entityBuilder.Built.Name;
             }
 
             entityBuilder.Built.Steps.Add(stepDefinitionBuilder.Built);

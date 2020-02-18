@@ -6,7 +6,7 @@ using AutoStep.Elements.Interaction;
 namespace AutoStep.Language.Interaction.Traits
 {
     [DebuggerDisplay("{DebuggerToString()}")]
-    public class TraitNameMatchingSet
+    internal struct TraitNameMatchingSet
     {
         private NameRefElement[] myTraits;
 
@@ -14,6 +14,11 @@ namespace AutoStep.Language.Interaction.Traits
         {
             Array.Sort(names);
             myTraits = names;
+        }
+
+        public TraitNameMatchingSet(TraitRef tRef)
+        {
+            myTraits = tRef.ReferencedTraits;
         }
 
         public bool Contains(NameRefElement name)

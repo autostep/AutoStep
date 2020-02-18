@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Elements.Interaction;
+using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Language.Interaction.Traits
 {
@@ -125,9 +126,9 @@ namespace AutoStep.Language.Interaction.Traits
 
             var traitMatchingSet = new TraitNameMatchingSet(namedTraits);
 
-            while (currentItem != null && currentItem.Value.NumberOfReferencedTraits <= numberOfTraits)
+            while (currentItem != null)
             {
-                if (currentItem.Value.EntirelyContainedIn(traitMatchingSet))
+                if (currentItem.Value.NumberOfReferencedTraits <= numberOfTraits && currentItem.Value.EntirelyContainedIn(traitMatchingSet))
                 {
                     callback(context, currentItem.Value.Trait);
                 }
@@ -153,6 +154,51 @@ namespace AutoStep.Language.Interaction.Traits
                 }
 
                 currentItem = currentItem.Previous;
+            }
+        }
+
+        public void MethodTableWalk(MethodTable rootTable, Action<TraitDefinitionElement, MethodTable> traitVisitCallback)
+        {
+            // traitVisitCallback should return true to continue down a given path; else
+            // it should return false.
+            // So if a trait has already been visited, don't go down that path again (for example).
+
+            // Ok, so starting from the most complex, work to the most simple.
+            var currentTrait = AllTraits.First;
+
+            while (currentTrait is object)
+            {
+                // For each node, start at the simplest, searching back down towards this one.
+                var matchingSet = new TraitNameMatchingSet(currentTrait.Value.Ref);
+                var currentSearchTrait = AllTraits.Last;
+                var methodTable = rootTable;
+
+                // Walk back down until we reach this one.
+                while (currentSearchTrait != currentTrait)
+                {
+                    // The current search trait is entirely contained in our search set.
+                    if (currentSearchTrait.Value.EntirelyContainedIn(matchingSet))
+                    {
+                        foreach (var traitMethod in currentSearchTrait.Value.Trait.Methods)
+                        {
+                            // Merge each method in.
+                            methodTable.Set(traitMethod.Name, traitMethod);
+                        }
+                    }
+
+                    currentSearchTrait = currentSearchTrait.Previous;
+                }
+
+                foreach (var traitMethod in currentSearchTrait.Value.Trait.Methods)
+                {
+                    // Merge any methods in the current trait.
+                    methodTable.Set(traitMethod.Name, traitMethod);
+                }
+
+                // We now have the complete method table. Invoke the callback that can do any validation it needs to.
+                traitVisitCallback(currentSearchTrait.Value.Trait, methodTable);
+
+                currentTrait = currentTrait.Next;
             }
         }
     }
