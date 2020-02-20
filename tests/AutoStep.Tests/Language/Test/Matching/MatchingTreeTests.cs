@@ -13,6 +13,8 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Test.Matching;
 using AutoStep.Elements.Test;
+using AutoStep.Elements.Interaction;
+using AutoStep.Language;
 
 namespace AutoStep.Tests.Language.Test.Matching
 {
@@ -266,6 +268,95 @@ namespace AutoStep.Tests.Language.Test.Matching
         }
 
         [Fact]
+        public void PlaceholderMatches()
+        {
+            var tree = new MatchingTree();
+
+            var manualDefEl = CreateInteractionDef(StepType.Given, "I click $component$", s => s
+                                                    .WordPart("I", 1)
+                                                    .WordPart("click", 3)
+                                                    .ComponentMatch(9)
+                                                );
+
+            manualDefEl.AddComponentMatch("button");
+            manualDefEl.AddComponentMatch("input");
+
+            var stepDef = new TestDef(manualDefEl);
+
+            tree.AddOrUpdateDefinition(stepDef);
+            
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I click button");
+
+            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+
+            result.Should().HaveCount(1);
+            result[0].IsExact.Should().BeTrue();
+            result[0].Confidence.Should().Be(int.MaxValue);
+            result[0].TryGetPlaceholderValue(InteractionPlaceholders.Component, out var value).Should().BeTrue();
+            result[0].Definition.Should().Be(stepDef);
+            value.Should().Be("button");
+        }
+
+        [Fact]
+        public void MultiplePlaceholdersDoesNotMatchWithDifferentValues()
+        {
+            var tree = new MatchingTree();
+
+            var manualDefEl = CreateInteractionDef(StepType.Given, "I click $component$ and $component$", s => s
+                                                    .WordPart("I", 1)
+                                                    .WordPart("click", 3)
+                                                    .ComponentMatch(9)
+                                                    .WordPart("and", 21)
+                                                    .ComponentMatch(25)
+                                                );
+
+            manualDefEl.AddComponentMatch("button");
+            manualDefEl.AddComponentMatch("input");
+
+            var stepDef = new TestDef(manualDefEl);
+
+            tree.AddOrUpdateDefinition(stepDef);
+
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I click button and input");
+
+            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+
+            result.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public void MultiplePlaceholdersMatchesWithSameValues()
+        {
+            var tree = new MatchingTree();
+
+            var manualDefEl = CreateInteractionDef(StepType.Given, "I click $component$ and $component$", s => s
+                                                    .WordPart("I", 1)
+                                                    .WordPart("click", 3)
+                                                    .ComponentMatch(9)
+                                                    .WordPart("and", 21)
+                                                    .ComponentMatch(25)
+                                                );
+
+            manualDefEl.AddComponentMatch("button");
+            manualDefEl.AddComponentMatch("input");
+
+            var stepDef = new TestDef(manualDefEl);
+
+            tree.AddOrUpdateDefinition(stepDef);
+
+            var stepRef1 = CreateSimpleRef(StepType.Given, "I click button and button");
+
+            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+
+            result.Should().HaveCount(1);
+            result[0].IsExact.Should().BeTrue();
+            result[0].Confidence.Should().Be(int.MaxValue);
+            result[0].TryGetPlaceholderValue(InteractionPlaceholders.Component, out var value).Should().BeTrue();
+            result[0].Definition.Should().Be(stepDef);
+            value.Should().Be("button");
+        }
+
+        [Fact]
         public void LargeTree()
         {
             var tree = new MatchingTree();
@@ -350,6 +441,15 @@ namespace AutoStep.Tests.Language.Test.Matching
         private StepDefinitionElement CreateDef(StepType type, string declaration, Action<StepDefinitionBuilder> builder)
         {
             var defBuilder = new StepDefinitionBuilder(type, declaration, 1, 1);
+
+            builder(defBuilder);
+
+            return defBuilder.Built;
+        }
+
+        private InteractionStepDefinitionElement CreateInteractionDef(StepType type, string declaration, Action<InteractionStepDefinitionBuilder> builder)
+        {
+            var defBuilder = new InteractionStepDefinitionBuilder(type, declaration, 1, 1);
 
             builder(defBuilder);
 

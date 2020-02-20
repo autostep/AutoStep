@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
@@ -12,6 +14,7 @@ namespace AutoStep.Language.Test.Matching
     internal class MatchResult
     {
         private List<CompilerMessage>? msgs;
+        private Dictionary<string, string>? placeholderValues;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchResult"/> class.
@@ -50,6 +53,11 @@ namespace AutoStep.Language.Test.Matching
         public LinkedList<ArgumentBinding>? ArgumentSet { get; private set; }
 
         /// <summary>
+        /// Gets the set of matched placeholder values for the match result.
+        /// </summary>
+        private IReadOnlyDictionary<string, string>? PlaceholderValues => placeholderValues;
+
+        /// <summary>
         /// Adds a compiler message to the match result.
         /// </summary>
         /// <param name="msg">The compilation message.</param>
@@ -76,6 +84,27 @@ namespace AutoStep.Language.Test.Matching
             }
 
             ArgumentSet.AddFirst(new ArgumentBinding(arg, matchResult));
+        }
+
+        public void IncludePlaceholderValue(string name, string value)
+        {
+            if (placeholderValues is null)
+            {
+                placeholderValues = new Dictionary<string, string>();
+            }
+
+            placeholderValues[name] = value;
+        }
+
+        public bool TryGetPlaceholderValue(string name, [NotNullWhen(true)] out string? value)
+        {
+            if (placeholderValues is null)
+            {
+                value = null;
+                return false;
+            }
+
+            return placeholderValues.TryGetValue(name, out value);
         }
     }
 }

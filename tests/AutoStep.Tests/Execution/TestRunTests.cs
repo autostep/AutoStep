@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Execution
                 .Scenario("My Scenario", 1, 1)
             ).Built;
 
-            var file = new ProjectFile("/path", new StringContentSource("test"));
+            var file = new ProjectTestFile("/path", new StringContentSource("test"));
 
             var mockProjectCompiler = new Mock<IProjectCompiler>();
 

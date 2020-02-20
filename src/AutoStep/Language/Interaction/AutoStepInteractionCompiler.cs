@@ -16,11 +16,12 @@ namespace AutoStep.Language.Interaction
 {
     public enum InteractionsCompilerOptions
     {
-        None,
+        Default,
+
         EnableDiagnostics
     }
 
-    public class AutoStepInteractionCompiler
+    public class AutoStepInteractionCompiler : IAutoStepInteractionCompiler
     {
         private readonly InteractionsCompilerOptions options;
 

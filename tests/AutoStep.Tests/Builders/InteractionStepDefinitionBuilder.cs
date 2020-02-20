@@ -2,6 +2,7 @@
 using AutoStep.Elements;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
+using AutoStep.Language;
 
 namespace AutoStep.Tests.Builders
 {
@@ -80,7 +81,7 @@ namespace AutoStep.Tests.Builders
         }
         public InteractionStepDefinitionBuilder ComponentMatch(int start)
         {
-            Built.AddPart(new ComponentMatchPart
+            Built.AddPart(new PlaceholderMatchPart(InteractionPlaceholders.Component)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = start,

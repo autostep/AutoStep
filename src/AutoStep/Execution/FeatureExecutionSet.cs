@@ -58,7 +58,7 @@ namespace AutoStep.Execution
 
         private void Populate()
         {
-            foreach (var file in project.AllFiles.Values)
+            foreach (var file in project.AllTestFiles.Values)
             {
                 if (filter.MatchesFile(file))
                 {
@@ -71,7 +71,7 @@ namespace AutoStep.Execution
             }
         }
 
-        private void AddFile(ProjectFile file)
+        private void AddFile(ProjectTestFile file)
         {
             var lastLinkResult = file.LastLinkResult;
             var lastCompile = file.LastCompileResult;

@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -111,7 +111,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -162,7 +162,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -222,7 +222,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -275,7 +275,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -353,8 +353,8 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
-            project.TryAddFile(new ProjectFile("/steps", new StringContentSource(StepsFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/steps", new StringContentSource(StepsFile)));
 
             var steps = new CallbackDefinitionSource();
 

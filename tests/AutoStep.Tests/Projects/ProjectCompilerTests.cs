@@ -55,7 +55,7 @@ namespace AutoStep.Tests.Projects
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -94,8 +94,8 @@ namespace AutoStep.Tests.Projects
 
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile1 = new ProjectFile("/file1", mockSource1.Object);
-            var projFile2 = new ProjectFile("/file2", mockSource2.Object);
+            var projFile1 = new ProjectTestFile("/file1", mockSource1.Object);
+            var projFile2 = new ProjectTestFile("/file2", mockSource2.Object);
             project.TryAddFile(projFile1);
             project.TryAddFile(projFile2);
 
@@ -128,7 +128,7 @@ namespace AutoStep.Tests.Projects
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -162,7 +162,7 @@ namespace AutoStep.Tests.Projects
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -198,7 +198,7 @@ namespace AutoStep.Tests.Projects
             ));
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -223,7 +223,7 @@ namespace AutoStep.Tests.Projects
 
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -251,7 +251,7 @@ namespace AutoStep.Tests.Projects
 
             var mockLinker = new Mock<IAutoStepLinker>();
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
@@ -274,7 +274,7 @@ namespace AutoStep.Tests.Projects
             
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var cancelledToken = new CancellationToken(true);
@@ -308,7 +308,7 @@ namespace AutoStep.Tests.Projects
             mockLinker.Setup(x => x.AddOrUpdateStepDefinitionSource(It.IsAny<IUpdatableStepDefinitionSource>()))
                       .Callback((IUpdatableStepDefinitionSource s) => addedSource = s);
 
-            var projFile = new ProjectFile("/file1", mockSource.Object);
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);

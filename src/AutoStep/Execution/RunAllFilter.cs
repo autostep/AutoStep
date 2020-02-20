@@ -9,13 +9,13 @@ namespace AutoStep.Execution
     public class RunAllFilter : IRunFilter
     {
         /// <inheritdoc/>
-        public bool MatchesFile(ProjectFile file)
+        public bool MatchesFile(ProjectTestFile file)
         {
             return true;
         }
 
         /// <inheritdoc/>
-        public bool MatchesFeature(ProjectFile file, IFeatureInfo feature)
+        public bool MatchesFeature(ProjectTestFile file, IFeatureInfo feature)
         {
             return true;
         }

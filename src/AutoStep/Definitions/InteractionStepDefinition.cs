@@ -22,7 +22,7 @@ namespace AutoStep.Definitions
 
         public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
-            throw new NotImplementedException();
+            return default;
         }
 
         public override object GetSignature()

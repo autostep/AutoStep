@@ -66,7 +66,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         protected override bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext parserContext)
         {
-            if (!stepDef.Parts.OfType<ComponentMatchPart>().Any())
+            if (!stepDef.Parts.OfType<PlaceholderMatchPart>().Any())
             {
                 // Trait step definitions must have at least one component match part, to ensure they
                 // can be differentiated from each other later.

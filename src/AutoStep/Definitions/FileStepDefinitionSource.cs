@@ -16,7 +16,7 @@ namespace AutoStep.Definitions
         /// Initializes a new instance of the <see cref="FileStepDefinitionSource"/> class.
         /// </summary>
         /// <param name="file">The file to get steps from.</param>
-        public FileStepDefinitionSource(ProjectFile file)
+        public FileStepDefinitionSource(ProjectTestFile file)
         {
             File = file;
         }
@@ -34,7 +34,7 @@ namespace AutoStep.Definitions
         /// <summary>
         /// Gets the backing project file.
         /// </summary>
-        public ProjectFile File { get; }
+        public ProjectTestFile File { get; }
 
         /// <summary>
         /// Gets the last modification time of the source, which is equal to the last compilation

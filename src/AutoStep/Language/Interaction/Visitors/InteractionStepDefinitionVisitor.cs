@@ -163,7 +163,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override InteractionStepDefinitionElement VisitDeclarationComponentInsert([NotNull] DeclarationComponentInsertContext context)
         {
-            AddPart(new ComponentMatchPart().AddPositionalLineInfo(context));
+            AddPart(new PlaceholderMatchPart(InteractionPlaceholders.Component).AddPositionalLineInfo(context));
 
             return Result!;
         }

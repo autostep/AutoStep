@@ -27,7 +27,7 @@ namespace AutoStep.Elements.Parts
             var currentPartSpan = originalPartSpan;
             var currentPart = currentPartSpan[0];
             var refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
-            int consumedTokens = 1;
+            int consumedTokens = 0;
             int matchedLength = 0;
 
             // While we have some text left in this part.
@@ -50,6 +50,8 @@ namespace AutoStep.Elements.Parts
 
                         if (currentPartSpan.IsEmpty)
                         {
+                            consumedTokens++;
+
                             // Out of reference parts; suggests a partial match on this part.
                             return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                         }
@@ -77,8 +79,13 @@ namespace AutoStep.Elements.Parts
                     // This tells us how many characters matched.
                     matchedLength += searchedCharacters;
 
-                    // Move the part span along.
-                    currentPartSpan = currentPartSpan.Slice(1);
+                    if (searchedCharacters > 0)
+                    {
+                        consumedTokens++;
+
+                        // Move the part span along.
+                        currentPartSpan = currentPartSpan.Slice(1);
+                    }
 
                     return new StepReferenceMatchResult(matchedLength, refTextSpan.Length == searchedCharacters, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                 }

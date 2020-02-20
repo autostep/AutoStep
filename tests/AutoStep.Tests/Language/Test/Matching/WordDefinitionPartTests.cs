@@ -71,7 +71,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             result.IsExact.Should().BeFalse();
             result.Length.Should().Be(0);
-            result.RemainingTokens.Length.Should().Be(0);
+            result.RemainingTokens.Length.Should().Be(1);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             result.IsExact.Should().BeFalse();
             result.Length.Should().Be(4);
-            result.RemainingTokens.Length.Should().Be(0);
+            result.RemainingTokens.Length.Should().Be(1);
         }
 
         [Fact]

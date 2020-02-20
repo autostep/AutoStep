@@ -12,7 +12,8 @@ namespace AutoStep.Projects
     /// </summary>
     public class Project
     {
-        private readonly Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
+        private readonly Dictionary<string, ProjectTestFile> allTestFiles = new Dictionary<string, ProjectTestFile>();
+        private readonly Dictionary<string, ProjectInteractionFile> allInteractionfiles = new Dictionary<string, ProjectInteractionFile>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
@@ -34,7 +35,9 @@ namespace AutoStep.Projects
         /// <summary>
         /// Gets the set of all files in the project.
         /// </summary>
-        public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
+        public IReadOnlyDictionary<string, ProjectTestFile> AllTestFiles => allTestFiles;
+
+        public IReadOnlyDictionary<string, ProjectInteractionFile> AllInteractionFiles => allInteractionfiles;
 
         /// <summary>
         /// Gets the active project configuration.
@@ -51,14 +54,35 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="file">The file to add.</param>
         /// <returns>True if the file was added.</returns>
-        public bool TryAddFile(ProjectFile file)
+        public bool TryAddFile(ProjectTestFile file)
         {
             if (file is null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (allFiles.TryAdd(file.Path, file))
+            if (allTestFiles.TryAdd(file.Path, file))
+            {
+                file.IsAttachedToProject = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to add an interaction file to the project (will return false if it's already in the project).
+        /// </summary>
+        /// <param name="file">The file to add.</param>
+        /// <returns>True if the file was added.</returns>
+        public bool TryAddFile(ProjectInteractionFile file)
+        {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (allInteractionfiles.TryAdd(file.Path, file))
             {
                 file.IsAttachedToProject = true;
                 return true;
@@ -72,14 +96,14 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="file">The file to remove.</param>
         /// <returns>True if the file was removed.</returns>
-        public bool TryRemoveFile(ProjectFile file)
+        public bool TryRemoveFile(ProjectTestFile file)
         {
             if (file is null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (allFiles.Remove(file.Path))
+            if (allTestFiles.Remove(file.Path))
             {
                 file.IsAttachedToProject = false;
                 return true;

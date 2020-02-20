@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Execution
         public void CanCreateFeatureSetFromIncludeEverythingFilter()
         {
             var project = new Project();
-            var file = new ProjectFile("/path", new StringContentSource("my file"));
+            var file = new ProjectTestFile("/path", new StringContentSource("my file"));
 
             project.TryAddFile(file);
 
@@ -52,8 +52,8 @@ namespace AutoStep.Tests.Execution
         public void CanCreateFeatureSetFromMultipleFiles()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
-            var file2 = new ProjectFile("/path2", new StringContentSource("my file 2"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
+            var file2 = new ProjectTestFile("/path2", new StringContentSource("my file 2"));
 
             project.TryAddFile(file1);
             project.TryAddFile(file2);
@@ -80,8 +80,8 @@ namespace AutoStep.Tests.Execution
         public void CanFilterOutAFile()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
-            var file2 = new ProjectFile("/path2", new StringContentSource("my file 2"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
+            var file2 = new ProjectTestFile("/path2", new StringContentSource("my file 2"));
 
             project.TryAddFile(file1);
             project.TryAddFile(file2);
@@ -110,7 +110,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFileWithNoFeature()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -129,7 +129,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFeaturesWithNoScenarios()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -148,7 +148,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFilesWithNoCompilationResult()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -163,7 +163,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFilesWithFailedCompilationResult()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -182,7 +182,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFilesWithNoLinkResult()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -200,7 +200,7 @@ namespace AutoStep.Tests.Execution
         public void ExcludesFilesWithFailedLinkResult()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
 
             project.TryAddFile(file1);
 
@@ -220,8 +220,8 @@ namespace AutoStep.Tests.Execution
         public void CanFilterOutAFeature()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
-            var file2 = new ProjectFile("/path2", new StringContentSource("my file 2"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
+            var file2 = new ProjectTestFile("/path2", new StringContentSource("my file 2"));
 
             project.TryAddFile(file1);
             project.TryAddFile(file2);
@@ -255,12 +255,12 @@ namespace AutoStep.Tests.Execution
                 this.featureName = featureName;
             }
 
-            public bool MatchesFeature(ProjectFile file, IFeatureInfo feature)
+            public bool MatchesFeature(ProjectTestFile file, IFeatureInfo feature)
             {
                 return feature.Name != featureName;
             }
 
-            public bool MatchesFile(ProjectFile file)
+            public bool MatchesFile(ProjectTestFile file)
             {
                 return true;
             }
@@ -279,12 +279,12 @@ namespace AutoStep.Tests.Execution
             {
                 this.path = path;
             }
-            public bool MatchesFeature(ProjectFile file, IFeatureInfo feature)
+            public bool MatchesFeature(ProjectTestFile file, IFeatureInfo feature)
             {
                 return true;
             }
 
-            public bool MatchesFile(ProjectFile file)
+            public bool MatchesFile(ProjectTestFile file)
             {
                 return file.Path != path;
             }

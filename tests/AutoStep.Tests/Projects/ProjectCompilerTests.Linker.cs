@@ -24,7 +24,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
             
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -53,7 +53,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -101,7 +101,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -133,7 +133,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -165,7 +165,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -200,7 +200,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
@@ -231,7 +231,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
 
             var linkerDepLastModify = DateTime.Today;
 
@@ -269,7 +269,7 @@ namespace AutoStep.Tests.Projects
             var mockLinker = new Mock<IAutoStepLinker>();
 
             var project = new Project();
-            var projFile = new ProjectFile("/file1", new Mock<IContentSource>().Object);
+            var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             
             project.TryAddFile(projFile);
 

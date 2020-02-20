@@ -34,9 +34,9 @@ namespace AutoStep.Elements.Interaction
         {
             foreach (var part in Parts)
             {
-                if (part is ComponentMatchPart compPart)
+                if (part is PlaceholderMatchPart compPart)
                 {
-                    compPart.ClearAllMatchingComponents();
+                    compPart.ClearAllValues();
                 }
             }
 
@@ -47,9 +47,9 @@ namespace AutoStep.Elements.Interaction
         {
             foreach (var part in Parts)
             {
-                if (part is ComponentMatchPart compPart)
+                if (part is PlaceholderMatchPart compPart && compPart.PlaceholderValueName == InteractionPlaceholders.Component)
                 {
-                    compPart.MatchComponentName(componentName);
+                    compPart.MatchValue(componentName);
                 }
             }
 

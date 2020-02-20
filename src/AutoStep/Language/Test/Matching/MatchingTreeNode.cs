@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
@@ -298,7 +299,7 @@ namespace AutoStep.Language.Test.Matching
                 var currentChild = children.First;
                 while (currentChild is object)
                 {
-                    currentChild.Value.SearchMatches(results, referenceText, allSearchTokens, exactOnly, out var finalSpan);
+                    currentChild.Value.SearchMatches(results, referenceText, allSearchTokens, exactOnly, default, out var finalSpan);
 
                     var handledSize = allSearchTokens.Length - finalSpan.Length;
 
@@ -319,9 +320,10 @@ namespace AutoStep.Language.Test.Matching
         /// <param name="referenceText">The text to search against.</param>
         /// <param name="remainingTokenSpan">The remaining set of tokens to search through.</param>
         /// <param name="exactOnly">Whether to return exact matches only.</param>
+        /// <param name="placeHolderDictionary">Dictionary of all placeholder matches.</param>
         /// <param name="finalSpan">Outputs the span of tokens remaining after the search has completed down this path.</param>
         /// <returns>true if this node (or any child) added results to the list.</returns>
-        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> remainingTokenSpan, bool exactOnly, out ReadOnlySpan<StepToken> finalSpan)
+        private bool SearchMatches(LinkedList<MatchResult> results, string referenceText, ReadOnlySpan<StepToken> remainingTokenSpan, bool exactOnly, PlaceHolderCopyOnWriteDictionary placeHolderDictionary, out ReadOnlySpan<StepToken> finalSpan)
         {
             Debug.Assert(matchingPart is object);
 
@@ -340,6 +342,29 @@ namespace AutoStep.Language.Test.Matching
                 var addAllRemaining = true;
                 var ignoreExact = false;
                 var addedSomething = false;
+
+                if (matchingPart is PlaceholderMatchPart placeholderPart)
+                {
+                    var placeholderValue = placeholderPart.GetContent(referenceText, match.MatchedTokens);
+
+                    // A placeholder value needs to be the same for all parts in order to match.
+                    // We need to take the matched placeholder and remember it for this search path.
+                    if (placeHolderDictionary.TryGetValue(placeholderPart.PlaceholderValueName, out var existingValue))
+                    {
+                        // If the existing value does not have the same value, then we do not match, and we will jump out
+                        // (return false).
+                        if (!string.Equals(placeholderValue, existingValue, StringComparison.CurrentCulture))
+                        {
+                            // Different placeholder value; not okay.
+                            // Do not match on this placeholder.
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        placeHolderDictionary.Set(placeholderPart.PlaceholderValueName, placeholderValue);
+                    }
+                }
 
                 // The current match has consumed the entirety of the rest of the reference.
                 if (match.RemainingTokens.IsEmpty)
@@ -367,7 +392,7 @@ namespace AutoStep.Language.Test.Matching
 
                         while (currentChild is object)
                         {
-                            var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, out var searchDepthSpan);
+                            var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, placeHolderDictionary.Copy(), out var searchDepthSpan);
 
                             if (childMatched)
                             {
@@ -410,26 +435,90 @@ namespace AutoStep.Language.Test.Matching
                     }
                 }
 
-                if (addedSomething && results.First.Value.IsExact && matchingPart is ArgumentPart arg)
+                if (addedSomething && results.First.Value.IsExact)
                 {
-                    // When at least one exact match has been added, it means that this node's
-                    // argument binding resulted in a final match.
-                    // Now let's see if there are any additional checks we can make on the argument.
-                    var currentResult = results.First;
-
-                    // Only worry about exact matches (and all the exacts come at the start of the list.
-                    while (currentResult is object && currentResult.Value.IsExact)
+                    if (matchingPart is ArgumentPart arg)
                     {
-                        var exactMatch = currentResult.Value;
+                        var currentResult = results.First;
 
-                        // Add to the list of 'argument token spans'.
-                        exactMatch.PrependArgumentSet(arg, match);
+                        // Only worry about exact matches (and all the exacts come at the start of the list).
+                        while (currentResult is object && currentResult.Value.IsExact)
+                        {
+                            // When at least one exact match has been added, it means that this node's
+                            // argument binding resulted in a final match.
+                            var exactMatch = currentResult.Value;
 
-                        currentResult = currentResult.Next;
+                            // Add to the list of 'argument token spans'.
+                            exactMatch.PrependArgumentSet(arg, match);
+
+                            currentResult = currentResult.Next;
+                        }
+                    }
+                    else if (matchingPart is PlaceholderMatchPart placeholder &&
+                             placeHolderDictionary.TryGetValue(placeholder.PlaceholderValueName, out var placeholderValue))
+                    {
+                        var currentResult = results.First;
+
+                        // Only worry about exact matches (and all the exacts come at the start of the list).
+                        while (currentResult is object && currentResult.Value.IsExact)
+                        {
+                            // When at least one exact match has been added, it means that this node's
+                            // placeholder binding resulted in a final match.
+                            var exactMatch = currentResult.Value;
+
+                            // Set the placeholder result in the final item.
+                            exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
+
+                            currentResult = currentResult.Next;
+                        }
                     }
                 }
 
                 return addedSomething;
+            }
+        }
+
+        private struct PlaceHolderCopyOnWriteDictionary
+        {
+            private Dictionary<string, string>? originalDictionary;
+            private Dictionary<string, string>? workingDictionary;
+
+            public PlaceHolderCopyOnWriteDictionary Copy()
+            {
+                return new PlaceHolderCopyOnWriteDictionary
+                {
+                    originalDictionary = workingDictionary ?? originalDictionary,
+                };
+            }
+
+            public bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
+            {
+                var dictionary = workingDictionary ?? originalDictionary;
+
+                if (dictionary is null)
+                {
+                    value = null;
+                    return false;
+                }
+
+                return dictionary.TryGetValue(key, out value);
+            }
+
+            public void Set(string key, string value)
+            {
+                if (workingDictionary is null)
+                {
+                    if (originalDictionary is null)
+                    {
+                        workingDictionary = new Dictionary<string, string>();
+                    }
+                    else
+                    {
+                        workingDictionary = new Dictionary<string, string>(originalDictionary);
+                    }
+                }
+
+                workingDictionary[key] = value;
             }
         }
     }

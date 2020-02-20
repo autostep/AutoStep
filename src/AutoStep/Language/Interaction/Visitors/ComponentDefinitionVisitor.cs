@@ -38,7 +38,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         protected override bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext bodyContext)
         {
-            if (stepDef.Parts.OfType<ComponentMatchPart>().Any())
+            if (stepDef.Parts.OfType<PlaceholderMatchPart>().Any())
             {
                 // Component step definitions cannot have a component marker.
                 MessageSet.Add(bodyContext.stepDefinition(), CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentStepDefinitionCannotHaveComponentMarker);

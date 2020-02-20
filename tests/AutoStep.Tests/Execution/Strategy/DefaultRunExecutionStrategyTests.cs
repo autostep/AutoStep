@@ -158,8 +158,8 @@ namespace AutoStep.Tests.Execution.Strategy
         private FeatureExecutionSet Get2FeatureSet()
         {
             var project = new Project();
-            var file1 = new ProjectFile("/path1", new StringContentSource("my file 1"));
-            var file2 = new ProjectFile("/path2", new StringContentSource("my file 2"));
+            var file1 = new ProjectTestFile("/path1", new StringContentSource("my file 1"));
+            var file2 = new ProjectTestFile("/path2", new StringContentSource("my file 2"));
 
             project.TryAddFile(file1);
             project.TryAddFile(file2);

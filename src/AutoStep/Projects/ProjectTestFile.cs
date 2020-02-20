@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Elements;
+using AutoStep.Language;
 using AutoStep.Language.Test;
 
 namespace AutoStep.Projects
@@ -10,16 +10,16 @@ namespace AutoStep.Projects
     /// <summary>
     /// Represents a single file within a project.
     /// </summary>
-    public class ProjectFile
+    public class ProjectTestFile
     {
         private List<IUpdatableStepDefinitionSource>? dependencies;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectFile"/> class.
+        /// Initializes a new instance of the <see cref="ProjectTestFile"/> class.
         /// </summary>
         /// <param name="filePath">The path to the file (might be physical or not, this is the identifier for the file).</param>
         /// <param name="contentSource">The content source used to access the raw file content.</param>
-        public ProjectFile(string filePath, IContentSource contentSource)
+        public ProjectTestFile(string filePath, IContentSource contentSource)
         {
             if (filePath is null)
             {

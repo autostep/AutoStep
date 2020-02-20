@@ -107,7 +107,7 @@ namespace AutoStep.Tests.Language.Interaction
             stepDefs.Should().HaveCount(1);
             stepDefs[0].Should().BeOfType<InteractionStepDefinition>();
             var stepParts = stepDefs[0].Definition.Should().BeOfType<InteractionStepDefinitionElement>()
-                                                           .Subject.Parts.OfType<ComponentMatchPart>();
+                                                           .Subject.Parts.OfType<PlaceholderMatchPart>();
 
             // Check that the component matches what we expect.
             stepParts.Should().HaveCount(1);
