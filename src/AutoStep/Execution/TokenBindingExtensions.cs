@@ -61,7 +61,7 @@ namespace AutoStep.Execution
                     else if (currentToken is InterpolateStartToken inter)
                     {
                         // We'll come back to this.
-                        throw new NotImplementedException();
+                        textSize += currentToken.Length;
                     }
                     else
                     {
