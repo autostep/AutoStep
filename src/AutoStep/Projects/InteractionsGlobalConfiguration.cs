@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using AutoStep.Definitions;
-using AutoStep.Language;
-using AutoStep.Language.Interaction;
 using AutoStep.Language.Interaction.Parser;
-using AutoStep.Language.Test;
-using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
 {
@@ -19,6 +11,21 @@ namespace AutoStep.Projects
         public void AddOrReplaceMethod(InteractionMethod method)
         {
             MethodTable.Set(method);
+        }
+
+        public void AddMethods<TMethodsClass>()
+        {
+            var methods = typeof(TMethodsClass).GetMethods();
+
+            foreach (var method in methods)
+            {
+                var attr = method.GetCustomAttribute<InteractionMethodAttribute>();
+
+                if (attr is object)
+                {
+                    MethodTable.Set(new ClassBackedInteractionMethod(attr.Name, typeof(TMethodsClass), method));
+                }
+            }
         }
     }
 }

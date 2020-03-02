@@ -113,11 +113,10 @@ namespace AutoStep.Tests.Execution
 
                 Trait: labeled + named
 
-                    locateLabel(name): select('label') -> withText(name)
+                    locateLabel(name): needs-defining
 
                     locateNamed(name): locateLabel(name) 
-                                       -> attributeToVariable('for', 'id') 
-                                       -> attributeToVariable('name', 'attrName')
+                                       -> attributeToVariable('for', 'id')
                                        -> selectById(id)
 
                     Step: Then the label for the {name} $component$ should exist

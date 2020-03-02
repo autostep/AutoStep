@@ -16,6 +16,12 @@ namespace AutoStep.Definitions
             this.target = target;
         }
 
+        public DelegateInteractionMethod(string name, Delegate @delegate)
+            : base(name, @delegate.Method)
+        {
+            this.target = @delegate.Target;
+        }
+
         protected override object GetMethodTarget(IServiceScope scope)
         {
             return target;
