@@ -45,7 +45,7 @@ namespace AutoStep.Definitions
             {
                 var methodArg = MethodDefinition.Arguments[argIdx];
 
-                context.Set(methodArg.Name, arguments[argIdx]);
+                context.Variables.Set(methodArg.Name, arguments[argIdx]);
             }
         }
     }

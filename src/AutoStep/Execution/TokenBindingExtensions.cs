@@ -158,7 +158,7 @@ namespace AutoStep.Execution
             arg = arg.ThrowIfNull(nameof(arg));
             scope.ThrowIfNull(nameof(scope));
 
-            return GetFullText(arg.Tokenised, scope, arg.Text, n => context.Get<object>(n).ToString());
+            return GetFullText(arg.Tokenised, scope, arg.Text, n => context.Variables.Get(n).ToString());
         }
 
         /// <summary>

@@ -19,12 +19,19 @@ namespace AutoStep.Definitions
 
         public string Name { get; }
 
-        public virtual void ProvideUpdatedCompilationVariables(InteractionMethodChainVariables variables)
+        public virtual void CompilerMethodCall(IReadOnlyList<MethodArgumentElement> arguments, InteractionMethodChainVariables variables)
         {
         }
 
-        // Todo: Figure out the parameters for this.
-        public abstract ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments, MethodTable methods, Stack<MethodContext> callStack);
+        public virtual ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments)
+        {
+            throw new NotImplementedException($"Registered Interaction Method '{Name}' has not been implemented");
+        }
+
+        public virtual ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+        {
+            return InvokeAsync(scope, context, arguments);
+        }
 
         public abstract int ArgumentCount { get; }
     }

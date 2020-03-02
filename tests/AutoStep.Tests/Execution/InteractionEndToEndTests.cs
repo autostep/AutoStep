@@ -14,6 +14,11 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Execution.Interaction;
+using AutoStep.Language.Interaction.Parser;
+using AutoStep.Elements.Interaction;
+using AutoStep.Language.Interaction;
+using System.Linq;
+using System.Configuration;
 
 namespace AutoStep.Tests.Execution
 {
@@ -102,17 +107,28 @@ namespace AutoStep.Tests.Execution
                     
                     locateNamed(name): needs-defining
 
-                Trait: clickable + named
+                    Step: Then the {name} $component$ should exist
+                        locateNamed(name)
+                          -> assertExists()
 
-                    Step: Given I have clicked the {name} $component$
-                        locateNamed(name) 
-                          -> click()
+                Trait: labeled + named
 
-                Component: button
+                    locateLabel(name): select('label') -> withText(name)
 
-                    traits: clickable, named
+                    locateNamed(name): locateLabel(name) 
+                                       -> attributeToVariable('for', 'id') 
+                                       -> attributeToVariable('name', 'attrName')
+                                       -> selectById(id)
 
-                    locateNamed(name): select('button')
+                    Step: Then the label for the {name} $component$ should exist
+                        locateLabel(name) 
+                          -> assertExists()
+
+                Component: field
+
+                    traits: named, labeled
+
+                    locateLabel(name): select('label') -> withText(name)
             ";
 
             // Compile a file.
@@ -122,7 +138,8 @@ namespace AutoStep.Tests.Execution
 
                 Scenario: My Scenario
 
-                    Given I have clicked the Submit button
+                    Then the label for the Name field should exist
+                     And the Name field should exist
             ";
 
             var project = new Project();
@@ -132,20 +149,55 @@ namespace AutoStep.Tests.Execution
             project.TryAddFile(new ProjectInteractionFile("/comp", new StringContentSource(InteractionsFile)));
 
             var selectCalled = false;
-            var clickCalled = false;
+            var selectByIdCalled = false;
+            var assertExistsCount = 0;
 
-            project.Compiler.Interactions.AddOrReplaceMethod("select", (IServiceScope scope, MethodContext ctxt, string selector) =>
+            var testElements = new[]
+            {
+                new TestElement { Type = "label", Text = "Name", For = "name" },
+                new TestElement { Type = "label", Text = "Age", For = "age" },
+                new TestElement { Type = "input", Id = "name" },
+                new TestElement { Type = "input", Id = "age" }
+            };
+
+            project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
             {
                 ctxt.ChainValue.Should().BeNull();
-                ctxt.ChainValue = "element";
+                ctxt.ChainValue = testElements.Where(c => c.Type == selector);
                 selectCalled = true;
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("click", (IServiceScope scope, MethodContext ctxt) =>
+            project.Compiler.Interactions.AddOrReplaceMethod("selectById", (MethodContext ctxt, string id) =>
             {
-                ctxt.ChainValue.Should().Be("element");
-                clickCalled = true;
+                ctxt.ChainValue = testElements.Where(c => c.Id == id);
+                selectByIdCalled = true;
             });
+
+            project.Compiler.Interactions.AddOrReplaceMethod("withText", (MethodContext ctxt, string text) =>
+            {
+                // The chain contains an IEnumerable of TestElement.
+                var elements = ctxt.ChainValue as IEnumerable<TestElement>;
+
+                ctxt.ChainValue = elements.Where(x => x.Text == text);
+            });
+
+            project.Compiler.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
+            {
+                var elements = ctxt.ChainValue as IEnumerable<TestElement>;
+
+                if(elements.Any())
+                {
+                    // Pass
+                    assertExistsCount++;
+                }
+                else
+                {
+                    // Fail
+                    throw new AssertionException("Does not exist.");
+                }
+            });
+
+            project.Compiler.Interactions.AddOrReplaceMethod(new AttributeToVariableMethod());
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -160,7 +212,65 @@ namespace AutoStep.Tests.Execution
             await testRun.Execute(LogFactory);
 
             selectCalled.Should().BeTrue();
-            clickCalled.Should().BeTrue();
+            selectByIdCalled.Should().BeTrue();
+
+            // Assert should have been called twice.
+            assertExistsCount.Should().Be(2);
+        }
+
+        private class TestElement
+        {
+            public string Type { get; set; }
+
+            public string For { get; set;  }
+
+            public string Id { get; set; }
+            public string Text { get; internal set; }
+        }
+
+        private class AttributeToVariableMethod : InteractionMethod
+        {
+            public AttributeToVariableMethod() : base("attributeToVariable")
+            {
+            }
+
+            public override void CompilerMethodCall(IReadOnlyList<MethodArgumentElement> arguments, InteractionMethodChainVariables variables)
+            {
+                // The second argument is used as the name of a variable.
+                if (arguments.Count > 1)
+                {
+                    var myArg = arguments[1];
+
+                    if(myArg is StringMethodArgumentElement strArg)
+                    {
+                        // Only if the value is a string.
+                        // Use the literal value only.
+                        var text = strArg.Text;
+
+                        // The text value becomes the name of a new variable.
+                        variables.SetVariable(text, false);
+                    }
+                }
+            }
+
+            public override int ArgumentCount => 2;
+
+            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments)
+            {
+                // Get the chain value, and update the variables with a name variable.
+                var propName = arguments[0].ToString();
+                var varName = arguments[1].ToString();
+
+                // Get the first chain value.
+                var first = (context.ChainValue as IEnumerable<TestElement>).First();
+
+                if(propName == "for")
+                {
+                    context.Variables.Set(varName, first.For);
+                }
+
+                return default;
+            }
         }
     }
 }

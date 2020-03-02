@@ -16,7 +16,7 @@ namespace AutoStep.Projects
     {
         internal MethodTable MethodTable { get; } = new MethodTable();
 
-        public void AddOrReplaceMethod(DefinedInteractionMethod method)
+        public void AddOrReplaceMethod(InteractionMethod method)
         {
             MethodTable.Set(method);
         }

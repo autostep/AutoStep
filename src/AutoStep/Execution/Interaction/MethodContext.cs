@@ -10,12 +10,14 @@ namespace AutoStep.Execution.Interaction
     {
         public MethodContext()
         {
+            Variables = new InteractionVariables();
         }
 
-        public MethodContext(MethodCallElement call, InteractionMethod methodDef)
+        public MethodContext(MethodCallElement call, InteractionMethod methodDef, InteractionVariables variables)
         {
             MethodCall = call;
             MethodDefinition = methodDef;
+            Variables = variables;
         }
 
         public object? ChainValue { get; set; }
@@ -23,5 +25,7 @@ namespace AutoStep.Execution.Interaction
         public InteractionMethod? MethodDefinition { get; }
 
         public MethodCallElement? MethodCall { get; }
+
+        public InteractionVariables Variables { get; }
     }
 }

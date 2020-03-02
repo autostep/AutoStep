@@ -59,7 +59,7 @@ namespace AutoStep.Definitions
 
                     var argText = argValue.GetFullText(stepScope, context.Step.Text, variables);
 
-                    initialContext.Set(Definition.Arguments[argIdx].Name, argText);
+                    initialContext.Variables.Set(Definition.Arguments[argIdx].Name, argText);
                 }
 
                 await stepDef.InvokeChainAsync(stepScope, initialContext, component.MethodTable);

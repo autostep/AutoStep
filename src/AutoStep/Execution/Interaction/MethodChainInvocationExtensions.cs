@@ -40,7 +40,7 @@ namespace AutoStep.Execution.Interaction
                         throw new CircularInteractionMethodException(method, callStack);
                     }
 
-                    var newContext = new MethodContext(method, foundMethod);
+                    var newContext = new MethodContext(method, foundMethod, context.Variables);
 
                     newContext.ChainValue = context.ChainValue;
 
@@ -92,7 +92,7 @@ namespace AutoStep.Execution.Interaction
                     StringMethodArgumentElement strArg => strArg.GetFullText(scope, callingContext),
                     IntMethodArgumentElement intArg => intArg.Value,
                     FloatMethodArgument floatArg => floatArg.Value,
-                    VariableRefMethodArgumentElement varRefArg => callingContext.Get<object>(varRefArg.VariableName),
+                    VariableRefMethodArgumentElement varRefArg => callingContext.Variables.Get(varRefArg.VariableName),
                     VariableArrayRefMethodArgument _ => throw new NotImplementedException(),
                     ConstantMethodArgument constantArg => constants.GetConstantValue(constantArg.ConstantName),
                     _ => throw new LanguageEngineAssertException()

@@ -237,7 +237,7 @@ namespace AutoStep.Language.Interaction
                     }
 
                     // Let this method update the set of available variables for the next one.
-                    foundMethod.ProvideUpdatedCompilationVariables(variableSet);
+                    foundMethod.CompilerMethodCall(call.Arguments, variableSet);
                 }
                 else if (requireMethodDefinitions)
                 {
