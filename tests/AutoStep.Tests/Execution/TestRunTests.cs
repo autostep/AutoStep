@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Execution
 
             testRun.SetRunExecutionStrategy(mockRunStrategy.Object);
 
-            var runResult = await testRun.Execute(logCfg =>
+            var runResult = await testRun.ExecuteAsync(logCfg =>
             {
                 
             });

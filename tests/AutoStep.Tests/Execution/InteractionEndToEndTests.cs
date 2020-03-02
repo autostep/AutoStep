@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             selectCalled.Should().BeTrue();
             clickCalled.Should().BeTrue();
@@ -208,7 +208,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             selectCalled.Should().BeTrue();
             selectByIdCalled.Should().BeTrue();

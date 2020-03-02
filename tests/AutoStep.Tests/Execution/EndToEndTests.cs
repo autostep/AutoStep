@@ -81,7 +81,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -136,7 +136,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().Be(2);
             argumentValues[0].Should().Be("value1");
@@ -194,7 +194,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             clickedSomethingCalled.Should().BeTrue();
@@ -247,7 +247,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -303,7 +303,7 @@ namespace AutoStep.Tests.Execution
             
             testRun.Events.Add(errorCollector);
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().BeNull();
@@ -379,7 +379,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("an argument1");
