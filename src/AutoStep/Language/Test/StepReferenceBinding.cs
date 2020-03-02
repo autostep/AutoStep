@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoStep.Definitions;
 
 namespace AutoStep.Language.Test
@@ -15,9 +16,10 @@ namespace AutoStep.Language.Test
         /// </summary>
         /// <param name="def">The step definition.</param>
         /// <param name="args">Any associated arguments.</param>
-        public StepReferenceBinding(StepDefinition def, ArgumentBinding[]? args)
+        public StepReferenceBinding(StepDefinition def, ArgumentBinding[]? args, IReadOnlyDictionary<string, string>? placeholders)
         {
             Definition = def;
+            Placeholders = placeholders;
             this.args = args;
         }
 
@@ -41,5 +43,7 @@ namespace AutoStep.Language.Test
                 return args.AsSpan();
             }
         }
+
+        public IReadOnlyDictionary<string, string>? Placeholders { get; }
     }
 }

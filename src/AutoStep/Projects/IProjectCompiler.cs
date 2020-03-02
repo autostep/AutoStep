@@ -23,6 +23,8 @@ namespace AutoStep.Projects
         /// <param name="source">The step definition source.</param>
         void AddUpdatableStepDefinitionSource(IUpdatableStepDefinitionSource source);
 
+        InteractionsGlobalConfiguration Interactions { get; }
+
         /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
         /// </summary>
@@ -50,6 +52,7 @@ namespace AutoStep.Projects
         /// <param name="cancelToken">A cancellation token for the linker process.</param>
         /// <returns>The overall project link result.</returns>
         ProjectCompilerResult Link(CancellationToken cancelToken = default);
+
 
         /// <summary>
         /// Tokenises a line of text, returning a set of line tokens. Used mostly for syntax highlighting; faster than a regular compile.

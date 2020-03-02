@@ -6,7 +6,7 @@ using AutoStep.Language;
 namespace AutoStep.Elements.Interaction
 {
 
-    public class IntMethodArgument : MethodArgumentElement
+    public class IntMethodArgumentElement : MethodArgumentElement
     {
         public int Value { get; set; }
     }

@@ -169,6 +169,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Component is missing definition for required method &apos;{0}&apos;, declared in {1}:{2}..
+        /// </summary>
+        internal static string InteractionMethodFromTraitRequiredButNotDefined {
+            get {
+                return ResourceManager.GetString("InteractionMethodFromTraitRequiredButNotDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified interaction method &apos;{0}&apos; is not available. It must be declared with an associated expression, e.g. &apos;{0}: method()&apos;..
         /// </summary>
         internal static string InteractionMethodNotAvailable {

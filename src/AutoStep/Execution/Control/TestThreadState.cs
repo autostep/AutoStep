@@ -24,5 +24,10 @@
         /// Step starting.
         /// </summary>
         StartingStep,
+
+        /// <summary>
+        /// Interaction method is about to be called.
+        /// </summary>
+        StartingInteractionMethod,
     }
 }

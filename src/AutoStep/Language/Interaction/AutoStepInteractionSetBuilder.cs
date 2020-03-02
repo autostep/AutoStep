@@ -108,6 +108,27 @@ namespace AutoStep.Language.Interaction
                     allBoundSteps.Add(step);
                 }
 
+                // Finally, validate the method table to make sure there are no needs-defining methods left.
+                foreach (var method in finalComponent.MethodTable.Methods)
+                {
+                    if (method.Value is FileDefinedInteractionMethod fileMethod)
+                    {
+                        if (fileMethod.NeedsDefining)
+                        {
+                            // A method required by one or more traits has not been defined. Indicate appropriately.
+                            // Add a message to the component itself that it needs to implement it.
+                            messages.Add(CompilerMessageFactory.Create(
+                                component.SourceName,
+                                component,
+                                CompilerMessageLevel.Error,
+                                CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined,
+                                fileMethod.Name,
+                                fileMethod.MethodDefinition.SourceName ?? string.Empty,
+                                fileMethod.MethodDefinition.SourceLine));
+                        }
+                    }
+                }
+
                 builtComponents[component.Name] = finalComponent;
             }
 
@@ -175,8 +196,6 @@ namespace AutoStep.Language.Interaction
                 // Look up the method in the method table.
                 if (methodTable.TryGetMethod(call.MethodName, out var foundMethod))
                 {
-                    call.BoundMethod = foundMethod;
-
                     // Method is in the method table
                     if (foundMethod is FileDefinedInteractionMethod fileMethod)
                     {
@@ -218,7 +237,7 @@ namespace AutoStep.Language.Interaction
                     }
 
                     // Let this method update the set of available variables for the next one.
-                    foundMethod.UpdateVariablesAfterMethod(variableSet);
+                    foundMethod.ProvideUpdatedCompilationVariables(variableSet);
                 }
                 else if (requireMethodDefinitions)
                 {

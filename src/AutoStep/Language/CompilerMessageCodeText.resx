@@ -153,6 +153,9 @@
   <data name="InteractionDuplicateTrait" xml:space="preserve">
     <value>Duplicate trait specified.</value>
   </data>
+  <data name="InteractionMethodFromTraitRequiredButNotDefined" xml:space="preserve">
+    <value>Component is missing definition for required method '{0}', declared in {1}:{2}.</value>
+  </data>
   <data name="InteractionMethodNotAvailable" xml:space="preserve">
     <value>The specified interaction method '{0}' is not available. It must be declared with an associated expression, e.g. '{0}: method()'.</value>
   </data>

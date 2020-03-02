@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Definition
             var scope = builder.BuildRootScope();
 
             var stepRef = new StepReferenceElement();
-            stepRef.Bind(new StepReferenceBinding(stepDef, null));
+            stepRef.Bind(new StepReferenceBinding(stepDef, null, null));
 
             var stepContext = new StepContext(0, new StepCollectionContext(), stepRef, VariableSet.Blank);
 

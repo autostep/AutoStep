@@ -68,7 +68,7 @@ namespace AutoStep.Tests.Definition
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
-            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null));
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
             await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank);
 
@@ -93,7 +93,7 @@ namespace AutoStep.Tests.Definition
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
-            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null));
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
             await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank);
 
@@ -118,7 +118,7 @@ namespace AutoStep.Tests.Definition
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
-            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null));
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
             await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank);
 
@@ -149,7 +149,7 @@ namespace AutoStep.Tests.Definition
             step.Bind(new StepReferenceBinding(delDefinition, new[] {
                 new ArgumentBinding(new ArgumentPart("{arg1}", "arg1", ArgumentType.Text),
                                     new StepReferenceMatchResult(4, true, new ReadOnlySpan<StepToken>(), step.TokenSpan.Slice(1)))
-            }));
+            }, null));
 
             await delDefinition.ExecuteStepAsync(scopeBuilder.BuildRootScope(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank);
 
@@ -177,7 +177,7 @@ namespace AutoStep.Tests.Definition
             step.Bind(new StepReferenceBinding(delDefinition, new[] {
                 new ArgumentBinding(new ArgumentPart("{arg1}", "arg1", ArgumentType.Text),
                                     new StepReferenceMatchResult(4, true, new ReadOnlySpan<StepToken>(), step.TokenSpan.Slice(1)))
-            }));
+            }, null));
 
             delDefinition.Invoking(x => x.ExecuteStepAsync(scopeBuilder.BuildRootScope(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank))
                          .Should()
@@ -203,7 +203,7 @@ namespace AutoStep.Tests.Definition
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
-            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null));
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
             await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank);
 
@@ -225,7 +225,7 @@ namespace AutoStep.Tests.Definition
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
-            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null));
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
             delDefinition.Invoking(d => d.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank))
                          .Should().Throw<InvalidOperationException>();

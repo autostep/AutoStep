@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using AutoStep.Definitions;
 using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction.Parser
@@ -49,5 +51,7 @@ namespace AutoStep.Language.Interaction.Parser
         {
             return (methods ?? copyFrom)!.TryGetValue(name, out method);
         }
+
+        public IEnumerable<KeyValuePair<string, InteractionMethod>> Methods => methods ?? copyFrom ?? Enumerable.Empty<KeyValuePair<string, InteractionMethod>>();
     }
 }

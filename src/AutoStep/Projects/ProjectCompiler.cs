@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoStep.Language;
 using AutoStep.Definitions;
-using Microsoft.Extensions.Logging;
-using AutoStep.Language.Test;
+using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Test;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
 {
@@ -40,6 +40,8 @@ namespace AutoStep.Projects
             this.lineTokeniser = new AutoStepLineTokeniser(linker);
         }
 
+        public InteractionsGlobalConfiguration Interactions { get; } = new InteractionsGlobalConfiguration();
+
         /// <summary>
         /// Creates a default project compiler with the normal compiler and linker settings.
         /// </summary>
@@ -48,10 +50,8 @@ namespace AutoStep.Projects
         public static ProjectCompiler CreateDefault(Project project)
         {
             var compiler = new AutoStepCompiler(CompilerOptions.Default);
-            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler), new AutoStepInteractionCompiler(InteractionsCompilerOptions.Default));
+            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler), new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics));
         }
-
-        public MethodTable InteractionRootMethodTable { get; } = new MethodTable();
 
         /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
@@ -188,7 +188,7 @@ namespace AutoStep.Projects
                     }
                 }
 
-                var setBuild = interactionSetBuilder.Build(InteractionRootMethodTable);
+                var setBuild = interactionSetBuilder.Build(Interactions.MethodTable);
 
                 allMessages.AddRange(setBuild.Messages);
 

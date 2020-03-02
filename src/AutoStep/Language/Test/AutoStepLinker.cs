@@ -189,7 +189,7 @@ namespace AutoStep.Language.Test
                 }
 
                 // Needs to materialise the argument set here. Assign the reference binding.
-                var referenceBinding = new StepReferenceBinding(foundMatch.Definition, foundMatch.ArgumentSet?.ToArray());
+                var referenceBinding = new StepReferenceBinding(foundMatch.Definition, foundMatch.ArgumentSet?.ToArray(), foundMatch.PlaceholderValues);
 
                 stepReference.Bind(referenceBinding);
             }

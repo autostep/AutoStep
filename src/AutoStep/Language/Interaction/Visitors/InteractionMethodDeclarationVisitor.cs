@@ -131,7 +131,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override TElement VisitIntArg([NotNull] IntArgContext context)
         {
-            var intArgElement = new IntMethodArgument();
+            var intArgElement = new IntMethodArgumentElement();
 
             intArgElement.AddPositionalLineInfo(context);
 

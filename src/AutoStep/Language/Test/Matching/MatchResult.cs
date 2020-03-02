@@ -55,7 +55,7 @@ namespace AutoStep.Language.Test.Matching
         /// <summary>
         /// Gets the set of matched placeholder values for the match result.
         /// </summary>
-        private IReadOnlyDictionary<string, string>? PlaceholderValues => placeholderValues;
+        public IReadOnlyDictionary<string, string>? PlaceholderValues => placeholderValues;
 
         /// <summary>
         /// Adds a compiler message to the match result.

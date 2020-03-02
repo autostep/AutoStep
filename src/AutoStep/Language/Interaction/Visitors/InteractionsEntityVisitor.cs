@@ -46,7 +46,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             MergeVisitorAndReset(methodVisitor);
 
-            Result!.Methods.Add(methodDef);
+            Result.Methods.Add(methodDef);
 
             return Result;
         }

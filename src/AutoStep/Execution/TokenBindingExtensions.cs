@@ -3,6 +3,8 @@ using AutoStep.Language;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Execution.Dependency;
+using AutoStep.Execution.Interaction;
+using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Execution
 {
@@ -11,25 +13,8 @@ namespace AutoStep.Execution
     /// </summary>
     public static class TokenBindingExtensions
     {
-        /// <summary>
-        /// Get the full text for a step argument.
-        /// </summary>
-        /// <param name="binding">The bound argument.</param>
-        /// <param name="scope">The current execution scope.</param>
-        /// <param name="rawText">The raw text of the step.</param>
-        /// <param name="variables">The variables currently in scope.</param>
-        /// <returns>The resolved text.</returns>
-        public static string GetFullText(this TokenisedArgumentValue binding, IServiceScope scope, string rawText, VariableSet variables)
+        private static string GetFullText(TokenisedArgumentValue binding, IServiceScope scope, string rawText, Func<string, string> getVariableValue)
         {
-            binding = binding.ThrowIfNull(nameof(binding));
-            variables = variables.ThrowIfNull(nameof(variables));
-            scope.ThrowIfNull(nameof(scope));
-
-            if (string.IsNullOrEmpty(rawText))
-            {
-                throw new ArgumentException(ExecutionText.TokenBindingExtensions_TextNotSupplied, nameof(rawText));
-            }
-
             // Ok, so we need to go get the raw text from the matched tokens.
             var tokens = binding.MatchedTokens;
 
@@ -69,7 +54,7 @@ namespace AutoStep.Execution
                     // Add text size for the token itself.
                     if (currentToken is VariableToken variable)
                     {
-                        var variableText = variables.Get(variable.VariableName);
+                        var variableText = getVariableValue(variable.VariableName);
                         foundVariables[tokenIdx] = variableText;
                         textSize += variableText.Length;
                     }
@@ -137,6 +122,43 @@ namespace AutoStep.Execution
             });
 
             return createdString;
+        }
+
+        /// <summary>
+        /// Get the full text for a step argument.
+        /// </summary>
+        /// <param name="binding">The bound argument.</param>
+        /// <param name="scope">The current execution scope.</param>
+        /// <param name="rawText">The raw text of the step.</param>
+        /// <param name="variables">The variables currently in scope.</param>
+        /// <returns>The resolved text.</returns>
+        public static string GetFullText(this TokenisedArgumentValue binding, IServiceScope scope, string rawText, VariableSet variables)
+        {
+            binding = binding.ThrowIfNull(nameof(binding));
+            variables = variables.ThrowIfNull(nameof(variables));
+            scope.ThrowIfNull(nameof(scope));
+
+            if (string.IsNullOrEmpty(rawText))
+            {
+                throw new ArgumentException(ExecutionText.TokenBindingExtensions_TextNotSupplied, nameof(rawText));
+            }
+
+            return GetFullText(binding, scope, rawText, n => variables.Get(n));
+        }
+
+        /// <summary>
+        /// Get the full text for a method context argument.
+        /// </summary>
+        /// <param name="arg">The bound argument.</param>
+        /// <param name="scope">The current execution scope.</param>
+        /// <param name="context">The method context (includes any variables).</param>
+        /// <returns>The resolved text.</returns>
+        public static string GetFullText(this StringMethodArgumentElement arg, IServiceScope scope, MethodContext context)
+        {
+            arg = arg.ThrowIfNull(nameof(arg));
+            scope.ThrowIfNull(nameof(scope));
+
+            return GetFullText(arg.Tokenised, scope, arg.Text, n => context.Get<object>(n).ToString());
         }
 
         /// <summary>

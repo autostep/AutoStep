@@ -210,5 +210,6 @@ namespace AutoStep.Language
         InteractionTraitStepDefinitionMustHaveComponent = 90008,
         InteractionComponentStepDefinitionCannotHaveComponentMarker = 90009,
         InteractionMethodNotAvailablePermitUndefined = 90010,
+        InteractionMethodFromTraitRequiredButNotDefined = 90011,
     }
 }
