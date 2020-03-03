@@ -3,6 +3,7 @@ lexer grammar AutoStepInteractionsLexer;
 fragment SPACE: [ \t];
 fragment NL: SPACE* '\r'? '\n';
 fragment DIGIT : [0-9] ; // match single digit
+fragment VAR_NAME : [A-Za-z] [A-Za-z_0-9-]*;
 
 APP_DEFINITION: 'App:';
 
@@ -14,7 +15,7 @@ COLLECTION_DEFINITION: 'Collection:';
 TRAITS_KEYWORD: 'traits:';
 NAME_KEYWORD: 'name:';
 COMPONENTS_KEYWORD: 'components:';
-BASEDON_KEYWORD: 'based-on:';
+INHERITS_KEYWORD: 'inherits:';
 
 STEP_DEFINE: 'Step:' -> pushMode(definition);
 
@@ -24,7 +25,7 @@ DEF_SEPARATOR: ':';
 NEEDS_DEFINING: 'needs-defining';
 
 METHOD_OPEN: '(' -> pushMode(methodArgs);
-NAME_REF: [a-zA-Z-]+;
+NAME_REF: VAR_NAME;
 PLUS: '+';
 
 COMPONENT_INSERT: '$component$';
@@ -44,7 +45,7 @@ mode methodArgs;
 METHOD_STRING_START: '"' -> pushMode(stringArg);
 METHOD_STRING_SINGLE_START: '\'' -> type(METHOD_STRING_START), pushMode(stringArgSingle);
 CONSTANT: [A-Z]+;
-PARAM_NAME: [\-a-zA-Z]+;
+PARAM_NAME: VAR_NAME;
 ARR_LEFT: '[';
 ARR_RIGHT: ']';
 PARAM_SEPARATOR: ',';
@@ -70,7 +71,7 @@ SINGLE_METHOD_STRING_END: '\'' -> type(METHOD_STRING_END), popMode;
 SINGLE_STR_CONTENT: ~[<\\']+ -> type(STR_CONTENT);
 
 mode stringVariable;
-STR_NAME_REF: NAME_REF;
+STR_NAME_REF: VAR_NAME;
 STR_ANGLE_RIGHT: '>' -> popMode;
 ERR_CHAR_STR_VAR: . -> type(ERR_CHAR);
 

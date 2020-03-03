@@ -432,19 +432,19 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitComponentName([NotNull] AutoStepInteractionsParser.ComponentNameContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>componentBasedOn</c>
+	/// Enter a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context) { }
+	public virtual void EnterComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>componentBasedOn</c>
+	/// Exit a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context) { }
+	public virtual void ExitComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentTraits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

@@ -115,12 +115,12 @@ namespace AutoStep.Tests.Execution
 
                     locateLabel(name): needs-defining
 
-                    locateNamed(name): locateLabel(name) 
-                                       -> attributeToVariable('for', 'id')
-                                       -> selectById(id)
+                    locateNamed(name): locateLabel(name)
+                                       -> attributeToVariable('for', 'id1')
+                                       -> selectById(id1)
 
                     Step: Then the label for the {name} $component$ should exist
-                        locateLabel(name) 
+                        locateLabel(name)
                           -> assertExists()
 
                 Component: field
@@ -217,6 +217,100 @@ namespace AutoStep.Tests.Execution
             assertExistsCount.Should().Be(2);
         }
 
+        [Fact]
+        public async Task InheritedComponentsTest()
+        {
+            const string InteractionsFile =
+            @"
+                Trait: named
+
+                    locateNamed(name): needs-defining
+
+                    Step: Then the {name} $component$ should exist
+                        locateNamed(name) -> assertExists()
+
+                Trait: named + clickable
+
+                    Step: Given I have clicked the {name} $component$
+                       locateNamed(name) -> click()
+
+                Component: field
+
+                    traits: named, clickable
+
+                    locateNamed(name): select('input[<name>]')
+
+                Component: text
+
+                    name: 'text box'
+                    inherits: field
+
+                    locateNamed(name): select('input[type=text][<name>]')
+            ";
+
+            // Compile a file.
+            const string TestFile =
+            @"                
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given I have clicked the Name field
+                      And I have clicked the Age text box
+                      
+                    Then the Name field should exist
+                     And the Age text box should exist
+            ";
+
+            var project = new Project();
+
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
+
+            project.TryAddFile(new ProjectInteractionFile("/comp", new StringContentSource(InteractionsFile)));
+
+            var actions = new List<string>();
+
+            project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
+            {
+                actions.Add(selector);
+            });
+
+            project.Compiler.Interactions.AddOrReplaceMethod("click", (MethodContext ctxt) =>
+            {
+                actions.Add("click");
+            });
+
+            project.Compiler.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
+            {
+                actions.Add("assertExists");
+            });
+
+            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+
+            compileResult.Messages.Should().BeEmpty();
+
+            var linkResult = project.Compiler.Link();
+
+            linkResult.Messages.Should().BeEmpty();
+
+            var testRun = project.CreateTestRun();
+
+            await testRun.ExecuteAsync(LogFactory);
+
+            // Verify the expected order of method invokes.
+            actions.Should().BeEquivalentTo(new[]
+            {
+                "input[Name]",
+                "click",
+                "input[type=text][Age]",
+                "click",
+                "input[Name]",
+                "assertExists",
+                "input[type=text][Age]",
+                "assertExists"
+            });
+        }
+
         private class TestElement
         {
             public string Type { get; set; }
@@ -224,7 +318,8 @@ namespace AutoStep.Tests.Execution
             public string For { get; set;  }
 
             public string Id { get; set; }
-            public string Text { get; internal set; }
+
+            public string Text { get; set; }
         }
 
         private class AttributeToVariableMethod : InteractionMethod

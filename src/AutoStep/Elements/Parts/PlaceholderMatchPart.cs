@@ -26,7 +26,7 @@ namespace AutoStep.Elements.Parts
         public void MatchValue(string placeholderValue)
         {
             // Add a word definition part.
-            matchingPlaceholderValues.Add(new WordDefinitionPart(placeholderValue)
+            matchingPlaceholderValues.Add(new WordDefinitionPart(placeholderValue, true)
             {
                 SourceLine = SourceLine,
                 StartColumn = StartColumn,
@@ -95,12 +95,8 @@ namespace AutoStep.Elements.Parts
             else
             {
                 var start = matchedTokens[0].StartIndex;
-                var length = 0;
-
-                for (int idx = 0; idx < matchedTokens.Length; idx++)
-                {
-                    length += matchedTokens.Length;
-                }
+                var lastToken = matchedTokens[matchedTokens.Length - 1];
+                var length = (lastToken.StartIndex - start) + lastToken.Length;
 
                 return referenceText.Substring(start, length);
             }

@@ -140,7 +140,7 @@ Component: button
   ## Description
 
   traits: clickable, enable-disable, named
-  based-on: control
+  inherits: control
   locateNamed(name): select("input[type=button], button") -> with-text(name)
       
 
@@ -150,7 +150,7 @@ Component: button
   ## This component is the override for buttons
   
   locateNamed(name): select("input.bootstrap-btn") -> with-text(name)
-  based-on: button
+  inherits: button
 
 Component: kendo-button
 

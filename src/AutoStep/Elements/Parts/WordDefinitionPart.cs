@@ -8,13 +8,17 @@ namespace AutoStep.Elements.Parts
     /// </summary>
     internal class WordDefinitionPart : DefinitionPart
     {
+        private readonly bool skipWhiteSpace;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WordDefinitionPart"/> class.
         /// </summary>
         /// <param name="text">The text of the part.</param>
-        public WordDefinitionPart(string text)
+        /// <param name="skipWhiteSpace">Indicates whether whitespace characters should be skipped when matching.</param>
+        public WordDefinitionPart(string text, bool skipWhiteSpace = false)
             : base(text)
         {
+            this.skipWhiteSpace = skipWhiteSpace;
         }
 
         /// <inheritdoc/>
@@ -33,10 +37,18 @@ namespace AutoStep.Elements.Parts
             // While we have some text left in this part.
             while (!defTextSpan.IsEmpty)
             {
-                // This word definition is bigger than the matching text then we may need to consume
-                // multiple parts.
-                if (defTextSpan.Length > refTextSpan.Length)
+                // Do we need to skip any whitespace in the definition text? This may happen when parts are defined
+                // manually, or from interaction component names.
+                if (skipWhiteSpace && char.IsWhiteSpace(defTextSpan[0]))
                 {
+                    // Move past it (but still say we matched it).
+                    defTextSpan = defTextSpan.Slice(1);
+                    matchedLength++;
+                }
+                else if (defTextSpan.Length > refTextSpan.Length)
+                {
+                    // This word definition is bigger than the matching text; we may need to consume
+                    // multiple parts.
                     if (defTextSpan.StartsWith(refTextSpan, StringComparison.CurrentCulture))
                     {
                         matchedLength += refTextSpan.Length;

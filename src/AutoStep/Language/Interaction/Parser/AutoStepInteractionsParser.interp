@@ -7,7 +7,7 @@ null
 'traits:'
 'name:'
 'components:'
-'based-on:'
+'inherits:'
 'Step:'
 null
 null
@@ -64,7 +64,7 @@ COLLECTION_DEFINITION
 TRAITS_KEYWORD
 NAME_KEYWORD
 COMPONENTS_KEYWORD
-BASEDON_KEYWORD
+INHERITS_KEYWORD
 STEP_DEFINE
 LIST_SEPARATOR
 DEF_SEPARATOR

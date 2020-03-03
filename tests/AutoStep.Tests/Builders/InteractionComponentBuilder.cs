@@ -7,7 +7,6 @@ namespace AutoStep.Tests.Builders
     {
         private readonly List<NameRefElement> nameParts = new List<NameRefElement>();
 
-
         public InteractionComponentBuilder(string name, int line, int column)
         {
             Built = new ComponentDefinitionElement();
@@ -30,9 +29,9 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public InteractionComponentBuilder BasedOn(string name, int line, int column)
+        public InteractionComponentBuilder Inherits(string name, int line, int column)
         {
-            Built.BasedOn = new NameRefElement
+            Built.Inherits = new NameRefElement
             {
                 Name = name,
                 SourceLine = line,

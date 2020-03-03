@@ -368,17 +368,17 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitComponentName([NotNull] AutoStepInteractionsParser.ComponentNameContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>componentBasedOn</c>
+	/// Enter a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context);
+	void EnterComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>componentBasedOn</c>
+	/// Exit a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context);
+	void ExitComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentTraits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

@@ -37,6 +37,31 @@ namespace AutoStep.Tests.Language.Test.Matching
         }
 
         [Fact]
+        public void ComponentsWithMultipleWords()
+        {
+            var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);
+
+            argPart.MatchValue("text box");
+
+            var text = "text box next";
+
+            var firstPart = WordFromString(text, "text");
+            var secondPart = WordFromString(text, "box");
+            var thirdPart = WordFromString(text, "next");
+
+            var match = argPart.DoStepReferenceMatch(text, GetContentParts(
+                firstPart,
+                secondPart,
+                thirdPart
+            ));
+
+            match.IsExact.Should().Be(true);
+            match.Length.Should().Be(8);
+            match.GetText(text).Should().Be("text box");
+            match.RemainingTokens[0].Should().Be(thirdPart);
+        }
+
+        [Fact]
         public void PartialMatchMultiplePlaceholders()
         {
             var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);

@@ -91,14 +91,14 @@ namespace AutoStep.Tests.Language.Interaction
             const string Test = @"                
                 Component: button
                 
-                    based-on: button
+                    inherits: button
 
                     locateNamed(name): select('label') -> withName(name)
             ";
 
             await CompileAndAssertSuccess(Test, cfg => cfg
                 .Component("button", 2, 17, c => c
-                    .BasedOn("button", 4, 31)
+                    .Inherits("button", 4, 31)
                     .Method("locateNamed", 6, 21, m => m
                         .Argument("name", 6, 33)
                         .Call("select", 6, 40, 6, 54, a => a.String("label", 47))
@@ -114,7 +114,7 @@ namespace AutoStep.Tests.Language.Interaction
             const string Test = @"                
                 Component: button
                 
-                    based-on: button
+                    inherits: button
 
                     Step: Given I have clicked on {name}
                         select(""btn[text='<name>']"")
@@ -123,7 +123,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             await CompileAndAssertSuccess(Test, cfg => cfg
                 .Component("button", 2, 17, c => c
-                    .BasedOn("button", 4, 31)
+                    .Inherits("button", 4, 31)
                     .StepDefinition(StepType.Given, "I have clicked on {name}", 6, 21, s => s
                         .WordPart("I", 33)
                         .WordPart("have", 35)

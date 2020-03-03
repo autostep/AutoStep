@@ -38,7 +38,7 @@ internal partial class AutoStepInteractionsParser : Parser {
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		APP_DEFINITION=1, TRAIT_DEFINITION=2, COMPONENT_DEFINITION=3, COLLECTION_DEFINITION=4, 
-		TRAITS_KEYWORD=5, NAME_KEYWORD=6, COMPONENTS_KEYWORD=7, BASEDON_KEYWORD=8, 
+		TRAITS_KEYWORD=5, NAME_KEYWORD=6, COMPONENTS_KEYWORD=7, INHERITS_KEYWORD=8, 
 		STEP_DEFINE=9, LIST_SEPARATOR=10, DEF_SEPARATOR=11, NEEDS_DEFINING=12, 
 		METHOD_OPEN=13, NAME_REF=14, PLUS=15, COMPONENT_INSERT=16, FUNC_PASS_MARKER=17, 
 		STRING=18, NEWLINE=19, TEXT_DOC_COMMENT=20, TEXT_COMMENT=21, WS=22, ERR_CHAR=23, 
@@ -71,7 +71,7 @@ internal partial class AutoStepInteractionsParser : Parser {
 
 	private static readonly string[] _LiteralNames = {
 		null, "'App:'", "'Trait:'", "'Component:'", "'Collection:'", "'traits:'", 
-		"'name:'", "'components:'", "'based-on:'", "'Step:'", null, null, "'needs-defining'", 
+		"'name:'", "'components:'", "'inherits:'", "'Step:'", null, null, "'needs-defining'", 
 		"'('", null, "'+'", null, "'->'", null, null, null, null, null, null, 
 		null, null, null, "'['", "']'", null, null, null, "')'", null, "'<'", 
 		"'\\\"'", null, null, null, "'>'", "'Given'", "'When'", "'Then'", "'\\{'", 
@@ -79,7 +79,7 @@ internal partial class AutoStepInteractionsParser : Parser {
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "APP_DEFINITION", "TRAIT_DEFINITION", "COMPONENT_DEFINITION", "COLLECTION_DEFINITION", 
-		"TRAITS_KEYWORD", "NAME_KEYWORD", "COMPONENTS_KEYWORD", "BASEDON_KEYWORD", 
+		"TRAITS_KEYWORD", "NAME_KEYWORD", "COMPONENTS_KEYWORD", "INHERITS_KEYWORD", 
 		"STEP_DEFINE", "LIST_SEPARATOR", "DEF_SEPARATOR", "NEEDS_DEFINING", "METHOD_OPEN", 
 		"NAME_REF", "PLUS", "COMPONENT_INSERT", "FUNC_PASS_MARKER", "STRING", 
 		"NEWLINE", "TEXT_DOC_COMMENT", "TEXT_COMMENT", "WS", "ERR_CHAR", "METHOD_STRING_START", 
@@ -1511,7 +1511,7 @@ internal partial class AutoStepInteractionsParser : Parser {
 			State = 189;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRAITS_KEYWORD) | (1L << NAME_KEYWORD) | (1L << BASEDON_KEYWORD) | (1L << STEP_DEFINE) | (1L << NAME_REF))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRAITS_KEYWORD) | (1L << NAME_KEYWORD) | (1L << INHERITS_KEYWORD) | (1L << STEP_DEFINE) | (1L << NAME_REF))) != 0)) {
 				{
 				{
 				State = 186; componentItem();
@@ -1544,6 +1544,24 @@ internal partial class AutoStepInteractionsParser : Parser {
 		public ComponentItemContext() { }
 		public virtual void CopyFrom(ComponentItemContext context) {
 			base.CopyFrom(context);
+		}
+	}
+	internal partial class ComponentInheritsContext : ComponentItemContext {
+		public ITerminalNode INHERITS_KEYWORD() { return GetToken(AutoStepInteractionsParser.INHERITS_KEYWORD, 0); }
+		public ITerminalNode NAME_REF() { return GetToken(AutoStepInteractionsParser.NAME_REF, 0); }
+		public ComponentInheritsContext(ComponentItemContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IAutoStepInteractionsParserListener typedListener = listener as IAutoStepInteractionsParserListener;
+			if (typedListener != null) typedListener.EnterComponentInherits(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IAutoStepInteractionsParserListener typedListener = listener as IAutoStepInteractionsParserListener;
+			if (typedListener != null) typedListener.ExitComponentInherits(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IAutoStepInteractionsParserVisitor<TResult> typedVisitor = visitor as IAutoStepInteractionsParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitComponentInherits(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 	internal partial class ComponentMethodContext : ComponentItemContext {
@@ -1602,24 +1620,6 @@ internal partial class AutoStepInteractionsParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	internal partial class ComponentBasedOnContext : ComponentItemContext {
-		public ITerminalNode BASEDON_KEYWORD() { return GetToken(AutoStepInteractionsParser.BASEDON_KEYWORD, 0); }
-		public ITerminalNode NAME_REF() { return GetToken(AutoStepInteractionsParser.NAME_REF, 0); }
-		public ComponentBasedOnContext(ComponentItemContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IAutoStepInteractionsParserListener typedListener = listener as IAutoStepInteractionsParserListener;
-			if (typedListener != null) typedListener.EnterComponentBasedOn(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IAutoStepInteractionsParserListener typedListener = listener as IAutoStepInteractionsParserListener;
-			if (typedListener != null) typedListener.ExitComponentBasedOn(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IAutoStepInteractionsParserVisitor<TResult> typedVisitor = visitor as IAutoStepInteractionsParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitComponentBasedOn(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
 	internal partial class ComponentTraitsContext : ComponentItemContext {
 		public ITerminalNode TRAITS_KEYWORD() { return GetToken(AutoStepInteractionsParser.TRAITS_KEYWORD, 0); }
 		public ITerminalNode[] NAME_REF() { return GetTokens(AutoStepInteractionsParser.NAME_REF); }
@@ -1663,11 +1663,11 @@ internal partial class AutoStepInteractionsParser : Parser {
 				State = 193; Match(STRING);
 				}
 				break;
-			case BASEDON_KEYWORD:
-				_localctx = new ComponentBasedOnContext(_localctx);
+			case INHERITS_KEYWORD:
+				_localctx = new ComponentInheritsContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 194; Match(BASEDON_KEYWORD);
+				State = 194; Match(INHERITS_KEYWORD);
 				State = 195; Match(NAME_REF);
 				}
 				break;

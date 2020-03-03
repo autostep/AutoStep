@@ -353,7 +353,7 @@ internal partial class AutoStepInteractionsParserBaseVisitor<Result> : AbstractP
 	/// <return>The visitor result.</return>
 	public virtual Result VisitComponentName([NotNull] AutoStepInteractionsParser.ComponentNameContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>componentBasedOn</c>
+	/// Visit a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -362,7 +362,7 @@ internal partial class AutoStepInteractionsParserBaseVisitor<Result> : AbstractP
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context) { return VisitChildren(context); }
+	public virtual Result VisitComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>componentTraits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

@@ -56,18 +56,18 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
-        public override ComponentDefinitionElement VisitComponentBasedOn([NotNull] ComponentBasedOnContext context)
+        public override ComponentDefinitionElement VisitComponentInherits([NotNull] ComponentInheritsContext context)
         {
-            var basedOn = context.NAME_REF();
+            var inherits = context.NAME_REF();
 
-            if (basedOn is object)
+            if (inherits is object)
             {
-                var basedOnElement = new NameRefElement
+                var inheritsElement = new NameRefElement
                 {
-                    Name = basedOn.GetText(),
+                    Name = inherits.GetText(),
                 }.AddPositionalLineInfo(context);
 
-                Result!.BasedOn = basedOnElement;
+                Result!.Inherits = inheritsElement;
             }
 
             return Result!;

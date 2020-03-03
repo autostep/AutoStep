@@ -231,12 +231,12 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitComponentName([NotNull] AutoStepInteractionsParser.ComponentNameContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>componentBasedOn</c>
+	/// Visit a parse tree produced by the <c>componentInherits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitComponentBasedOn([NotNull] AutoStepInteractionsParser.ComponentBasedOnContext context);
+	Result VisitComponentInherits([NotNull] AutoStepInteractionsParser.ComponentInheritsContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>componentTraits</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

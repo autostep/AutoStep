@@ -58,7 +58,7 @@ componentDefinition: COMPONENT_DEFINITION NAME_REF
                      componentItem*;
 
 componentItem: NAME_KEYWORD STRING #componentName
-             | BASEDON_KEYWORD NAME_REF #componentBasedOn
+             | INHERITS_KEYWORD NAME_REF #componentInherits
              | TRAITS_KEYWORD NAME_REF (LIST_SEPARATOR NAME_REF)* #componentTraits
              | methodDefinition    #componentMethod
              | stepDefinitionBody  #componentStep;
