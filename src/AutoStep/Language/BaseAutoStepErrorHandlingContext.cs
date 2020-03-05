@@ -142,7 +142,7 @@ namespace AutoStep.Language
         /// <returns>True if one of the specified token types is expected by the parser.</returns>
         protected bool ExpectingTokens(params int[] tokens)
         {
-            return !Parser.GetExpectedTokens().Or(new IntervalSet(tokens)).IsNil;
+           return !Parser.GetExpectedTokens().And(new IntervalSet(tokens)).IsNil;
         }
 
         /// <summary>

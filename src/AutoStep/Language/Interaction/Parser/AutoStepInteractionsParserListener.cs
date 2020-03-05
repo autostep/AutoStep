@@ -130,18 +130,6 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>traitError</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterTraitError([NotNull] AutoStepInteractionsParser.TraitErrorContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>traitError</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitTraitError([NotNull] AutoStepInteractionsParser.TraitErrorContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>traitName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
 	/// </summary>
@@ -367,18 +355,6 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitComponentDefinition([NotNull] AutoStepInteractionsParser.ComponentDefinitionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>componentError</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterComponentError([NotNull] AutoStepInteractionsParser.ComponentErrorContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>componentError</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitComponentError([NotNull] AutoStepInteractionsParser.ComponentErrorContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

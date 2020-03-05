@@ -8,7 +8,7 @@ using AutoStep.Tests.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Tests.Language.Interaction
+namespace AutoStep.Tests.Language.Interaction.Parser
 {
     public class ComponentDefinitionTests : InteractionsCompilerTestBase
     {
@@ -28,7 +28,7 @@ namespace AutoStep.Tests.Language.Interaction
             ";
 
             await CompileAndAssertSuccess(Test, cfg => cfg
-                .Component("button", 2, 17, c => c 
+                .Component("button", 2, 17, c => c
                     .Trait("clickable", 4, 29)
                     .Trait("editable", 4, 40)
                     .Trait("displayable", 4, 50)
@@ -48,7 +48,7 @@ namespace AutoStep.Tests.Language.Interaction
                 Component:
             ";
 
-            await CompileAndAssertErrors(Test, 
+            await CompileAndAssertErrors(Test,
                 CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 2, 17, 2, 26));
         }
 
@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Language.Interaction
                 CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 27, 4, 31),
                 CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 33, 4, 35));
         }
-               
+
         [Fact]
         public async Task ComponentJunkContentError()
         {
@@ -220,20 +220,18 @@ namespace AutoStep.Tests.Language.Interaction
 
                     Step: Given I
                         method()
+
+                Component: other
             ";
 
             // The compiler will think we're trying to declare methods and associated calls.
-            await CompileAndAssertErrors(Test,
-                file => file.Component("button", 2, 17, cfg => cfg
+            await CompileAndAssertErrors(Test, file => file
+                .Component("button", 2, 17, cfg => cfg
                     .Name("abc")
-                    .StepDefinition(StepType.Given, "I", 8, 21, step => step
-                        .WordPart("I", 33)
-                        .Expression(expr => expr
-                            .Call("method", 9, 25, 9, 32)
-                        )
-                    )
-                ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 23));
+                )
+                .Component("other", 11, 17),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, 6, 21, 6, 21,
+                                             "extraneous input '<' expecting {<EOF>, 'App:', 'Trait:', 'Component:'}"));
         }
     }
 }

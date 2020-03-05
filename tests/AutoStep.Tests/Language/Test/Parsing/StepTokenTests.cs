@@ -185,7 +185,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 Scenario: My Scenario
 
                     Given I have passed \'argument
-
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file

@@ -79,12 +79,5 @@ namespace AutoStep.Language.Interaction.Visitors
 
             return Result;
         }
-
-        public override ComponentDefinitionElement VisitComponentError([NotNull] ComponentErrorContext context)
-        {
-            MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent);
-
-            return Result!;
-        }
     }
 }

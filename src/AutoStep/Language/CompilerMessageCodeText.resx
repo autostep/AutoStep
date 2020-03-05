@@ -180,6 +180,9 @@
   <data name="InteractionTraitStepDefinitionMustHaveComponent" xml:space="preserve">
     <value>Interaction Step Definitions inside traits must contain at least one $component$ marker, so that the component can be identified.</value>
   </data>
+  <data name="InteractionUnterminatedMethod" xml:space="preserve">
+    <value>Method declaration has not been closed, expecting ')'.</value>
+  </data>
   <data name="InteractionVariableNotAnArray" xml:space="preserve">
     <value>The {0} variable is not a collection, so you cannot access it as one.</value>
   </data>

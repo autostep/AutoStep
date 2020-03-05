@@ -8,7 +8,7 @@ using AutoStep.Tests.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AutoStep.Tests.Language.Interaction
+namespace AutoStep.Tests.Language.Interaction.Parser
 {
     public class TraitDefinitionTests : InteractionsCompilerTestBase
     {
@@ -23,11 +23,11 @@ namespace AutoStep.Tests.Language.Interaction
                 Trait: clickable
             ";
 
-           await CompileAndAssertSuccess(Test, file => file
-                .Trait("clickable", 2, 17, t => t
-                    .NamePart("clickable", 24)
-                )
-            );
+            await CompileAndAssertSuccess(Test, file => file
+                 .Trait("clickable", 2, 17, t => t
+                     .NamePart("clickable", 24)
+                 )
+             );
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Language.Interaction
                 )
              );
         }
-        
+
         [Fact]
         public async Task CanDefineTraitWithStep()
         {
@@ -96,7 +96,7 @@ namespace AutoStep.Tests.Language.Interaction
                             .Call("click", 6, 28, 6, 34)
                         )
                      )
-                     
+
                  )
              );
         }
@@ -159,7 +159,7 @@ namespace AutoStep.Tests.Language.Interaction
                         .Call("select", 6, 36, 6, 50, m => m.String("label", 43))
                         .Call("first", 6, 55, 6, 61)
                     )
-                 )               
+                 )
              );
         }
 

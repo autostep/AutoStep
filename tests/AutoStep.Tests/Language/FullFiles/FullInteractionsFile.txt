@@ -232,14 +232,14 @@ Component: label
   
   traits: named
 
-  locateNamed(name): select("label") -> with-text(name);
+  locateNamed(name): select("label") -> with-text(name)
 
 Component: heading
 
   locateNamed(name): select("h1,h2,h3") -> with-text(name)
 
   traits: named, displayable
-
+  
 Component: link
   
   traits: named, displayable, clickable, enable-disable

@@ -65,19 +65,9 @@ namespace AutoStep.Tests.Language.FullFiles {
         ///# Define App Context
         ///App: my-app
         ///
-        ///  name: &apos;My App&apos;
+        ///  name: &quot;My App&quot;
         ///  components: button, text, checkbox
         ///
-        ///Trait: clickable + named + enable-disable
-        ///  
-        ///  Step: Given I have clicked the {name} $component$
-        ///
-        ///    ## This step will click the $component$.    
-        ///
-        ///    locateNamed(name)
-        ///    -&gt; first()
-        ///    -&gt; assertEnabled()
-        ///    -&gt; click()
         ///
         ///Trait: enable-disable
         ///  
@@ -87,7 +77,17 @@ namespace AutoStep.Tests.Language.FullFiles {
         ///Trait: named
         ///
         ///  default(name): locateNamed(name)
-        ///        /// [rest of string was truncated]&quot;;.
+        ///
+        ///  locateNamed(name): select(&quot;input[name=&apos;&lt;name&gt;&apos;]&quot;)
+        ///
+        ///Trait: named + enable-disable
+        ///
+        ///  Step: Then the {name} $component$ should be enabled
+        ///    locateNamed(name)
+        ///    -&gt; first()
+        ///    -&gt; assertEnabled()
+        ///
+        ///  Step: Then the {name}  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FullInteractionsFile {
             get {

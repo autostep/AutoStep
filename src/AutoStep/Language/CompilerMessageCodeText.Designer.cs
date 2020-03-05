@@ -250,6 +250,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Method declaration has not been closed, expecting &apos;)&apos;..
+        /// </summary>
+        internal static string InteractionUnterminatedMethod {
+            get {
+                return ResourceManager.GetString("InteractionUnterminatedMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} variable is not a collection, so you cannot access it as one..
         /// </summary>
         internal static string InteractionVariableNotAnArray {

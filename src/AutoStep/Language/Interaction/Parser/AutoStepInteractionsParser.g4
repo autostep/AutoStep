@@ -2,7 +2,7 @@ parser grammar AutoStepInteractionsParser;
 
 options { tokenVocab=AutoStepInteractionsLexer; }
 
-file: entityDefinition*;
+file: entityDefinition* EOF;
 
 entityDefinition: traitDefinition
                 | componentDefinition
@@ -21,8 +21,7 @@ traitDefinition:  TRAIT_DEFINITION traitRefList
 
 traitRefList: NAME_REF (PLUS NAME_REF)*;
 
-traitItem: ERR_CHAR+           #traitError
-         | NAME_KEYWORD STRING #traitName
+traitItem: NAME_KEYWORD STRING #traitName
          | methodDefinition    #traitMethod
          | stepDefinitionBody  #traitStep
          ;
@@ -35,7 +34,7 @@ methodDefinition: methodDeclaration DEF_SEPARATOR
 
 methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 
-methodDefArgs: PARAM_NAME (PARAM_NAME LIST_SEPARATOR)*;
+methodDefArgs: PARAM_NAME (PARAM_SEPARATOR PARAM_NAME)*;
 
 methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 
@@ -59,8 +58,7 @@ methodStrPart: STR_CONTENT                                 #methodStrContent
 componentDefinition: COMPONENT_DEFINITION NAME_REF
                      componentItem*;
 
-componentItem: ERR_CHAR+           #componentError
-             | NAME_KEYWORD STRING #componentName
+componentItem: NAME_KEYWORD STRING #componentName
              | INHERITS_KEYWORD NAME_REF #componentInherits
              | TRAITS_KEYWORD NAME_REF (LIST_SEPARATOR NAME_REF)* #componentTraits
              | methodDefinition    #componentMethod
