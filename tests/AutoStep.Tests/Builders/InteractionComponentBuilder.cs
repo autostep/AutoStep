@@ -15,6 +15,13 @@ namespace AutoStep.Tests.Builders
             Built.StartColumn = column;
         }
 
+        public InteractionComponentBuilder Name(string name)
+        {
+            Built.Name = name;
+
+            return this;
+        }
+
         public InteractionComponentBuilder Trait(string name, int line, int column)
         {
             Built.Traits.Add(new NameRefElement

@@ -6,7 +6,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using Microsoft.Extensions.Logging;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Loads steps with types that have attributes on them.

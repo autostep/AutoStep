@@ -19,6 +19,7 @@ using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction;
 using System.Linq;
 using System.Configuration;
+using AutoStep.Definitions.Interaction;
 
 namespace AutoStep.Tests.Execution
 {

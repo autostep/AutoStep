@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoStep.Definitions;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
-using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Interaction.Traits;
 
 namespace AutoStep.Language.Interaction

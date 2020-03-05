@@ -7,7 +7,6 @@ using System.Text;
 using Autofac.Features.ResolveAnything;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
-using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Interaction.Traits;
 
 namespace AutoStep.Language.Interaction

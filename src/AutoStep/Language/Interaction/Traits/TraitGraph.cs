@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Elements.Interaction;
-using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Language.Interaction.Traits
 {

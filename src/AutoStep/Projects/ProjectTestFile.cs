@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Definitions;
+using AutoStep.Definitions.Test;
 using AutoStep.Elements;
 using AutoStep.Language;
 using AutoStep.Language.Test;

@@ -29,17 +29,20 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
-            currentMethodCall = new MethodCallElement();
+            if (context.NAME_REF() is object)
+            {
+                currentMethodCall = new MethodCallElement();
 
-            currentMethodCall.AddPositionalLineInfo(context);
+                currentMethodCall.AddPositionalLineInfo(context);
 
-            currentMethodCall.MethodName = context.NAME_REF().GetText();
+                currentMethodCall.MethodName = context.NAME_REF().GetText();
 
-            VisitChildren(context);
+                VisitChildren(context);
 
-            Result!.MethodCallChain.Add(currentMethodCall);
+                Result!.MethodCallChain.Add(currentMethodCall);
 
-            currentMethodCall = null;
+                currentMethodCall = null;
+            }
 
             return Result;
         }

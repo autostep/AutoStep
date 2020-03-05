@@ -28,7 +28,12 @@ namespace AutoStep.Tests.Utils
         {
         }
 
-        protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
+        protected Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
+        {
+            return CompileAndAssertErrors(content, null, expectedMessages);
+        }
+
+        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder> cfg, params CompilerMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
@@ -45,54 +50,15 @@ namespace AutoStep.Tests.Utils
             // Make sure the messages are the same.
             Assert.Equal(expectedMessages, result.Messages);
             Assert.False(result.Success);
-        }
 
-        protected async Task CompileAndAssertWarnings(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
-        {
-            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
-
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
-            var source = new StringContentSource(content);
-
-            var result = await compiler.CompileInteractionsAsync(source, LogFactory);
-
-            foreach(var message in result.Messages)
+            if (cfg is object)
             {
-                TestOutput.WriteLine(message.ToString());
+                var expectedBuilder = new InteractionFileBuilder();
+                cfg(expectedBuilder);
+
+                AssertElementComparison(expectedBuilder.Built, result.Output, false);
             }
-
-            // Make sure the messages are the same.
-            Assert.Equal(expectedMessages, result.Messages);
-
-            var expectedBuilder = new FileBuilder();
-            cfg(expectedBuilder);
-
-           // AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
-
-        protected async Task CompileAndAssertWarningsWithStatementParts(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
-        {
-            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
-
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
-            var source = new StringContentSource(content);
-
-            var result = await compiler.CompileInteractionsAsync(source, LogFactory);
-
-            foreach (var message in result.Messages)
-            {
-                TestOutput.WriteLine(message.ToString());
-            }
-
-            // Make sure the messages are the same.
-            Assert.Equal(expectedMessages, result.Messages);
-
-            //var expectedBuilder = new FileBuilder();
-            //cfg(expectedBuilder);
-
-            //AssertElementComparison(expectedBuilder.Built, result.Output, true);
-        }
-
 
         protected async Task CompileAndAssertWarnings(string content, params CompilerMessage[] expectedMessages)
         {

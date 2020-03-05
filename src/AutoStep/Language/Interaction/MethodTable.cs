@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AutoStep.Definitions;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 
-namespace AutoStep.Language.Interaction.Parser
+namespace AutoStep.Language.Interaction
 {
     public class MethodTable
     {

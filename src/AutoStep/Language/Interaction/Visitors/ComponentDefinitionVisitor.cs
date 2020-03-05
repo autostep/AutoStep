@@ -46,7 +46,7 @@ namespace AutoStep.Language.Interaction.Visitors
                 return false;
             }
 
-            return true;
+            return base.ValidateAddedStepDefinition(stepDef, bodyContext);
         }
 
         public override ComponentDefinitionElement VisitComponentName([NotNull] ComponentNameContext context)
@@ -78,6 +78,13 @@ namespace AutoStep.Language.Interaction.Visitors
             Result!.Traits.AddRange(context.NAME_REF().Select(n => new NameRefElement { Name = n.GetText() }.AddPositionalLineInfo(n)));
 
             return Result;
+        }
+
+        public override ComponentDefinitionElement VisitComponentError([NotNull] ComponentErrorContext context)
+        {
+            MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent);
+
+            return Result!;
         }
     }
 }

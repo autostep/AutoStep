@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using AutoStep.Definitions;
-using AutoStep.Language.Interaction.Parser;
+using AutoStep.Definitions.Interaction;
+using AutoStep.Language.Interaction;
 
 namespace AutoStep.Projects
 {

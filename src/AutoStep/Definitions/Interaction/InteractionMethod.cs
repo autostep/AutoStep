@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
 using AutoStep.Language.Interaction;
-using AutoStep.Language.Interaction.Parser;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Interaction
 {
     public abstract class InteractionMethod
     {

@@ -67,7 +67,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
         protected virtual bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext bodyContext)
         {
-            return true;
+            // Blank declarations prevent any 
+            return !string.IsNullOrEmpty(stepDef.Declaration);
         }
 
         protected void ProvideName(string name, ParserRuleContext nameItemContext)

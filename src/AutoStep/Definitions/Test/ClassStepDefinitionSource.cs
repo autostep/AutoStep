@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Represents a class that can have multiple types added to it manually that each provide binding steps.

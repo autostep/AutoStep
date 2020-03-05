@@ -6,7 +6,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Strategy;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Represents a step definined inside an autostep file.

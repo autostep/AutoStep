@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Represents a step definition backed by a delegate.

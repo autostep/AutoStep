@@ -3,7 +3,7 @@ lexer grammar AutoStepInteractionsLexer;
 fragment SPACE: [ \t];
 fragment NL: SPACE* '\r'? '\n';
 fragment DIGIT : [0-9] ; // match single digit
-fragment VAR_NAME : [A-Za-z] [A-Za-z_0-9-]*;
+fragment VAR_NAME : [A-Za-z] [A-Za-z0-9-]*;
 
 APP_DEFINITION: 'App:';
 

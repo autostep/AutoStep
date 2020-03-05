@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Interaction
 {
     public class InteractionStepDefinitionSource : IUpdatableStepDefinitionSource
     {
@@ -30,7 +29,7 @@ namespace AutoStep.Definitions
             if (interactions is object)
             {
                 // Register the interactions set, so we can retrieve it in individual steps.
-                servicesBuilder.ThrowIfNull(nameof(servicesBuilder)).RegisterSingleInstance(interactions);                
+                servicesBuilder.ThrowIfNull(nameof(servicesBuilder)).RegisterSingleInstance(interactions);
             }
         }
 

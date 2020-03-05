@@ -8,7 +8,6 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
-using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Execution.Interaction
 {

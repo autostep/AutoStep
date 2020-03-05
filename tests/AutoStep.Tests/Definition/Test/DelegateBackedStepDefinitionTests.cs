@@ -15,6 +15,7 @@ using Moq;
 using Xunit;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
+using AutoStep.Definitions.Test;
 
 namespace AutoStep.Tests.Definition
 {

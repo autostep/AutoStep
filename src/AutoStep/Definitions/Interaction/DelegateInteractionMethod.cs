@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Interaction
 {
     public class DelegateInteractionMethod : DefinedInteractionMethod
     {
@@ -19,7 +17,7 @@ namespace AutoStep.Definitions
         public DelegateInteractionMethod(string name, Delegate @delegate)
             : base(name, @delegate.Method)
         {
-            this.target = @delegate.Target;
+            target = @delegate.Target;
         }
 
         protected override object GetMethodTarget(IServiceScope scope)

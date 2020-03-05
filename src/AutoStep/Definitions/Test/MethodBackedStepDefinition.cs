@@ -6,7 +6,7 @@ using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Represents a step definition that calls a C# method of some form when the step is invoked.
@@ -41,7 +41,7 @@ namespace AutoStep.Definitions
         public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
         {
             // Need to convert the found arguments into actual type arguments.
-            object[] arguments = BindArguments(stepScope, context, variables);
+            var arguments = BindArguments(stepScope, context, variables);
 
             try
             {

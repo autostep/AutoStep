@@ -153,8 +153,14 @@
   <data name="InteractionDuplicateTrait" xml:space="preserve">
     <value>Duplicate trait specified.</value>
   </data>
+  <data name="InteractionInvalidContent" xml:space="preserve">
+    <value>Invalid character(s).</value>
+  </data>
   <data name="InteractionMethodFromTraitRequiredButNotDefined" xml:space="preserve">
     <value>Component is missing definition for required method '{0}', declared in {1}:{2}.</value>
+  </data>
+  <data name="InteractionMethodNeedsParentheses" xml:space="preserve">
+    <value>Interaction methods require parentheses; e.g. myMethod(), or myMethod(arg1, arg2).</value>
   </data>
   <data name="InteractionMethodNotAvailable" xml:space="preserve">
     <value>The specified interaction method '{0}' is not available. It must be declared with an associated expression, e.g. '{0}: method()'.</value>
@@ -164,6 +170,9 @@
   </data>
   <data name="InteractionMissingExpectedName" xml:space="preserve">
     <value>A name is required.</value>
+  </data>
+  <data name="InteractionMissingStepDeclaration" xml:space="preserve">
+    <value>Interaction Step Declaration is missing the declaration text.</value>
   </data>
   <data name="InteractionNameAlreadySet" xml:space="preserve">
     <value>A name has already been provided for this entity.</value>

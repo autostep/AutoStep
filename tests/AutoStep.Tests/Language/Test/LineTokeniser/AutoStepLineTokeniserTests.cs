@@ -8,6 +8,7 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Language.Test;
+using AutoStep.Definitions.Test;
 
 namespace AutoStep.Tests.Language.Test.LineTokeniser
 {

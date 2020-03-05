@@ -169,11 +169,29 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid character(s)..
+        /// </summary>
+        internal static string InteractionInvalidContent {
+            get {
+                return ResourceManager.GetString("InteractionInvalidContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Component is missing definition for required method &apos;{0}&apos;, declared in {1}:{2}..
         /// </summary>
         internal static string InteractionMethodFromTraitRequiredButNotDefined {
             get {
                 return ResourceManager.GetString("InteractionMethodFromTraitRequiredButNotDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interaction methods require parentheses; e.g. myMethod(), or myMethod(arg1, arg2)..
+        /// </summary>
+        internal static string InteractionMethodNeedsParentheses {
+            get {
+                return ResourceManager.GetString("InteractionMethodNeedsParentheses", resourceCulture);
             }
         }
         
@@ -201,6 +219,15 @@ namespace AutoStep.Language {
         internal static string InteractionMissingExpectedName {
             get {
                 return ResourceManager.GetString("InteractionMissingExpectedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interaction Step Declaration is missing the declaration text..
+        /// </summary>
+        internal static string InteractionMissingStepDeclaration {
+            get {
+                return ResourceManager.GetString("InteractionMissingStepDeclaration", resourceCulture);
             }
         }
         

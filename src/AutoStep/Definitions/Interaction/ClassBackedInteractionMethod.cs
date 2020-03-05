@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Interaction
 {
     public class ClassBackedInteractionMethod : DefinedInteractionMethod
     {

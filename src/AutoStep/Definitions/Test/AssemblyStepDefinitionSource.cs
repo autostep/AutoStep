@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// The assembly step definition source loads steps from .NET assemblies.

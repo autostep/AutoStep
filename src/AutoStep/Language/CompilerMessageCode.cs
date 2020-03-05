@@ -191,6 +191,19 @@ namespace AutoStep.Language
         InteractionVariableNotDefined = 30004,
 
         InteractionVariableNotAnArray = 30005,
+
+        InteractionMissingExpectedName = 30006,
+        InteractionMethodRequiredButNotDefined = 30007,
+        InteractionMethodNotAvailable = 30008,
+        InteractionMethodArgumentMismatch = 30009,
+        InteractionMethodCircularReference = 30010,
+        InteractionTraitStepDefinitionMustHaveComponent = 30011,
+        InteractionComponentStepDefinitionCannotHaveComponentMarker = 30012,
+        InteractionMethodNotAvailablePermitUndefined = 30013,
+        InteractionMethodFromTraitRequiredButNotDefined = 30014,
+        InteractionComponentInheritanceLoop = 30015,
+        InteractionMissingStepDeclaration = 30016,
+
         //// Errors from Exceptions ////
 
         /// <summary>
@@ -202,15 +215,7 @@ namespace AutoStep.Language
         /// Unknown error category (the catch-all).
         /// </summary>
         UncategorisedException = 90002,
-        InteractionMissingExpectedName = 90003,
-        InteractionMethodRequiredButNotDefined = 90004,
-        InteractionMethodNotAvailable = 90005,
-        InteractionMethodArgumentMismatch = 90006,
-        InteractionMethodCircularReference = 90007,
-        InteractionTraitStepDefinitionMustHaveComponent = 90008,
-        InteractionComponentStepDefinitionCannotHaveComponentMarker = 90009,
-        InteractionMethodNotAvailablePermitUndefined = 90010,
-        InteractionMethodFromTraitRequiredButNotDefined = 90011,
-        InteractionComponentInheritanceLoop = 90012,
+        InteractionMethodNeedsParentheses = 90003,
+        InteractionInvalidContent = 90004,
     }
 }

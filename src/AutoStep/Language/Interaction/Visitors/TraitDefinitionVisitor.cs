@@ -64,6 +64,13 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        public override TraitDefinitionElement VisitTraitError([NotNull] TraitErrorContext context)
+        {
+            MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent);
+
+            return Result!;
+        }
+
         protected override bool ValidateAddedStepDefinition(InteractionStepDefinitionElement stepDef, StepDefinitionBodyContext parserContext)
         {
             if (!stepDef.Parts.OfType<PlaceholderMatchPart>().Any())
@@ -75,7 +82,7 @@ namespace AutoStep.Language.Interaction.Visitors
                 return false;
             }
 
-            return true;
+            return base.ValidateAddedStepDefinition(stepDef, parserContext);
         }
     }
 }

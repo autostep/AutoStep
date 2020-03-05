@@ -144,5 +144,96 @@ namespace AutoStep.Tests.Language.Interaction
                 )
             );
         }
+
+        [Fact]
+        public async Task ComponentBlankInheritsError()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    inherits:
+
+                    Step: Given I have clicked on {name}
+                        select(""btn[text='<name>']"")
+                        -> click()
+            ";
+
+            await CompileAndAssertErrors(Test,
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 4, 21, 4, 29));
+        }
+
+        [Fact]
+        public async Task ComponentBlankStepError()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    Step: 
+                        select(""btn[text='<name>']"")
+                        -> click()
+            ";
+
+            await CompileAndAssertErrors(Test,
+                file => file.Component("button", 2, 17),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingStepDeclaration, 4, 21, 4, 25));
+        }
+
+        [Fact]
+        public async Task ComponentMissingMethodParensError()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    method
+            ";
+
+            await CompileAndAssertErrors(Test,
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 26));
+        }
+
+        [Fact]
+        public async Task ComponentMultipleRandomNamesError()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    not a valid set
+            ";
+
+            // The compiler will think we're trying to declare methods and associated calls.
+            await CompileAndAssertErrors(Test,
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 23),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 25, 4, 25),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 27, 4, 31),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 33, 4, 35));
+        }
+               
+        [Fact]
+        public async Task ComponentJunkContentError()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    name: 'abc'
+
+                    <<!!3214FFF-_ @@@!
+
+                    Step: Given I
+                        method()
+            ";
+
+            // The compiler will think we're trying to declare methods and associated calls.
+            await CompileAndAssertErrors(Test,
+                file => file.Component("button", 2, 17, cfg => cfg
+                    .Name("abc")
+                    .StepDefinition(StepType.Given, "I", 8, 21, step => step
+                        .WordPart("I", 33)
+                        .Expression(expr => expr
+                            .Call("method", 9, 25, 9, 32)
+                        )
+                    )
+                ),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 23));
+        }
     }
 }

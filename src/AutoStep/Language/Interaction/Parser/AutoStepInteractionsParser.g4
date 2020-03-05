@@ -21,9 +21,11 @@ traitDefinition:  TRAIT_DEFINITION traitRefList
 
 traitRefList: NAME_REF (PLUS NAME_REF)*;
 
-traitItem: NAME_KEYWORD STRING #traitName
+traitItem: ERR_CHAR+           #traitError
+         | NAME_KEYWORD STRING #traitName
          | methodDefinition    #traitMethod
-         | stepDefinitionBody  #traitStep;
+         | stepDefinitionBody  #traitStep
+         ;
 
 // method(): callee() -> callee()
 methodDefinition: methodDeclaration DEF_SEPARATOR
@@ -57,7 +59,8 @@ methodStrPart: STR_CONTENT                                 #methodStrContent
 componentDefinition: COMPONENT_DEFINITION NAME_REF
                      componentItem*;
 
-componentItem: NAME_KEYWORD STRING #componentName
+componentItem: ERR_CHAR+           #componentError
+             | NAME_KEYWORD STRING #componentName
              | INHERITS_KEYWORD NAME_REF #componentInherits
              | TRAITS_KEYWORD NAME_REF (LIST_SEPARATOR NAME_REF)* #componentTraits
              | methodDefinition    #componentMethod

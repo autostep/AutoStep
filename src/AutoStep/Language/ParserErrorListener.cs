@@ -16,7 +16,7 @@ namespace AutoStep.Language
         private bool swallowEndOfFileErrors = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParserErrorListener"/> class.
+        /// Initializes a new instance of the <see cref="ParserErrorListener{TParser}"/> class.
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>

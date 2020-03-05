@@ -11,6 +11,7 @@ namespace AutoStep.Definitions
 {
     using System;
     using System.Threading.Tasks;
+    using AutoStep.Definitions.Interaction;
     using AutoStep.Execution.Dependency;
     using AutoStep.Execution.Interaction;
     using AutoStep.Projects;

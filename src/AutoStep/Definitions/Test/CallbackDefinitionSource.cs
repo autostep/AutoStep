@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Represents a source of step definitions backed by registered callbacks.

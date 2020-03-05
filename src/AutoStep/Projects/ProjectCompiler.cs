@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Interaction.Parser;

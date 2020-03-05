@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using AutoStep.Language.Tests.DefinedSteps;
-using AutoStep.Definitions;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using AutoStep.Definitions.Test;
 
 namespace AutoStep.Tests.Definition
 {

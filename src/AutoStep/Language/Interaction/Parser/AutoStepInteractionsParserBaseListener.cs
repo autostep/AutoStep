@@ -152,6 +152,20 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>traitError</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTraitError([NotNull] AutoStepInteractionsParser.TraitErrorContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>traitError</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTraitError([NotNull] AutoStepInteractionsParser.TraitErrorContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>traitName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -417,6 +431,20 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitComponentDefinition([NotNull] AutoStepInteractionsParser.ComponentDefinitionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>componentError</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterComponentError([NotNull] AutoStepInteractionsParser.ComponentErrorContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>componentError</c>
+	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitComponentError([NotNull] AutoStepInteractionsParser.ComponentErrorContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

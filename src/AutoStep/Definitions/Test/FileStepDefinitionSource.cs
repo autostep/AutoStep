@@ -5,7 +5,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Test
 {
     /// <summary>
     /// Defines a step definition source backed by a project file that has its own step definitions.

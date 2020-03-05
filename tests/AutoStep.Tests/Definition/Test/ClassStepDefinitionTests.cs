@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -12,6 +9,7 @@ using FluentAssertions;
 using Xunit;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
+using AutoStep.Definitions.Test;
 
 namespace AutoStep.Tests.Definition
 {

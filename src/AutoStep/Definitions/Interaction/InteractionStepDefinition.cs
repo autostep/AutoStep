@@ -7,7 +7,7 @@ using AutoStep.Execution.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 
-namespace AutoStep.Definitions
+namespace AutoStep.Definitions.Interaction
 {
     public class InteractionStepDefinition : StepDefinition
     {
