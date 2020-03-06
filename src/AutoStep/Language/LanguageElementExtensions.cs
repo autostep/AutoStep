@@ -23,6 +23,30 @@ namespace AutoStep.Language
         }
 
         /// <summary>
+        /// Add positional line information to the specified element, using the given parser context for positions. If the rule context ends with the specified error token,
+        /// the preceding token will be used instead.
+        /// </summary>
+        /// <typeparam name="TElement">The element type.</typeparam>
+        /// <param name="element">The element to update.</param>
+        /// <param name="ctxt">The Antlr parser context.</param>
+        /// <param name="stream">The token stream.</param>
+        /// <param name="errorToken">The error token type to check for.</param>
+        /// <returns>The same input element, after update.</returns>
+        public static TElement AddPositionalLineInfoExcludingErrorStopToken<TElement>(this TElement element, ParserRuleContext ctxt, ITokenStream stream, int errorToken)
+            where TElement : PositionalElement
+        {
+            var defaultEnd = ctxt.Stop;
+
+            if (errorToken == ctxt.Stop.Type)
+            {
+                // Don't use this one.
+                defaultEnd = stream.Get(ctxt.Stop.TokenIndex - 1);
+            }
+
+            return AddPositionalLineInfo(element, ctxt.Start, defaultEnd);
+        }
+
+        /// <summary>
         /// Add positional line information to the specified element, using the given terminal node for positions.
         /// </summary>
         /// <typeparam name="TElement">The element type.</typeparam>

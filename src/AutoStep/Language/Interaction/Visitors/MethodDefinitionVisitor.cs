@@ -22,7 +22,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             var decl = context.methodDeclaration();
 
-            Result.AddPositionalLineInfo(decl);
+            Result.AddPositionalLineInfoExcludingErrorStopToken(decl, TokenStream, METHOD_STRING_ERRNL);
             Result.SourceName = SourceName;
 
             Result.Name = decl.NAME_REF().GetText();

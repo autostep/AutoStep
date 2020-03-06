@@ -137,7 +137,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
             await CompileAndAssertErrors(Test, cfg => cfg
                 .Component("button", 2, 17, comp => comp
-                    .Method("method", 4, 21, 4, 55, m => m
+                    .Method("method", 4, 21, 4, 53, m => m
                         .Argument("name1", 4, 28)
                     )
                 ),
@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
             await CompileAndAssertErrors(Test, cfg => cfg
                 .Component("button", 2, 17, comp => comp
-                    .Method("method", 4, 21, 4, 55, m => m
+                    .Method("method", 4, 21, 4, 53, m => m
                         .Argument("name1", 4, 28)
                     )
                     .Method("method2", 6, 21, m => m
