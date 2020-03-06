@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 
@@ -128,6 +129,36 @@ namespace AutoStep.Language
         }
 
         /// <summary>
+        /// Indicates that the preceding token of the specified type to the offending symbol should be used for the ending symbol.
+        /// </summary>
+        /// <param name="tokenType">The token type to use as the end token.</param>
+        protected void UsePrecedingTokenAsEnd(int tokenType)
+        {
+            // Get the preceding token for the offending new line
+            EndingSymbol = TokenStream.GetPrecedingToken(OffendingSymbol, tokenType);
+        }
+
+        /// <summary>
+        /// Indicates that the preceding token of the specified type to the offending symbol should be used for the ending symbol.
+        /// </summary>
+        /// <param name="token">The token to search from.</param>
+        /// <param name="precedingTokenType">The token type to use as the end token.</param>
+        protected void UsePrecedingTokenAsEnd(IToken token, int precedingTokenType)
+        {
+            // Get the preceding token for the offending new line
+            EndingSymbol = TokenStream.GetPrecedingToken(token, precedingTokenType);
+        }
+
+        /// <summary>
+        /// Indicates that the specified symbol should be considered the end of the error.
+        /// </summary>
+        /// <param name="token">The token to use as the end of the error.</param>
+        protected void UseTokenAsEnd(IToken token)
+        {
+            EndingSymbol = token;
+        }
+
+        /// <summary>
         /// Indicates that the error starts and ends on the same symbol.
         /// </summary>
         protected void UseStartSymbolAsEndSymbol()
@@ -170,6 +201,16 @@ namespace AutoStep.Language
         protected bool OffendingSymbolIs(int symbol)
         {
             return OffendingSymbol.Type == symbol;
+        }
+
+        /// <summary>
+        /// Checks if the offending symbol is one of the specified token types.
+        /// </summary>
+        /// <param name="symbols">The symbol types.</param>
+        /// <returns>True if the offending symbol is any of the specified types.</returns>
+        protected bool OffendingSymbolIsOneOf(params int[] symbols)
+        {
+            return symbols.Contains(OffendingSymbol.Type);
         }
 
         /// <summary>

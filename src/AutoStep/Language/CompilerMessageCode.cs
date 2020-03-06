@@ -217,6 +217,10 @@ namespace AutoStep.Language
         UncategorisedException = 90002,
         InteractionMethodNeedsParentheses = 90003,
         InteractionInvalidContent = 90004,
-        InteractionUnterminatedMethod = 90005,
+        InteractionMethodUnterminated = 90005,
+        InteractionMethodDeclMissingParameter = 90006,
+        InteractionMethodDeclMissingParameterSeparator = 90007,
+        InteractionMethodDeclUnexpectedContent = 90008,
+        InteractionUnterminatedString = 90009,
     }
 }

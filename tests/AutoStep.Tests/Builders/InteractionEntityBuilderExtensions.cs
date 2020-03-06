@@ -60,5 +60,25 @@ namespace AutoStep.Tests.Builders
 
             return entityBuilder;
         }
+
+        public static TEntityBuilder Method<TEntityBuilder>(this TEntityBuilder entityBuilder, string name, int startLine, int startColumn, int endLine, int endColumn, Action<MethodDefinitionBuilder> callBuilder)
+            where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
+        {
+            var methodDef = new MethodDefinitionElement();
+            methodDef.Name = name;
+            methodDef.SourceLine = startLine;
+            methodDef.StartColumn = startColumn;
+            methodDef.EndLine = endLine;
+            methodDef.EndColumn = endColumn;
+
+            var methodDefBuilder = new MethodDefinitionBuilder(methodDef);
+
+            // Do the call builder.
+            callBuilder(methodDefBuilder);
+
+            entityBuilder.Built.Methods.Add(methodDef);
+
+            return entityBuilder;
+        }
     }
 }

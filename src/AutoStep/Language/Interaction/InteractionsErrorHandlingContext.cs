@@ -16,7 +16,12 @@ namespace AutoStep.Language.Interaction
             SetErrorHandlers(
                 NameMissingHandler,
                 MissingStepDeclaration,
-                MissingMethodParentheses
+                MissingMethodParentheses,
+                MissingMethodDeclArgSeparator,
+                MethodDeclInvalidParameterStringDeclaration,
+                MethodDeclInvalidParameterDeclaration,
+                UnterminatedMethod,
+                MissingMethodDeclArgument
             );
         }
 
@@ -68,6 +73,91 @@ namespace AutoStep.Language.Interaction
                 UseStartSymbolAsEndSymbol();
 
                 SwallowEndOfFileErrorsAfterThis();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MissingMethodDeclArgSeparator()
+        {
+            if (ExpectingTokens(METHOD_CLOSE) && OffendingSymbolIs(PARAM_NAME)
+                && Context is MethodDeclarationContext)
+            {
+                ChangeError(CompilerMessageCode.InteractionMethodDeclMissingParameterSeparator);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MethodDeclInvalidParameterStringDeclaration()
+        {
+            if (ExpectingTokens(PARAM_NAME) && OffendingSymbolIs(METHOD_STRING_START)
+                && Context is MethodDefArgsContext)
+            {
+                while (Parser.CurrentToken.Type != METHOD_STRING_END &&
+                       Parser.CurrentToken.Type != METHOD_STRING_ERRNL &&
+                       Parser.CurrentToken.Type != AutoStepInteractionsLexer.Eof)
+                {
+                    Parser.Consume();
+                }
+
+                if (Parser.CurrentToken.Type == METHOD_STRING_END)
+                {
+                    ChangeError(CompilerMessageCode.InteractionMethodDeclUnexpectedContent);
+
+                    UseTokenAsEnd(Parser.CurrentToken);
+                }
+                else
+                {
+                    ChangeError(CompilerMessageCode.InteractionUnterminatedString);
+
+                    UsePrecedingTokenAsEnd(Parser.CurrentToken, STR_CONTENT);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MethodDeclInvalidParameterDeclaration()
+        {
+            if (ExpectingTokens(PARAM_NAME) && OffendingSymbolIsOneOf(CONSTANT, ARR_LEFT, ARR_RIGHT, FLOAT, INT)
+                && Context is MethodDefArgsContext)
+            {
+                ChangeError(CompilerMessageCode.InteractionMethodDeclUnexpectedContent);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool UnterminatedMethod()
+        {
+            if (ExpectingTokens(METHOD_CLOSE)
+                && (Context is MethodDeclarationContext || Context is MethodCallContext))
+            {
+                ChangeError(CompilerMessageCode.InteractionMethodUnterminated);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MissingMethodDeclArgument()
+        {
+            if (ExpectingTokens(PARAM_NAME) && OffendingSymbolIs(METHOD_CLOSE)
+                && (Context is MethodDefArgsContext))
+            {
+                ChangeError(CompilerMessageCode.InteractionMethodDeclMissingParameter);
+
+                UseOpeningTokenAsStart(PARAM_SEPARATOR);
 
                 return true;
             }

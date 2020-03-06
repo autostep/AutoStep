@@ -10,6 +10,7 @@ using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Interaction.Visitors;
 using AutoStep.Language.Test;
+using AutoStep.Language.Test.Parser;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Interaction
@@ -113,7 +114,7 @@ namespace AutoStep.Language.Interaction
                 parser.Reset();
 
                 parser.AddErrorListener(errorListener);
-                parser.ErrorHandler = new DefaultErrorStrategy();
+                parser.ErrorHandler = new UnterminatedStringRecoveryStrategy();
 
                 // Now we will do the full LL mode.
                 parser.Interpreter.PredictionMode = PredictionMode.LL;

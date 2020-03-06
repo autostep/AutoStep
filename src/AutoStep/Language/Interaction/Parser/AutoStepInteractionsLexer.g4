@@ -56,19 +56,26 @@ FLOAT : DIGIT+ '.' DIGIT* // match 1. 39. 3.14159 etc...
 INT : DIGIT+;
 METHOD_CLOSE: ')' -> popMode;
 METH_WS: SPACE+ -> channel(HIDDEN);
-ERR_CHAR_METHOD: . -> type(ERR_CHAR);
+METH_ARGS_NEWLINE: NL -> type(NEWLINE), channel(HIDDEN);
+ERR_CHAR_METHOD: . -> type(ERR_CHAR), popMode;
 
 mode stringArg;
 STR_ANGLE_LEFT: '<' -> pushMode(stringVariable);
 METHOD_STR_ESCAPE_QUOTE: '\\"';
 METHOD_STRING_END: '"' -> popMode;
-STR_CONTENT: ~[<\\"]+;
+// If we get a new line in the middle of a string, things are obviously pretty broken.
+// Reset to the default mode to attempt to recover.
+METHOD_STRING_ERRNL: '\r'? '\n' -> mode(DEFAULT_MODE);
+STR_CONTENT: ~[<\\"\r\n]+;
 
 mode stringArgSingle;
 SINGLE_STR_ANGLE_LEFT: '<' -> type(STR_ANGLE_LEFT), pushMode(stringVariable);
 SINGLE_METHOD_STR_ESCAPE_QUOTE: '\\\'' -> type(METHOD_STR_ESCAPE_QUOTE);
 SINGLE_METHOD_STRING_END: '\'' -> type(METHOD_STRING_END), popMode;
-SINGLE_STR_CONTENT: ~[<\\']+ -> type(STR_CONTENT);
+// If we get a new line in the middle of a string, things are obviously pretty broken.
+// Reset to the default mode to attempt to recover.
+SINGLE_METHOD_STRING_ERRNL: '\r'? '\n' -> type(METHOD_STRING_ERRNL), mode(DEFAULT_MODE);
+SINGLE_STR_CONTENT: ~[<\\'\r\n]+ -> type(STR_CONTENT);
 
 mode stringVariable;
 STR_NAME_REF: VAR_NAME;

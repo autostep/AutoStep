@@ -42,6 +42,12 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             foreach (var argName in context.PARAM_NAME())
             {
+                // Don't consume error nodes.
+                if (argName is Antlr4.Runtime.Tree.ErrorNodeImpl)
+                {
+                    continue;
+                }
+
                 var defArg = new MethodDefinitionArgumentElement().AddPositionalLineInfo(argName);
                 defArg.Name = argName.GetText();
 
