@@ -197,6 +197,12 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitFloatArg([NotNull] AutoStepInteractionsParser.FloatArgContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallArrayRefString"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodCallArrayRefString([NotNull] AutoStepInteractionsParser.MethodCallArrayRefStringContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodStr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

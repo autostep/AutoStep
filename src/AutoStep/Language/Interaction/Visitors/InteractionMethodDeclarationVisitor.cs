@@ -33,7 +33,7 @@ namespace AutoStep.Language.Interaction.Visitors
             {
                 currentMethodCall = new MethodCallElement();
 
-                currentMethodCall.AddPositionalLineInfo(context);
+                currentMethodCall.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
 
                 currentMethodCall.MethodName = context.NAME_REF().GetText();
 
@@ -51,15 +51,23 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             var stringMethodArgument = new StringMethodArgumentElement();
 
-            stringMethodArgument.AddPositionalLineInfo(context);
+            stringMethodArgument.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
 
             var methodStr = context.methodStr();
 
-            stringMethodArgument.Text = methodStr.GetText();
+            PopulateStringArgElement(stringMethodArgument, methodStr);
 
-            // TODO - determine the set of tokens.
-            var parts = methodStr.methodStrPart();
-            var initialOffset = context.Start.Column + 1;
+            currentMethodCall!.Arguments.Add(stringMethodArgument);
+
+            return Result!;
+        }
+
+        private void PopulateStringArgElement(StringMethodArgumentElement element, MethodStrContext context)
+        {
+            element.Text = context.GetText();
+
+            var parts = context.methodStrPart();
+            var initialOffset = context.Start.Column;
             var tokenSet = new List<StepToken>();
 
             foreach (var p in parts)
@@ -75,11 +83,7 @@ namespace AutoStep.Language.Interaction.Visitors
                 tokenSet.Add(token);
             }
 
-            stringMethodArgument.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
-
-            currentMethodCall!.Arguments.Add(stringMethodArgument);
-
-            return Result!;
+            element.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
         }
 
         private static TToken CreateToken<TToken>(ParserRuleContext ctxt, int offset, Func<int, int, TToken> creator)
@@ -113,7 +117,38 @@ namespace AutoStep.Language.Interaction.Visitors
             varArrElement.AddPositionalLineInfo(context);
 
             varArrElement.VariableName = context.PARAM_NAME(0).GetText();
-            varArrElement.ArrayIndex = context.PARAM_NAME(1).GetText();
+
+            var varNameNode = context.PARAM_NAME(1);
+
+            var varRefElement = new VariableRefMethodArgumentElement();
+            varRefElement.AddPositionalLineInfo(varNameNode);
+
+            varRefElement.VariableName = varNameNode.GetText();
+
+            varArrElement.Indexer = varRefElement;
+
+            currentMethodCall!.Arguments.Add(varArrElement);
+
+            return Result!;
+        }
+
+        public override TElement VisitVariableArrStrRef([NotNull] VariableArrStrRefContext context)
+        {
+            var varArrElement = new VariableArrayRefMethodArgument();
+            varArrElement.AddPositionalLineInfo(context);
+
+            varArrElement.VariableName = context.PARAM_NAME().GetText();
+
+            var methodStrOuterContext = context.methodCallArrayRefString();
+
+            var stringMethodArgument = new StringMethodArgumentElement();
+            stringMethodArgument.AddPositionalLineInfo(methodStrOuterContext);
+
+            var methodStr = methodStrOuterContext.methodStr();
+
+            PopulateStringArgElement(stringMethodArgument, methodStr);
+
+            varArrElement.Indexer = stringMethodArgument;
 
             currentMethodCall!.Arguments.Add(varArrElement);
 
@@ -122,7 +157,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override TElement VisitConstantRef([NotNull] ConstantRefContext context)
         {
-            var constantRefElement = new ConstantMethodArgument();
+            var constantRefElement = new ConstantMethodArgumentElement();
             constantRefElement.AddPositionalLineInfo(context);
 
             constantRefElement.ConstantName = context.GetText();
@@ -153,7 +188,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override TElement VisitFloatArg([NotNull] FloatArgContext context)
         {
-            var floatArgElement = new FloatMethodArgument();
+            var floatArgElement = new FloatMethodArgumentElement();
 
             floatArgElement.AddPositionalLineInfo(context);
 

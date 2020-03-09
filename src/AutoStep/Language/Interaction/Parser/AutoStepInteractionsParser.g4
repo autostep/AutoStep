@@ -44,10 +44,12 @@ methodCallArgs: methodCallArg (PARAM_SEPARATOR methodCallArg)*;
 methodCallArg: METHOD_STRING_START methodStr METHOD_STRING_END  #stringArg
              | PARAM_NAME #variableRef
              | PARAM_NAME ARR_LEFT PARAM_NAME ARR_RIGHT #variableArrRef
-             | PARAM_NAME ARR_LEFT METHOD_STRING_START methodStr METHOD_STRING_END ARR_RIGHT #variableArrStrRef
+             | PARAM_NAME ARR_LEFT methodCallArrayRefString ARR_RIGHT #variableArrStrRef
              | CONSTANT #constantRef
              | INT      #intArg
              | FLOAT    #floatArg;
+
+methodCallArrayRefString: METHOD_STRING_START methodStr METHOD_STRING_END;
 
 methodStr: methodStrPart+;
 

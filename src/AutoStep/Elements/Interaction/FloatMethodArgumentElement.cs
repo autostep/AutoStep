@@ -6,8 +6,8 @@ using AutoStep.Language;
 namespace AutoStep.Elements.Interaction
 {
 
-    public class ConstantMethodArgument : MethodArgumentElement
+    public class FloatMethodArgumentElement : MethodArgumentElement
     {
-        public string ConstantName { get; set; }
+        public double Value { get; set; }
     }
 }

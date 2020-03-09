@@ -90,10 +90,10 @@ namespace AutoStep.Execution.Interaction
                 {
                     StringMethodArgumentElement strArg => strArg.GetFullText(scope, callingContext),
                     IntMethodArgumentElement intArg => intArg.Value,
-                    FloatMethodArgument floatArg => floatArg.Value,
+                    FloatMethodArgumentElement floatArg => floatArg.Value,
                     VariableRefMethodArgumentElement varRefArg => callingContext.Variables.Get(varRefArg.VariableName),
                     VariableArrayRefMethodArgument _ => throw new NotImplementedException(),
-                    ConstantMethodArgument constantArg => constants.GetConstantValue(constantArg.ConstantName),
+                    ConstantMethodArgumentElement constantArg => constants.GetConstantValue(constantArg.ConstantName),
                     _ => throw new LanguageEngineAssertException()
                 };
 

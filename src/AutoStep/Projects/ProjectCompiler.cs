@@ -25,6 +25,7 @@ namespace AutoStep.Projects
 
         private readonly IAutoStepInteractionCompiler? interactionCompiler;
         private InteractionStepDefinitionSource? interactionSteps;
+        private readonly ICallChainValidator interactionCallChainValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
@@ -38,6 +39,7 @@ namespace AutoStep.Projects
             this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
             this.interactionCompiler = interactionCompiler;
+            this.interactionCallChainValidator = new DefaultCallChainValidator();
             this.lineTokeniser = new AutoStepLineTokeniser(linker);
         }
 
@@ -179,7 +181,7 @@ namespace AutoStep.Projects
             if (fileWasCompiled)
             {
                 // Regenerate the interaction set.
-                var interactionSetBuilder = new AutoStepInteractionSetBuilder();
+                var interactionSetBuilder = new AutoStepInteractionSetBuilder(interactionCallChainValidator);
 
                 foreach (var projectFile in project.AllInteractionFiles)
                 {

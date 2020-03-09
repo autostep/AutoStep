@@ -21,7 +21,9 @@ namespace AutoStep.Language.Interaction
                 MethodDeclInvalidParameterStringDeclaration,
                 MethodDeclInvalidParameterDeclaration,
                 CallChainMissingSeparator,
+                MissingMethodCallArgSeparator,
                 UnterminatedMethod,
+                MethodCallUnterminatedString,
                 MissingMethodDeclArgument
             );
         }
@@ -94,6 +96,25 @@ namespace AutoStep.Language.Interaction
             return false;
         }
 
+        private bool MissingMethodCallArgSeparator()
+        {
+            if (ExpectingTokens(METHOD_CLOSE)
+                && Context is MethodCallContext && OffendingSymbolIsOneOf(
+                    FLOAT,
+                    INT,
+                    METHOD_STRING_START,
+                    PARAM_NAME,
+                    CONSTANT
+                ))
+            {
+                ChangeError(CompilerMessageCode.InteractionMethodCallMissingParameterSeparator);
+
+                return true;
+            }
+
+            return false;
+        }
+
         private bool MethodDeclInvalidParameterStringDeclaration()
         {
             if (ExpectingTokens(PARAM_NAME) && OffendingSymbolIs(METHOD_STRING_START)
@@ -118,6 +139,21 @@ namespace AutoStep.Language.Interaction
 
                     UsePrecedingTokenAsEnd(Parser.CurrentToken, STR_CONTENT);
                 }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MethodCallUnterminatedString()
+        {
+            if (Context is StringArgContext && OffendingSymbolIsOneOf(METHOD_STRING_ERRNL, Lexer.Eof))
+            {
+                ChangeError(CompilerMessageCode.InteractionUnterminatedString);
+
+                UseOpeningTokenAsStart(STR_CONTENT);
+                UsePrecedingTokenAsEnd(Parser.CurrentToken, STR_CONTENT);
 
                 return true;
             }

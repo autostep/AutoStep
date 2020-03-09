@@ -144,6 +144,9 @@
   <data name="ExampleVariableNotDeclared" xml:space="preserve">
     <value>You have specified an Example variable to insert, '{0}', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.</value>
   </data>
+  <data name="InteractionComponentInheritanceLoop" xml:space="preserve">
+    <value>Detected a circular component inheritance loop; loop path is {0}.</value>
+  </data>
   <data name="InteractionComponentStepDefinitionCannotHaveComponentMarker" xml:space="preserve">
     <value>Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps.</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="InteractionInvalidContent" xml:space="preserve">
     <value>Invalid character(s).</value>
+  </data>
+  <data name="InteractionMethodCallMissingParameterSeparator" xml:space="preserve">
+    <value>Method call appears to be missing a parameter separator, are you missing a comma?</value>
   </data>
   <data name="InteractionMethodCallMissingSeparator" xml:space="preserve">
     <value>Missing call separator '-&gt;'.</value>
@@ -185,6 +191,9 @@
   </data>
   <data name="InteractionMethodNotAvailablePermitUndefined" xml:space="preserve">
     <value>The specified interaction method '{0}' is not available. It should be either be declared with an associated expression, or with 'needs-defining'. E.g. '{0}: method()' or '{0}: needs-defining'.</value>
+  </data>
+  <data name="InteractionMethodRequiredButNotDefined" xml:space="preserve">
+    <value>Method needs to be defined; declared at {0}:L{1}.</value>
   </data>
   <data name="InteractionMissingExpectedName" xml:space="preserve">
     <value>A name is required.</value>

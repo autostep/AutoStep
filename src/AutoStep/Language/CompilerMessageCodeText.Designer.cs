@@ -142,6 +142,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Detected a circular component inheritance loop; loop path is {0}..
+        /// </summary>
+        internal static string InteractionComponentInheritanceLoop {
+            get {
+                return ResourceManager.GetString("InteractionComponentInheritanceLoop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps..
         /// </summary>
         internal static string InteractionComponentStepDefinitionCannotHaveComponentMarker {
@@ -174,6 +183,15 @@ namespace AutoStep.Language {
         internal static string InteractionInvalidContent {
             get {
                 return ResourceManager.GetString("InteractionInvalidContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method call appears to be missing a parameter separator, are you missing a comma?.
+        /// </summary>
+        internal static string InteractionMethodCallMissingParameterSeparator {
+            get {
+                return ResourceManager.GetString("InteractionMethodCallMissingParameterSeparator", resourceCulture);
             }
         }
         
@@ -264,6 +282,15 @@ namespace AutoStep.Language {
         internal static string InteractionMethodNotAvailablePermitUndefined {
             get {
                 return ResourceManager.GetString("InteractionMethodNotAvailablePermitUndefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method needs to be defined; declared at {0}:L{1}..
+        /// </summary>
+        internal static string InteractionMethodRequiredButNotDefined {
+            get {
+                return ResourceManager.GetString("InteractionMethodRequiredButNotDefined", resourceCulture);
             }
         }
         

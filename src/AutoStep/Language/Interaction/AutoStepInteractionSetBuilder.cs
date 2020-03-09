@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
@@ -9,116 +8,15 @@ namespace AutoStep.Language.Interaction
 {
     internal class AutoStepInteractionSetBuilder
     {
-        private class ComponentResolutionData
-        {
-            private bool createdOwnSteps;
-
-            public ComponentResolutionData(string id)
-            {
-                Id = id;
-            }
-
-            public List<ComponentDefinitionElement> AllComponents { get; } = new List<ComponentDefinitionElement>();
-
-            public bool Visited { get; set; }
-
-            public string Id { get; }
-
-            public string Name { get; set; }
-
-            public ComponentDefinitionElement? FinalComponent { get; set; }
-
-            public Dictionary<string, MethodDefinitionElement>? Methods { get; set; }
-
-            public List<InteractionStepDefinitionElement>? Steps { get; set; }
-
-            public IReadOnlyList<NameRefElement>? Traits { get; set; }
-
-            public void Replace(ComponentDefinitionElement definition)
-            {
-                Methods = definition.Methods.ToDictionary(x => x.Name);
-                Steps = definition.Steps;
-                Traits = definition.Traits;
-                Name = definition.Name;
-                FinalComponent = definition;
-            }
-
-            public void ReplaceInheritance(ComponentResolutionData baseData, ComponentDefinitionElement derivedDefinition)
-            {
-                if (baseData.Methods is object)
-                {
-                    Methods = new Dictionary<string, MethodDefinitionElement>(baseData.Methods);
-                }
-                else
-                {
-                    Methods = null;
-                }
-
-                if (baseData.Steps is object)
-                {
-                    Steps = baseData.Steps;
-                }
-                else
-                {
-                    Steps = null;
-                }
-
-                Traits = baseData.Traits;
-
-                Merge(derivedDefinition);
-            }
-
-            public void Merge(ComponentDefinitionElement definition)
-            {
-                // Method replacements.
-                if (Methods is null)
-                {
-                    if (definition.Methods.Any())
-                    {
-                        Methods = definition.Methods.ToDictionary(x => x.Name);
-                    }
-                }
-                else if (definition.Methods.Any())
-                {
-                    foreach (var def in definition.Methods)
-                    {
-                        Methods[def.Name] = def;
-                    }
-                }
-
-                if (Steps is null)
-                {
-                    if (definition.Steps.Any())
-                    {
-                        Steps = definition.Steps;
-                    }
-                }
-                else if (definition.Steps.Any())
-                {
-                    if (!createdOwnSteps)
-                    {
-                        // Now we need to copy the list.
-                        Steps = new List<InteractionStepDefinitionElement>(Steps);
-                        createdOwnSteps = true;
-                    }
-
-                    Steps.AddRange(definition.Steps);
-                }
-
-                if (definition.Traits.Any())
-                {
-                    // Traits aren't merged, they are simply added.
-                    Traits = definition.Traits;
-                }
-
-                Name = definition.Name;
-                FinalComponent = definition;
-            }
-        }
-
         private readonly TraitGraph traits = new TraitGraph();
         private readonly Dictionary<string, ComponentResolutionData> allComponents = new Dictionary<string, ComponentResolutionData>();
+        private readonly ICallChainValidator callChainValidator;
         private InteractionConstantSet constants = new InteractionConstantSet();
+
+        public AutoStepInteractionSetBuilder(ICallChainValidator callChainValidator)
+        {
+            this.callChainValidator = callChainValidator;
+        }
 
         public void AddInteractionFile(string? sourceName, InteractionFileElement interactionFile)
         {
@@ -213,7 +111,7 @@ namespace AutoStep.Language.Interaction
                     // ...and again to validate the call chain.
                     foreach (var method in componentEntry.Methods.Values)
                     {
-                        ValidateCallChain(componentEntry.FinalComponent.SourceName, method, finalComponent.MethodTable, constants, true, messages);
+                        callChainValidator.ValidateCallChain(componentEntry.FinalComponent.SourceName, method, finalComponent.MethodTable, constants, true, messages);
                     }
 
                     // Finally, validate the method table to make sure there are no needs-defining methods left.
@@ -243,7 +141,7 @@ namespace AutoStep.Language.Interaction
                     // Add any methods and steps for the component itself.
                     foreach (var step in componentEntry.Steps)
                     {
-                        ValidateCallChain(step.SourceName, step, finalComponent.MethodTable, constants, true, messages);
+                        callChainValidator.ValidateCallChain(step.SourceName, step, finalComponent.MethodTable, constants, true, messages);
 
                         allBoundSteps.Add(step);
                     }
@@ -280,8 +178,6 @@ namespace AutoStep.Language.Interaction
                 if (consideredComponent.Inherits is null)
                 {
                     componentData.Replace(consideredComponent);
-
-                    break;
                 }
                 else if (consideredComponent.Inherits.Name == componentData.Id)
                 {
@@ -291,6 +187,8 @@ namespace AutoStep.Language.Interaction
                 }
                 else
                 {
+                    visited.Push(componentData);
+
                     // We are inheriting from something else.
                     // Go find it.
                     var inheritId = consideredComponent.Inherits.Name;
@@ -306,7 +204,7 @@ namespace AutoStep.Language.Interaction
                                 consideredComponent,
                                 CompilerMessageLevel.Error,
                                 CompilerMessageCode.InteractionComponentInheritanceLoop,
-                                string.Join(" -> ", visited.Select(x => x.Id).Concat(new[] { inheritId }))));
+                                string.Join(" -> ", visited.Reverse().Select(x => x.Id).Concat(new[] { inheritId }))));
                         }
                         else
                         {
@@ -319,6 +217,8 @@ namespace AutoStep.Language.Interaction
                             }
                         }
                     }
+
+                    visited.Pop();
                 }
             }
 
@@ -332,122 +232,12 @@ namespace AutoStep.Language.Interaction
             foreach (var methodDef in trait.Methods)
             {
                 // Go through the call chain.
-                ValidateCallChain(trait.SourceName, methodDef, methodTable, constants, false, messages);
+                callChainValidator.ValidateCallChain(trait.SourceName, methodDef, methodTable, constants, false, messages);
             }
 
             foreach (var step in trait.Steps)
             {
-                ValidateCallChain(trait.SourceName, step, methodTable, constants, false, messages);
-            }
-        }
-
-        private void ValidateCallChain(string? sourceFileName, IMethodCallSource definition, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<CompilerMessage> messages)
-        {
-            var variableSet = definition.GetInitialMethodChainVariables();
-
-            foreach (var call in definition.MethodCallChain)
-            {
-                // Validate the arguments.
-                for (var callArgIdx = 0; callArgIdx < call.Arguments.Count; callArgIdx++)
-                {
-                    var callArg = call.Arguments[callArgIdx];
-
-                    if (callArg is VariableRefMethodArgumentElement varArg)
-                    {
-                        var msg = variableSet.ValidateVariable(sourceFileName, varArg);
-
-                        if (msg is object)
-                        {
-                            messages.Add(msg);
-                        }
-                    }
-                    else if (callArg is VariableArrayRefMethodArgument varArrArg)
-                    {
-                        var msg = variableSet.ValidateVariable(sourceFileName, varArrArg);
-
-                        if (msg is object)
-                        {
-                            messages.Add(msg);
-                        }
-                    }
-                    else if (callArg is ConstantMethodArgument constantArg)
-                    {
-                        if (!constants.ContainsConstant(constantArg.ConstantName))
-                        {
-                            // Not a valid constant.
-                            messages.Add(CompilerMessageFactory.Create(sourceFileName, constantArg, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, constantArg.ConstantName));
-                        }
-                    }
-                }
-
-                // Look up the method in the method table.
-                if (methodTable.TryGetMethod(call.MethodName, out var foundMethod))
-                {
-                    // Method is in the method table
-                    if (foundMethod is FileDefinedInteractionMethod fileMethod)
-                    {
-                        if (requireMethodDefinitions && fileMethod.NeedsDefining)
-                        {
-                            // Error.
-                            // File-based method needs a definition.
-                            messages.Add(CompilerMessageFactory.Create(
-                                sourceFileName,
-                                call,
-                                CompilerMessageLevel.Error,
-                                CompilerMessageCode.InteractionMethodRequiredButNotDefined,
-                                fileMethod.MethodDefinition.SourceName ?? string.Empty,
-                                fileMethod.MethodDefinition.SourceLine));
-                        }
-
-                        if (ReferenceEquals(fileMethod.MethodDefinition, definition))
-                        {
-                            // Circular reference detection.
-                            messages.Add(CompilerMessageFactory.Create(
-                                sourceFileName,
-                                call,
-                                CompilerMessageLevel.Error,
-                                CompilerMessageCode.InteractionMethodCircularReference));
-                        }
-                    }
-
-                    // Match the provided arguments against the bound method.
-                    if (foundMethod.ArgumentCount != call.Arguments.Count)
-                    {
-                        // Argument count mismatch.
-                        messages.Add(CompilerMessageFactory.Create(
-                            sourceFileName,
-                            call,
-                            CompilerMessageLevel.Error,
-                            CompilerMessageCode.InteractionMethodArgumentMismatch,
-                            foundMethod.ArgumentCount,
-                            call.Arguments.Count));
-                    }
-
-                    // Let this method update the set of available variables for the next one.
-                    foundMethod.CompilerMethodCall(call.Arguments, variableSet);
-                }
-                else if (requireMethodDefinitions)
-                {
-                    // Error.
-                    // Method does not exist (and 'needs-defining' is not allowed).
-                    messages.Add(CompilerMessageFactory.Create(
-                        sourceFileName,
-                        call,
-                        CompilerMessageLevel.Error,
-                        CompilerMessageCode.InteractionMethodNotAvailable,
-                        call.MethodName));
-                }
-                else
-                {
-                    // Error.
-                    // Method does not exist.
-                    messages.Add(CompilerMessageFactory.Create(
-                        sourceFileName,
-                        call,
-                        CompilerMessageLevel.Error,
-                        CompilerMessageCode.InteractionMethodNotAvailablePermitUndefined,
-                        call.MethodName));
-                }
+                callChainValidator.ValidateCallChain(trait.SourceName, step, methodTable, constants, false, messages);
             }
         }
     }

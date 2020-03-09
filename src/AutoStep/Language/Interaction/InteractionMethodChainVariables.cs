@@ -8,7 +8,7 @@ namespace AutoStep.Language.Interaction
     {
         private readonly Dictionary<string, MethodChainVariable> activeVariables = new Dictionary<string, MethodChainVariable>();
 
-        public CompilerMessage? ValidateVariable(string? sourceName, VariableRefMethodArgumentElement nameRefToken)
+        public virtual CompilerMessage? ValidateVariable(string? sourceName, VariableRefMethodArgumentElement nameRefToken)
         {
             if (activeVariables.TryGetValue(nameRefToken.VariableName, out var foundVariable))
             {
@@ -21,7 +21,7 @@ namespace AutoStep.Language.Interaction
             return CompilerMessageFactory.Create(sourceName, nameRefToken, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, nameRefToken.VariableName);
         }
 
-        public CompilerMessage? ValidateVariable(string? sourceName, VariableArrayRefMethodArgument nameRefToken)
+        public virtual CompilerMessage? ValidateVariable(string? sourceName, VariableArrayRefMethodArgument nameRefToken)
         {
             if (activeVariables.TryGetValue(nameRefToken.VariableName, out var foundVariable))
             {

@@ -52,6 +52,63 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
+        public InteractionMethodArgumentSetBuilder String(string content, int line, int startColumn, int endColumn)
+        {
+            var strArg = new InteractionStringArgumentBuilder(content, line, startColumn);
+
+            strArg.Text(content);
+
+            strArg.Complete();
+
+            strArg.Built.EndColumn = endColumn;
+
+            Built.Arguments.Add(strArg.Built);
+
+            return this;
+        }
+
+        public InteractionMethodArgumentSetBuilder Int(int value, int startColumn)
+        {
+            Built.Arguments.Add(new IntMethodArgumentElement
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = startColumn,
+                EndLine = Built.SourceLine,
+                EndColumn = startColumn + value.ToString().Length - 1,
+                Value = value
+            });
+
+            return this;
+        }
+
+        public InteractionMethodArgumentSetBuilder Float(double value, int startColumn)
+        {
+            Built.Arguments.Add(new FloatMethodArgumentElement
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = startColumn,
+                EndLine = Built.SourceLine,
+                EndColumn = startColumn + value.ToString().Length - 1,
+                Value = value
+            });
+
+            return this;
+        }
+
+        public InteractionMethodArgumentSetBuilder Constant(string constantName, int startColumn)
+        {
+            Built.Arguments.Add(new ConstantMethodArgumentElement
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = startColumn,
+                EndLine = Built.SourceLine,
+                ConstantName = constantName,
+                EndColumn = startColumn + constantName.Length - 1
+            });
+
+            return this;
+        }
+
         public InteractionMethodArgumentSetBuilder Variable(string varName, int startColumn)
         {
             Built.Arguments.Add(new VariableRefMethodArgumentElement
@@ -62,6 +119,26 @@ namespace AutoStep.Tests.Builders
                 VariableName = varName,
                 EndColumn = startColumn + varName.Length - 1
             });
+
+            return this;
+        }
+
+        public InteractionMethodArgumentSetBuilder VariableArray(string varName, int startColumn, int endColumn, Action<VariableArrayRefBuilder> cfg)
+        {
+            var arg = new VariableArrayRefMethodArgument
+            {
+                SourceLine = Built.SourceLine,
+                StartColumn = startColumn,
+                EndLine = Built.SourceLine,
+                VariableName = varName,
+                EndColumn = endColumn
+            };
+
+            var builder = new VariableArrayRefBuilder(arg);
+
+            cfg(builder);
+
+            Built.Arguments.Add(arg);
 
             return this;
         }

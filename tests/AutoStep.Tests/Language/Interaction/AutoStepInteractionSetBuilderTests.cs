@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanBuiltInteractionSetFromTraitAndComponent()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder();
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
             var rootMethodTable = new MethodTable();
             rootMethodTable.Set(new DummyMethod("select", 1));
@@ -119,12 +119,223 @@ namespace AutoStep.Tests.Language.Interaction
 
             match.IsExact.Should().BeTrue();
         }
+        
+        [Fact]
+        public void ComponentSteps()
+        {
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
+            var rootMethodTable = new MethodTable();
+            rootMethodTable.Set(new DummyMethod("select", 1));
+            rootMethodTable.Set(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("button", 1, 1, c => c
+                .StepDefinition(StepType.Given, "I have done", 2, 1, s => s 
+                    .WordPart("I", 1)
+                    .WordPart("have", 3)
+                    .WordPart("done", 8)
+                    .Expression(e => e
+                        .Call("select", 3, 1, 3, 2, s => s.String("something", 3))
+                        .Call("click", 4, 1, 4, 2)
+                    )
+                )
+            );
+
+            setBuilder.AddInteractionFile(null, file.Built);
+
+            var result = setBuilder.Build(rootMethodTable);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output;
+
+            builtSet.Components.Should().HaveCount(1);
+            var button = builtSet.Components["button"];
+
+            button.MethodTable.TryGetMethod("select", out var foundSelect).Should().BeTrue();
+            foundSelect.Should().BeOfType<DummyMethod>();
+
+            button.MethodTable.TryGetMethod("click", out var foundClick).Should().BeTrue();
+            foundClick.Should().BeOfType<DummyMethod>();
+
+            var stepSource = TestStepDefinitionSource.Blank;
+
+            var stepDefs = builtSet.GetStepDefinitions(stepSource).ToList();
+
+            stepDefs.Should().HaveCount(1);
+            stepDefs[0].Should().BeOfType<InteractionStepDefinition>();
+            stepDefs[0].Declaration.Should().Be("I have done");
+        }
+
+        [Fact]
+        public void CanInheritFromExistingCopyOfSelf()
+        {
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+
+            var rootMethodTable = new MethodTable();
+            rootMethodTable.Set(new DummyMethod("select", 1));
+            rootMethodTable.Set(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("button", 10, 1, c => c
+                .Method("locateNamed", 12, 1, m => m
+                    .Argument("name", 12, 1)
+                    .Call("select", 13, 1, 13, 1, cfg => cfg.Variable("name", 1))
+                    .Call("click", 14, 1, 14, 1)
+                )
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("button", 16, 1)
+                .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
+            );
+
+            setBuilder.AddInteractionFile(null, file.Built);
+
+            var result = setBuilder.Build(rootMethodTable);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output;
+
+            builtSet.Components.Should().HaveCount(1);
+            var button = builtSet.Components["button"];
+
+            button.MethodTable.TryGetMethod("select", out var foundSelect).Should().BeTrue();
+            foundSelect.Should().BeOfType<DummyMethod>();
+
+            button.MethodTable.TryGetMethod("click", out var foundClick).Should().BeTrue();
+            foundClick.Should().BeOfType<DummyMethod>();
+
+            button.MethodTable.TryGetMethod("locateNamed", out var foundLocateNamed).Should().BeTrue();
+            foundLocateNamed.Should().BeOfType<FileDefinedInteractionMethod>()
+                                     .Subject.NeedsDefining.Should().BeFalse();
+
+            button.MethodTable.TryGetMethod("anotherMethod", out var foundAnotherMethod).Should().BeTrue();
+            foundAnotherMethod.Should().BeOfType<FileDefinedInteractionMethod>()
+                                       .Subject.MethodDefinition.MethodCallChain[0].MethodName.Should().Be("click");
+        }
+        
+        [Fact]
+        public void CanInheritFromADifferentControl()
+        {
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+
+            var rootMethodTable = new MethodTable();
+            rootMethodTable.Set(new DummyMethod("select", 1));
+            rootMethodTable.Set(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("field", 10, 1, c => c
+                .Method("locateNamed", 12, 1, m => m
+                    .Argument("name", 12, 1)
+                    .Call("select", 13, 1, 13, 1, cfg => cfg.Variable("name", 1))
+                    .Call("click", 14, 1, 14, 1)
+                )
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("field", 16, 1)
+                .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
+            );
+
+            setBuilder.AddInteractionFile(null, file.Built);
+
+            var result = setBuilder.Build(rootMethodTable);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output;
+
+            builtSet.Components.Should().HaveCount(2);
+            var button = builtSet.Components["button"];
+
+            button.MethodTable.TryGetMethod("select", out var foundSelect).Should().BeTrue();
+            foundSelect.Should().BeOfType<DummyMethod>();
+
+            button.MethodTable.TryGetMethod("click", out var foundClick).Should().BeTrue();
+            foundClick.Should().BeOfType<DummyMethod>();
+
+            button.MethodTable.TryGetMethod("locateNamed", out var foundLocateNamed).Should().BeTrue();
+            foundLocateNamed.Should().BeOfType<FileDefinedInteractionMethod>()
+                                     .Subject.NeedsDefining.Should().BeFalse();
+
+            button.MethodTable.TryGetMethod("anotherMethod", out var foundAnotherMethod).Should().BeTrue();
+            foundAnotherMethod.Should().BeOfType<FileDefinedInteractionMethod>()
+                                       .Subject.MethodDefinition.MethodCallChain[0].MethodName.Should().Be("click");
+        }
+
+        [Fact]
+        public void DirectCircularInheritanceReferenceErrorDetected()
+        {
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+
+            var rootMethodTable = new MethodTable();
+            rootMethodTable.Set(new DummyMethod("select", 1));
+            rootMethodTable.Set(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("field", 10, 1, c => c
+                .Inherits("button", 11, 1)
+                .Method("locateNamed", 12, 1, m => m
+                    .Argument("name", 12, 1)
+                    .Call("select", 13, 1, 13, 1, cfg => cfg.Variable("name", 1))
+                    .Call("click", 14, 1, 14, 1)
+                )
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("field", 16, 1)
+                .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
+            );
+
+            setBuilder.AddInteractionFile(null, file.Built);
+
+            var result = setBuilder.Build(rootMethodTable);
+
+            result.Success.Should().BeFalse();
+            result.Messages.Should().BeEquivalentTo(
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
+                                              "field -> button -> field"));
+        }
+
+        [Fact]
+        public void InDirectCircularInheritanceReferenceErrorDetected()
+        {
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+
+            var rootMethodTable = new MethodTable();
+            rootMethodTable.Set(new DummyMethod("select", 1));
+            rootMethodTable.Set(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("field", 10, 1, c => c
+                .Inherits("input", 11, 1)
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("field", 16, 1)
+            );
+            file.Component("input", 18, 1, c => c
+                .Inherits("button", 19, 1)
+            );
+
+            setBuilder.AddInteractionFile(null, file.Built);
+
+            var result = setBuilder.Build(rootMethodTable);
+
+            result.Success.Should().BeFalse();
+            result.Messages.Should().BeEquivalentTo(
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
+                                              "field -> input -> button -> field"));
+        }
 
         [Fact]
         public void NeedsDefiningMethodGivesError()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder();
+            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
             var rootMethodTable = new MethodTable();
             rootMethodTable.Set(new DummyMethod("select", 1));

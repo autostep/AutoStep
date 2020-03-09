@@ -10,6 +10,6 @@ namespace AutoStep.Elements.Interaction
     {
         public string VariableName { get; set; }
 
-        public string ArrayIndex { get; set; }
+        public MethodArgumentElement Indexer { get; set; }
     }
 }
