@@ -114,7 +114,7 @@ namespace AutoStep.Language.Interaction
                 parser.Reset();
 
                 parser.AddErrorListener(errorListener);
-                parser.ErrorHandler = new UnterminatedStringRecoveryStrategy();
+                parser.ErrorHandler = new InteractionErrorStrategy();
 
                 // Now we will do the full LL mode.
                 parser.Interpreter.PredictionMode = PredictionMode.LL;

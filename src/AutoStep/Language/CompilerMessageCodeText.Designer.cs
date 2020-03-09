@@ -178,6 +178,24 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing call separator &apos;-&gt;&apos;..
+        /// </summary>
+        internal static string InteractionMethodCallMissingSeparator {
+            get {
+                return ResourceManager.GetString("InteractionMethodCallMissingSeparator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method call has not been closed, expecting &apos;)&apos;..
+        /// </summary>
+        internal static string InteractionMethodCallUnterminated {
+            get {
+                return ResourceManager.GetString("InteractionMethodCallUnterminated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Method declaration expects another parameter; do you have an unintended extra comma in your declaration list?.
         /// </summary>
         internal static string InteractionMethodDeclMissingParameter {
@@ -201,6 +219,15 @@ namespace AutoStep.Language {
         internal static string InteractionMethodDeclUnexpectedContent {
             get {
                 return ResourceManager.GetString("InteractionMethodDeclUnexpectedContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method declaration has not been closed, expecting &apos;)&apos;..
+        /// </summary>
+        internal static string InteractionMethodDeclUnterminated {
+            get {
+                return ResourceManager.GetString("InteractionMethodDeclUnterminated", resourceCulture);
             }
         }
         
@@ -237,15 +264,6 @@ namespace AutoStep.Language {
         internal static string InteractionMethodNotAvailablePermitUndefined {
             get {
                 return ResourceManager.GetString("InteractionMethodNotAvailablePermitUndefined", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Method declaration has not been closed, expecting &apos;)&apos;..
-        /// </summary>
-        internal static string InteractionMethodUnterminated {
-            get {
-                return ResourceManager.GetString("InteractionMethodUnterminated", resourceCulture);
             }
         }
         

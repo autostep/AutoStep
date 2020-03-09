@@ -20,6 +20,7 @@ namespace AutoStep.Language.Interaction
                 MissingMethodDeclArgSeparator,
                 MethodDeclInvalidParameterStringDeclaration,
                 MethodDeclInvalidParameterDeclaration,
+                CallChainMissingSeparator,
                 UnterminatedMethod,
                 MissingMethodDeclArgument
             );
@@ -139,12 +140,24 @@ namespace AutoStep.Language.Interaction
 
         private bool UnterminatedMethod()
         {
-            if (ExpectingTokens(METHOD_CLOSE)
-                && (Context is MethodDeclarationContext || Context is MethodCallContext))
+            if (ExpectingTokens(METHOD_CLOSE))
             {
-                ChangeError(CompilerMessageCode.InteractionMethodUnterminated);
+                if (Context is MethodDeclarationContext)
+                {
+                    ChangeError(CompilerMessageCode.InteractionMethodDeclUnterminated);
 
-                return true;
+                    return true;
+                }
+                else if (Context is MethodCallContext)
+                {
+                    ChangeError(CompilerMessageCode.InteractionMethodCallUnterminated);
+
+                    UseOpeningTokenAsStart(NAME_REF);
+
+                    UsePrecedingTokenAsEnd();
+
+                    return true;
+                }
             }
 
             return false;
@@ -158,6 +171,19 @@ namespace AutoStep.Language.Interaction
                 ChangeError(CompilerMessageCode.InteractionMethodDeclMissingParameter);
 
                 UseOpeningTokenAsStart(PARAM_SEPARATOR);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CallChainMissingSeparator()
+        {
+            if (Exception is CallChainSeparationException)
+            {
+                // Missing Separator.
+                ChangeError(CompilerMessageCode.InteractionMethodCallMissingSeparator);
 
                 return true;
             }

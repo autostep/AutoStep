@@ -192,6 +192,16 @@ internal partial class AutoStepInteractionsParserBaseVisitor<Result> : AbstractP
 	/// <return>The visitor result.</return>
 	public virtual Result VisitMethodDefArgs([NotNull] AutoStepInteractionsParser.MethodDefArgsContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallChain"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>

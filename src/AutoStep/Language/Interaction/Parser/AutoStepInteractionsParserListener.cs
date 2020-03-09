@@ -196,6 +196,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitMethodDefArgs([NotNull] AutoStepInteractionsParser.MethodDefArgsContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallChain"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallChain"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

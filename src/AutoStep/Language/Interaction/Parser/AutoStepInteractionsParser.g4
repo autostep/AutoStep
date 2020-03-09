@@ -28,13 +28,14 @@ traitItem: NAME_KEYWORD STRING #traitName
 
 // method(): callee() -> callee()
 methodDefinition: methodDeclaration DEF_SEPARATOR
-                  (NEEDS_DEFINING | 
-                     methodCall (FUNC_PASS_MARKER methodCall)*
-                  );
+                  (NEEDS_DEFINING | methodCallChain)
+                  ;
 
 methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 
 methodDefArgs: PARAM_NAME (PARAM_SEPARATOR PARAM_NAME)*;
+
+methodCallChain: methodCall (FUNC_PASS_MARKER methodCall)*;
 
 methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 

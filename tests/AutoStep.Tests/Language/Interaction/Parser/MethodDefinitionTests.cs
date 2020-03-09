@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ), 
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodUnterminated, 4, 40, 4, 40));
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnterminated, 4, 40, 4, 40));
         }
 
         [Fact]
@@ -125,6 +125,70 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 ),
                 CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 45));
         }
+
+        [Fact]
+        public async Task MethodDefinitionUnexpectedFloat()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    method(name1, 123.5): call('label')
+            ";
+
+            await CompileAndAssertErrors(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 4, 21, 4, 40, m => m
+                        .Argument("name1", 4, 28)
+                        .Call("call", 4, 43, 4, 55, c => c
+                            .String("label", 48)
+                        )
+                    )
+                ),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 39));
+        }
+
+        [Fact]
+        public async Task MethodDefinitionUnexpectedInt()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    method(name1, 123): call('label')
+            ";
+
+            await CompileAndAssertErrors(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 4, 21, 4, 38, m => m
+                        .Argument("name1", 4, 28)
+                        .Call("call", 4, 41, 4, 53, c => c
+                            .String("label", 46)
+                        )
+                    )
+                ),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
+        }
+
+        [Fact]
+        public async Task MethodDefinitionUnexpectedConstant()
+        {
+            const string Test = @"                
+                Component: button
+                
+                    method(name1, TAB): call('label')
+            ";
+
+            await CompileAndAssertErrors(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 4, 21, 4, 38, m => m
+                        .Argument("name1", 4, 28)
+                        .Call("call", 4, 41, 4, 53, c => c
+                            .String("label", 46)
+                        )
+                    )
+                ),
+                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
+        }
+
 
         [Fact]
         public async Task MethodDefinitionUnterminatedString()

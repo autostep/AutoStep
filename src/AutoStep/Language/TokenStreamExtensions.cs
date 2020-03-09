@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Antlr4.Runtime;
 
 namespace AutoStep.Language
@@ -43,23 +41,28 @@ namespace AutoStep.Language
         }
 
         /// <summary>
-        /// Gets the immediately previous token in the token stream, relative to the provided token.
+        /// Gets the immediately previous token in the token stream (on the default channel), relative to the provided token.
         /// </summary>
         /// <param name="tokenStream">The current token stream to search.</param>
         /// <param name="currentToken">The token to seek back from.</param>
         /// <returns>The found token.</returns>
         public static IToken GetPrecedingToken(this ITokenStream tokenStream, IToken currentToken)
         {
-            var newPos = currentToken.TokenIndex - 1;
+            IToken? foundToken = null;
+            var currentPosition = currentToken.TokenIndex;
 
-            if (newPos > 0)
+            while (currentPosition > 0 && foundToken == null)
             {
-                return tokenStream.Get(newPos);
+                currentPosition--;
+                var previousToken = tokenStream.Get(currentPosition);
+
+                if (previousToken.Channel == Lexer.DefaultTokenChannel)
+                {
+                    foundToken = previousToken;
+                }
             }
-            else
-            {
-                return currentToken;
-            }
+
+            return foundToken ?? currentToken;
         }
     }
 }

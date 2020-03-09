@@ -156,6 +156,12 @@
   <data name="InteractionInvalidContent" xml:space="preserve">
     <value>Invalid character(s).</value>
   </data>
+  <data name="InteractionMethodCallMissingSeparator" xml:space="preserve">
+    <value>Missing call separator '-&gt;'.</value>
+  </data>
+  <data name="InteractionMethodCallUnterminated" xml:space="preserve">
+    <value>Method call has not been closed, expecting ')'.</value>
+  </data>
   <data name="InteractionMethodDeclMissingParameter" xml:space="preserve">
     <value>Method declaration expects another parameter; do you have an unintended extra comma in your declaration list?</value>
   </data>
@@ -164,6 +170,9 @@
   </data>
   <data name="InteractionMethodDeclUnexpectedContent" xml:space="preserve">
     <value>Method declaration contains unexpected content. Method declarations should consist of zero or more parameter names only, e.g. method(), method(param1), method(param1, param2).</value>
+  </data>
+  <data name="InteractionMethodDeclUnterminated" xml:space="preserve">
+    <value>Method declaration has not been closed, expecting ')'.</value>
   </data>
   <data name="InteractionMethodFromTraitRequiredButNotDefined" xml:space="preserve">
     <value>Component is missing definition for required method '{0}', declared in {1}:{2}.</value>
@@ -176,9 +185,6 @@
   </data>
   <data name="InteractionMethodNotAvailablePermitUndefined" xml:space="preserve">
     <value>The specified interaction method '{0}' is not available. It should be either be declared with an associated expression, or with 'needs-defining'. E.g. '{0}: method()' or '{0}: needs-defining'.</value>
-  </data>
-  <data name="InteractionMethodUnterminated" xml:space="preserve">
-    <value>Method declaration has not been closed, expecting ')'.</value>
   </data>
   <data name="InteractionMissingExpectedName" xml:space="preserve">
     <value>A name is required.</value>
