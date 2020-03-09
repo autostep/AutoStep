@@ -97,6 +97,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Projects\ProjectCompilerMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -139,6 +144,10 @@
     <EmbeddedResource Update="Elements\Test\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Projects\ProjectCompilerMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProjectCompilerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

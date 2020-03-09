@@ -29,7 +29,6 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <summary>
         /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
         /// </summary>
-        /// <param name="type">The step type.</param>
         /// <param name="definitionContext">The step declaration context.</param>
         /// <returns>A generated step reference.</returns>
         public InteractionStepDefinitionElement BuildStepDefinition(StepDefinitionBodyContext definitionContext)
@@ -44,6 +43,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitDeclareGiven([NotNull] DeclareGivenContext context)
         {
             Result!.Type = StepType.Given;
@@ -53,6 +53,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitDeclareWhen([NotNull] DeclareWhenContext context)
         {
             Result!.Type = StepType.When;
@@ -62,6 +63,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitDeclareThen([NotNull] DeclareThenContext context)
         {
             Result!.Type = StepType.Then;
@@ -71,20 +73,17 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitStepDeclarationBody([NotNull] StepDeclarationBodyContext context)
         {
             Result!.Declaration = context.GetText();
-            
+
             VisitChildren(context);
 
             return Result;
         }
 
-        /// <summary>
-        /// Visits a declaration argument.
-        /// </summary>
-        /// <param name="context">The parser context.</param>
-        /// <returns>The step definition element.</returns>
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitDeclarationArgument([NotNull] DeclarationArgumentContext context)
         {
             Debug.Assert(Result is object);
@@ -161,6 +160,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override InteractionStepDefinitionElement VisitDeclarationComponentInsert([NotNull] DeclarationComponentInsertContext context)
         {
             AddPart(new PlaceholderMatchPart(InteractionPlaceholders.Component).AddPositionalLineInfo(context));

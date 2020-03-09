@@ -24,8 +24,8 @@ namespace AutoStep.Projects
         private readonly AutoStepLineTokeniser lineTokeniser;
 
         private readonly IAutoStepInteractionCompiler? interactionCompiler;
-        private InteractionStepDefinitionSource? interactionSteps;
         private readonly ICallChainValidator interactionCallChainValidator;
+        private InteractionStepDefinitionSource? interactionSteps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
@@ -33,6 +33,7 @@ namespace AutoStep.Projects
         /// <param name="project">The project to work on.</param>
         /// <param name="compiler">The compiler implementation to use.</param>
         /// <param name="linker">The linker implementation to use.</param>
+        /// <param name="interactionCompiler">The interaction compiler.</param>
         public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker, IAutoStepInteractionCompiler? interactionCompiler = null)
         {
             this.project = project ?? throw new ArgumentNullException(nameof(project));
@@ -43,6 +44,9 @@ namespace AutoStep.Projects
             this.lineTokeniser = new AutoStepLineTokeniser(linker);
         }
 
+        /// <summary>
+        /// Gets the global interactions configuration, that allows the global root method table to be manipulated.
+        /// </summary>
         public InteractionsGlobalConfiguration Interactions { get; } = new InteractionsGlobalConfiguration();
 
         /// <summary>
@@ -74,7 +78,6 @@ namespace AutoStep.Projects
         /// <param name="loggerFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         public async Task<ProjectCompilerResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
             var allMessages = new List<CompilerMessage>();
@@ -90,6 +93,7 @@ namespace AutoStep.Projects
             return new ProjectCompilerResult(true, allMessages, project);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, List<CompilerMessage> allMessages, CancellationToken cancelToken = default)
         {
             // This method will go through all the autostep files in the project that match the filter and:
@@ -130,11 +134,12 @@ namespace AutoStep.Projects
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, List<CompilerMessage> allMessages, CancellationToken cancelToken = default)
         {
             if (interactionCompiler is null && project.AllInteractionFiles.Count > 0)
             {
-                throw new InvalidOperationException("Cannot compile interaction files if no compiler has been specified.");
+                throw new InvalidOperationException(ProjectCompilerMessages.MissingInteractionCompiler);
             }
 
             var fileWasCompiled = false;

@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Atn;
+﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
-using AutoStep.Language.Interaction.Visitors;
-using AutoStep.Language.Test;
-using AutoStep.Language.Test.Parser;
-using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Interaction
 {
     using static AutoStepInteractionsParser;
 
-    class InteractionErrorStrategy : DefaultErrorStrategy
+    /// <summary>
+    /// Provides the custom error strategy behaviour for the Interactions parser. Custom behaviour for handling
+    /// missing call chain separators, and unterminated strings.
+    /// </summary>
+    internal class InteractionErrorStrategy : DefaultErrorStrategy
     {
-        // Defines the expected set of tokens that exist inside the 
+        // Defines the expected set of tokens that exist inside the
         private readonly IntervalSet insideMethodSet = new IntervalSet(
             METHOD_OPEN,
             METHOD_STRING_START,
@@ -34,9 +27,9 @@ namespace AutoStep.Language.Interaction
             METHOD_STR_ESCAPE_QUOTE,
             STR_ANGLE_LEFT,
             STR_NAME_REF,
-            STR_ANGLE_RIGHT
-        );
+            STR_ANGLE_RIGHT);
 
+        /// <inheritdoc/>
         public override void Sync(Antlr4.Runtime.Parser recognizer)
         {
             if (recognizer.Context is MethodCallChainContext)
@@ -71,9 +64,10 @@ namespace AutoStep.Language.Interaction
                 {
                     la = tokens.LA(position);
                     position++;
-                } while (insideMethodSet.Contains(la));
+                }
+                while (insideMethodSet.Contains(la));
 
-                // If we've existed the method 'cleanly', i.e. with a
+                // If we've exited the method 'cleanly', i.e. with a
                 // ')', then check what comes afterwards.
                 if (la == METHOD_CLOSE)
                 {
@@ -107,6 +101,7 @@ namespace AutoStep.Language.Interaction
             }
         }
 
+        /// <inheritdoc/>
         protected override bool SingleTokenInsertion(Antlr4.Runtime.Parser recognizer)
         {
             // We need to be able to curtail the attempts by ANTLR to recover from errors where we've experienced an unterminated string

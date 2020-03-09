@@ -9,13 +9,27 @@ namespace AutoStep.Language.Interaction.Visitors
 {
     using static AutoStepInteractionsParser;
 
+    /// <summary>
+    /// Defines the visitor for generating in-file method definitions.
+    /// </summary>
     internal class MethodDefinitionVisitor : InteractionMethodDeclarationVisitor<MethodDefinitionElement>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MethodDefinitionVisitor"/> class.
+        /// </summary>
+        /// <param name="sourceName">The source name.</param>
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="rewriter">The stream rewriter.</param>
         public MethodDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
         }
 
+        /// <summary>
+        /// Create a <see cref="MethodDefinitionElement"/> from the parse tree context.
+        /// </summary>
+        /// <param name="context">The ANTLR context.</param>
+        /// <returns>A new element.</returns>
         public MethodDefinitionElement Build(MethodDefinitionContext context)
         {
             Result = new MethodDefinitionElement();
@@ -38,6 +52,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result;
         }
 
+        /// <inheritdoc/>
         public override MethodDefinitionElement VisitMethodDefArgs(MethodDefArgsContext context)
         {
             foreach (var argName in context.PARAM_NAME())
@@ -54,7 +69,7 @@ namespace AutoStep.Language.Interaction.Visitors
                 Result!.Arguments.Add(defArg);
             }
 
-            return Result;
+            return Result!;
         }
     }
 }

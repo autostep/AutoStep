@@ -1,32 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
 using AutoStep.Elements.Interaction;
-using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
     using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
 
+    /// <summary>
+    /// Base class for any section of the parse tree that visits a method call chain (in-file method definitions and steps).
+    /// </summary>
+    /// <typeparam name="TElement">The method type that is being generated (assignable to <see cref="IMethodCallSource"/>).</typeparam>
     internal abstract class InteractionMethodDeclarationVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
         where TElement : class, IMethodCallSource
     {
         private MethodCallElement? currentMethodCall;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InteractionMethodDeclarationVisitor{TElement}"/> class.
+        /// </summary>
+        /// <param name="sourceName">The source name.</param>
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="rewriter">The stream rewriter.</param>
         public InteractionMethodDeclarationVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
             : base(sourceName, tokenStream, rewriter)
         {
         }
 
+        /// <inheritdoc/>
         public override void Reset()
         {
             currentMethodCall = null;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
             if (context.NAME_REF() is object)
@@ -44,9 +53,10 @@ namespace AutoStep.Language.Interaction.Visitors
                 currentMethodCall = null;
             }
 
-            return Result;
+            return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitStringArg([NotNull] StringArgContext context)
         {
             var stringMethodArgument = new StringMethodArgumentElement();
@@ -99,6 +109,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return part;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitVariableRef([NotNull] VariableRefContext context)
         {
             var variableRefElement = new VariableRefMethodArgumentElement();
@@ -111,6 +122,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitVariableArrRef([NotNull] VariableArrRefContext context)
         {
             var varArrElement = new VariableArrayRefMethodArgument();
@@ -132,6 +144,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitVariableArrStrRef([NotNull] VariableArrStrRefContext context)
         {
             var varArrElement = new VariableArrayRefMethodArgument();
@@ -155,6 +168,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitConstantRef([NotNull] ConstantRefContext context)
         {
             var constantRefElement = new ConstantMethodArgumentElement();
@@ -167,6 +181,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitIntArg([NotNull] IntArgContext context)
         {
             var intArgElement = new IntMethodArgumentElement();
@@ -186,6 +201,7 @@ namespace AutoStep.Language.Interaction.Visitors
             return Result!;
         }
 
+        /// <inheritdoc/>
         public override TElement VisitFloatArg([NotNull] FloatArgContext context)
         {
             var floatArgElement = new FloatMethodArgumentElement();

@@ -9,13 +9,14 @@ namespace AutoStep.Language
     /// Represents a base syntax error handling context, that allows for managed
     /// error matching based on the state of the parser and the position in the token stream.
     /// </summary>
+    /// <typeparam name="TParser">The ANTLR parser implementation.</typeparam>
     internal abstract class BaseAutoStepErrorHandlingContext<TParser>
-        where TParser : Antlr4.Runtime.Parser
+        where TParser : Parser
     {
         private Func<bool>[]? handlers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseAutoStepErrorHandlingContext"/> class.
+        /// Initializes a new instance of the <see cref="BaseAutoStepErrorHandlingContext{TParser}"/> class.
         /// </summary>
         /// <param name="tokenStream">The token stream for the file being parsed.</param>
         /// <param name="recognizer">The Antlr recogniser.</param>
