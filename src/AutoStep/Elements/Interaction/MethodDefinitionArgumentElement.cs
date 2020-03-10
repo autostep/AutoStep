@@ -1,17 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
-using AutoStep.Language.Interaction.Parser;
-
-namespace AutoStep.Elements.Interaction
+﻿namespace AutoStep.Elements.Interaction
 {
-
+    /// <summary>
+    /// Defines a named method definition argument.
+    /// </summary>
     public class MethodDefinitionArgumentElement : PositionalElement
     {
-        public string Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MethodDefinitionArgumentElement"/> class.
+        /// </summary>
+        /// <param name="name">The argument name.</param>
+        public MethodDefinitionArgumentElement(string name)
+        {
+            Name = name;
+        }
 
-        public string TypeHint { get; set; }
+        /// <summary>
+        /// Gets the argument name.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets or sets the type hint for a parameter.
+        /// </summary>
+        public string? TypeHint { get; set; }
     }
 
 }

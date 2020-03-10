@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,27 +9,27 @@ using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Interaction.Visitors;
 using AutoStep.Language.Test;
-using AutoStep.Language.Test.Parser;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Interaction
 {
-    public enum InteractionsCompilerOptions
-    {
-        Default,
-
-        EnableDiagnostics
-    }
-
+    /// <summary>
+    /// Provides the compilation of AutoStep interaction files.
+    /// </summary>
     public class AutoStepInteractionCompiler : IAutoStepInteractionCompiler
     {
         private readonly InteractionsCompilerOptions options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoStepInteractionCompiler"/> class.
+        /// </summary>
+        /// <param name="options">Compiler options.</param>
         public AutoStepInteractionCompiler(InteractionsCompilerOptions options)
         {
             this.options = options;
         }
 
+        /// <inheritdoc/>
         public async ValueTask<InteractionsFileCompilerResult> CompileInteractionsAsync(IContentSource source, ILoggerFactory logFactory, CancellationToken cancelToken = default)
         {
             source = source.ThrowIfNull(nameof(source));
@@ -114,6 +113,8 @@ namespace AutoStep.Language.Interaction
                 parser.Reset();
 
                 parser.AddErrorListener(errorListener);
+
+                // Use our custom error strategy for giving more meaningful errors.
                 parser.ErrorHandler = new InteractionErrorStrategy();
 
                 // Now we will do the full LL mode.

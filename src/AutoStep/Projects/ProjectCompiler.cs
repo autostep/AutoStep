@@ -56,7 +56,7 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateDefault(Project project)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.Default);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.Default);
             return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler), new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics));
         }
 
@@ -192,7 +192,7 @@ namespace AutoStep.Projects
                 {
                     if (projectFile.Value.LastCompileResult?.Output is object)
                     {
-                        interactionSetBuilder.AddInteractionFile(projectFile.Key, projectFile.Value.LastCompileResult.Output);
+                        interactionSetBuilder.AddInteractionFile(projectFile.Value.LastCompileResult.Output);
                     }
                 }
 

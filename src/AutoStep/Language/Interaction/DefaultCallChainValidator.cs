@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction
 {
+    /// <summary>
+    /// Implements standard call chain validation behaviour.
+    /// </summary>
     internal class DefaultCallChainValidator : ICallChainValidator
     {
-        public void ValidateCallChain(string? sourceFileName, IMethodCallSource definition, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<CompilerMessage> messages)
+        /// <inheritdoc/>
+        public void ValidateCallChain(ICallChainSource definition, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<CompilerMessage> messages)
         {
-            var variableSet = definition.GetInitialMethodChainVariables();
+            // Get the set of variables available to the call chain at the time of compilation.
+            var variableSet = definition.GetCompileTimeChainVariables();
+            var sourceFileName = definition.SourceName;
 
-            foreach (var call in definition.MethodCallChain)
+            foreach (var call in definition.Calls)
             {
                 // Validate the arguments.
                 for (var callArgIdx = 0; callArgIdx < call.Arguments.Count; callArgIdx++)

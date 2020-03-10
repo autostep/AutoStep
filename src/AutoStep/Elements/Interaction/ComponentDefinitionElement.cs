@@ -9,6 +9,11 @@ namespace AutoStep.Elements.Interaction
 
     public class ComponentDefinitionElement : InteractionDefinitionElement
     {
+        public ComponentDefinitionElement(string id)
+            : base(id)
+        {
+        }
+
         public List<NameRefElement> Traits { get; } = new List<NameRefElement>();
 
         public NameRefElement? Inherits { get; set; }

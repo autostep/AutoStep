@@ -8,7 +8,7 @@ using AutoStep.Language.Interaction.Parser;
 namespace AutoStep.Elements.Interaction
 {
 
-    public class MethodDefinitionElement : PositionalElement, IMethodCallSource
+    public class MethodDefinitionElement : PositionalElement, ICallChainSource
     {
         public string Name { get; set; }
 
@@ -16,13 +16,13 @@ namespace AutoStep.Elements.Interaction
 
         public string? SourceName { get; set; }
 
-        public List<MethodCallElement> MethodCallChain { get; } = new List<MethodCallElement>();
+        public List<MethodCallElement> Calls { get; } = new List<MethodCallElement>();
 
         public List<MethodDefinitionArgumentElement> Arguments { get; } = new List<MethodDefinitionArgumentElement>();
 
-        public InteractionMethodChainVariables GetInitialMethodChainVariables()
+        public CallChainCompileTimeVariables GetCompileTimeChainVariables()
         {
-            var variableSet = new InteractionMethodChainVariables();
+            var variableSet = new CallChainCompileTimeVariables();
 
             foreach (var arg in Arguments)
             {

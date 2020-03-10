@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Traits;
 using BenchmarkDotNet.Attributes;
@@ -34,10 +33,10 @@ namespace AutoStep.Benchmarks
         {
             var freshGraph = BuildGraph(rootNodeSize, numberOfCombos, maxComboSize, random);
 
-            var first = freshGraph.AllTraits.First.Value;
-            var second = freshGraph.AllTraits.First.Next.Value;
+            var first = freshGraph.AllTraits.First();
+            var second = freshGraph.AllTraits.Skip(1).First();
 
-            var _ = first.Trait.NameParts.Union(second.Trait.NameParts).ToArray();
+            var _ = first.NameElements.Union(second.NameElements).ToArray();
         }
         
         [Benchmark]
@@ -47,13 +46,9 @@ namespace AutoStep.Benchmarks
             var graph = BuildGraph(rootNodeSize, numberOfCombos, maxComboSize, random);
 
             // Go through every item (top down) and match it.
-            var node = graph.AllTraits.First;
-
-            while (node != null)
+            foreach(var trait in graph.AllTraits)
             {
-                graph.MatchTraits(node.Value.Trait.NameParts);
-
-                node = node.Next;
+                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object) null, (c, el) => { });
             }
         }
 
@@ -63,14 +58,9 @@ namespace AutoStep.Benchmarks
             // Find all traits.
             var graph = BuildGraph(rootNodeSize, numberOfCombos, maxComboSize, random);
 
-            // Go through every item (top down) and match it.
-            var node = graph.AllTraits.Last;
-
-            while (node != null)
+            foreach (var trait in graph.AllTraits.Reverse())
             {
-                graph.MatchTraits(node.Value.Trait.NameParts);
-
-                node = node.Previous;
+                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object)null, (c, el) => { });
             }
         }
 
@@ -79,18 +69,13 @@ namespace AutoStep.Benchmarks
         {
             var freshGraph = BuildGraph(rootNodeSize, numberOfCombos, maxComboSize, random);
 
-            var first = freshGraph.AllTraits.First.Value;
-            var second = freshGraph.AllTraits.First.Next.Value;
+            var first = freshGraph.AllTraits.First();
+            var second = freshGraph.AllTraits.Skip(1).First();
 
-            var lookup = first.Trait.NameParts.Union(second.Trait.NameParts).ToArray();
+            var lookup = first.NameElements.Select(x => x.Name).Union(second.NameElements.Select(x => x.Name)).ToArray();
 
             // Find all traits.
-            var result = freshGraph.MatchTraits(lookup);
-
-            if (result.OrderedTraits.Count == 0)
-            {
-                throw new InvalidOperationException();
-            }
+            freshGraph.SearchTraits(lookup, (object)null, (c, el) => { });
         }
 
         private TraitGraph BuildGraph(int rootTraitCount, int numberOfCombos, int maxComboSize, Random random)
@@ -100,8 +85,7 @@ namespace AutoStep.Benchmarks
 
             foreach (var item in alphabet)
             {
-                var newEl = new TraitDefinitionElement() { Name = item };
-                newEl.SetNameParts(new NameRefElement { Name = item });
+                var newEl = new TraitDefinitionElement(item, new[] { new NameRefElement(item) });
 
                 traitGraph.AddOrExtendTrait(newEl);
             }
@@ -119,10 +103,7 @@ namespace AutoStep.Benchmarks
                     comboItems.Add(comboItem.ToString());
                 }
 
-                var traitDefEl = new TraitDefinitionElement();
-                traitDefEl.Name = string.Join(" + ", comboItems);
-                traitDefEl.SetNameParts(comboItems.Select(c => new NameRefElement { Name = c }).ToArray());
-
+                var traitDefEl = new TraitDefinitionElement(string.Join(" + ", comboItems), comboItems.Select(c => new NameRefElement(c)).ToArray());
                 traitGraph.AddOrExtendTrait(traitDefEl);
             }
 

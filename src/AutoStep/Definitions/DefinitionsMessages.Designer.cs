@@ -104,5 +104,32 @@ namespace AutoStep.Definitions {
                 return ResourceManager.GetString("ClassStepDefinitionSource_TypeAlreadyProvided", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use provided value &apos;{0}&apos; as an argument to {1}. Cannot cast to expected type {2}..
+        /// </summary>
+        internal static string DefinedInteractionMethod_CannotCastArgument {
+            get {
+                return ResourceManager.GetString("DefinedInteractionMethod_CannotCastArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use provided value &apos;{0}&apos; as an argument to {1}. Cannot convert to {2}..
+        /// </summary>
+        internal static string DefinedInteractionMethod_CannotConvertArgument {
+            get {
+                return ResourceManager.GetString("DefinedInteractionMethod_CannotConvertArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Registered Interaction Method &apos;{0}&apos; has not been implemented..
+        /// </summary>
+        internal static string InteractionMethod_InvokeNotImplemented {
+            get {
+                return ResourceManager.GetString("InteractionMethod_InvokeNotImplemented", resourceCulture);
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -73,7 +73,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -97,7 +97,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -113,7 +113,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<FileBuilder> cfg)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -134,7 +134,7 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);
@@ -151,7 +151,7 @@ namespace AutoStep.Tests.Utils
             var expectedBuilder = new FileBuilder();
             cfg(expectedBuilder);
 
-            var compiler = new AutoStepCompiler(CompilerOptions.EnableDiagnostics);
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileAsync(source, LogFactory);

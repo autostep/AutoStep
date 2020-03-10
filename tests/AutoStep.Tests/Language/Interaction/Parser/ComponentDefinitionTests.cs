@@ -74,8 +74,8 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             await CompileAndAssertSuccess(Test, cfg => cfg
                 .Component("button", 3, 17, c => c
                     .Trait("clickable", 7, 29)
-                    .Trait("editable", 9, 40)
-                    .Trait("displayable", 10, 50)
+                    .Trait("editable", 9, 29)
+                    .Trait("displayable", 10, 29)
                     .Method("locateNamed", 12, 21, m => m
                         .Argument("name", 12, 33)
                         .Call("select", 12, 40, 12, 54, a => a.String("label", 47))

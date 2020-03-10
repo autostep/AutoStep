@@ -20,6 +20,7 @@ using AutoStep.Language.Interaction;
 using System.Linq;
 using System.Configuration;
 using AutoStep.Definitions.Interaction;
+using AutoStep.Assertion;
 
 namespace AutoStep.Tests.Execution
 {
@@ -329,7 +330,7 @@ namespace AutoStep.Tests.Execution
             {
             }
 
-            public override void CompilerMethodCall(IReadOnlyList<MethodArgumentElement> arguments, InteractionMethodChainVariables variables)
+            public override void CompilerMethodCall(IReadOnlyList<MethodArgumentElement> arguments, CallChainCompileTimeVariables variables)
             {
                 // The second argument is used as the name of a variable.
                 if (arguments.Count > 1)

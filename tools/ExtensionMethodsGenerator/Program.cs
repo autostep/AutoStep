@@ -25,6 +25,7 @@ namespace ExtensionMethodsGenerator
 
             if(args.Length > 0 && args[0] == "interactions")
             {
+                myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Interaction"));
                 myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Interaction"));
                 myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Projects"));
 
@@ -260,7 +261,8 @@ namespace ExtensionMethodsGenerator
             {
                 AddDocComments(method.Comments,
                     "Type parameters for the callback are the type of values to bind interaction arguments to.",
-                    "A type argument of <see cref=\"IServiceScope\" /> will cause the current scope to be injected into the method; a type argument of <see cref=\"MethodContext\" /> will receive " +
+                    "A type argument of <see cref=\"IServiceScope\" /> will cause the current scope to be injected into the method;" +
+                    " a type argument of <see cref=\"MethodContext\" /> will receive " +
                     "the current interaction method context.");
             }
 

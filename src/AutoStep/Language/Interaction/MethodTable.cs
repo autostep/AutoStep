@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
@@ -53,10 +54,9 @@ namespace AutoStep.Language.Interaction
                 throw new ArgumentNullException(nameof(methodDef));
             }
 
-            Set(new FileDefinedInteractionMethod(name)
+            Set(new FileDefinedInteractionMethod(name, methodDef)
             {
                 NeedsDefining = methodDef.NeedsDefining,
-                MethodDefinition = methodDef,
             });
         }
 
@@ -86,7 +86,7 @@ namespace AutoStep.Language.Interaction
         /// <param name="name">The name of the method.</param>
         /// <param name="method">The method implementation.</param>
         /// <returns>True if the method exists, false otherwise.</returns>
-        public bool TryGetMethod(string name, out InteractionMethod? method)
+        public bool TryGetMethod(string name, [NotNullWhen(true)] out InteractionMethod? method)
         {
             return (methods ?? copyFrom)!.TryGetValue(name, out method);
         }

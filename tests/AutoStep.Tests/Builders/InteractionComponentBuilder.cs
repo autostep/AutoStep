@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
-using AutoStep.Elements.Interaction;
+﻿using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Builders
 {
     public class InteractionComponentBuilder : BaseBuilder<ComponentDefinitionElement>, IInteractionEntityBuilder<ComponentDefinitionElement>
     {
-        private readonly List<NameRefElement> nameParts = new List<NameRefElement>();
-
         public InteractionComponentBuilder(string name, int line, int column)
         {
-            Built = new ComponentDefinitionElement();
-            Built.Name = Built.Id = name;
+            Built = new ComponentDefinitionElement(name);
             Built.SourceLine = line;
             Built.StartColumn = column;
         }
@@ -24,9 +20,8 @@ namespace AutoStep.Tests.Builders
 
         public InteractionComponentBuilder Trait(string name, int line, int column)
         {
-            Built.Traits.Add(new NameRefElement
+            Built.Traits.Add(new NameRefElement(name)
             {
-                Name = name,
                 SourceLine = line,
                 StartColumn = column,
                 EndColumn = column + name.Length - 1,
@@ -38,9 +33,8 @@ namespace AutoStep.Tests.Builders
 
         public InteractionComponentBuilder Inherits(string name, int line, int column)
         {
-            Built.Inherits = new NameRefElement
+            Built.Inherits = new NameRefElement(name)
             {
-                Name = name,
                 SourceLine = line,
                 StartColumn = column,
                 EndColumn = column + name.Length - 1,

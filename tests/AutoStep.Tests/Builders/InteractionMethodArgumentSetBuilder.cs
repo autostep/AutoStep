@@ -111,12 +111,11 @@ namespace AutoStep.Tests.Builders
 
         public InteractionMethodArgumentSetBuilder Variable(string varName, int startColumn)
         {
-            Built.Arguments.Add(new VariableRefMethodArgumentElement
+            Built.Arguments.Add(new VariableRefMethodArgumentElement(varName)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = startColumn,
                 EndLine = Built.SourceLine,
-                VariableName = varName,
                 EndColumn = startColumn + varName.Length - 1
             });
 

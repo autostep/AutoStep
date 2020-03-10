@@ -12,9 +12,9 @@ namespace AutoStep.Language.Interaction.Visitors
     /// <summary>
     /// Base class for any section of the parse tree that visits a method call chain (in-file method definitions and steps).
     /// </summary>
-    /// <typeparam name="TElement">The method type that is being generated (assignable to <see cref="IMethodCallSource"/>).</typeparam>
+    /// <typeparam name="TElement">The method type that is being generated (assignable to <see cref="ICallChainSource"/>).</typeparam>
     internal abstract class InteractionMethodDeclarationVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
-        where TElement : class, IMethodCallSource
+        where TElement : class, ICallChainSource
     {
         private MethodCallElement? currentMethodCall;
 
@@ -40,15 +40,13 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             if (context.NAME_REF() is object)
             {
-                currentMethodCall = new MethodCallElement();
+                currentMethodCall = new MethodCallElement(context.NAME_REF().GetText());
 
                 currentMethodCall.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
 
-                currentMethodCall.MethodName = context.NAME_REF().GetText();
-
                 VisitChildren(context);
 
-                Result!.MethodCallChain.Add(currentMethodCall);
+                Result!.Calls.Add(currentMethodCall);
 
                 currentMethodCall = null;
             }
@@ -112,10 +110,8 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override TElement VisitVariableRef([NotNull] VariableRefContext context)
         {
-            var variableRefElement = new VariableRefMethodArgumentElement();
+            var variableRefElement = new VariableRefMethodArgumentElement(context.PARAM_NAME().GetText());
             variableRefElement.AddPositionalLineInfo(context);
-
-            variableRefElement.VariableName = context.PARAM_NAME().GetText();
 
             currentMethodCall!.Arguments.Add(variableRefElement);
 
@@ -132,10 +128,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
             var varNameNode = context.PARAM_NAME(1);
 
-            var varRefElement = new VariableRefMethodArgumentElement();
+            var varRefElement = new VariableRefMethodArgumentElement(varNameNode.GetText());
             varRefElement.AddPositionalLineInfo(varNameNode);
-
-            varRefElement.VariableName = varNameNode.GetText();
 
             varArrElement.Indexer = varRefElement;
 

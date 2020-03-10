@@ -6,6 +6,9 @@ using AutoStep.Language.Interaction.Traits;
 
 namespace AutoStep.Language.Interaction
 {
+    /// <summary>
+    /// Provides the functionality to generate an interaction set from a set of files.
+    /// </summary>
     internal class AutoStepInteractionSetBuilder
     {
         private readonly TraitGraph traits = new TraitGraph();
@@ -13,12 +16,20 @@ namespace AutoStep.Language.Interaction
         private readonly ICallChainValidator callChainValidator;
         private InteractionConstantSet constants = new InteractionConstantSet();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoStepInteractionSetBuilder"/> class.
+        /// </summary>
+        /// <param name="callChainValidator">The call chain validator.</param>
         public AutoStepInteractionSetBuilder(ICallChainValidator callChainValidator)
         {
             this.callChainValidator = callChainValidator;
         }
 
-        public void AddInteractionFile(string? sourceName, InteractionFileElement interactionFile)
+        /// <summary>
+        /// Add an interaction file to consider during <see cref="Build(MethodTable)"/>.
+        /// </summary>
+        /// <param name="interactionFile">The file.</param>
+        public void AddInteractionFile(InteractionFileElement interactionFile)
         {
             interactionFile = interactionFile.ThrowIfNull(nameof(interactionFile));
 
@@ -37,7 +48,16 @@ namespace AutoStep.Language.Interaction
             }
         }
 
-        public AutoStepInteractionGroupBuilderResult Build(MethodTable rootMethodTable)
+        /// <summary>
+        /// Builds the interaction set.
+        /// </summary>
+        /// <param name="rootMethodTable">The root method table, containing all of the system-provided methods.</param>
+        /// <returns>The set build result.</returns>
+        /// <remarks>
+        /// This method goes through all the full trait graph and component list and determines the actual method table and step set for each
+        /// component.
+        /// </remarks>
+        public AutoStepInteractionSetBuilderResult Build(MethodTable rootMethodTable)
         {
             // Building the autostep interaction group involves:
             // 1. Going through the complete list of traits, resolving the method table for each one, and validating
@@ -68,6 +88,7 @@ namespace AutoStep.Language.Interaction
             //     - Each component adds all steps that apply to it.
             foreach (var componentEntry in allComponents.Values)
             {
+                // Resolve the component. This will determine the final inherited state of the component.
                 ResolveComponent(componentEntry, allComponents, messages);
 
                 if (componentEntry.FinalComponent is null)
@@ -76,15 +97,14 @@ namespace AutoStep.Language.Interaction
                     continue;
                 }
 
-                var finalComponent = new BuiltComponent
-                {
-                    Name = componentEntry.Name,
-                    MethodTable = new MethodTable(rootMethodTable),
-                };
+                // Create the built component.
+                var finalComponent = new BuiltComponent(componentEntry.Name, new MethodTable(rootMethodTable));
 
                 if (componentEntry.Traits is object && componentEntry.Traits.Any())
                 {
-                    traits.SearchTraitsSimplestFirst(componentEntry.Traits.ToArray(), finalComponent, (ctxt, trait) =>
+                    // Search the trait graph for all traits that match this component (simplest first).
+                    // We merge in the state of each trait into the final component.
+                    traits.SearchTraits(componentEntry.Traits.Select(x => x.Name), finalComponent, (ctxt, trait) =>
                     {
                         foreach (var traitMethod in trait.Methods)
                         {
@@ -94,7 +114,10 @@ namespace AutoStep.Language.Interaction
 
                         foreach (var traitStep in trait.Steps)
                         {
+                            // Add to the set of all bound steps.
                             allBoundSteps.Add(traitStep);
+
+                            // Tell the trait step to include the component name for the $component$ placeholder.
                             traitStep.AddComponentMatch(ctxt.Name);
                         }
                     });
@@ -102,7 +125,7 @@ namespace AutoStep.Language.Interaction
 
                 if (componentEntry.Methods is object)
                 {
-                    // Do it once to update the method table...
+                    // First pass through the set of methods to to update the method table with the methods defined in the component.
                     foreach (var method in componentEntry.Methods.Values)
                     {
                         finalComponent.MethodTable.Set(method.Name, method);
@@ -111,7 +134,7 @@ namespace AutoStep.Language.Interaction
                     // ...and again to validate the call chain.
                     foreach (var method in componentEntry.Methods.Values)
                     {
-                        callChainValidator.ValidateCallChain(componentEntry.FinalComponent.SourceName, method, finalComponent.MethodTable, constants, true, messages);
+                        callChainValidator.ValidateCallChain(method, finalComponent.MethodTable, constants, true, messages);
                     }
 
                     // Finally, validate the method table to make sure there are no needs-defining methods left.
@@ -138,10 +161,11 @@ namespace AutoStep.Language.Interaction
 
                 if (componentEntry.Steps is object)
                 {
-                    // Add any methods and steps for the component itself.
+                    // Add any steps defined on the component.
                     foreach (var step in componentEntry.Steps)
                     {
-                        callChainValidator.ValidateCallChain(step.SourceName, step, finalComponent.MethodTable, constants, true, messages);
+                        // Validate the step's call chain.
+                        callChainValidator.ValidateCallChain(step, finalComponent.MethodTable, constants, true, messages);
 
                         allBoundSteps.Add(step);
                     }
@@ -150,7 +174,7 @@ namespace AutoStep.Language.Interaction
                 builtComponents[componentEntry.Name] = finalComponent;
             }
 
-            return new AutoStepInteractionGroupBuilderResult(
+            return new AutoStepInteractionSetBuilderResult(
                 messages.All(x => x.Level != CompilerMessageLevel.Error),
                 messages,
                 new AutoStepInteractionSet(constants, builtComponents, allBoundSteps));
@@ -232,12 +256,12 @@ namespace AutoStep.Language.Interaction
             foreach (var methodDef in trait.Methods)
             {
                 // Go through the call chain.
-                callChainValidator.ValidateCallChain(trait.SourceName, methodDef, methodTable, constants, false, messages);
+                callChainValidator.ValidateCallChain(methodDef, methodTable, constants, false, messages);
             }
 
             foreach (var step in trait.Steps)
             {
-                callChainValidator.ValidateCallChain(trait.SourceName, step, methodTable, constants, false, messages);
+                callChainValidator.ValidateCallChain(step, methodTable, constants, false, messages);
             }
         }
     }

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using AutoStep.Language.Test.Parser;
 using AutoStep.Elements.StepTokens;
-using static AutoStep.Language.Test.Parser.AutoStepParser;
-using AutoStep.Language.Test.Visitors;
 using AutoStep.Language.Test;
+using AutoStep.Language.Test.Parser;
+using AutoStep.Language.Test.Visitors;
 
 namespace AutoStep
 {
+    using static AutoStep.Language.Test.Parser.AutoStepParser;
+
     /// <summary>
     /// Provides a visitor for handling single-line tokenisation.
     /// </summary>

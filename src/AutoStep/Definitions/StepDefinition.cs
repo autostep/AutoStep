@@ -52,6 +52,10 @@ namespace AutoStep.Definitions
         /// <returns>True if the definition is semantically the same.</returns>
         public abstract bool IsSameDefinition(StepDefinition def);
 
+        /// <summary>
+        /// Gets the 'signature' of a step definition; i.e. a unique ID for the step definition that only this step would have.
+        /// </summary>
+        /// <returns>The signature.</returns>
         public virtual object GetSignature()
         {
             return (Type, Declaration);

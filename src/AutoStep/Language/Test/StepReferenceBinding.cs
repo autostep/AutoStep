@@ -16,6 +16,7 @@ namespace AutoStep.Language.Test
         /// </summary>
         /// <param name="def">The step definition.</param>
         /// <param name="args">Any associated arguments.</param>
+        /// <param name="placeholders">The set of replaced placeholders (key -> value).</param>
         public StepReferenceBinding(StepDefinition def, ArgumentBinding[]? args, IReadOnlyDictionary<string, string>? placeholders)
         {
             Definition = def;
@@ -44,6 +45,9 @@ namespace AutoStep.Language.Test
             }
         }
 
+        /// <summary>
+        /// Gets the set of placeholders found during binding.
+        /// </summary>
         public IReadOnlyDictionary<string, string>? Placeholders { get; }
     }
 }

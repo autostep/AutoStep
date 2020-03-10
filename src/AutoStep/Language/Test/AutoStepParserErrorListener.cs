@@ -13,7 +13,7 @@ namespace AutoStep.Language.Test
         {
         }
 
-        protected override BaseAutoStepErrorHandlingContext<AutoStepParser> GetErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e)
+        protected override BaseAutoStepErrorHandlingContext<AutoStepParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e)
         {
             return new DefaultAutoStepErrorHandling(TokenStream, recognizer, offendingSymbol, e);
         }

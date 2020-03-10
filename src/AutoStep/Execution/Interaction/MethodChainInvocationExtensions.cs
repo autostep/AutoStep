@@ -2,18 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoStep.Definitions;
 using AutoStep.Elements.Interaction;
-using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
 
 namespace AutoStep.Execution.Interaction
 {
+    /// <summary>
+    /// Provides the ability to execute the method chain defined against an <see cref="ICallChainSource"/>.
+    /// </summary>
     internal static class MethodChainInvocationExtensions
     {
-        public static async ValueTask InvokeChainAsync(this IMethodCallSource callSource, IServiceScope stepScope, MethodContext context, MethodTable methods, Stack<MethodContext>? callStack = null)
+        /// <summary>
+        /// Invokes the method chain for the <see cref="ICallChainSource"/>. Walks through each method, binding parameters and invoking the underlying code method, or
+        /// the file-defined method.
+        /// </summary>
+        /// <param name="callSource">The source of the call chain.</param>
+        /// <param name="stepScope">The current service scope.</param>
+        /// <param name="context">The current method context.</param>
+        /// <param name="methods">The known method table for the invoking component.</param>
+        /// <param name="callStack">The method call stack.</param>
+        /// <returns>A task that completes when the chain has completed.</returns>
+        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceScope stepScope, MethodContext context, MethodTable methods, Stack<MethodContext>? callStack = null)
         {
             if (callStack is null)
             {
@@ -26,8 +37,10 @@ namespace AutoStep.Execution.Interaction
             // Get the execution manager.
             var executionManager = stepScope.Resolve<IExecutionStateManager>();
 
+            // Define a new set of variables for this call.
+
             // Go through the method chain.
-            foreach (var method in callSource.MethodCallChain)
+            foreach (var method in callSource.Calls)
             {
                 // Locate this method.
                 if (methods.TryGetMethod(method.MethodName, out var foundMethod))
@@ -69,7 +82,7 @@ namespace AutoStep.Execution.Interaction
             }
         }
 
-        private static object[] BindArguments(IServiceScope scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
+        private static object?[] BindArguments(IServiceScope scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
         {
             var providedArgs = call.Arguments;
 
@@ -78,7 +91,7 @@ namespace AutoStep.Execution.Interaction
                 return Array.Empty<object>();
             }
 
-            var resultArray = new object[providedArgs.Count];
+            var resultArray = new object?[providedArgs.Count];
 
             for (var argIdx = 0; argIdx < providedArgs.Count; argIdx++)
             {
@@ -86,7 +99,7 @@ namespace AutoStep.Execution.Interaction
                 var callArg = providedArgs[argIdx];
 
                 // Bind differently depending on the provided argument type.
-                object actualValue = callArg switch
+                object? actualValue = callArg switch
                 {
                     StringMethodArgumentElement strArg => strArg.GetFullText(scope, callingContext),
                     IntMethodArgumentElement intArg => intArg.Value,

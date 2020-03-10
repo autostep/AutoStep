@@ -14,8 +14,14 @@ namespace AutoStep.Language.Interaction
 
     internal class BuiltComponent
     {
-        public string Name { get; set; }
+        public BuiltComponent(string name, MethodTable methodTable)
+        {
+            Name = name;
+            MethodTable = methodTable;
+        }
 
-        public MethodTable MethodTable { get; set; }
+        public string Name { get; }
+
+        public MethodTable MethodTable { get; }
     }
 }

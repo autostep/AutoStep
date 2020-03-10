@@ -7,51 +7,89 @@ using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction.Traits
 {
+    /// <summary>
+    /// Defines a trait reference, that defines a 'signature' for a trait.
+    /// </summary>
     [DebuggerDisplay("{DebuggerToString()}")]
     internal struct TraitRef : IEquatable<TraitRef>
     {
-        public TraitRef(NameRefElement singleComponent)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraitRef"/> struct for a single name.
+        /// </summary>
+        /// <param name="singleName">The single name.</param>
+        public TraitRef(string singleName)
         {
-            TopLevelName = singleComponent;
-            ReferencedTraits = Array.Empty<NameRefElement>();
+            TopLevelName = singleName;
+            ReferencedTraits = Array.Empty<string>();
         }
 
-        public TraitRef(NameRefElement[] sortedComponents)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraitRef"/> struct, for a multiple-name trait.
+        /// </summary>
+        /// <param name="sortedNames">A set of pre-sorted names.</param>
+        public TraitRef(IReadOnlyList<string> sortedNames)
         {
-            if (sortedComponents.Length > 1)
+            if (sortedNames.Count > 1)
             {
-                ReferencedTraits = sortedComponents;
+                ReferencedTraits = sortedNames;
                 TopLevelName = null;
             }
             else
             {
-                TopLevelName = sortedComponents[0];
-                ReferencedTraits = Array.Empty<NameRefElement>();
+                TopLevelName = sortedNames[0];
+                ReferencedTraits = Array.Empty<string>();
             }
         }
 
-        public int NumberOfReferencedTraits => ReferencedTraits.Length;
+        /// <summary>
+        /// Gets the number of referenced traits. Singular-named traits have 0 referenced traits, so the minimum
+        /// number will be 2.
+        /// </summary>
+        public int NumberOfReferencedTraits => ReferencedTraits.Count;
 
-        public NameRefElement TopLevelName { get; set; }
+        /// <summary>
+        /// Gets the top-level name for this trait. Will be null if this is a multi-named trait.
+        /// </summary>
+        public string? TopLevelName { get; }
 
-        public NameRefElement[] ReferencedTraits { get; private set; }
+        /// <summary>
+        /// Gets the set of reference traits. Will be empty if this is a single-named trait.
+        /// </summary>
+        public IReadOnlyList<string> ReferencedTraits { get; }
 
-        public string DebuggerToString()
+        public static bool operator ==(TraitRef left, TraitRef right)
         {
-            return TopLevelName?.Name ?? string.Join(" + ", ReferencedTraits.Select(n => n.Name));
+            return left.Equals(right);
         }
 
+        public static bool operator !=(TraitRef left, TraitRef right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Gets debugger content.
+        /// </summary>
+        /// <returns>The debugger text.</returns>
+        public string DebuggerToString()
+        {
+            return TopLevelName ?? string.Join(" + ", ReferencedTraits);
+        }
+
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj is TraitRef @ref && Equals(@ref);
         }
 
-        public bool Equals([AllowNull] TraitRef other)
+        /// <inheritdoc/>
+        public bool Equals(TraitRef other)
         {
-            return TopLevelName == other.TopLevelName &&
-                   ReferencedTraits.SequenceEqual(other.ReferencedTraits);
+            return TopLevelName == other.TopLevelName
+                    && ReferencedTraits.SequenceEqual(other.ReferencedTraits);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             HashCode myHash = default;
@@ -63,16 +101,6 @@ namespace AutoStep.Language.Interaction.Traits
             }
 
             return myHash.ToHashCode();
-        }
-
-        public static bool operator ==(TraitRef left, TraitRef right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(TraitRef left, TraitRef right)
-        {
-            return !(left == right);
         }
     }
 }

@@ -4,7 +4,7 @@ using AutoStep.Elements.Interaction;
 namespace AutoStep.Tests.Builders
 {
     internal class InteractionMethodCallChainBuilder<TMethodCallSource> : BaseBuilder<TMethodCallSource>
-        where TMethodCallSource : IMethodCallSource
+        where TMethodCallSource : ICallChainSource
     {
         public InteractionMethodCallChainBuilder(TMethodCallSource methodSource)
         {
@@ -13,9 +13,8 @@ namespace AutoStep.Tests.Builders
 
         public InteractionMethodCallChainBuilder<TMethodCallSource> Call(string name, int startLine, int startCol, int endLine, int endCol, Action<InteractionMethodArgumentSetBuilder> cfg = null)
         {
-            var methodCall = new MethodCallElement
+            var methodCall = new MethodCallElement(name)
             {
-                MethodName = name,
                 SourceLine = startLine,
                 StartColumn = startCol,
                 EndColumn = endCol,
@@ -29,7 +28,7 @@ namespace AutoStep.Tests.Builders
                 cfg(methodArgumentSetBuilder);
             }
 
-            Built.MethodCallChain.Add(methodCall);
+            Built.Calls.Add(methodCall);
 
             return this;
         }

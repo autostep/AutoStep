@@ -31,11 +31,11 @@ namespace AutoStep.Tests.Language.Interaction
             var messages = new List<CompilerMessage>();
 
             var validator = new DefaultCallChainValidator();
-            validator.ValidateCallChain(null, callSource, methodTable, constants, false, messages);
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 1, 7, 1, 18, "NOTACONSTANT"),
-             CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 2, 7, 2, 19, "NOTACONSTANT2")
+             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 1, 7, 1, 18, "NOTACONSTANT"),
+             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 2, 7, 2, 19, "NOTACONSTANT2")
             );
         }
 
@@ -56,10 +56,10 @@ namespace AutoStep.Tests.Language.Interaction
             var messages = new List<CompilerMessage>();
 
             var validator = new DefaultCallChainValidator();
-            validator.ValidateCallChain(null, callSource, methodTable, constants, false, messages);
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailablePermitUndefined, 2, 1, 2, 6, "methodDoesNotExist")
+             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailablePermitUndefined, 2, 1, 2, 6, "methodDoesNotExist")
             );
         }
 
@@ -80,10 +80,10 @@ namespace AutoStep.Tests.Language.Interaction
             var messages = new List<CompilerMessage>();
 
             var validator = new DefaultCallChainValidator();
-            validator.ValidateCallChain(null, callSource, methodTable, constants, true, messages);
+            validator.ValidateCallChain(callSource, methodTable, constants, true, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailable, 2, 1, 2, 6, "methodDoesNotExist")
+             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailable, 2, 1, 2, 6, "methodDoesNotExist")
             );
         }
 
@@ -109,10 +109,10 @@ namespace AutoStep.Tests.Language.Interaction
             var messages = new List<CompilerMessage>();
 
             var validator = new DefaultCallChainValidator();
-            validator.ValidateCallChain(null, callSource, methodTable, constants, true, messages);
+            validator.ValidateCallChain(callSource, methodTable, constants, true, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodRequiredButNotDefined, 1, 1, 1, 6, "", 10)
+             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodRequiredButNotDefined, 1, 1, 1, 6, "", 10)
             );
         }
 
@@ -126,26 +126,26 @@ namespace AutoStep.Tests.Language.Interaction
             public override int ArgumentCount { get; }
         }
 
-        private class CustomCallSource : IMethodCallSource
+        private class CustomCallSource : ICallChainSource
         {
-            private readonly InteractionMethodChainVariables variableSet;
+            private readonly CallChainCompileTimeVariables variableSet;
 
-            public CustomCallSource(InteractionMethodChainVariables variableSet)
+            public CustomCallSource(CallChainCompileTimeVariables variableSet)
             {
                 this.variableSet = variableSet;
             }
 
             public string SourceName => "custom";
 
-            public List<MethodCallElement> MethodCallChain { get; } = new List<MethodCallElement>();
+            public List<MethodCallElement> Calls { get; } = new List<MethodCallElement>();
 
-            public InteractionMethodChainVariables GetInitialMethodChainVariables()
+            public CallChainCompileTimeVariables GetCompileTimeChainVariables()
             {
                 return variableSet;
             }
         }
 
-        private class FailingVariableSet : InteractionMethodChainVariables
+        private class FailingVariableSet : CallChainCompileTimeVariables
         {
             public override CompilerMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
             {
@@ -158,7 +158,7 @@ namespace AutoStep.Tests.Language.Interaction
             }
         }
 
-        private class PassingVariableSet : InteractionMethodChainVariables
+        private class PassingVariableSet : CallChainCompileTimeVariables
         {
             public override CompilerMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
             {

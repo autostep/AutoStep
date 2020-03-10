@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Language.Interaction
                 )
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -143,7 +143,7 @@ namespace AutoStep.Tests.Language.Interaction
                 )
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -192,7 +192,7 @@ namespace AutoStep.Tests.Language.Interaction
                 .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -215,7 +215,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             button.MethodTable.TryGetMethod("anotherMethod", out var foundAnotherMethod).Should().BeTrue();
             foundAnotherMethod.Should().BeOfType<FileDefinedInteractionMethod>()
-                                       .Subject.MethodDefinition.MethodCallChain[0].MethodName.Should().Be("click");
+                                       .Subject.MethodDefinition.Calls[0].MethodName.Should().Be("click");
         }
         
         [Fact]
@@ -241,7 +241,7 @@ namespace AutoStep.Tests.Language.Interaction
                 .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -264,7 +264,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             button.MethodTable.TryGetMethod("anotherMethod", out var foundAnotherMethod).Should().BeTrue();
             foundAnotherMethod.Should().BeOfType<FileDefinedInteractionMethod>()
-                                       .Subject.MethodDefinition.MethodCallChain[0].MethodName.Should().Be("click");
+                                       .Subject.MethodDefinition.Calls[0].MethodName.Should().Be("click");
         }
 
         [Fact]
@@ -291,7 +291,7 @@ namespace AutoStep.Tests.Language.Interaction
                 .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -322,7 +322,7 @@ namespace AutoStep.Tests.Language.Interaction
                 .Inherits("button", 19, 1)
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 
@@ -373,7 +373,7 @@ namespace AutoStep.Tests.Language.Interaction
                 // We haven't defined the locateNamed method, so I'm expecting an error.
             );
 
-            setBuilder.AddInteractionFile(null, file.Built);
+            setBuilder.AddInteractionFile(file.Built);
 
             var result = setBuilder.Build(rootMethodTable);
 

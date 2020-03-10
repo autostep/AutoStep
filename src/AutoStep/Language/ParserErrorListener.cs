@@ -8,8 +8,9 @@ namespace AutoStep.Language
     /// <summary>
     /// Listener attached to the AutoStep parser that generates <see cref="CompilerMessage"/> items from any raised syntax errors.
     /// </summary>
+    /// <typeparam name="TParser">The underlying ANTLR Parser implementation that this listener attaches to.</typeparam>
     internal abstract class ParserErrorListener<TParser> : BaseErrorListener
-        where TParser : Antlr4.Runtime.Parser
+        where TParser : Parser
     {
         private readonly string? sourceName;
         private readonly List<CompilerMessage> messages;
@@ -24,10 +25,12 @@ namespace AutoStep.Language
         {
             this.sourceName = sourceName;
             this.messages = new List<CompilerMessage>();
-
             this.TokenStream = tokenStream;
         }
 
+        /// <summary>
+        /// Gets the token stream.
+        /// </summary>
         protected ITokenStream TokenStream { get; }
 
         /// <summary>
@@ -35,12 +38,19 @@ namespace AutoStep.Language
         /// </summary>
         public IReadOnlyList<CompilerMessage> ParserErrors => messages;
 
-        protected abstract BaseAutoStepErrorHandlingContext<TParser> GetErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e);
+        /// <summary>
+        /// A derived implementation should create a new appopriate error handling context when this method is called.
+        /// </summary>
+        /// <param name="recognizer">The recognizer.</param>
+        /// <param name="offendingSymbol">The offending symbol.</param>
+        /// <param name="e">The recognition exception.</param>
+        /// <returns>An error context.</returns>
+        protected abstract BaseAutoStepErrorHandlingContext<TParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e);
 
         /// <inheritdoc/>
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            var ctxt = GetErrorContext(recognizer, offendingSymbol, e);
+            var ctxt = CreateErrorContext(recognizer, offendingSymbol, e);
 
             ctxt.DoErrorMatching();
 

@@ -23,13 +23,13 @@ namespace AutoStep.Language.Test
     /// </remarks>
     public class AutoStepCompiler : IAutoStepCompiler
     {
-        private readonly CompilerOptions options;
+        private readonly TestCompilerOptions options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
         public AutoStepCompiler()
-            : this(CompilerOptions.Default)
+            : this(TestCompilerOptions.Default)
         {
         }
 
@@ -37,7 +37,7 @@ namespace AutoStep.Language.Test
         /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
-        public AutoStepCompiler(CompilerOptions options)
+        public AutoStepCompiler(TestCompilerOptions options)
         {
             this.options = options;
         }
@@ -212,7 +212,7 @@ namespace AutoStep.Language.Test
             }
 
             // Write to the tracer if diagnostics are on.
-            if (options.HasFlag(CompilerOptions.EnableDiagnostics))
+            if (options.HasFlag(TestCompilerOptions.EnableDiagnostics))
             {
                 logger.LogDebug(
                     CompilerLogMessages.AutoStepCompiler_TokenStreamForSource,

@@ -10,24 +10,22 @@ namespace AutoStep.Tests.Builders
 
         public InteractionTraitBuilder(string name, int line, int column)
         {
-            Built = new TraitDefinitionElement();
-            Built.Name = Built.Id = name;
+            Built = new TraitDefinitionElement(name, new List<NameRefElement> { new NameRefElement(name) });
             Built.SourceLine = line;
             Built.StartColumn = column;
         }
 
         public InteractionTraitBuilder NamePart(string name, int column)
         {
-            nameParts.Add(new NameRefElement
+            nameParts.Add(new NameRefElement(name)
             {
-                Name = name,
                 SourceLine = Built.SourceLine,
                 StartColumn = column,
-                EndColumn = column + name.Length - 1,                
+                EndColumn = column + name.Length - 1,
                 EndLine = Built.SourceLine,
             });
 
-            Built.SetNameParts(nameParts.ToArray());
+            Built.ReplaceNameParts(nameParts);
 
             return this;
         }

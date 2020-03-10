@@ -45,12 +45,11 @@ namespace AutoStep.Tests.Builders
 
         public void Variable(string varName, int startColumn)
         {
-            Built.Indexer = new VariableRefMethodArgumentElement
+            Built.Indexer = new VariableRefMethodArgumentElement(varName)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = startColumn,
                 EndLine = Built.SourceLine,
-                VariableName = varName,
                 EndColumn = startColumn + varName.Length - 1
             };
         }

@@ -18,12 +18,10 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override ComponentDefinitionElement VisitComponentDefinition([NotNull] ComponentDefinitionContext context)
         {
-            Result = new ComponentDefinitionElement();
-            Result.AddLineInfo(context);
-
             var componentName = context.NAME_REF();
 
-            Result.Id = Result.Name = componentName.GetText();
+            Result = new ComponentDefinitionElement(componentName.GetText());
+            Result.AddLineInfo(context);
 
             VisitChildren(context);
 
@@ -62,10 +60,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             if (inherits is object)
             {
-                var inheritsElement = new NameRefElement
-                {
-                    Name = inherits.GetText(),
-                }.AddPositionalLineInfo(context);
+                var inheritsElement = new NameRefElement(inherits.GetText()).AddPositionalLineInfo(inherits);
 
                 Result!.Inherits = inheritsElement;
             }
@@ -75,7 +70,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override ComponentDefinitionElement VisitComponentTraits(ComponentTraitsContext context)
         {
-            Result!.Traits.AddRange(context.NAME_REF().Select(n => new NameRefElement { Name = n.GetText() }.AddPositionalLineInfo(n)));
+            Result!.Traits.AddRange(context.NAME_REF().Select(n => new NameRefElement(n.GetText()).AddPositionalLineInfo(n)));
 
             return Result;
         }

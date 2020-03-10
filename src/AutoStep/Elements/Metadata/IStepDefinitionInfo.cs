@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
-using AutoStep.Elements.StepTokens;
+﻿using System.Collections.Generic;
 
 namespace AutoStep.Elements.Metadata
 {

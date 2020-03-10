@@ -6,7 +6,7 @@ namespace AutoStep.Execution
     public class VariableSetBase<TValue>
         where TValue : class
     {
-        private readonly Dictionary<string, TValue> valuesStore = new Dictionary<string, TValue>();
+        private readonly Dictionary<string, TValue?> valuesStore = new Dictionary<string, TValue?>();
         private readonly bool isReadOnly;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace AutoStep.Execution
         /// <summary>
         /// Gets the set of known variables.
         /// </summary>
-        public IReadOnlyDictionary<string, TValue> Variables => valuesStore;
+        public IReadOnlyDictionary<string, TValue?> Variables => valuesStore;
 
         /// <summary>
         /// Get the value of a variable. If the variable is not set, an empty string will be returned.
@@ -43,7 +43,7 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="name">The name of the variable.</param>
         /// <param name="value">The value to set.</param>
-        public void Set(string name, TValue value)
+        public void Set(string name, TValue? value)
         {
             if (isReadOnly)
             {

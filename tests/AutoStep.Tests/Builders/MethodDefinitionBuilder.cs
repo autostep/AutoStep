@@ -16,13 +16,12 @@ namespace AutoStep.Tests.Builders
 
         public MethodDefinitionBuilder Argument(string name, int line, int column)
         {
-            Built.Arguments.Add(new MethodDefinitionArgumentElement
+            Built.Arguments.Add(new MethodDefinitionArgumentElement(name)
             {
                 SourceLine = line,
                 StartColumn = column,
                 EndLine = line,
-                EndColumn = column + name.Length - 1,
-                Name = name
+                EndColumn = column + name.Length - 1
             });
 
             return this;

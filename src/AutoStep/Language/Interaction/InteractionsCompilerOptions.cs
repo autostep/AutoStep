@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace AutoStep.Language.Test
+namespace AutoStep.Language.Interaction
 {
     /// <summary>
-    /// The available Compiler Options.
+    /// Defines the available interaction compilation options.
     /// </summary>
     [Flags]
-    public enum TestCompilerOptions
+    public enum InteractionsCompilerOptions
     {
         /// <summary>
-        /// Default compiler behaviour.
+        /// Default behaviour.
         /// </summary>
         Default,
 

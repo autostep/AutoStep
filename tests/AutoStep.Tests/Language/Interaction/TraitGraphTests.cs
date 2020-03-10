@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoStep.Elements.Interaction;
@@ -31,10 +32,12 @@ namespace AutoStep.Tests.Language.Interaction
             traitGraph.AddOrExtendTrait(traitD);
             traitGraph.AddOrExtendTrait(traitBD);
 
-            // Find all traits.
-            var result = traitGraph.MatchTraits(GetNameParts(new string[] { "A", "D", "C" }));
+            var traits = new List<TraitDefinitionElement>();
 
-            result.OrderedTraits.Should().Equal(traitAD, traitD, traitC, traitA);
+            // Find all traits.
+            traitGraph.SearchTraits(new string[] { "A", "D", "C" }, traits, (set, el) => set.Add(el));
+
+            traits.Should().Equal(traitA, traitC, traitD, traitAD);
         }
 
         [Fact]
@@ -77,12 +80,15 @@ namespace AutoStep.Tests.Language.Interaction
             traitGraph.AddOrExtendTrait(traitABCD);
             traitGraph.AddOrExtendTrait(traitABCE);
 
-            // Find all traits.
-            var result = traitGraph.MatchTraits(GetNameParts(new string[] { "A", "B", "C", "E", "F" }));
+            var traits = new List<TraitDefinitionElement>();
 
-            result.OrderedTraits.Should().Equal(traitABCE, traitABC, 
-                                                traitEF, traitCE, traitAB, 
-                                                traitF, traitE, traitC, traitB, traitA);
+            // Find all traits.
+            traitGraph.SearchTraits(new string[] { "A", "B", "C", "E", "F" }, traits, (set, el) => set.Add(el));
+            
+            traits.Should().Equal(traitA, traitB, traitC, traitE, traitF,
+                                  traitAB, traitCE, traitEF,
+                                  traitABC, traitABCE
+                                  );
         }
 
         [Fact]
@@ -124,11 +130,13 @@ namespace AutoStep.Tests.Language.Interaction
             traitGraph.AddOrExtendTrait(traitCDE);
             traitGraph.AddOrExtendTrait(traitABCD);
             traitGraph.AddOrExtendTrait(traitABCE);
+            
+            var traits = new List<TraitDefinitionElement>();
 
             // Find all traits.
-            var result = traitGraph.MatchTraits(GetNameParts(new string[] { "A", "B" }));
+            traitGraph.SearchTraits(new string[] { "A", "B" }, traits, (set, el) => set.Add(el));
 
-            result.OrderedTraits.Should().Equal(traitAB, traitB, traitA);
+            traits.Should().Equal(traitA, traitB, traitAB);
         }
 
 
@@ -184,25 +192,25 @@ namespace AutoStep.Tests.Language.Interaction
             mainGraph.Merge(traitGraph1);
             mainGraph.Merge(traitGraph2);
 
-            // Find all traits.
-            var result = mainGraph.MatchTraits(GetNameParts(new string[] { "A", "B", "C", "E", "F" }));
+            var traits = new List<TraitDefinitionElement>();
 
-            result.OrderedTraits.Should().Equal(traitABCE, traitABC,
-                                                traitEF, traitCE, traitAB,
-                                                traitF, traitE, traitC, traitB, traitA);
+            // Find all traits.
+            mainGraph.SearchTraits(new string[] { "A", "B", "C", "E", "F" }, traits, (set, el) => set.Add(el));
+
+            traits.Should().Equal(traitA, traitB, traitC, traitE, traitF,
+                                  traitAB, traitCE, traitEF,
+                                  traitABC, traitABCE);
+        }
+        
+        private TraitDefinitionElement CreateTrait(params string[] nameParts)
+        {
+            var newElement = new TraitDefinitionElement(string.Join(" + ", nameParts), GetNameParts(nameParts));
+            return newElement;
         }
 
         private NameRefElement[] GetNameParts(params string[] nameParts)
         {
-            return nameParts.Select(n => new NameRefElement { Name = n }).ToArray();
-        }
-
-        private TraitDefinitionElement CreateTrait(params string[] nameParts)
-        {
-            var newElement = new TraitDefinitionElement();
-            newElement.Name = string.Join(" + ", nameParts);
-            newElement.SetNameParts(GetNameParts(nameParts));
-            return newElement;
+            return nameParts.Select(n => new NameRefElement(n)).ToArray();
         }
     }
 }

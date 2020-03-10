@@ -8,19 +8,19 @@ using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Elements.Interaction
 {
-    public class InteractionStepDefinitionElement : StepDefinitionElement, IMethodCallSource
+    public class InteractionStepDefinitionElement : StepDefinitionElement, ICallChainSource
     {
         private readonly HashSet<string> allComponents = new HashSet<string>();
 
-        public List<MethodCallElement> MethodCallChain { get; } = new List<MethodCallElement>();
+        public List<MethodCallElement> Calls { get; } = new List<MethodCallElement>();
 
         public string? SourceName { get; set; }
 
         public string? FixedComponentName { get; set; }
 
-        public InteractionMethodChainVariables GetInitialMethodChainVariables()
+        public CallChainCompileTimeVariables GetCompileTimeChainVariables()
         {
-            var variables = new InteractionMethodChainVariables();
+            var variables = new CallChainCompileTimeVariables();
 
             foreach (var item in Arguments)
             {

@@ -18,26 +18,15 @@ namespace AutoStep.Language.Interaction.Visitors
 
         public override TraitDefinitionElement VisitTraitDefinition([NotNull] TraitDefinitionContext context)
         {
-            Result = new TraitDefinitionElement();
-
-            Result.AddLineInfo(context);
-
             var refList = context.traitRefList();
 
-            // Use TokenStream.GetText to ensure we capture any whitespace.
-            Result.Name = Result.Id = TokenStream.GetText(refList);
             var actualRefs = new HashSet<NameRefElement>();
 
             foreach (var traitRef in refList.NAME_REF())
             {
-                var traitNamePart = new NameRefElement
-                {
-                    Name = traitRef.GetText(),
-                };
+                var traitNamePart = new NameRefElement(traitRef.GetText());
 
                 traitNamePart.AddPositionalLineInfo(traitRef);
-
-                var traitText = traitRef.GetText();
 
                 if (actualRefs.Contains(traitNamePart))
                 {
@@ -50,7 +39,9 @@ namespace AutoStep.Language.Interaction.Visitors
                 }
             }
 
-            Result.SetNameParts(actualRefs.ToArray());
+            // Use TokenStream.GetText to ensure we capture any whitespace.
+            Result = new TraitDefinitionElement(TokenStream.GetText(refList), actualRefs.ToList());
+            Result.AddLineInfo(context);
 
             VisitChildren(context);
 

@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
-
-namespace AutoStep.Elements.Interaction
+﻿namespace AutoStep.Elements.Interaction
 {
-
+    /// <summary>
+    /// Defines an array variable reference.
+    /// </summary>
     public class VariableArrayRefMethodArgument : MethodArgumentElement
     {
-        public string VariableName { get; set; }
+        /// <summary>
+        /// Gets or sets the variable name.
+        /// </summary>
+        public string? VariableName { get; set; }
 
-        public MethodArgumentElement Indexer { get; set; }
+        /// <summary>
+        /// Gets or sets the indexer argument.
+        /// </summary>
+        public MethodArgumentElement? Indexer { get; set; }
     }
 }

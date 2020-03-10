@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Parser;
 
@@ -63,8 +60,7 @@ namespace AutoStep.Language.Interaction.Visitors
                     continue;
                 }
 
-                var defArg = new MethodDefinitionArgumentElement().AddPositionalLineInfo(argName);
-                defArg.Name = argName.GetText();
+                var defArg = new MethodDefinitionArgumentElement(argName.GetText()).AddPositionalLineInfo(argName);
 
                 Result!.Arguments.Add(defArg);
             }
