@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoStep;
-using AutoStep.Elements;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {
@@ -27,7 +27,8 @@ namespace AutoStep.Tests.Builders
                     HeaderName = item.headerName,
                     SourceLine = lineNo,
                     StartColumn = item.startColumn,
-                    EndColumn = item.endColumn
+                    EndColumn = item.endColumn,                    
+                    EndLine = lineNo,
                 });
             }
 

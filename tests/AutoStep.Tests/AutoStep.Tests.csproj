@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Language\FullFiles\FullInteractionsFile.txt" />
+    <None Remove="Language\FullFiles\SingleScenarioSimple.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Language\FullFiles\SingleScenarioSimple.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.0" />
     <PackageReference Include="FormatWith" Version="2.2.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
@@ -25,11 +34,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AutoStep\AutoStep.csproj" />
-    <ProjectReference Include="..\AutoStep.Compiler.Tests.DefinedSteps\AutoStep.Compiler.Tests.DefinedSteps.csproj" />
+    <ProjectReference Include="..\AutoStep.Language.Tests.DefinedSteps\AutoStep.Language.Tests.DefinedSteps.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Compiler\FullFiles\Files.Designer.cs">
+    <Resource Include="Language\FullFiles\FullInteractionsFile.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Language\FullFiles\Files.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Files.resx</DependentUpon>
@@ -37,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Compiler\FullFiles\Files.resx">
+    <EmbeddedResource Update="Language\FullFiles\Files.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Files.Designer.cs</LastGenOutput>
     </EmbeddedResource>

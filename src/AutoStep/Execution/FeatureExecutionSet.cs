@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Elements;
 using AutoStep.Elements.Metadata;
+using AutoStep.Elements.Test;
 using AutoStep.Projects;
 using Microsoft.Extensions.Logging;
 
@@ -58,7 +58,7 @@ namespace AutoStep.Execution
 
         private void Populate()
         {
-            foreach (var file in project.AllFiles.Values)
+            foreach (var file in project.AllTestFiles.Values)
             {
                 if (filter.MatchesFile(file))
                 {
@@ -71,7 +71,7 @@ namespace AutoStep.Execution
             }
         }
 
-        private void AddFile(ProjectFile file)
+        private void AddFile(ProjectTestFile file)
         {
             var lastLinkResult = file.LastLinkResult;
             var lastCompile = file.LastCompileResult;

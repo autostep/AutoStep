@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AutoStep.Compiler;
-using AutoStep.Elements;
+using AutoStep.Language;
 using AutoStep.Projects;
+using AutoStep.Elements.Test;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Utils
 {
     public static class ProjectFileExtensions
     {
-        public static void SetFileReadyForRunTest(this ProjectFile projFile, FileElement builtFile)
+        public static void SetFileReadyForRunTest(this ProjectTestFile projFile, FileElement builtFile)
         {
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
-            projFile.UpdateLastLinkResult(new LinkResult(true, Enumerable.Empty<CompilerMessage>(), output: builtFile));
+            projFile.UpdateLastLinkResult(new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), output: builtFile));
         }
     }
 }

@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
 using AutoStep.Definitions;
+using AutoStep.Definitions.Interaction;
+using AutoStep.Language;
+using AutoStep.Language.Interaction;
+using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Test;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -19,19 +23,31 @@ namespace AutoStep.Projects
         private readonly IAutoStepLinker linker;
         private readonly AutoStepLineTokeniser lineTokeniser;
 
+        private readonly IAutoStepInteractionCompiler? interactionCompiler;
+        private readonly ICallChainValidator interactionCallChainValidator;
+        private InteractionStepDefinitionSource? interactionSteps;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
         /// </summary>
         /// <param name="project">The project to work on.</param>
         /// <param name="compiler">The compiler implementation to use.</param>
         /// <param name="linker">The linker implementation to use.</param>
-        public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker)
+        /// <param name="interactionCompiler">The interaction compiler.</param>
+        public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker, IAutoStepInteractionCompiler? interactionCompiler = null)
         {
             this.project = project ?? throw new ArgumentNullException(nameof(project));
             this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
+            this.interactionCompiler = interactionCompiler;
+            this.interactionCallChainValidator = new DefaultCallChainValidator();
             this.lineTokeniser = new AutoStepLineTokeniser(linker);
         }
+
+        /// <summary>
+        /// Gets the global interactions configuration, that allows the global root method table to be manipulated.
+        /// </summary>
+        public IInteractionsConfiguration Interactions { get; } = new InteractionsConfiguration();
 
         /// <summary>
         /// Creates a default project compiler with the normal compiler and linker settings.
@@ -40,8 +56,8 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateDefault(Project project)
         {
-            var compiler = new AutoStepCompiler(CompilerOptions.Default);
-            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler));
+            var compiler = new AutoStepCompiler(TestCompilerOptions.Default);
+            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler), new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics));
         }
 
         /// <summary>
@@ -62,17 +78,30 @@ namespace AutoStep.Projects
         /// <param name="loggerFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
         public async Task<ProjectCompilerResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
-            var allMessages = new List<CompilerMessage>();
+            var allMessages = new List<LanguageOperationMessage>();
 
+            // Compile the interaction files.
+            await CompileInteractionFilesAsync(loggerFactory, allMessages, cancelToken).ConfigureAwait(false);
+
+            // Compile the test files.
+            await CompileTestFilesAsync(loggerFactory, allMessages, cancelToken).ConfigureAwait(false);
+
+            // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file
+            // messages and report them at once.
+            return new ProjectCompilerResult(true, allMessages, project);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
+        private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
+        {
             // This method will go through all the autostep files in the project that match the filter and:
             //  - Verify that the built files are later than the source file last-modify time.
             //  - Update the project files with the built content.
             //  - Report any errors in that compilation.
             //  - Each file in the project will have its 'last' FileCompilerResult stored against it.
-            foreach (var projectFile in project.AllFiles)
+            foreach (var projectFile in project.AllTestFiles)
             {
                 cancelToken.ThrowIfCancellationRequested();
 
@@ -86,30 +115,106 @@ namespace AutoStep.Projects
                     // Add as a new step definition source to the linker if the file defines any step definitions.
                     if (file.LastCompileTime < file.ContentSource.GetLastContentModifyTime())
                     {
-                        var fileResult = await DoProjectFileCompile(file, loggerFactory, cancelToken).ConfigureAwait(false);
+                        var fileResult = await DoProjectTestFileCompile(file, loggerFactory, cancelToken).ConfigureAwait(false);
 
                         allMessages.AddRange(fileResult.Messages);
                     }
                 }
                 catch (IOException ex)
                 {
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
                 }
                 catch (Exception ex)
                 {
                     // Severe enough error occurred inside the compilation process that we couldn't convert into
                     // a compiler message internally, and wasn't a more specific Exception we can catch.
                     // Add a catch all compilation error.
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
+        private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
+        {
+            if (interactionCompiler is null && project.AllInteractionFiles.Count > 0)
+            {
+                throw new InvalidOperationException(ProjectCompilerMessages.MissingInteractionCompiler);
+            }
+
+            var fileWasCompiled = false;
+
+            // This method will go through all the interaction files (filters not considered).
+            // If any of them need re-compiling, we will do so, and then regenerate the interaction set and update the
+            // step definition source.
+            foreach (var projectFile in project.AllInteractionFiles)
+            {
+                cancelToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var file = projectFile.Value;
+
+                    // For each file.
+                    // Compile.
+                    // Add the result of the compilation to the ProjectFile.
+                    // Add as a new step definition source to the linker if the file defines any step definitions.
+                    if (file.LastCompileTime < file.ContentSource.GetLastContentModifyTime())
+                    {
+                        var compileResult = await interactionCompiler!.CompileInteractionsAsync(file.ContentSource, loggerFactory, cancelToken).ConfigureAwait(false);
+
+                        fileWasCompiled = true;
+
+                        file.UpdateLastCompileResult(compileResult);
+
+                        allMessages.AddRange(compileResult.Messages);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
+                }
+                catch (Exception ex)
+                {
+                    // Severe enough error occurred inside the compilation process that we couldn't convert into
+                    // a compiler message internally, and wasn't a more specific Exception we can catch.
+                    // Add a catch all compilation error.
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
                 }
             }
 
-            // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file
-            // messages and report them at once.
-            return new ProjectCompilerResult(true, allMessages, project);
+            if (fileWasCompiled)
+            {
+                // Regenerate the interaction set.
+                var interactionSetBuilder = new AutoStepInteractionSetBuilder(interactionCallChainValidator);
+
+                foreach (var projectFile in project.AllInteractionFiles)
+                {
+                    if (projectFile.Value.LastCompileResult?.Output is object)
+                    {
+                        interactionSetBuilder.AddInteractionFile(projectFile.Value.LastCompileResult.Output);
+                    }
+                }
+
+                var setBuild = interactionSetBuilder.Build(Interactions);
+
+                allMessages.AddRange(setBuild.Messages);
+
+                if (setBuild.Output is object)
+                {
+                    if (interactionSteps is null)
+                    {
+                        interactionSteps = new InteractionStepDefinitionSource();
+                    }
+
+                    interactionSteps.UpdateInteractionSet(setBuild.Output);
+
+                    linker.AddOrUpdateStepDefinitionSource(interactionSteps);
+                }
+            }
         }
 
-        private async Task<FileCompilerResult> DoProjectFileCompile(ProjectFile file, ILoggerFactory loggerFactory, CancellationToken cancelToken)
+        private async Task<FileCompilerResult> DoProjectTestFileCompile(ProjectTestFile file, ILoggerFactory loggerFactory, CancellationToken cancelToken)
         {
             var compileResult = await compiler.CompileAsync(file.ContentSource, loggerFactory, cancelToken).ConfigureAwait(false);
 
@@ -158,13 +263,13 @@ namespace AutoStep.Projects
         /// <returns>The overall project link result.</returns>
         public ProjectCompilerResult Link(CancellationToken cancelToken = default)
         {
-            var allMessages = new List<CompilerMessage>();
+            var allMessages = new List<LanguageOperationMessage>();
 
             // This method will go through all the autostep files in the project and:
             //  - Link if needed.
             //  - Report any errors in the link.
             //  - Each file in the project will have its 'last' LinkResult stored against it.
-            foreach (var projectFile in project.AllFiles)
+            foreach (var projectFile in project.AllTestFiles)
             {
                 cancelToken.ThrowIfCancellationRequested();
 
@@ -196,7 +301,7 @@ namespace AutoStep.Projects
             return new ProjectCompilerResult(true, allMessages, project);
         }
 
-        private static bool AnyLinkerDependenciesUpdated(ProjectFile file)
+        private static bool AnyLinkerDependenciesUpdated(ProjectTestFile file)
         {
             if (file.LinkerDependencies is null)
             {
@@ -228,6 +333,13 @@ namespace AutoStep.Projects
         public LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
         {
             return lineTokeniser.Tokenise(line, lastTokeniserState);
+        }
+
+        private class InteractionsConfiguration : IInteractionsConfiguration
+        {
+            public MethodTable RootMethodTable { get; } = new MethodTable();
+
+            public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }
     }
 }

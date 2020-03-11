@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Language.Interaction;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -11,6 +12,11 @@ namespace AutoStep.Projects
     /// </summary>
     public interface IProjectCompiler
     {
+        /// <summary>
+        /// Gets the interaction configuration, that allows the root set of methods and constants to be defined.
+        /// </summary>
+        IInteractionsConfiguration Interactions { get; }
+
         /// <summary>
         /// Add a static step definition source (i.e. one that cannot change after it is registered).
         /// </summary>

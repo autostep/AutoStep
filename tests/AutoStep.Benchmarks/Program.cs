@@ -8,6 +8,13 @@ namespace AutoStep.Benchmarks
     {
         static void Main(string[] args)
         {
+            //var bench = new TraitGraphBenchmarks();
+            ////bench.Complexity = 16;
+
+            //bench.Setup();
+
+            //bench.FindInGraph();
+
             new BenchmarkSwitcher(AllBenchmarks).Run(args, new BenchmarkConfig());
         }
 
@@ -15,7 +22,8 @@ namespace AutoStep.Benchmarks
         {
             typeof(FullFileBenchmark),
             typeof(DefinitionParsingBenchmark),
-            typeof(MatchingTreeBenchmark)
+            typeof(MatchingTreeBenchmark),
+            typeof(TraitGraphBenchmarks)
         };
     }
 }

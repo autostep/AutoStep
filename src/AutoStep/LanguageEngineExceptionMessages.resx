@@ -120,4 +120,13 @@
   <data name="AntlrRulesDoNotMatchExpectation" xml:space="preserve">
     <value>The known Antlr Parser Rules should prevent the compilation system reaching this point. </value>
   </data>
+  <data name="InteractionConstantSet_ConstantNameRequired" xml:space="preserve">
+    <value>Constant name must be provided.</value>
+  </data>
+  <data name="InteractionConstantSet_ConstantNamesMustBeUpperCase" xml:space="preserve">
+    <value>Constant names must be entirely upper-case, e.g. TAB, ESCAPE.</value>
+  </data>
+  <data name="InteractionConstantSet_ConstantNotAvailable" xml:space="preserve">
+    <value>Specified constant does not exist in the set.</value>
+  </data>
 </root>

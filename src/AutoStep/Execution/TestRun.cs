@@ -81,11 +81,11 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> Execute(Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(Action<IServicesBuilder>? serviceRegistration = null)
         {
             using var nullLogger = new LoggerFactory();
 
-            return await Execute(nullLogger, serviceRegistration).ConfigureAwait(false);
+            return await ExecuteAsync(nullLogger, serviceRegistration).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace AutoStep.Execution
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> Execute(ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration = null)
         {
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);

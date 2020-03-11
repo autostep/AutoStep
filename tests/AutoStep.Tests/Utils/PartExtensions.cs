@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AutoStep.Compiler;
 using AutoStep.Elements.Parts;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Utils
 {

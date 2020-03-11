@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using AutoStep.Compiler;
-using AutoStep.Compiler.Matching;
-using AutoStep.Definitions;
 using AutoStep.Elements.StepTokens;
 
 namespace AutoStep.Elements.Parts
@@ -13,13 +8,17 @@ namespace AutoStep.Elements.Parts
     /// </summary>
     internal class WordDefinitionPart : DefinitionPart
     {
+        private readonly bool skipWhiteSpace;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WordDefinitionPart"/> class.
         /// </summary>
         /// <param name="text">The text of the part.</param>
-        public WordDefinitionPart(string text)
+        /// <param name="skipWhiteSpace">Indicates whether whitespace characters should be skipped when matching.</param>
+        public WordDefinitionPart(string text, bool skipWhiteSpace = false)
             : base(text)
         {
+            this.skipWhiteSpace = skipWhiteSpace;
         }
 
         /// <inheritdoc/>
@@ -32,16 +31,24 @@ namespace AutoStep.Elements.Parts
             var currentPartSpan = originalPartSpan;
             var currentPart = currentPartSpan[0];
             var refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
-            int consumedTokens = 1;
+            int consumedTokens = 0;
             int matchedLength = 0;
 
             // While we have some text left in this part.
             while (!defTextSpan.IsEmpty)
             {
-                // This word definition is bigger than the matching text then we may need to consume
-                // multiple parts.
-                if (defTextSpan.Length > refTextSpan.Length)
+                // Do we need to skip any whitespace in the definition text? This may happen when parts are defined
+                // manually, or from interaction component names.
+                if (skipWhiteSpace && char.IsWhiteSpace(defTextSpan[0]))
                 {
+                    // Move past it (but still say we matched it).
+                    defTextSpan = defTextSpan.Slice(1);
+                    matchedLength++;
+                }
+                else if (defTextSpan.Length > refTextSpan.Length)
+                {
+                    // This word definition is bigger than the matching text; we may need to consume
+                    // multiple parts.
                     if (defTextSpan.StartsWith(refTextSpan, StringComparison.CurrentCulture))
                     {
                         matchedLength += refTextSpan.Length;
@@ -55,6 +62,8 @@ namespace AutoStep.Elements.Parts
 
                         if (currentPartSpan.IsEmpty)
                         {
+                            consumedTokens++;
+
                             // Out of reference parts; suggests a partial match on this part.
                             return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                         }
@@ -82,8 +91,13 @@ namespace AutoStep.Elements.Parts
                     // This tells us how many characters matched.
                     matchedLength += searchedCharacters;
 
-                    // Move the part span along.
-                    currentPartSpan = currentPartSpan.Slice(1);
+                    if (searchedCharacters > 0)
+                    {
+                        consumedTokens++;
+
+                        // Move the part span along.
+                        currentPartSpan = currentPartSpan.Slice(1);
+                    }
 
                     return new StepReferenceMatchResult(matchedLength, refTextSpan.Length == searchedCharacters, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                 }

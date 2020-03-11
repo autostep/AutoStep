@@ -132,4 +132,13 @@
   <data name="ClassStepDefinitionSource_TypeAlreadyProvided" xml:space="preserve">
     <value>Provided type '{0}' has already been added.</value>
   </data>
+  <data name="DefinedInteractionMethod_CannotCastArgument" xml:space="preserve">
+    <value>Cannot use provided value '{0}' as an argument to {1}. Cannot cast to expected type {2}.</value>
+  </data>
+  <data name="DefinedInteractionMethod_CannotConvertArgument" xml:space="preserve">
+    <value>Cannot use provided value '{0}' as an argument to {1}. Cannot convert to {2}.</value>
+  </data>
+  <data name="InteractionMethod_InvokeNotImplemented" xml:space="preserve">
+    <value>Registered Interaction Method '{0}' has not been implemented.</value>
+  </data>
 </root>

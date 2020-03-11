@@ -14,7 +14,7 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="file">The project file.</param>
         /// <returns>True to include the file, false otherwise.</returns>
-        bool MatchesFile(ProjectFile file);
+        bool MatchesFile(ProjectTestFile file);
 
         /// <summary>
         /// Called to check if a feature should be included in the test. Use this to filter on feature name/tags.
@@ -22,7 +22,7 @@ namespace AutoStep.Execution
         /// <param name="file">The project file.</param>
         /// <param name="feature">The feature metadata.</param>
         /// <returns>True to include the feature, false otherwise.</returns>
-        bool MatchesFeature(ProjectFile file, IFeatureInfo feature);
+        bool MatchesFeature(ProjectTestFile file, IFeatureInfo feature);
 
         /// <summary>
         /// Called to check if a scenario/example pair should be included in the test. Use this to filter on scenario or example tags.

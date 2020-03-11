@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AutoStep.Compiler;
 using AutoStep.Elements.Parts;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
@@ -9,6 +8,7 @@ using AutoStep.Tests.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Execution
 {

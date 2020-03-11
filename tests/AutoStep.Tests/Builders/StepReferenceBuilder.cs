@@ -1,6 +1,6 @@
 ﻿using System;
-using AutoStep.Elements;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {
@@ -83,6 +83,7 @@ namespace AutoStep.Tests.Builders
             part.SourceLine = Built.SourceLine;
             part.StartColumn = startTokenIdx + startIdx + 1;
             part.EndColumn = part.StartColumn + (text.Length - 1);
+            part.EndLine = Built.SourceLine;
 
             Built.AddToken(part);
             

@@ -3,7 +3,7 @@ using FluentAssertions;
 using AutoStep.Execution;
 using AutoStep.Projects;
 using Moq;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using Xunit;
 using AutoStep.Tests.Utils;
 using AutoStep.Tests.Builders;
@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Execution
                 .Scenario("My Scenario", 1, 1)
             ).Built;
 
-            var file = new ProjectFile("/path", new StringContentSource("test"));
+            var file = new ProjectTestFile("/path", new StringContentSource("test"));
 
             var mockProjectCompiler = new Mock<IProjectCompiler>();
 
@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Execution
 
             testRun.SetRunExecutionStrategy(mockRunStrategy.Object);
 
-            var runResult = await testRun.Execute(logCfg =>
+            var runResult = await testRun.ExecuteAsync(logCfg =>
             {
                 
             });

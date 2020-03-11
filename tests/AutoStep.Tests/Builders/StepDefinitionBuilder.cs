@@ -30,7 +30,8 @@ namespace AutoStep.Tests.Builders
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
-                EndColumn = start + (word.Length - 1)
+                EndColumn = start + (word.Length - 1),
+                EndLine = Built.SourceLine,
             });
 
             return this;
@@ -44,7 +45,8 @@ namespace AutoStep.Tests.Builders
                 // EscapedText = escaped,
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
-                EndColumn = start + (word.Length - 1)
+                EndColumn = start + (word.Length - 1),
+                EndLine = Built.SourceLine,
             });
 
             return this;
@@ -56,7 +58,8 @@ namespace AutoStep.Tests.Builders
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
-                EndColumn = start + (text.Length - 1)
+                EndColumn = start + (text.Length - 1),
+                EndLine = Built.SourceLine,
             });
 
             return this;
@@ -68,7 +71,8 @@ namespace AutoStep.Tests.Builders
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = start,
-                EndColumn = start + (text.Length - 1)
+                EndColumn = start + (text.Length - 1),
+                EndLine = Built.SourceLine,
             });
 
             return this;

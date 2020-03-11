@@ -68,5 +68,32 @@ namespace AutoStep {
                 return ResourceManager.GetString("AntlrRulesDoNotMatchExpectation", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constant name must be provided..
+        /// </summary>
+        internal static string InteractionConstantSet_ConstantNameRequired {
+            get {
+                return ResourceManager.GetString("InteractionConstantSet_ConstantNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constant names must be entirely upper-case, e.g. TAB, ESCAPE..
+        /// </summary>
+        internal static string InteractionConstantSet_ConstantNamesMustBeUpperCase {
+            get {
+                return ResourceManager.GetString("InteractionConstantSet_ConstantNamesMustBeUpperCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified constant does not exist in the set..
+        /// </summary>
+        internal static string InteractionConstantSet_ConstantNotAvailable {
+            get {
+                return ResourceManager.GetString("InteractionConstantSet_ConstantNotAvailable", resourceCulture);
+            }
+        }
     }
 }

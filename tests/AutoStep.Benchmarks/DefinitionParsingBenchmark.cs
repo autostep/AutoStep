@@ -1,8 +1,6 @@
 ﻿using System;
-using AutoStep.Compiler;
-using AutoStep.Compiler.Matching;
+using AutoStep.Language.Test;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Benchmarks
 {

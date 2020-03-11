@@ -21,9 +21,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Compiler\Parser\.antlr\**" />
-    <EmbeddedResource Remove="Compiler\Parser\.antlr\**" />
-    <None Remove="Compiler\Parser\.antlr\**" />
+    <Compile Remove="Language\Test\Parser\.antlr\**" />
+    <EmbeddedResource Remove="Language\Test\Parser\.antlr\**" />
+    <None Remove="Language\Test\Parser\.antlr\**" />
     <None Include="..\..\build\nuget-icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -47,17 +47,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Compiler\AutoStepLinkerMessages.Designer.cs">
+    <Compile Update="Elements\Interaction\ElementExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Language\Interaction\CompilerLogMessages.Designer.cs">
+      <DependentUpon>CompilerLogMessages.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Language\Test\AutoStepLinkerMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AutoStepLinkerMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Compiler\CompilerLogMessages.Designer.cs">
+    <Compile Update="Language\Test\CompilerLogMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerLogMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Compiler\CompilerMessageCodeText.Designer.cs">
+    <Compile Update="Language\CompilerMessageCodeText.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CompilerMessageCodeText.resx</DependentUpon>
@@ -77,33 +87,46 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LanguageEngineExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Compiler\Matching\MatchingTreeMessages.Designer.cs">
+    <Compile Update="Language\Test\Matching\MatchingTreeMessages.Designer.cs">
       <DependentUpon>MatchingTreeMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Compiler\TokenStreamExtensionsMessages.Designer.cs">
+    <Compile Update="Language\TokenStreamExtensionsMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>TokenStreamExtensionsMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Elements\ElementExceptionMessages.Designer.cs">
+    <Compile Update="Elements\Test\ElementExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Projects\ProjectCompilerMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Compiler\AutoStepLinkerMessages.resx">
+    <EmbeddedResource Update="Elements\Interaction\ElementExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Language\Interaction\CompilerLogMessages.resx">
+      <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Language\Test\AutoStepLinkerMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AutoStepLinkerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Compiler\CompilerLogMessages.resx">
+    <EmbeddedResource Update="Language\Test\CompilerLogMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Compiler\CompilerMessageCodeText.resx">
+    <EmbeddedResource Update="Language\CompilerMessageCodeText.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CompilerMessageCodeText.Designer.cs</LastGenOutput>
     </EmbeddedResource>
@@ -119,17 +142,21 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LanguageEngineExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Compiler\Matching\MatchingTreeMessages.resx">
+    <EmbeddedResource Update="Language\Test\Matching\MatchingTreeMessages.resx">
       <LastGenOutput>MatchingTreeMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Compiler\TokenStreamExtensionsMessages.resx">
+    <EmbeddedResource Update="Language\TokenStreamExtensionsMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>TokenStreamExtensionsMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Elements\ElementExceptionMessages.resx">
+    <EmbeddedResource Update="Elements\Test\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Projects\ProjectCompilerMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProjectCompilerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -13,6 +13,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
+using AutoStep.Definitions.Test;
 
 namespace AutoStep.Tests.Execution
 {
@@ -42,7 +43,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -70,6 +71,7 @@ namespace AutoStep.Tests.Execution
             steps.Then("it should be true", async () =>
             {
                 thenCalled = true;
+                await Task.Delay(1);
             });
 
             project.Compiler.AddStaticStepDefinitionSource(steps);
@@ -80,7 +82,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -110,7 +112,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -135,7 +137,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().Be(2);
             argumentValues[0].Should().Be("value1");
@@ -161,7 +163,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -193,7 +195,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             clickedSomethingCalled.Should().BeTrue();
@@ -221,7 +223,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -246,7 +248,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -274,7 +276,7 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -302,7 +304,7 @@ namespace AutoStep.Tests.Execution
             
             testRun.Events.Add(errorCollector);
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().BeNull();
@@ -352,8 +354,8 @@ namespace AutoStep.Tests.Execution
 
             var project = new Project();
 
-            project.TryAddFile(new ProjectFile("/test", new StringContentSource(TestFile)));
-            project.TryAddFile(new ProjectFile("/steps", new StringContentSource(StepsFile)));
+            project.TryAddFile(new ProjectTestFile("/test", new StringContentSource(TestFile)));
+            project.TryAddFile(new ProjectTestFile("/steps", new StringContentSource(StepsFile)));
 
             var steps = new CallbackDefinitionSource();
 
@@ -378,7 +380,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.Execute(LogFactory);
+            await testRun.ExecuteAsync(LogFactory);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("an argument1");

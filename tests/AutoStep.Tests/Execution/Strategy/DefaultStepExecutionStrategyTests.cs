@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
 using AutoStep.Definitions;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -13,6 +12,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
+using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
@@ -45,7 +45,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 return default;
             });
 
-            step.Bind(new StepReferenceBinding(stepDef, null));
+            step.Bind(new StepReferenceBinding(stepDef, null, null));
 
             var strategy = new DefaultStepExecutionStrategy();
 
@@ -108,7 +108,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 await strategy.ExecuteStep(scope, ctxt, vars);
             });
 
-            step.Bind(new StepReferenceBinding(stepDef, null));
+            step.Bind(new StepReferenceBinding(stepDef, null, null));
 
             var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
                              .Should().ThrowAsync<CircularStepReferenceException>();
@@ -156,8 +156,8 @@ namespace AutoStep.Tests.Execution.Strategy
                 await strategy.ExecuteStep(scope, stepContext, vars);
             });
 
-            step.Bind(new StepReferenceBinding(stepDef, null));
-            loopbackStep.Bind(new StepReferenceBinding(loopBackStepDef, null));
+            step.Bind(new StepReferenceBinding(stepDef, null, null));
+            loopbackStep.Bind(new StepReferenceBinding(loopBackStepDef, null, null));
 
             var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
                              .Should().ThrowAsync<CircularStepReferenceException>();

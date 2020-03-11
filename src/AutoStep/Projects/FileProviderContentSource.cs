@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoStep.Compiler;
+using AutoStep.Language;
 using Microsoft.Extensions.FileProviders;
 
 namespace AutoStep.Projects
