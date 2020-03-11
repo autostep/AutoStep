@@ -130,20 +130,16 @@ namespace AutoStep.Language.Test
                 throw new OperationCanceledException();
             }
 
-            // Inspect the errors.
-            if (parserMessages.Any())
-            {
-                // Parser failed.
-                return new FileCompilerResult(false, parserMessages);
-            }
-
-            // Once the parser has succeeded, we'll proceed to walk the parse tree and build the file.
+            // Once the parser has completed, we'll proceed to walk the parse tree and build the file.
             var compilerVisitor = new FileVisitor(source.SourceName, tokenStream);
 
             var builtFile = compilerVisitor.Visit(fileContext);
 
+            var success = parserMessages.All(x => x.Level != CompilerMessageLevel.Error) && !compilerVisitor.MessageSet.AnyErrorMessages;
+            var allMessages = parserMessages.Concat(compilerVisitor.MessageSet.Messages);
+
             // Compile the file.
-            return new FileCompilerResult(compilerVisitor.Success, compilerVisitor.MessageSet.Messages, compilerVisitor.Success ? builtFile : null);
+            return new FileCompilerResult(success, allMessages, compilerVisitor.Success ? builtFile : null);
         }
 
         /// <summary>
@@ -203,7 +199,7 @@ namespace AutoStep.Language.Test
                 parser.Reset();
 
                 parser.AddErrorListener(errorListener);
-                parser.ErrorHandler = new DefaultErrorStrategy();
+                parser.ErrorHandler = new TestErrorStrategy();
 
                 // Now we will do the full LL mode.
                 parser.Interpreter.PredictionMode = PredictionMode.LL;

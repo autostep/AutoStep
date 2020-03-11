@@ -169,5 +169,62 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 )
             );
         }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/39")]
+        public async Task OnlyOneFeatureAllowed()
+        {
+            const string TestFile =
+            @"                
+              Feature: Feature 1
+
+                Scenario: My Scenario
+
+              Feature: Feature 2
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.OnlyOneFeatureAllowed,
+                    6, 15, 6, 32
+                )
+            );
+        }
+        
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/39")]
+        public async Task OnlyOneFeatureAllowedErrorRaisedIfEarlierSyntaxError()
+        {
+            const string TestFile =
+            @"                
+              Scenario: Error
+
+              Feature: Feature 1
+
+                Scenario: My Scenario
+
+              Feature: Feature 2
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.SyntaxError,
+                    2, 15, 2, 23, "no viable alternative at input '              Scenario:'"),
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.OnlyOneFeatureAllowed,
+                    8, 15, 8, 32
+                )
+            );
+        }
     }
 }

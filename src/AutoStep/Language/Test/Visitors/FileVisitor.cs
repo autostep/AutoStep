@@ -76,7 +76,7 @@ namespace AutoStep.Language.Test.Visitors
 
             VisitChildren(context);
 
-            if (Result.Feature.Scenarios.Count == 0)
+            if (!string.IsNullOrEmpty(Result.Feature.Name) && Result.Feature.Scenarios.Count == 0)
             {
                 // Warning should be associated to the title.
                 MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result.Feature.Name ?? "unknown");
@@ -185,7 +185,7 @@ namespace AutoStep.Language.Test.Visitors
                 MessageSet.Add(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
             }
 
-            var title = titleTree.text().GetText();
+            var title = titleTree.text()?.GetText() ?? string.Empty;
             var description = ExtractDescription(context.description());
 
             // Past this point, annotations aren't valid.
@@ -233,17 +233,32 @@ namespace AutoStep.Language.Test.Visitors
 
             var declaration = definition.stepDeclaration();
 
-            var type = declaration switch
+            StepType? type = declaration switch
             {
                 AutoStepParser.DeclareGivenContext _ => StepType.Given,
                 AutoStepParser.DeclareWhenContext _ => StepType.When,
                 AutoStepParser.DeclareThenContext _ => StepType.Then,
-                _ => throw new LanguageEngineAssertException()
+                _ => null
             };
 
-            var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+            StepDefinitionElement stepDefinition;
+            var bodyContext = declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0);
+            var isProcessedStep = false;
 
-            MergeVisitorAndReset(stepDefinitionVisitor);
+            if (type is null || bodyContext is null)
+            {
+                // Create a 'dummy' step definition.
+                stepDefinition = new StepDefinitionElement();
+                stepDefinition.AddLineInfo(declaration);
+            }
+            else
+            {
+                stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type.Value, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+
+                isProcessedStep = true;
+
+                MergeVisitorAndReset(stepDefinitionVisitor);
+            }
 
             currentAnnotatable = stepDefinition;
 
@@ -273,7 +288,10 @@ namespace AutoStep.Language.Test.Visitors
 
             Visit(context.stepDefinitionBody());
 
-            Result.AddStepDefinition(stepDefinition);
+            if (isProcessedStep)
+            {
+                Result.AddStepDefinition(stepDefinition);
+            }
 
             currentStepSet = null;
             currentStepDefinition = null;
@@ -311,7 +329,7 @@ namespace AutoStep.Language.Test.Visitors
                 }
 
                 scenario = new ScenarioElement();
-                titleText = scenarioTitle.text().GetText();
+                titleText = scenarioTitle.text()?.GetText() ?? string.Empty;
             }
             else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
             {
@@ -327,7 +345,7 @@ namespace AutoStep.Language.Test.Visitors
                 }
 
                 scenario = new ScenarioOutlineElement();
-                titleText = scenariOutlineTitle.text().GetText();
+                titleText = scenariOutlineTitle.text()?.GetText() ?? string.Empty;
             }
             else
             {

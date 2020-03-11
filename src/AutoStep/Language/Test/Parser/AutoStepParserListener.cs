@@ -42,6 +42,16 @@ internal interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitFile([NotNull] AutoStepParser.FileContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFileEntity([NotNull] AutoStepParser.FileEntityContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFileEntity([NotNull] AutoStepParser.FileEntityContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

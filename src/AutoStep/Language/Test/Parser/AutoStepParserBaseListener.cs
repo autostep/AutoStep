@@ -48,6 +48,18 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFile([NotNull] AutoStepParser.FileContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFileEntity([NotNull] AutoStepParser.FileEntityContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFileEntity([NotNull] AutoStepParser.FileEntityContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

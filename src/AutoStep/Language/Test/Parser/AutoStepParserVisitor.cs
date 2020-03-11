@@ -39,6 +39,12 @@ internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFile([NotNull] AutoStepParser.FileContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFileEntity([NotNull] AutoStepParser.FileEntityContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
