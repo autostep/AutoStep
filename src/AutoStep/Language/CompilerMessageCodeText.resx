@@ -162,6 +162,9 @@
   <data name="InteractionInvalidContent" xml:space="preserve">
     <value>Invalid character(s).</value>
   </data>
+  <data name="InteractionMethodArgumentMismatch" xml:space="preserve">
+    <value>The method being called requires {0} argument(s), but you are only providing {1}.</value>
+  </data>
   <data name="InteractionMethodCallMissingParameterSeparator" xml:space="preserve">
     <value>Method call appears to be missing a parameter separator, are you missing a comma?</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="InteractionMethodCallUnterminated" xml:space="preserve">
     <value>Method call has not been closed, expecting ')'.</value>
+  </data>
+  <data name="InteractionMethodCircularReference" xml:space="preserve">
+    <value>An interaction method cannot call itself.</value>
   </data>
   <data name="InteractionMethodDeclMissingParameter" xml:space="preserve">
     <value>Method declaration expects another parameter; do you have an unintended extra comma in your declaration list?</value>

@@ -196,6 +196,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The method being called requires {0} argument(s), but you are only providing {1}..
+        /// </summary>
+        internal static string InteractionMethodArgumentMismatch {
+            get {
+                return ResourceManager.GetString("InteractionMethodArgumentMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Method call appears to be missing a parameter separator, are you missing a comma?.
         /// </summary>
         internal static string InteractionMethodCallMissingParameterSeparator {
@@ -219,6 +228,15 @@ namespace AutoStep.Language {
         internal static string InteractionMethodCallUnterminated {
             get {
                 return ResourceManager.GetString("InteractionMethodCallUnterminated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An interaction method cannot call itself..
+        /// </summary>
+        internal static string InteractionMethodCircularReference {
+            get {
+                return ResourceManager.GetString("InteractionMethodCircularReference", resourceCulture);
             }
         }
         

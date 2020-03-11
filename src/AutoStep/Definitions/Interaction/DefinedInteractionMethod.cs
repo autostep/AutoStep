@@ -38,11 +38,16 @@ namespace AutoStep.Definitions.Interaction
                                                                  !typeof(IServiceScope).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+        public override async ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
         {
             if (scope is null)
             {
                 throw new ArgumentNullException(nameof(scope));
+            }
+
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
             }
 
             if (arguments is null)

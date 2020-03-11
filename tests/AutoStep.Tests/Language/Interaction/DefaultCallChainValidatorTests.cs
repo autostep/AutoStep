@@ -40,6 +40,103 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
+        public void InvalidVariableGivesError()
+        {
+            var callSource = new CustomCallSource(new CallChainCompileTimeVariables());
+            var methodBuilder = new InteractionMethodCallChainBuilder<CustomCallSource>(callSource);
+
+            // This is the call we are validating.
+            methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.Variable("var", 7));
+
+            var methodTable = new MethodTable();
+            methodTable.Set(new DummyMethod("method", 1));
+
+            var constants = new InteractionConstantSet();
+            var messages = new List<LanguageOperationMessage>();
+
+            var validator = new DefaultCallChainValidator();
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
+
+            messages.Should().BeEquivalentTo(
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, 1, 7, 1, 9, "var")
+            );
+        }
+
+        [Fact]
+        public void InvalidVariableArrayRefGivesError()
+        {
+            var callSource = new CustomCallSource(new CallChainCompileTimeVariables());
+            var methodBuilder = new InteractionMethodCallChainBuilder<CustomCallSource>(callSource);
+
+            // This is the call we are validating.
+            methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.VariableArray("var", 7, 10, c => c.String("index", 1, 1)));
+
+            var methodTable = new MethodTable();
+            methodTable.Set(new DummyMethod("method", 1));
+
+            var constants = new InteractionConstantSet();
+            var messages = new List<LanguageOperationMessage>();
+
+            var validator = new DefaultCallChainValidator();
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
+
+            messages.Should().BeEquivalentTo(
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, 1, 7, 1, 10, "var")
+            );
+        }
+        
+        [Fact]
+        public void VariableArrayRefForNonArrayVariableGivesError()
+        {
+            var variables = new CallChainCompileTimeVariables();
+            variables.SetVariable("var", false);
+
+            var callSource = new CustomCallSource(variables);
+            var methodBuilder = new InteractionMethodCallChainBuilder<CustomCallSource>(callSource);
+
+            // This is the call we are validating.
+            methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.VariableArray("var", 7, 10, c => c.String("index", 1, 1)));
+
+            var methodTable = new MethodTable();
+            methodTable.Set(new DummyMethod("method", 1));
+
+            var constants = new InteractionConstantSet();
+            var messages = new List<LanguageOperationMessage>();
+
+            var validator = new DefaultCallChainValidator();
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
+
+            messages.Should().BeEquivalentTo(
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotAnArray, 1, 7, 1, 10, "var")
+            );
+        }
+
+        [Fact]
+        public void ArgumentCountMismatchGivesError()
+        {
+            var callSource = new CustomCallSource(new CallChainCompileTimeVariables());
+            var methodBuilder = new InteractionMethodCallChainBuilder<CustomCallSource>(callSource);
+
+            // This is the call we are validating.
+            methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.String("var", 7));
+
+            var methodTable = new MethodTable();
+            methodTable.Set(new DummyMethod("method", 2));
+
+            var constants = new InteractionConstantSet();
+            var messages = new List<LanguageOperationMessage>();
+
+            var validator = new DefaultCallChainValidator();
+            validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
+
+            messages.Should().BeEquivalentTo(
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodArgumentMismatch,
+             lineStart: 1, colStart: 1, lineEnd: 1, colEnd: 6, 
+             2, 1)
+            );
+        }
+
+        [Fact]
         public void NonExistentMethodGivesSpecificErrorIfMethodDefinitionsAreNotRequired()
         {
             var callSource = new CustomCallSource(new PassingVariableSet());
@@ -116,6 +213,26 @@ namespace AutoStep.Tests.Language.Interaction
              LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodRequiredButNotDefined, 1, 1, 1, 6, "", 10)
             );
         }
+        
+        [Fact]
+        public void CircularMethodCallDetected()
+        {
+            var fileMethod = new MethodDefinitionBuilder(new MethodDefinitionElement("mydef"));
+            fileMethod.Call("mydef", 1, 1, 1, 10);
+
+            var methodTable = new MethodTable();
+            methodTable.Set("mydef", fileMethod.Built);
+
+            var constants = new InteractionConstantSet();
+            var messages = new List<LanguageOperationMessage>();
+
+            var validator = new DefaultCallChainValidator();
+            validator.ValidateCallChain(fileMethod.Built, methodTable, constants, true, messages);
+
+            messages.Should().BeEquivalentTo(
+             LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCircularReference, 1, 1, 1, 10, "", 10)
+            );
+        }
 
         private class DummyMethod : InteractionMethod
         {
@@ -146,29 +263,16 @@ namespace AutoStep.Tests.Language.Interaction
             }
         }
 
-        private class FailingVariableSet : CallChainCompileTimeVariables
-        {
-            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
-            {
-                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
-            }
-
-            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
-            {
-                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
-            }
-        }
-
         private class PassingVariableSet : CallChainCompileTimeVariables
         {
             public override LanguageOperationMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
             {
-                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return null;
             }
 
             public override LanguageOperationMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
             {
-                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return null;
             }
         }
     }
