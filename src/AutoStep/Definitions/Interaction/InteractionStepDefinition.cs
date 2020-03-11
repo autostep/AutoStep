@@ -49,7 +49,7 @@ namespace AutoStep.Definitions.Interaction
                 // The component name comes from the placeholders matched during step binding.
                 var placeholders = context.Step.Binding?.Placeholders;
 
-                if (placeholders is object && placeholders.TryGetValue(InteractionPlaceholders.Component, out var placeHolderName))
+                if (placeholders is object && placeholders.TryGetValue(StepPlaceholders.Component, out var placeHolderName))
                 {
                     componentName = placeHolderName;
                 }
@@ -98,7 +98,7 @@ namespace AutoStep.Definitions.Interaction
             // A definition is the same if the IDs are the same and it matches all the same components.
             if (def is InteractionStepDefinition)
             {
-                if (Definition is InteractionStepDefinitionElement myElement && 
+                if (Definition is InteractionStepDefinitionElement myElement &&
                     def.Definition is InteractionStepDefinitionElement otherElement)
                 {
                     return Source.Uid == def.Source.Uid && Type == def.Type && Declaration == def.Declaration && myElement.MatchesSameComponentsAs(otherElement);

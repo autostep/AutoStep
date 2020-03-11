@@ -44,9 +44,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -85,7 +85,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeTrue();
 
@@ -125,9 +125,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -145,7 +145,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeTrue();
 
@@ -174,9 +174,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -194,7 +194,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeTrue();
 
@@ -223,9 +223,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -243,7 +243,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeTrue();
 
@@ -272,9 +272,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -293,11 +293,11 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeFalse();
             result.Messages.Should().BeEquivalentTo(
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
                                               "field -> button -> field"));
         }
 
@@ -306,9 +306,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -324,11 +324,11 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeFalse();
             result.Messages.Should().BeEquivalentTo(
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionComponentInheritanceLoop, 15, 1,
                                               "field -> input -> button -> field"));
         }
 
@@ -337,9 +337,9 @@ namespace AutoStep.Tests.Language.Interaction
         {
             var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
 
-            var rootMethodTable = new MethodTable();
-            rootMethodTable.Set(new DummyMethod("select", 1));
-            rootMethodTable.Set(new DummyMethod("click", 0));
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
 
             // Create an example file.
             var file = new InteractionFileBuilder();
@@ -375,12 +375,19 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(rootMethodTable);
+            var result = setBuilder.Build(interactions);
 
             result.Success.Should().BeFalse();
 
             result.Messages.Should().HaveCount(1);
             result.Messages.First().Code.Should().Be(CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined);
+        }
+
+        private class InteractionsConfig : IInteractionsConfiguration
+        {
+            public MethodTable RootMethodTable { get; } = new MethodTable();
+
+            public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }
     }
 }

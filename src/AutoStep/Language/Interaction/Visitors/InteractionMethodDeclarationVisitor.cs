@@ -57,23 +57,19 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override TElement VisitStringArg([NotNull] StringArgContext context)
         {
-            var stringMethodArgument = new StringMethodArgumentElement();
-
-            stringMethodArgument.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
-
             var methodStr = context.methodStr();
 
-            PopulateStringArgElement(stringMethodArgument, methodStr);
+            var stringMethodArgument = CreateStringArgElement(methodStr);
+
+            stringMethodArgument.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
 
             currentMethodCall!.Arguments.Add(stringMethodArgument);
 
             return Result!;
         }
 
-        private void PopulateStringArgElement(StringMethodArgumentElement element, MethodStrContext context)
+        private StringMethodArgumentElement CreateStringArgElement(MethodStrContext context)
         {
-            element.Text = context.GetText();
-
             var parts = context.methodStrPart();
             var initialOffset = context.Start.Column;
             var tokenSet = new List<StepToken>();
@@ -91,7 +87,10 @@ namespace AutoStep.Language.Interaction.Visitors
                 tokenSet.Add(token);
             }
 
-            element.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
+            var text = context.GetText();
+            var tokens = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
+
+            return new StringMethodArgumentElement(text, tokens);
         }
 
         private static TToken CreateToken<TToken>(ParserRuleContext ctxt, int offset, Func<int, int, TToken> creator)
@@ -148,12 +147,10 @@ namespace AutoStep.Language.Interaction.Visitors
 
             var methodStrOuterContext = context.methodCallArrayRefString();
 
-            var stringMethodArgument = new StringMethodArgumentElement();
-            stringMethodArgument.AddPositionalLineInfo(methodStrOuterContext);
-
             var methodStr = methodStrOuterContext.methodStr();
 
-            PopulateStringArgElement(stringMethodArgument, methodStr);
+            var stringMethodArgument = CreateStringArgElement(methodStr);
+            stringMethodArgument.AddPositionalLineInfo(methodStrOuterContext);
 
             varArrElement.Indexer = stringMethodArgument;
 
@@ -165,10 +162,8 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override TElement VisitConstantRef([NotNull] ConstantRefContext context)
         {
-            var constantRefElement = new ConstantMethodArgumentElement();
+            var constantRefElement = new ConstantMethodArgumentElement(context.GetText());
             constantRefElement.AddPositionalLineInfo(context);
-
-            constantRefElement.ConstantName = context.GetText();
 
             currentMethodCall!.Arguments.Add(constantRefElement);
 
@@ -178,17 +173,15 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override TElement VisitIntArg([NotNull] IntArgContext context)
         {
-            var intArgElement = new IntMethodArgumentElement();
-
-            intArgElement.AddPositionalLineInfo(context);
-
             if (!int.TryParse(context.GetText(), out var intValue))
             {
                 // Parser should not have allowed this through.
                 throw new LanguageEngineAssertException();
             }
 
-            intArgElement.Value = intValue;
+            var intArgElement = new IntMethodArgumentElement(intValue);
+
+            intArgElement.AddPositionalLineInfo(context);
 
             currentMethodCall!.Arguments.Add(intArgElement);
 
@@ -198,16 +191,14 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override TElement VisitFloatArg([NotNull] FloatArgContext context)
         {
-            var floatArgElement = new FloatMethodArgumentElement();
-
-            floatArgElement.AddPositionalLineInfo(context);
-
             if (!double.TryParse(context.GetText(), out var doubleValue))
             {
                 throw new LanguageEngineAssertException();
             }
 
-            floatArgElement.Value = doubleValue;
+            var floatArgElement = new FloatMethodArgumentElement(doubleValue);
+
+            floatArgElement.AddPositionalLineInfo(context);
 
             currentMethodCall!.Arguments.Add(floatArgElement);
 

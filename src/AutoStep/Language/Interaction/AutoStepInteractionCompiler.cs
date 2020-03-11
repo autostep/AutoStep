@@ -73,7 +73,7 @@ namespace AutoStep.Language.Interaction
             Func<AutoStepInteractionsParser, TContext> entryPoint,
             ILoggerFactory logFactory,
             out ITokenStream tokenStream,
-            out IEnumerable<CompilerMessage> parserErrors,
+            out IEnumerable<LanguageOperationMessage> parserErrors,
             int? customLexerStartMode = null)
             where TContext : ParserRuleContext
         {

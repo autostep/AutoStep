@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Execution
             var builtFile1 = new FileBuilder().Feature("My Feature 1", 1, 1).Built;
 
             file1.UpdateLastCompileResult(new FileCompilerResult(true, builtFile1));
-            file1.UpdateLastLinkResult(new LinkResult(false, Enumerable.Empty<CompilerMessage>()));
+            file1.UpdateLastLinkResult(new LinkResult(false, Enumerable.Empty<LanguageOperationMessage>()));
 
             var featureSet = FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
 

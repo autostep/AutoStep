@@ -142,7 +142,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                             .Text("to")
                             .Text("something")
             ))),
-            new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario,
+            new LanguageOperationMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableInScenario,
                                 "You have specified an Example variable to insert, 'variable name', but the step is in a Scenario; did you mean to use a Scenario Outline instead?",
                                 6, 40, 6, 54)
             );

@@ -23,7 +23,7 @@ namespace AutoStep.Language.Test.Visitors
             (AutoStepParser.STATEMENT_ESCAPED_VAREND, "<"),
         };
 
-        private readonly Func<ParserRuleContext, string, CompilerMessage?>? insertionNameValidator;
+        private readonly Func<ParserRuleContext, string, LanguageOperationMessage?>? insertionNameValidator;
 
         private int textColumnOffset = 0;
 
@@ -33,7 +33,7 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, Func<ParserRuleContext, string, CompilerMessage?>? insertionNameValidator = null)
+        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, Func<ParserRuleContext, string, LanguageOperationMessage?>? insertionNameValidator = null)
             : base(sourceName, tokenStream)
         {
             this.insertionNameValidator = insertionNameValidator;
@@ -46,7 +46,7 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, CompilerMessage?> insertionNameValidator)
+        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
             : base(sourceName, tokenStream, rewriter)
         {
             this.insertionNameValidator = insertionNameValidator;

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace AutoStep.Execution
 {
+    /// <summary>
+    /// Base class for a set of named variables, of a certain value (or more derived one).
+    /// </summary>
+    /// <typeparam name="TValue">The base value type.</typeparam>
     public class VariableSetBase<TValue>
         where TValue : class
     {
@@ -53,6 +57,10 @@ namespace AutoStep.Execution
             valuesStore[name] = value;
         }
 
+        /// <summary>
+        /// Gets the default value for a variable.
+        /// </summary>
+        /// <returns>A default value (e.g. null).</returns>
         protected virtual TValue? GetDefault()
         {
             return default;

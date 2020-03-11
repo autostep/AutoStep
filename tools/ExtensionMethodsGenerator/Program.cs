@@ -6,8 +6,8 @@ using System.IO;
 namespace ExtensionMethodsGenerator
 {
     /// <summary>
-    /// Generate a CallbackDefinitionExtensions class for all of the callback definition options
-    /// in AutoStep callbacks.
+    /// Generate a class for all of the callback definition options
+    /// in AutoStep callbacks for interactions and for steps.
     /// </summary>
     class Program
     {
@@ -15,30 +15,34 @@ namespace ExtensionMethodsGenerator
         {
             var codeCompileUnit = new CodeCompileUnit();
 
-            var myNamespace = new CodeNamespace("AutoStep.Definitions");
-
-            codeCompileUnit.Namespaces.Add(myNamespace);
-
-            myNamespace.Imports.Add(new CodeNamespaceImport("System"));
-            myNamespace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
-            myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Dependency"));
-
+            var myNameSpace = new CodeNamespace("AutoStep");
+            
             if(args.Length > 0 && args[0] == "interactions")
             {
-                myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Interaction"));
-                myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Interaction"));
-                myNamespace.Imports.Add(new CodeNamespaceImport("AutoStep.Projects"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Interaction"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Dependency"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Interaction"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Language.Interaction"));
 
                 var interType = GenerateInteractionExtensions();
 
-                myNamespace.Types.Add(interType);
+                myNameSpace.Types.Add(interType);
             }
             else
             {
+                myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Test"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Dependency"));
+
                 var defType = GenerateDefinitionExtensions();
 
-                myNamespace.Types.Add(defType);
+                myNameSpace.Types.Add(defType);
             }
+
+            codeCompileUnit.Namespaces.Add(myNameSpace);
 
             // Output the code.
             var codeDom = CodeDomProvider.CreateProvider("CSharp");
@@ -157,9 +161,11 @@ namespace ExtensionMethodsGenerator
                 typeParameters[idx] = new CodeTypeParameter($"T{idx + 1}");
             }
 
-            var method = new CodeMemberMethod();
-            method.Name = methodName;
-            method.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+            var method = new CodeMemberMethod
+            {
+                Name = methodName,
+                Attributes = MemberAttributes.Public | MemberAttributes.Static
+            };
             method.TypeParameters.AddRange(typeParameters);
             method.ReturnType = new CodeTypeReference("CallbackDefinitionSource");
 
@@ -246,9 +252,11 @@ namespace ExtensionMethodsGenerator
                 typeParameters[idx] = new CodeTypeParameter($"T{idx + 1}");
             }
 
-            var method = new CodeMemberMethod();
-            method.Name = "AddOrReplaceMethod";
-            method.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+            var method = new CodeMemberMethod
+            {
+                Name = "AddOrReplaceMethod",
+                Attributes = MemberAttributes.Public | MemberAttributes.Static
+            };
             method.TypeParameters.AddRange(typeParameters);
 
             // Add the docs.
@@ -280,7 +288,7 @@ namespace ExtensionMethodsGenerator
                 "<param name=\"methodName\">The name of the method.</param>",
                 "<param name=\"callback\">The callback to invoke when the step executes.</param>");
 
-            var extensionPointParameter = new CodeParameterDeclarationExpression("this InteractionsGlobalConfiguration", "interactionsConfig");
+            var extensionPointParameter = new CodeParameterDeclarationExpression("this IInteractionsConfiguration", "interactionsConfig");
             var declarationParameter = new CodeParameterDeclarationExpression(typeof(string), "methodName");
 
             CodeTypeReference callbackType;
@@ -318,7 +326,7 @@ namespace ExtensionMethodsGenerator
             method.Statements.Add(callbackNullCheck);
             method.Statements.Add(sourceNullCheck);
 
-            method.Statements.Add(new CodeExpressionStatement(new CodeSnippetExpression($"interactionsConfig.AddOrReplaceMethod(new DelegateInteractionMethod(methodName, callback.Target, callback.Method))")));
+            method.Statements.Add(new CodeExpressionStatement(new CodeSnippetExpression($"interactionsConfig.AddOrReplaceMethod(new DelegateInteractionMethod(methodName, callback))")));
 
             classDecl.Members.Add(method);
         }

@@ -1,15 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Language.Interaction
 {
     using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
 
+    /// <summary>
+    /// Error handling for the interactions language.
+    /// </summary>
     internal class InteractionsErrorHandlingContext : BaseAutoStepErrorHandlingContext<AutoStepInteractionsParser>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InteractionsErrorHandlingContext"/> class.
+        /// </summary>
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="recognizer">The recognizer.</param>
+        /// <param name="offendingSymbol">The offending symbol.</param>
+        /// <param name="ex">The exception (if available).</param>
         public InteractionsErrorHandlingContext(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
             : base(tokenStream, recognizer, offendingSymbol, ex)
         {
@@ -24,8 +31,7 @@ namespace AutoStep.Language.Interaction
                 MissingMethodCallArgSeparator,
                 UnterminatedMethod,
                 MethodCallUnterminatedString,
-                MissingMethodDeclArgument
-            );
+                MissingMethodDeclArgument);
         }
 
         private bool NameMissingHandler()
@@ -104,8 +110,7 @@ namespace AutoStep.Language.Interaction
                     INT,
                     METHOD_STRING_START,
                     PARAM_NAME,
-                    CONSTANT
-                ))
+                    CONSTANT))
             {
                 ChangeError(CompilerMessageCode.InteractionMethodCallMissingParameterSeparator);
 

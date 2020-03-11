@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ), 
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnterminated, 4, 40, 4, 40));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnterminated, 4, 40, 4, 40));
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameter, 4, 33, 4, 35));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameter, 4, 33, 4, 35));
         }
         
         [Fact]
@@ -102,7 +102,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameterSeparator, 4, 34, 4, 38));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameterSeparator, 4, 34, 4, 38));
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 45));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 45));
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 39));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 39));
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
         }
 
         [Fact]
@@ -186,7 +186,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
         }
 
 
@@ -205,7 +205,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .Argument("name1", 4, 28)
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .NeedsDefining()
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
         }
         
         [Fact]
@@ -255,7 +255,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .NeedsDefining()
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 46));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 46));
         }
 
         [Fact]
@@ -278,7 +278,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .NeedsDefining()
                     )
                 ),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
         }
     }
 }

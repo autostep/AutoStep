@@ -31,8 +31,7 @@ namespace AutoStep.Tests.Builders
         public static TEntityBuilder Method<TEntityBuilder>(this TEntityBuilder entityBuilder, string name, int line, int column, Action<MethodDefinitionBuilder> callBuilder)
             where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
         {
-            var methodDef = new MethodDefinitionElement();
-            methodDef.Name = name;
+            var methodDef = new MethodDefinitionElement(name);
             methodDef.SourceLine = line;
             methodDef.StartColumn = column;
 
@@ -64,8 +63,7 @@ namespace AutoStep.Tests.Builders
         public static TEntityBuilder Method<TEntityBuilder>(this TEntityBuilder entityBuilder, string name, int startLine, int startColumn, int endLine, int endColumn, Action<MethodDefinitionBuilder> callBuilder)
             where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
         {
-            var methodDef = new MethodDefinitionElement();
-            methodDef.Name = name;
+            var methodDef = new MethodDefinitionElement(name);
             methodDef.SourceLine = startLine;
             methodDef.StartColumn = startColumn;
             methodDef.EndLine = endLine;

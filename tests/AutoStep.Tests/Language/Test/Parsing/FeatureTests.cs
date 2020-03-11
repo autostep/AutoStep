@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Warning,
                     CompilerMessageCode.NoScenarios,
@@ -45,7 +45,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Error,
                     CompilerMessageCode.NoFeatureTitleProvided,
@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature:";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Error,
                     CompilerMessageCode.NoFeatureTitleProvided,
@@ -90,7 +90,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Error,
                     CompilerMessageCode.InvalidFeatureKeyword,
@@ -100,7 +100,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     endLineNo: 2,
                     endColumn: 22
                 ),
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Warning,
                     CompilerMessageCode.NoScenarios,

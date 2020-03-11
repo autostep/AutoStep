@@ -147,6 +147,9 @@
   <data name="InteractionComponentInheritanceLoop" xml:space="preserve">
     <value>Detected a circular component inheritance loop; loop path is {0}.</value>
   </data>
+  <data name="InteractionComponentInheritedComponentNotFound" xml:space="preserve">
+    <value>The specified component to inherit from, {0}, cannot be found. Does this component exist?</value>
+  </data>
   <data name="InteractionComponentStepDefinitionCannotHaveComponentMarker" xml:space="preserve">
     <value>Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps.</value>
   </data>

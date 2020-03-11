@@ -18,15 +18,16 @@ namespace AutoStep.Execution
         {
         }
 
+        /// <summary>
+        /// Gets a fixed empty variable set.
+        /// </summary>
+        public static VariableSet Blank { get; } = new VariableSet(true);
+
+        /// <inheritdoc/>
         protected override string? GetDefault()
         {
             return string.Empty;
         }
-
-        /// <summary>
-        /// Gets an fixed empty variable set.
-        /// </summary>
-        public static VariableSet Blank { get; } = new VariableSet(true);
 
         /// <summary>
         /// Create a variable set from a row in a table.

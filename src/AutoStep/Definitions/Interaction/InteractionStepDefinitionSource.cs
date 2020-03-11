@@ -7,16 +7,26 @@ using AutoStep.Language.Interaction;
 
 namespace AutoStep.Definitions.Interaction
 {
-    public class InteractionStepDefinitionSource : IUpdatableStepDefinitionSource
+    /// <summary>
+    /// An interactions step definition source that holds all of the step definitions exposed by
+    /// the interactions system.
+    /// </summary>
+    internal class InteractionStepDefinitionSource : IUpdatableStepDefinitionSource
     {
         private AutoStepInteractionSet? interactions;
         private List<StepDefinition>? cachedSteps;
         private DateTime lastModifyTime;
 
+        /// <inheritdoc/>
         public string Uid => "interaction";
 
+        /// <inheritdoc/>
         public string Name => "Interaction";
 
+        /// <summary>
+        /// Updates the steps from a new interaction set.
+        /// </summary>
+        /// <param name="interactions">The interaction set.</param>
         internal void UpdateInteractionSet(AutoStepInteractionSet interactions)
         {
             this.interactions = interactions;
@@ -24,6 +34,7 @@ namespace AutoStep.Definitions.Interaction
             cachedSteps = interactions.GetStepDefinitions(this).ToList();
         }
 
+        /// <inheritdoc/>
         public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
         {
             if (interactions is object)
@@ -33,11 +44,13 @@ namespace AutoStep.Definitions.Interaction
             }
         }
 
+        /// <inheritdoc/>
         public DateTime GetLastModifyTime()
         {
             return lastModifyTime;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<StepDefinition> GetStepDefinitions()
         {
             if (cachedSteps is object)
@@ -45,6 +58,7 @@ namespace AutoStep.Definitions.Interaction
                 return cachedSteps;
             }
 
+            // Step definitions are only available after a call to UpdateInteractionSet.
             return Enumerable.Empty<StepDefinition>();
         }
     }

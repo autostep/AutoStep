@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Language.Test
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
             matched.Messages.Should().Contain(
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired,
                                     "You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. {variable1} or {total}.",
                                     1, 28, 1, 29
                                     ));
@@ -84,7 +84,7 @@ namespace AutoStep.Tests.Language.Test
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
             matched.Messages.Should().Contain(
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
                                     "You cannot use 'value <insert>' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.",
                                     1, 28, 1, 43
                                     ));
@@ -103,7 +103,7 @@ namespace AutoStep.Tests.Language.Test
             matched.Success.Should().BeFalse();
             matched.Messages.Should().HaveCount(1);
             matched.Messages.Should().Contain(
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
                                     "You cannot use ':interpolate' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.",
                                     1, 28, 1, 41
                                     ));

@@ -13,7 +13,7 @@ namespace AutoStep.Language.Test.Matching
     /// </summary>
     internal class MatchResult
     {
-        private List<CompilerMessage>? msgs;
+        private List<LanguageOperationMessage>? msgs;
         private Dictionary<string, string>? placeholderValues;
 
         /// <summary>
@@ -61,11 +61,11 @@ namespace AutoStep.Language.Test.Matching
         /// Adds a compiler message to the match result.
         /// </summary>
         /// <param name="msg">The compilation message.</param>
-        public void AddMessage(CompilerMessage msg)
+        public void AddMessage(LanguageOperationMessage msg)
         {
             if (msgs is null)
             {
-                msgs = new List<CompilerMessage>();
+                msgs = new List<LanguageOperationMessage>();
             }
 
             msgs.Add(msg);
@@ -86,6 +86,11 @@ namespace AutoStep.Language.Test.Matching
             ArgumentSet.AddFirst(new ArgumentBinding(arg, matchResult));
         }
 
+        /// <summary>
+        /// Include a named placeholder value in the match result.
+        /// </summary>
+        /// <param name="name">The name of the placeholder.</param>
+        /// <param name="value">The value of the placeholder.</param>
         public void IncludePlaceholderValue(string name, string value)
         {
             if (placeholderValues is null)
@@ -96,6 +101,12 @@ namespace AutoStep.Language.Test.Matching
             placeholderValues[name] = value;
         }
 
+        /// <summary>
+        /// Attempt to retrieve a named placeholder value from the match result.
+        /// </summary>
+        /// <param name="name">The name of the placeholder.</param>
+        /// <param name="value">The value of the placeholder.</param>
+        /// <returns>True if the value was found; false otherwise.</returns>
         public bool TryGetPlaceholderValue(string name, [NotNullWhen(true)] out string? value)
         {
             if (placeholderValues is null)

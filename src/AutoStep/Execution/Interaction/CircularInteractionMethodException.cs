@@ -17,7 +17,7 @@ namespace AutoStep.Execution.Interaction
         /// <param name="methodCall">The method call that initiates the loop.</param>
         /// <param name="methodContextStack">The method execution stack at the time the loop was detected.</param>
         public CircularInteractionMethodException(MethodCallElement methodCall, IEnumerable<MethodContext> methodContextStack)
-            : base("Circular interaction method loop detected.")
+            : base(ExecutionText.CircularInteractionMethodException_Message)
         {
             MethodCall = methodCall;
             MethodContextStack = methodContextStack;

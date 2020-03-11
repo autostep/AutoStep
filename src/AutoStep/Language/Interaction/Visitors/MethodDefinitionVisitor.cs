@@ -29,14 +29,12 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <returns>A new element.</returns>
         public MethodDefinitionElement Build(MethodDefinitionContext context)
         {
-            Result = new MethodDefinitionElement();
-
             var decl = context.methodDeclaration();
+
+            Result = new MethodDefinitionElement(decl.NAME_REF().GetText());
 
             Result.AddPositionalLineInfoExcludingErrorStopToken(decl, TokenStream, METHOD_STRING_ERRNL);
             Result.SourceName = SourceName;
-
-            Result.Name = decl.NAME_REF().GetText();
 
             VisitChildren(context);
 

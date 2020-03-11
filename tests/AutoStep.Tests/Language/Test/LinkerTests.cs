@@ -202,7 +202,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
                                     "No step definitions could be found that match this step.", 1, 1)
             });
 
@@ -254,7 +254,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
                                     "There are multiple matching step definitions that match this step.", 3, 1)
             });
 
@@ -591,7 +591,7 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().Be(ArgumentType.Text);
 
             linkResult.Messages.Should().HaveCount(1);
-            linkResult.Messages.First().Should().Be(CompilerMessageFactory.Create(null, CompilerMessageLevel.Error,
+            linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, binding.Arguments[0],
                                                     binding.Arguments[0].DeterminedType, binding.Arguments[0].Part.TypeHint));
         }
@@ -616,7 +616,7 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().Be(ArgumentType.Text);
 
             linkResult.Messages.Should().HaveCount(1);
-            linkResult.Messages.First().Should().Be(CompilerMessageFactory.Create(null, CompilerMessageLevel.Error,
+            linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, binding.Arguments[0],
                                                     binding.Arguments[0].DeterminedType, binding.Arguments[0].Part.TypeHint));
         }
@@ -642,7 +642,7 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().Be(ArgumentType.NumericDecimal);
 
             linkResult.Messages.Should().HaveCount(1);
-            linkResult.Messages.First().Should().Be(CompilerMessageFactory.Create(null, CompilerMessageLevel.Error,
+            linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, binding.Arguments[0],
                                                     binding.Arguments[0].DeterminedType, binding.Arguments[0].Part.TypeHint));
         }
@@ -668,7 +668,7 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().Be(ArgumentType.Text);
 
             linkResult.Messages.Should().HaveCount(1);
-            linkResult.Messages.First().Should().Be(CompilerMessageFactory.Create(null, CompilerMessageLevel.Error,
+            linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.TypeRequiresValueForArgument, binding.Arguments[0],
                                                     binding.Arguments[0].Part.TypeHint));
         }
@@ -694,7 +694,7 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().Be(ArgumentType.Text);
 
             linkResult.Messages.Should().HaveCount(1);
-            linkResult.Messages.First().Should().Be(CompilerMessageFactory.Create(null, CompilerMessageLevel.Error,
+            linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.TypeRequiresValueForArgument, binding.Arguments[0],
                                                     binding.Arguments[0].Part.TypeHint));
         }

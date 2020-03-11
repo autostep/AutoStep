@@ -24,5 +24,4 @@
         /// </summary>
         public string? TypeHint { get; set; }
     }
-
 }

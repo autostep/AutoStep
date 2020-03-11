@@ -16,7 +16,7 @@ namespace AutoStep.Language.Interaction
         /// <param name="sourceName">The source file containing the element to validate.</param>
         /// <param name="variableRef">The variable reference.</param>
         /// <returns>A compilation message, if there are any problems.</returns>
-        public virtual CompilerMessage? ValidateVariable(string? sourceName, VariableRefMethodArgumentElement variableRef)
+        public virtual LanguageOperationMessage? ValidateVariable(string? sourceName, VariableRefMethodArgumentElement variableRef)
         {
             if (variableRef is null)
             {
@@ -31,7 +31,7 @@ namespace AutoStep.Language.Interaction
 
             // Variable does not exist.
             // Error.
-            return CompilerMessageFactory.Create(sourceName, variableRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, variableRef.VariableName);
+            return LanguageMessageFactory.Create(sourceName, variableRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, variableRef.VariableName);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace AutoStep.Language.Interaction
         /// <param name="sourceName">The source file containing the element to validate.</param>
         /// <param name="variableArrayRef">The variable array reference.</param>
         /// <returns>A compilation message, if there are any problems.</returns>
-        public virtual CompilerMessage? ValidateVariable(string? sourceName, VariableArrayRefMethodArgument variableArrayRef)
+        public virtual LanguageOperationMessage? ValidateVariable(string? sourceName, VariableArrayRefMethodArgument variableArrayRef)
         {
             if (variableArrayRef is null)
             {
@@ -59,7 +59,7 @@ namespace AutoStep.Language.Interaction
                 {
                     // Trying to use a non-array variable as an array.
                     // Error.
-                    return CompilerMessageFactory.Create(sourceName, variableArrayRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotAnArray, variableArrayRef.VariableName);
+                    return LanguageMessageFactory.Create(sourceName, variableArrayRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotAnArray, variableArrayRef.VariableName);
                 }
 
                 // All good.
@@ -68,7 +68,7 @@ namespace AutoStep.Language.Interaction
 
             // Variable does not exist.
             // Error.
-            return CompilerMessageFactory.Create(sourceName, variableArrayRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, variableArrayRef.VariableName);
+            return LanguageMessageFactory.Create(sourceName, variableArrayRef, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, variableArrayRef.VariableName);
         }
 
         /// <summary>

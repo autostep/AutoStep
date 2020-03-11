@@ -49,7 +49,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             ";
 
             await CompileAndAssertErrors(Test,
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 2, 17, 2, 26));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 2, 17, 2, 26));
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             ";
 
             await CompileAndAssertErrors(Test,
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 4, 21, 4, 29));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingExpectedName, 4, 21, 4, 29));
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
             await CompileAndAssertErrors(Test,
                 file => file.Component("button", 2, 17),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingStepDeclaration, 4, 21, 4, 25));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMissingStepDeclaration, 4, 21, 4, 25));
         }
 
         [Fact]
@@ -188,7 +188,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             ";
 
             await CompileAndAssertErrors(Test,
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 26));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 26));
         }
 
         [Fact]
@@ -202,10 +202,10 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
             // The compiler will think we're trying to declare methods and associated calls.
             await CompileAndAssertErrors(Test,
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 23),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 25, 4, 25),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 27, 4, 31),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 33, 4, 35));
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 21, 4, 23),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 25, 4, 25),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 27, 4, 31),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNeedsParentheses, 4, 33, 4, 35));
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                     .Name("abc")
                 )
                 .Component("other", 11, 17),
-                CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, 6, 21, 6, 21,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, 6, 21, 6, 21,
                                              "extraneous input '<' expecting {<EOF>, 'App:', 'Trait:', 'Component:'}"));
         }
     }

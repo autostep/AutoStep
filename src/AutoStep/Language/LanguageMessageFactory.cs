@@ -10,7 +10,7 @@ namespace AutoStep.Language
     /// <summary>
     /// Factory for creating compiler messages.
     /// </summary>
-    internal static class CompilerMessageFactory
+    internal static class LanguageMessageFactory
     {
         /// <summary>
         /// Create a compiler message.
@@ -24,9 +24,9 @@ namespace AutoStep.Language
         /// <param name="colEnd">The column position at which the message ends.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, int lineEnd, int colEnd, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, int lineEnd, int colEnd, params object[] args)
         {
-            var message = new CompilerMessage(
+            var message = new LanguageOperationMessage(
                 sourceName,
                 level,
                 code,
@@ -49,9 +49,9 @@ namespace AutoStep.Language
         /// <param name="colStart">The column position at which the message starts.</param>
         /// <param name="args">Message arguments.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, params object[] args)
         {
-            var message = new CompilerMessage(
+            var message = new LanguageOperationMessage(
                 sourceName,
                 level,
                 code,
@@ -72,7 +72,7 @@ namespace AutoStep.Language
         /// <param name="stop">The Antlr token at which the message stops.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
         {
             return Create(sourceName, level, code, start.Line, start.Column + 1, stop.Line, stop.Column + 1 + (stop.StopIndex - stop.StartIndex), args);
         }
@@ -86,7 +86,7 @@ namespace AutoStep.Language
         /// <param name="argBinding">The argument binding the message covers.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, ArgumentBinding argBinding, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, ArgumentBinding argBinding, params object[] args)
         {
             return Create(sourceName, level, code, argBinding.MatchedTokens[0], argBinding.MatchedTokens[argBinding.MatchedTokens.Length - 1], args);
         }
@@ -101,7 +101,7 @@ namespace AutoStep.Language
         /// <param name="stop">The step token at which the message stops.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, StepToken start, StepToken stop, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, StepToken start, StepToken stop, params object[] args)
         {
             return Create(sourceName, level, code, start.SourceLine, start.StartColumn, stop.EndLine, stop.EndColumn, args);
         }
@@ -115,7 +115,7 @@ namespace AutoStep.Language
         /// <param name="code">Message code.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
             return Create(sourceName, level, code, context.Start, context.Stop, args);
         }
@@ -129,7 +129,7 @@ namespace AutoStep.Language
         /// <param name="code">Message code.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
             return Create(sourceName, level, code, element.SourceLine, element.StartColumn, element.EndLine, element.EndColumn, args);
         }
@@ -143,7 +143,7 @@ namespace AutoStep.Language
         /// <param name="code">Message code.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public static CompilerMessage Create(string? sourceName, BuiltElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+        public static LanguageOperationMessage Create(string? sourceName, BuiltElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
         {
             return Create(sourceName, level, code, element.SourceLine, element.StartColumn, args);
         }

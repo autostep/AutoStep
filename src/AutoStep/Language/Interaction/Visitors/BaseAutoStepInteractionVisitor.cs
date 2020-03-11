@@ -94,6 +94,11 @@ namespace AutoStep.Language.Interaction.Visitors
             other.Reset();
         }
 
+        /// <summary>
+        /// Retrieves the text for a terminal node containing a quoted string.
+        /// </summary>
+        /// <param name="node">The antlr node.</param>
+        /// <returns>The text block.</returns>
         protected string GetTextFromStringToken(ITerminalNode node)
         {
             // The text for a string node is just minus 1 character on either side.
@@ -108,6 +113,5 @@ namespace AutoStep.Language.Interaction.Visitors
 
             return string.Empty;
         }
-
     }
 }

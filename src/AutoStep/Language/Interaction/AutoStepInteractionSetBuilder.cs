@@ -14,7 +14,6 @@ namespace AutoStep.Language.Interaction
         private readonly TraitGraph traits = new TraitGraph();
         private readonly Dictionary<string, ComponentResolutionData> allComponents = new Dictionary<string, ComponentResolutionData>();
         private readonly ICallChainValidator callChainValidator;
-        private InteractionConstantSet constants = new InteractionConstantSet();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoStepInteractionSetBuilder"/> class.
@@ -26,7 +25,7 @@ namespace AutoStep.Language.Interaction
         }
 
         /// <summary>
-        /// Add an interaction file to consider during <see cref="Build(MethodTable)"/>.
+        /// Add an interaction file to consider during <see cref="Build(IInteractionsConfiguration)"/>.
         /// </summary>
         /// <param name="interactionFile">The file.</param>
         public void AddInteractionFile(InteractionFileElement interactionFile)
@@ -51,13 +50,15 @@ namespace AutoStep.Language.Interaction
         /// <summary>
         /// Builds the interaction set.
         /// </summary>
-        /// <param name="rootMethodTable">The root method table, containing all of the system-provided methods.</param>
+        /// <param name="interactionsConfig">
+        /// The interactions config, that provides the root method table,
+        /// containing all of the system-provided methods, plus the set of available constants.</param>
         /// <returns>The set build result.</returns>
         /// <remarks>
         /// This method goes through all the full trait graph and component list and determines the actual method table and step set for each
         /// component.
         /// </remarks>
-        public AutoStepInteractionSetBuilderResult Build(MethodTable rootMethodTable)
+        public AutoStepInteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig)
         {
             // Building the autostep interaction group involves:
             // 1. Going through the complete list of traits, resolving the method table for each one, and validating
@@ -66,14 +67,14 @@ namespace AutoStep.Language.Interaction
             //    Can't call self. Compiler error.
             //
             //    Indirect circular references will be detected at runtime.
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
             var allBoundSteps = new HashSet<InteractionStepDefinitionElement>();
             var builtComponents = new Dictionary<string, BuiltComponent>();
 
-            traits.MethodTableWalk(rootMethodTable, (trait, methodTable) =>
+            traits.MethodTableWalk(interactionsConfig.RootMethodTable, (trait, methodTable) =>
             {
                 // This gets invoked for each trait, with the complete method table.
-                ValidateTrait(trait, methodTable, constants, messages);
+                ValidateTrait(trait, methodTable, interactionsConfig.Constants, messages);
 
                 // In each trait, for each step, we need to reset the registered matching components.
                 // These may be added back in a minute.
@@ -97,8 +98,15 @@ namespace AutoStep.Language.Interaction
                     continue;
                 }
 
+                if (componentEntry.Name is null)
+                {
+                    // The name cannot be null here if a final component has been selected,
+                    // and the parser did its job.
+                    throw new LanguageEngineAssertException();
+                }
+
                 // Create the built component.
-                var finalComponent = new BuiltComponent(componentEntry.Name, new MethodTable(rootMethodTable));
+                var finalComponent = new BuiltComponent(componentEntry.Name, new MethodTable(interactionsConfig.RootMethodTable));
 
                 if (componentEntry.Traits is object && componentEntry.Traits.Any())
                 {
@@ -134,7 +142,7 @@ namespace AutoStep.Language.Interaction
                     // ...and again to validate the call chain.
                     foreach (var method in componentEntry.Methods.Values)
                     {
-                        callChainValidator.ValidateCallChain(method, finalComponent.MethodTable, constants, true, messages);
+                        callChainValidator.ValidateCallChain(method, finalComponent.MethodTable, interactionsConfig.Constants, true, messages);
                     }
 
                     // Finally, validate the method table to make sure there are no needs-defining methods left.
@@ -146,7 +154,7 @@ namespace AutoStep.Language.Interaction
                             {
                                 // A method required by one or more traits has not been defined. Indicate appropriately.
                                 // Add a message to the component itself that it needs to implement it.
-                                messages.Add(CompilerMessageFactory.Create(
+                                messages.Add(LanguageMessageFactory.Create(
                                     componentEntry.FinalComponent.SourceName,
                                     componentEntry.FinalComponent,
                                     CompilerMessageLevel.Error,
@@ -165,7 +173,7 @@ namespace AutoStep.Language.Interaction
                     foreach (var step in componentEntry.Steps)
                     {
                         // Validate the step's call chain.
-                        callChainValidator.ValidateCallChain(step, finalComponent.MethodTable, constants, true, messages);
+                        callChainValidator.ValidateCallChain(step, finalComponent.MethodTable, interactionsConfig.Constants, true, messages);
 
                         allBoundSteps.Add(step);
                     }
@@ -177,15 +185,15 @@ namespace AutoStep.Language.Interaction
             return new AutoStepInteractionSetBuilderResult(
                 messages.All(x => x.Level != CompilerMessageLevel.Error),
                 messages,
-                new AutoStepInteractionSet(constants, builtComponents, allBoundSteps));
+                new AutoStepInteractionSet(interactionsConfig.Constants, builtComponents, allBoundSteps));
         }
 
-        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<CompilerMessage> messages)
+        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<LanguageOperationMessage> messages)
         {
             ResolveComponent(componentData, allComponents, messages, new Stack<ComponentResolutionData>());
         }
 
-        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<CompilerMessage> messages, Stack<ComponentResolutionData> visited)
+        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<LanguageOperationMessage> messages, Stack<ComponentResolutionData> visited)
         {
             // We've already visited this component; it's in as good a state as it's going to be.
             if (componentData.Visited)
@@ -211,19 +219,19 @@ namespace AutoStep.Language.Interaction
                 }
                 else
                 {
-                    visited.Push(componentData);
-
                     // We are inheriting from something else.
                     // Go find it.
                     var inheritId = consideredComponent.Inherits.Name;
 
                     if (allComponents.TryGetValue(inheritId, out var inheritedData))
                     {
+                        visited.Push(componentData);
+
                         if (visited.Contains(inheritedData))
                         {
                             // Circular reference.
                             // Add a message with the call stack referenced.
-                            messages.Add(CompilerMessageFactory.Create(
+                            messages.Add(LanguageMessageFactory.Create(
                                 consideredComponent.SourceName,
                                 consideredComponent,
                                 CompilerMessageLevel.Error,
@@ -237,19 +245,29 @@ namespace AutoStep.Language.Interaction
                             // There is at least something to inherit from.
                             if (inheritedData.FinalComponent is object)
                             {
-                                componentData.ReplaceInheritance(inheritedData, consideredComponent);
+                                componentData.RebaseOnOtherComponent(inheritedData, consideredComponent);
                             }
                         }
-                    }
 
-                    visited.Pop();
+                        visited.Pop();
+                    }
+                    else
+                    {
+                        // Inheritance error, referenced field does not exist.
+                        messages.Add(LanguageMessageFactory.Create(
+                            consideredComponent.SourceName,
+                            consideredComponent.Inherits,
+                            CompilerMessageLevel.Error,
+                            CompilerMessageCode.InteractionComponentInheritedComponentNotFound,
+                            inheritId));
+                    }
                 }
             }
 
             componentData.Visited = true;
         }
 
-        private void ValidateTrait(TraitDefinitionElement trait, MethodTable methodTable, InteractionConstantSet constants, List<CompilerMessage> messages)
+        private void ValidateTrait(TraitDefinitionElement trait, MethodTable methodTable, InteractionConstantSet constants, List<LanguageOperationMessage> messages)
         {
             // For each method definition and step.
             // Walk the call chain for the expression and validate.

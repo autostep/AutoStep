@@ -89,7 +89,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.BadTagFormat,
@@ -111,7 +111,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.BadOptionFormat,
@@ -178,7 +178,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.OptionWithNoSetting,
@@ -201,7 +201,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.OptionWithNoSetting,

@@ -19,6 +19,6 @@ namespace AutoStep.Language.Interaction
         /// in the call chain are marked as 'needs-defining', i.e. a concrete implementation has not been set.
         /// </param>
         /// <param name="messages">A list of messages that this call will add to if there are any issues.</param>
-        void ValidateCallChain(ICallChainSource callChain, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<CompilerMessage> messages);
+        void ValidateCallChain(ICallChainSource callChain, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<LanguageOperationMessage> messages);
     }
 }

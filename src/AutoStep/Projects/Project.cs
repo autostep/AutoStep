@@ -33,10 +33,13 @@ namespace AutoStep.Projects
         }
 
         /// <summary>
-        /// Gets the set of all files in the project.
+        /// Gets the set of all test files in the project.
         /// </summary>
         public IReadOnlyDictionary<string, ProjectTestFile> AllTestFiles => allTestFiles;
 
+        /// <summary>
+        /// Gets the set of all interaction files in the project.
+        /// </summary>
         public IReadOnlyDictionary<string, ProjectInteractionFile> AllInteractionFiles => allInteractionfiles;
 
         /// <summary>

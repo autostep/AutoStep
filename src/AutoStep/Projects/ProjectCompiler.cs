@@ -47,7 +47,7 @@ namespace AutoStep.Projects
         /// <summary>
         /// Gets the global interactions configuration, that allows the global root method table to be manipulated.
         /// </summary>
-        public InteractionsGlobalConfiguration Interactions { get; } = new InteractionsGlobalConfiguration();
+        public IInteractionsConfiguration Interactions { get; } = new InteractionsConfiguration();
 
         /// <summary>
         /// Creates a default project compiler with the normal compiler and linker settings.
@@ -80,7 +80,7 @@ namespace AutoStep.Projects
         /// <returns>The overall project compilation result.</returns>
         public async Task<ProjectCompilerResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
-            var allMessages = new List<CompilerMessage>();
+            var allMessages = new List<LanguageOperationMessage>();
 
             // Compile the interaction files.
             await CompileInteractionFilesAsync(loggerFactory, allMessages, cancelToken).ConfigureAwait(false);
@@ -94,7 +94,7 @@ namespace AutoStep.Projects
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
-        private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, List<CompilerMessage> allMessages, CancellationToken cancelToken = default)
+        private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
         {
             // This method will go through all the autostep files in the project that match the filter and:
             //  - Verify that the built files are later than the source file last-modify time.
@@ -122,20 +122,20 @@ namespace AutoStep.Projects
                 }
                 catch (IOException ex)
                 {
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
                 }
                 catch (Exception ex)
                 {
                     // Severe enough error occurred inside the compilation process that we couldn't convert into
                     // a compiler message internally, and wasn't a more specific Exception we can catch.
                     // Add a catch all compilation error.
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
                 }
             }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
-        private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, List<CompilerMessage> allMessages, CancellationToken cancelToken = default)
+        private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
         {
             if (interactionCompiler is null && project.AllInteractionFiles.Count > 0)
             {
@@ -172,14 +172,14 @@ namespace AutoStep.Projects
                 }
                 catch (IOException ex)
                 {
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.IOException, 0, 0, ex.Message));
                 }
                 catch (Exception ex)
                 {
                     // Severe enough error occurred inside the compilation process that we couldn't convert into
                     // a compiler message internally, and wasn't a more specific Exception we can catch.
                     // Add a catch all compilation error.
-                    allMessages.Add(CompilerMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
+                    allMessages.Add(LanguageMessageFactory.Create(projectFile.Value.Path, CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException, 0, 0, ex.Message));
                 }
             }
 
@@ -196,7 +196,7 @@ namespace AutoStep.Projects
                     }
                 }
 
-                var setBuild = interactionSetBuilder.Build(Interactions.MethodTable);
+                var setBuild = interactionSetBuilder.Build(Interactions);
 
                 allMessages.AddRange(setBuild.Messages);
 
@@ -263,7 +263,7 @@ namespace AutoStep.Projects
         /// <returns>The overall project link result.</returns>
         public ProjectCompilerResult Link(CancellationToken cancelToken = default)
         {
-            var allMessages = new List<CompilerMessage>();
+            var allMessages = new List<LanguageOperationMessage>();
 
             // This method will go through all the autostep files in the project and:
             //  - Link if needed.
@@ -333,6 +333,13 @@ namespace AutoStep.Projects
         public LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
         {
             return lineTokeniser.Tokenise(line, lastTokeniserState);
+        }
+
+        private class InteractionsConfiguration : IInteractionsConfiguration
+        {
+            public MethodTable RootMethodTable { get; } = new MethodTable();
+
+            public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }
     }
 }

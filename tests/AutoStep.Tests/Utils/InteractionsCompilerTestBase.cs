@@ -28,12 +28,12 @@ namespace AutoStep.Tests.Utils
         {
         }
 
-        protected Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
+        protected Task CompileAndAssertErrors(string content, params LanguageOperationMessage[] expectedMessages)
         {
             return CompileAndAssertErrors(content, null, expectedMessages);
         }
 
-        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder> cfg, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Utils
             }
         }
 
-        protected async Task CompileAndAssertWarnings(string content, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertWarnings(string content, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 

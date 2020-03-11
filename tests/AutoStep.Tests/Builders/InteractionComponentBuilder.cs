@@ -6,9 +6,11 @@ namespace AutoStep.Tests.Builders
     {
         public InteractionComponentBuilder(string name, int line, int column)
         {
-            Built = new ComponentDefinitionElement(name);
-            Built.SourceLine = line;
-            Built.StartColumn = column;
+            Built = new ComponentDefinitionElement(name)
+            {
+                SourceLine = line,
+                StartColumn = column
+            };
         }
 
         public InteractionComponentBuilder Name(string name)

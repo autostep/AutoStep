@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements;
 
 namespace AutoStep.Language
 {
+    /// <summary>
+    /// Extensions for language elements that can add positional info.
+    /// </summary>
     internal static class LanguageElementExtensions
     {
         /// <summary>

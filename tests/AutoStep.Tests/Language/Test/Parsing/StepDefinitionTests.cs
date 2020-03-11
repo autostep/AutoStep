@@ -105,7 +105,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InvalidStepDefineKeyword,
                                     "A custom step cannot be defined using 'And'. You must use Given, When or Then.",
                                     2, 21, 2, 23)
             );
@@ -122,7 +122,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.StepVariableNotDeclared,
                                     "You have specified a Step parameter variable to insert, 'not an arg', but you have not declared the variable in the step declaration. This value will always be blank when the test runs.",
                                     4, 50, 4, 61)
             );
@@ -139,7 +139,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertWarnings(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep,
                                     "An 'And' statement must be preceded by a 'Given', 'When' or 'Then'.",
                                     4, 17, 4, 45)
             );
@@ -156,7 +156,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableNameRequired,
                                     "You cannot specify an Empty Parameter as a Step Parameter. Step Parameter variables must be literal names, e.g. {variable1} or {total}.",
                                     2, 41, 2, 42)
             );
@@ -174,7 +174,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
                                     "You cannot use '<arg>' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.",
                                     2, 55, 2, 61)
             );
@@ -192,7 +192,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.CannotSpecifyDynamicValueInStepDefinition,
                                     "You cannot use ':interpolated' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.",
                                     2, 55, 2, 69)
             );
@@ -209,7 +209,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableInvalidWhitespace,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepVariableInvalidWhitespace,
                                     "Extraneous whitespace detected in Step Parameter variable name. You cannot have extra whitespace at the start or end of a Step Parameter variable name.",
                                     2, 48, 2, 48)
             );

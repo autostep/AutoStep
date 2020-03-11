@@ -69,7 +69,7 @@ namespace AutoStep.Language.Test
             // Trim first, we don't want to worry about the whitespace at the end.
             statementBody = statementBody.Trim();
 
-            var errors = new List<CompilerMessage>();
+            var errors = new List<LanguageOperationMessage>();
             var success = true;
 
             // Compile the text, specifying a starting lexical mode of 'statement'.
@@ -164,7 +164,7 @@ namespace AutoStep.Language.Test
             Func<AutoStepParser, TContext> entryPoint,
             ILoggerFactory logFactory,
             out ITokenStream tokenStream,
-            out IEnumerable<CompilerMessage> parserErrors,
+            out IEnumerable<LanguageOperationMessage> parserErrors,
             int? customLexerStartMode = null)
             where TContext : ParserRuleContext
         {

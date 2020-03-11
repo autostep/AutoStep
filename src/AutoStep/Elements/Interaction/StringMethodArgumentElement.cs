@@ -6,18 +6,29 @@ using AutoStep.Language;
 namespace AutoStep.Elements.Interaction
 {
     /// <summary>
-    /// Represents a string arugment to a method.
+    /// Represents a string argument to a method.
     /// </summary>
     public class StringMethodArgumentElement : MethodArgumentElement
     {
         /// <summary>
-        /// Gets or sets the literal text.
+        /// Initializes a new instance of the <see cref="StringMethodArgumentElement"/> class.
         /// </summary>
-        public string? Text { get; set; }
+        /// <param name="text">The string text.</param>
+        /// <param name="tokens">The tokenised content of the text (to handle variable insertion).</param>
+        public StringMethodArgumentElement(string text, TokenisedArgumentValue tokens)
+        {
+            Text = text;
+            Tokenised = tokens;
+        }
 
         /// <summary>
-        /// Gets or sets the tokenised data for the text to allow variable replacement.
+        /// Gets the literal text.
         /// </summary>
-        public TokenisedArgumentValue? Tokenised { get; set; }
+        public string Text { get; }
+
+        /// <summary>
+        /// Gets the tokenised data for the text to allow variable replacement.
+        /// </summary>
+        public TokenisedArgumentValue Tokenised { get; }
     }
 }

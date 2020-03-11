@@ -14,7 +14,7 @@ namespace AutoStep.Tests.Utils
         public static void SetFileReadyForRunTest(this ProjectTestFile projFile, FileElement builtFile)
         {
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
-            projFile.UpdateLastLinkResult(new LinkResult(true, Enumerable.Empty<CompilerMessage>(), output: builtFile));
+            projFile.UpdateLastLinkResult(new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), output: builtFile));
         }
     }
 }

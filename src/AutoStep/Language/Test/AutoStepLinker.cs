@@ -113,7 +113,7 @@ namespace AutoStep.Language.Test
                 throw new ArgumentNullException(nameof(file));
             }
 
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
             bool success = true;
 
             var allFoundStepSources = new Dictionary<string, IStepDefinitionSource>();
@@ -143,7 +143,7 @@ namespace AutoStep.Language.Test
         /// <param name="sourceName">The relevant source for any messages.</param>
         /// <param name="messages">An optional set to add messages to.</param>
         /// <returns>True if binding is successful, false otherwise.</returns>
-        public bool BindSingleStep(StepReferenceElement stepReference, string? sourceName = null, IList<CompilerMessage>? messages = null)
+        public bool BindSingleStep(StepReferenceElement stepReference, string? sourceName = null, IList<LanguageOperationMessage>? messages = null)
         {
             if (stepReference is null)
             {
@@ -158,7 +158,7 @@ namespace AutoStep.Language.Test
                 // No matches.
                 if (messages is object)
                 {
-                    messages.Add(CompilerMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
+                    messages.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
                 }
 
                 stepReference.Unbind();
@@ -168,7 +168,7 @@ namespace AutoStep.Language.Test
             {
                 if (messages is object)
                 {
-                    messages.Add(CompilerMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
+                    messages.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
                 }
 
                 stepReference.Unbind();
@@ -197,7 +197,7 @@ namespace AutoStep.Language.Test
             return success;
         }
 
-        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, IList<CompilerMessage> messages)
+        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, IList<LanguageOperationMessage> messages)
         {
             var success = true;
 
@@ -223,7 +223,7 @@ namespace AutoStep.Language.Test
         /// Generate an optional compiler message for the matched argument. Only invoked on a successful exact match for the entire step reference.
         /// </summary>
         /// <returns>An optional compiler message.</returns>
-        private static CompilerMessage? GetBindingMessage(string? sourceName, ArgumentBinding binding)
+        private static LanguageOperationMessage? GetBindingMessage(string? sourceName, ArgumentBinding binding)
         {
             var part = binding.Part;
             var resultTokens = binding.MatchedTokens.AsSpan();
@@ -260,7 +260,7 @@ namespace AutoStep.Language.Test
             }
 
             ArgumentType? effectiveType;
-            CompilerMessage? message = null;
+            LanguageOperationMessage? message = null;
 
             if (resultTokens.Length == 0)
             {
@@ -271,7 +271,7 @@ namespace AutoStep.Language.Test
                 if (part.TypeHint == ArgumentType.NumericDecimal || part.TypeHint == ArgumentType.NumericInteger)
                 {
                     // We are expecting a value.
-                    message = CompilerMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.TypeRequiresValueForArgument, binding, part.TypeHint);
+                    message = LanguageMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.TypeRequiresValueForArgument, binding, part.TypeHint);
                 }
             }
             else if (resultTokens.Length > 1 || containsWhiteSpacePadding)
@@ -312,7 +312,7 @@ namespace AutoStep.Language.Test
             if (message is null && effectiveType != null && part.TypeHint != null && effectiveType < part.TypeHint)
             {
                 // The type hint indicates an incompatible type assignment (float can't be assigned to int, text can't be assigned to int, etc).
-                message = CompilerMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.ArgumentTypeNotCompatible, binding, effectiveType, part.TypeHint);
+                message = LanguageMessageFactory.Create(sourceName, CompilerMessageLevel.Error, CompilerMessageCode.ArgumentTypeNotCompatible, binding, effectiveType, part.TypeHint);
             }
 
             return message;

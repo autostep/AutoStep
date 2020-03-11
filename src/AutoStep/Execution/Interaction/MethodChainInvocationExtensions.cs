@@ -52,9 +52,10 @@ namespace AutoStep.Execution.Interaction
                         throw new CircularInteractionMethodException(method, callStack);
                     }
 
-                    var newContext = new MethodContext(method, foundMethod, context.Variables);
-
-                    newContext.ChainValue = context.ChainValue;
+                    var newContext = new MethodContext(method, foundMethod, context.Variables)
+                    {
+                        ChainValue = context.ChainValue,
+                    };
 
                     callStack.Push(newContext);
 

@@ -27,7 +27,7 @@ namespace AutoStep.Tests.Utils
         {
         }
 
-        protected async Task CompileAndAssertErrors(string content, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertErrors(string content, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Utils
             Assert.False(result.Success);
         }
 
-        protected async Task CompileAndAssertWarnings(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertWarnings(string content, Action<FileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
@@ -69,7 +69,7 @@ namespace AutoStep.Tests.Utils
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
-        protected async Task CompileAndAssertWarningsWithStatementParts(string content, Action<FileBuilder> cfg, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertWarningsWithStatementParts(string content, Action<FileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
@@ -93,7 +93,7 @@ namespace AutoStep.Tests.Utils
         }
 
 
-        protected async Task CompileAndAssertWarnings(string content, params CompilerMessage[] expectedMessages)
+        protected async Task CompileAndAssertWarnings(string content, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 

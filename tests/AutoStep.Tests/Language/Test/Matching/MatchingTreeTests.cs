@@ -292,7 +292,7 @@ namespace AutoStep.Tests.Language.Test.Matching
             result.Should().HaveCount(1);
             result[0].IsExact.Should().BeTrue();
             result[0].Confidence.Should().Be(int.MaxValue);
-            result[0].TryGetPlaceholderValue(InteractionPlaceholders.Component, out var value).Should().BeTrue();
+            result[0].TryGetPlaceholderValue(StepPlaceholders.Component, out var value).Should().BeTrue();
             result[0].Definition.Should().Be(stepDef);
             value.Should().Be("button");
         }
@@ -351,7 +351,7 @@ namespace AutoStep.Tests.Language.Test.Matching
             result.Should().HaveCount(1);
             result[0].IsExact.Should().BeTrue();
             result[0].Confidence.Should().Be(int.MaxValue);
-            result[0].TryGetPlaceholderValue(InteractionPlaceholders.Component, out var value).Should().BeTrue();
+            result[0].TryGetPlaceholderValue(StepPlaceholders.Component, out var value).Should().BeTrue();
             result[0].Definition.Should().Be(stepDef);
             value.Should().Be("button");
         }

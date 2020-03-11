@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Projects
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
 
-            var linkResult = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), null, builtFile);
+            var linkResult = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), null, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult);
 
@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Projects
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
 
-            var linkResult = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), null, builtFile);
+            var linkResult = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), null, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult).Verifiable();
 
@@ -108,7 +108,7 @@ namespace AutoStep.Tests.Projects
 
             var linkResult = new LinkResult(false, new []
             {
-                new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition, "")
+                new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition, "")
             }, null, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult).Verifiable();
@@ -140,7 +140,7 @@ namespace AutoStep.Tests.Projects
 
             var linkResult = new LinkResult(true, new[]
             {
-                new CompilerMessage("/file1", CompilerMessageLevel.Warning, CompilerMessageCode.LinkerNoMatchingStepDefinition, "")
+                new LanguageOperationMessage("/file1", CompilerMessageLevel.Warning, CompilerMessageCode.LinkerNoMatchingStepDefinition, "")
             }, null, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult).Verifiable();
@@ -170,7 +170,7 @@ namespace AutoStep.Tests.Projects
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
 
-            var linkResult = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), null, builtFile);
+            var linkResult = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), null, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult).Verifiable();
 
@@ -205,7 +205,7 @@ namespace AutoStep.Tests.Projects
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
 
-            var msg = new CompilerMessage("/file1", CompilerMessageLevel.Warning, CompilerMessageCode.LinkerNoMatchingStepDefinition, "");
+            var msg = new LanguageOperationMessage("/file1", CompilerMessageLevel.Warning, CompilerMessageCode.LinkerNoMatchingStepDefinition, "");
 
             var linkResult = new LinkResult(true, new[]
             {
@@ -242,7 +242,7 @@ namespace AutoStep.Tests.Projects
 
             var builtFile = new FileBuilder().Feature("My Feature", 1, 1).Built;
 
-            var linkResult = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), new[] { stepDefSource.Object }, builtFile);
+            var linkResult = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), new[] { stepDefSource.Object }, builtFile);
 
             mockLinker.Setup(x => x.Link(builtFile)).Returns(linkResult).Verifiable();
 

@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioTitleProvided,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioTitleProvided,
                                     "Scenarios must have a title.",
                                     4, 17, 4, 25));
         }
@@ -87,7 +87,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Error,
                     CompilerMessageCode.InvalidScenarioKeyword,
@@ -97,7 +97,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     endLineNo: 5,
                     endColumn: 25
                 ),
-                new CompilerMessage(
+                new LanguageOperationMessage(
                     null,
                     CompilerMessageLevel.Warning,
                     CompilerMessageCode.NoScenarios,
@@ -127,7 +127,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample,
                     "Not expecting an Examples block here; did you mean to define 'My Scenario' as a Scenario Outline rather than a Scenario?",
                     8, 17, 8, 25
                 )

@@ -1,31 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements;
 
 namespace AutoStep.Language
 {
+    /// <summary>
+    /// Represents a set of compiler messages generated during a compilation activity.
+    /// </summary>
     internal class CompilerMessageSet
     {
         private readonly string? sourceName;
         private readonly ITokenStream tokenStream;
-        private readonly List<CompilerMessage> messages = new List<CompilerMessage>();
-
-        public bool AnyErrorMessages { get; private set; } = false;
+        private readonly List<LanguageOperationMessage> messages = new List<LanguageOperationMessage>();
 
         /// <summary>
-        /// Gets the list of compiler messages generated during the visit process.
+        /// Initializes a new instance of the <see cref="CompilerMessageSet"/> class.
         /// </summary>
-        public IReadOnlyList<CompilerMessage> Messages => messages;
-
+        /// <param name="sourceName">The content source name.</param>
+        /// <param name="tokenStream">The token stream.</param>
         public CompilerMessageSet(string? sourceName, ITokenStream tokenStream)
         {
             this.sourceName = sourceName;
             this.tokenStream = tokenStream;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether any error messages have been generated.
+        /// </summary>
+        public bool AnyErrorMessages { get; private set; } = false;
+
+        /// <summary>
+        /// Gets the list of compiler messages generated during the visit process.
+        /// </summary>
+        public IReadOnlyList<LanguageOperationMessage> Messages => messages;
+
+        /// <summary>
+        /// Resets the set of messages to empty.
+        /// </summary>
         public void Clear()
         {
             messages.Clear();
@@ -118,8 +131,8 @@ namespace AutoStep.Language
         /// <param name="code">Message code.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public CompilerMessage CreateMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
-            => CompilerMessageFactory.Create(sourceName, context, level, code, args);
+        public LanguageOperationMessage CreateMessage(ParserRuleContext context, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+            => LanguageMessageFactory.Create(sourceName, context, level, code, args);
 
         /// <summary>
         /// Create a compiler message.
@@ -129,8 +142,8 @@ namespace AutoStep.Language
         /// <param name="code">Message code.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public CompilerMessage CreateMessage(PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
-            => CompilerMessageFactory.Create(sourceName, element, level, code, args);
+        public LanguageOperationMessage CreateMessage(PositionalElement element, CompilerMessageLevel level, CompilerMessageCode code, params object[] args)
+            => LanguageMessageFactory.Create(sourceName, element, level, code, args);
 
         /// <summary>
         /// Create a compiler message.
@@ -141,10 +154,14 @@ namespace AutoStep.Language
         /// <param name="stop">The Antlr token at which the message stops.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public CompilerMessage CreateMessage(CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
-            => CompilerMessageFactory.Create(sourceName, level, code, start, stop, args);
+        public LanguageOperationMessage CreateMessage(CompilerMessageLevel level, CompilerMessageCode code, IToken start, IToken stop, params object[] args)
+            => LanguageMessageFactory.Create(sourceName, level, code, start, stop, args);
 
-        public void AddRange(IEnumerable<CompilerMessage> messages)
+        /// <summary>
+        /// Adds a set of messages to the set.
+        /// </summary>
+        /// <param name="messages">The set of messages.</param>
+        public void AddRange(IEnumerable<LanguageOperationMessage> messages)
         {
             foreach (var newMessage in messages)
             {
@@ -163,14 +180,14 @@ namespace AutoStep.Language
         /// <param name="colEnd">The column position at which the message ends.</param>
         /// <param name="args">Any arguments used to prepare the message string.</param>
         /// <returns>The created message.</returns>
-        public CompilerMessage CreateMessage(CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, int lineEnd, int colEnd, params object[] args)
-            => CompilerMessageFactory.Create(sourceName, level, code, lineStart, colStart, lineEnd, colEnd, args);
+        public LanguageOperationMessage CreateMessage(CompilerMessageLevel level, CompilerMessageCode code, int lineStart, int colStart, int lineEnd, int colEnd, params object[] args)
+            => LanguageMessageFactory.Create(sourceName, level, code, lineStart, colStart, lineEnd, colEnd, args);
 
         /// <summary>
         /// Add a compiler message to the set output by the visitor.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void Add(CompilerMessage message)
+        public void Add(LanguageOperationMessage message)
         {
             if (message is null)
             {

@@ -84,12 +84,12 @@ namespace AutoStep.Tests.Projects
 
             // First compile result
             mockCompiler.Setup(x => x.CompileAsync(mockSource1.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
-                new FileCompilerResult(true, new[] { new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
+                new FileCompilerResult(true, new[] { new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
             ));
 
             // Second compile result
             mockCompiler.Setup(x => x.CompileAsync(mockSource2.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
-                new FileCompilerResult(true, new[] { new CompilerMessage("/file2", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
+                new FileCompilerResult(true, new[] { new LanguageOperationMessage("/file2", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "") })
             ));
 
             var mockLinker = new Mock<IAutoStepLinker>();
@@ -189,7 +189,7 @@ namespace AutoStep.Tests.Projects
             var mockSource = new Mock<IContentSource>();
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.Today);
 
-            var fileMessage = new CompilerMessage("/path", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "");
+            var fileMessage = new LanguageOperationMessage("/path", CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, "");
 
             var mockCompiler = new Mock<IAutoStepCompiler>();
             // Compilation will return a compilation result (with an empty file).
@@ -231,7 +231,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
-            var expectedMessage = new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
+            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
 
             overallResult.Messages.Should().Contain(expectedMessage);
@@ -259,7 +259,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
-            var expectedMessage = new CompilerMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,                                                      
+            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,                                                      
                                                       "Internal Error: Unknown Error", 0, 0);
 
             overallResult.Messages.Should().Contain(expectedMessage);

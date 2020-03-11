@@ -6,7 +6,7 @@ namespace AutoStep.Language.Test
     /// <summary>
     /// Represents the result from a compilation operation.
     /// </summary>
-    public class FileCompilerResult : CompilerResult<FileElement>
+    public class FileCompilerResult : LanguageOperationResult<FileElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCompilerResult"/> class.
@@ -24,7 +24,7 @@ namespace AutoStep.Language.Test
         /// <param name="success">Indicates a successful compilation.</param>
         /// <param name="messages">The set of messages resulting from a compilation.</param>
         /// <param name="output">The built output (if the compilation succeeded).</param>
-        public FileCompilerResult(bool success, IEnumerable<CompilerMessage> messages, FileElement? output = null)
+        public FileCompilerResult(bool success, IEnumerable<LanguageOperationMessage> messages, FileElement? output = null)
             : base(success, messages, output)
         {
         }

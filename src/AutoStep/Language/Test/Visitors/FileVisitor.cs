@@ -499,7 +499,7 @@ namespace AutoStep.Language.Test.Visitors
             return Result;
         }
 
-        private CompilerMessage? ValidateVariableInsertionName(ParserRuleContext context, string insertionName)
+        private LanguageOperationMessage? ValidateVariableInsertionName(ParserRuleContext context, string insertionName)
         {
             if (currentStepDefinition is object && currentStepSet is object)
             {

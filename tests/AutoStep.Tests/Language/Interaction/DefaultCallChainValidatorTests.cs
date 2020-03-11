@@ -28,14 +28,14 @@ namespace AutoStep.Tests.Language.Interaction
             methodTable.Set(new DummyMethod("method", 1));
             
             var constants = new InteractionConstantSet();
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
 
             var validator = new DefaultCallChainValidator();
             validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 1, 7, 1, 18, "NOTACONSTANT"),
-             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 2, 7, 2, 19, "NOTACONSTANT2")
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 1, 7, 1, 18, "NOTACONSTANT"),
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, 2, 7, 2, 19, "NOTACONSTANT2")
             );
         }
 
@@ -53,13 +53,13 @@ namespace AutoStep.Tests.Language.Interaction
             methodTable.Set(new DummyMethod("method", 0));
 
             var constants = new InteractionConstantSet();
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
 
             var validator = new DefaultCallChainValidator();
             validator.ValidateCallChain(callSource, methodTable, constants, false, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailablePermitUndefined, 2, 1, 2, 6, "methodDoesNotExist")
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailablePermitUndefined, 2, 1, 2, 6, "methodDoesNotExist")
             );
         }
 
@@ -77,13 +77,13 @@ namespace AutoStep.Tests.Language.Interaction
             methodTable.Set(new DummyMethod("method", 0));
 
             var constants = new InteractionConstantSet();
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
 
             var validator = new DefaultCallChainValidator();
             validator.ValidateCallChain(callSource, methodTable, constants, true, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailable, 2, 1, 2, 6, "methodDoesNotExist")
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodNotAvailable, 2, 1, 2, 6, "methodDoesNotExist")
             );
         }
 
@@ -97,22 +97,23 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 1, 1, 1, 6);
 
             // Register it as 'needs-defining'
-            var methodDef = new MethodDefinitionElement();
-            methodDef.Name = "method";
-            methodDef.SourceLine = 10;
-            methodDef.NeedsDefining = true;
+            var methodDef = new MethodDefinitionElement("method")
+            {
+                SourceLine = 10,
+                NeedsDefining = true
+            };
 
             var methodTable = new MethodTable();
             methodTable.Set("method", methodDef);
 
             var constants = new InteractionConstantSet();
-            var messages = new List<CompilerMessage>();
+            var messages = new List<LanguageOperationMessage>();
 
             var validator = new DefaultCallChainValidator();
             validator.ValidateCallChain(callSource, methodTable, constants, true, messages);
 
             messages.Should().BeEquivalentTo(
-             CompilerMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodRequiredButNotDefined, 1, 1, 1, 6, "", 10)
+             LanguageMessageFactory.Create("custom", CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodRequiredButNotDefined, 1, 1, 1, 6, "", 10)
             );
         }
 
@@ -147,27 +148,27 @@ namespace AutoStep.Tests.Language.Interaction
 
         private class FailingVariableSet : CallChainCompileTimeVariables
         {
-            public override CompilerMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
+            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
             {
-                return new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
             }
 
-            public override CompilerMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
+            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
             {
-                return new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
             }
         }
 
         private class PassingVariableSet : CallChainCompileTimeVariables
         {
-            public override CompilerMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
+            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableArrayRefMethodArgument nameRefToken)
             {
-                return new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
             }
 
-            public override CompilerMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
+            public override LanguageOperationMessage ValidateVariable(string sourceName, VariableRefMethodArgumentElement nameRefToken)
             {
-                return new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
+                return new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionVariableNotDefined, "eek");
             }
         }
     }

@@ -6,14 +6,14 @@ using Antlr4.Runtime;
 namespace AutoStep.Language
 {
     /// <summary>
-    /// Listener attached to the AutoStep parser that generates <see cref="CompilerMessage"/> items from any raised syntax errors.
+    /// Listener attached to the AutoStep parser that generates <see cref="LanguageOperationMessage"/> items from any raised syntax errors.
     /// </summary>
     /// <typeparam name="TParser">The underlying ANTLR Parser implementation that this listener attaches to.</typeparam>
     internal abstract class ParserErrorListener<TParser> : BaseErrorListener
         where TParser : Parser
     {
         private readonly string? sourceName;
-        private readonly List<CompilerMessage> messages;
+        private readonly List<LanguageOperationMessage> messages;
         private bool swallowEndOfFileErrors = false;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace AutoStep.Language
         public ParserErrorListener(string? sourceName, ITokenStream tokenStream)
         {
             this.sourceName = sourceName;
-            this.messages = new List<CompilerMessage>();
+            this.messages = new List<LanguageOperationMessage>();
             this.TokenStream = tokenStream;
         }
 
@@ -36,7 +36,7 @@ namespace AutoStep.Language
         /// <summary>
         /// Gets the set of compiler messages.
         /// </summary>
-        public IReadOnlyList<CompilerMessage> ParserErrors => messages;
+        public IReadOnlyList<LanguageOperationMessage> ParserErrors => messages;
 
         /// <summary>
         /// A derived implementation should create a new appopriate error handling context when this method is called.
@@ -87,7 +87,7 @@ namespace AutoStep.Language
                 swallowEndOfFileErrors = true;
             }
 
-            var compileMsg = new CompilerMessage(
+            var compileMsg = new LanguageOperationMessage(
                 sourceName,
                 CompilerMessageLevel.Error,
                 ctxt.Code,

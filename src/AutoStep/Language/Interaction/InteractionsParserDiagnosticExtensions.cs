@@ -8,6 +8,9 @@ namespace AutoStep.Language.Interaction
 {
     using static AutoStepInteractionsParser;
 
+    /// <summary>
+    /// Provides diagnostic extensions for generating text output from Antlr trees.
+    /// </summary>
     internal static class InteractionsParserDiagnosticExtensions
     {
         /// <summary>

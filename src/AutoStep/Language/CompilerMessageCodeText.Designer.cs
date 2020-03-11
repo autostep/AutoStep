@@ -151,6 +151,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified component to inherit from, {0}, cannot be found. Does this component exist?.
+        /// </summary>
+        internal static string InteractionComponentInheritedComponentNotFound {
+            get {
+                return ResourceManager.GetString("InteractionComponentInheritedComponentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interaction Step Definitions inside components cannot have $component$ markers; these are reserved for Trait steps..
         /// </summary>
         internal static string InteractionComponentStepDefinitionCannotHaveComponentMarker {

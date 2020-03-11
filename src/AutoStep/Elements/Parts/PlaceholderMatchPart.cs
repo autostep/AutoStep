@@ -5,13 +5,12 @@ using AutoStep.Elements.StepTokens;
 namespace AutoStep.Elements.Parts
 {
     /// <summary>
-    /// Represents a defined step argument.
+    /// Represents a placeholder part, that can match a dynamic value. This allows a single step definition to match against
+    /// multiple steps based on these values, and output the matched value as a result of the binding operation.
     /// </summary>
     internal class PlaceholderMatchPart : DefinitionPart
     {
-        private List<WordDefinitionPart> matchingPlaceholderValues = new List<WordDefinitionPart>();
-
-        public string PlaceholderValueName { get; }
+        private readonly List<WordDefinitionPart> matchingPlaceholderValues = new List<WordDefinitionPart>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderMatchPart"/> class.
@@ -23,7 +22,16 @@ namespace AutoStep.Elements.Parts
             PlaceholderValueName = placeholderValueName;
         }
 
-        public void MatchValue(string placeholderValue)
+        /// <summary>
+        /// Gets the name of the placeholder.
+        /// </summary>
+        public string PlaceholderValueName { get; }
+
+        /// <summary>
+        /// Add a value to match against.
+        /// </summary>
+        /// <param name="placeholderValue">The value to match.</param>
+        public void AddMatchingValue(string placeholderValue)
         {
             // Add a word definition part.
             matchingPlaceholderValues.Add(new WordDefinitionPart(placeholderValue, true)
@@ -35,6 +43,9 @@ namespace AutoStep.Elements.Parts
             });
         }
 
+        /// <summary>
+        /// Reset the list of matching placeholder values.
+        /// </summary>
         public void ClearAllValues()
         {
             matchingPlaceholderValues.Clear();
@@ -72,34 +83,6 @@ namespace AutoStep.Elements.Parts
         {
             // A placeholder part matches.
             return part is PlaceholderMatchPart;
-        }
-
-        /// <summary>
-        /// Returns the content of the matched text, given the reference text.
-        /// </summary>
-        /// <param name="referenceText">The entire reference text.</param>
-        /// <param name="matchedTokens">The set of matched tokens.</param>
-        /// <returns>The placeholder content.</returns>
-        public string GetContent(string referenceText, ReadOnlySpan<StepToken> matchedTokens)
-        {
-            // Content of a placeholder will just be the literal text between the start and end.
-            if (matchedTokens.Length == 0)
-            {
-                return string.Empty;
-            }
-            else if (matchedTokens.Length == 1)
-            {
-                var matched = matchedTokens[0];
-                return referenceText.Substring(matched.StartIndex, matched.Length);
-            }
-            else
-            {
-                var start = matchedTokens[0].StartIndex;
-                var lastToken = matchedTokens[matchedTokens.Length - 1];
-                var length = (lastToken.StartIndex - start) + lastToken.Length;
-
-                return referenceText.Substring(start, length);
-            }
         }
     }
 }

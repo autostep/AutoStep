@@ -5,16 +5,16 @@ namespace AutoStep.Language
     /// <summary>
     /// Defines a compiler message.
     /// </summary>
-    public class CompilerMessage : IEquatable<CompilerMessage>
+    public class LanguageOperationMessage : IEquatable<LanguageOperationMessage>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CompilerMessage"/> class.
+        /// Initializes a new instance of the <see cref="LanguageOperationMessage"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="level">The message level.</param>
         /// <param name="code">The name of the code.</param>
         /// <param name="message">The message.</param>
-        public CompilerMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message)
+        public LanguageOperationMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message)
         {
             SourceName = sourceName;
             Level = level;
@@ -23,7 +23,7 @@ namespace AutoStep.Language
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CompilerMessage"/> class.
+        /// Initializes a new instance of the <see cref="LanguageOperationMessage"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="level">The message level.</param>
@@ -31,7 +31,7 @@ namespace AutoStep.Language
         /// <param name="message">The message.</param>
         /// <param name="startLineNo">The line number of the element that the message applies to.</param>
         /// <param name="startColumn">The column position of the element that the message applies to.</param>
-        public CompilerMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message, int startLineNo, int startColumn)
+        public LanguageOperationMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message, int startLineNo, int startColumn)
             : this(sourceName, level, code, message)
         {
             StartLineNo = startLineNo;
@@ -39,7 +39,7 @@ namespace AutoStep.Language
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CompilerMessage"/> class.
+        /// Initializes a new instance of the <see cref="LanguageOperationMessage"/> class.
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="level">The message level.</param>
@@ -49,7 +49,7 @@ namespace AutoStep.Language
         /// <param name="startColumn">The starting column position of the element that the message applies to.</param>
         /// <param name="endLineNo">The ending line number of the element that the message applies to.</param>
         /// <param name="endColumn">The ending column position of the element that the message applies to.</param>
-        public CompilerMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message, int startLineNo, int startColumn, int endLineNo, int endColumn)
+        public LanguageOperationMessage(string? sourceName, CompilerMessageLevel level, CompilerMessageCode code, string message, int startLineNo, int startColumn, int endLineNo, int endColumn)
             : this(sourceName, level, code, message, startLineNo, startColumn)
         {
             EndLineNo = endLineNo;
@@ -112,11 +112,11 @@ namespace AutoStep.Language
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            return Equals(obj as CompilerMessage);
+            return Equals(obj as LanguageOperationMessage);
         }
 
         /// <inheritdoc/>
-        public bool Equals(CompilerMessage? other)
+        public bool Equals(LanguageOperationMessage? other)
         {
             var match = other != null &&
                    SourceName == other.SourceName &&

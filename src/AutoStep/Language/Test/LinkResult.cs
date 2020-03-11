@@ -8,7 +8,7 @@ namespace AutoStep.Language.Test
     /// <summary>
     /// Defines a linking operation result.
     /// </summary>
-    public class LinkResult : CompilerResult<FileElement>
+    public class LinkResult : LanguageOperationResult<FileElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkResult"/> class.
@@ -17,7 +17,7 @@ namespace AutoStep.Language.Test
         /// <param name="messages">The set of messages resulting from a link.</param>
         /// <param name="referencedSources">The set of all referenced step definition sources found by the linker.</param>
         /// <param name="output">The built output (if the link succeeded).</param>
-        public LinkResult(bool success, IEnumerable<CompilerMessage> messages, IEnumerable<IStepDefinitionSource>? referencedSources = null, FileElement? output = null)
+        public LinkResult(bool success, IEnumerable<LanguageOperationMessage> messages, IEnumerable<IStepDefinitionSource>? referencedSources = null, FileElement? output = null)
             : base(success, messages, output)
         {
             if (messages.Any(m => m.Level > CompilerMessageLevel.Info))

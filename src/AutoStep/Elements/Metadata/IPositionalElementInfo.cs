@@ -10,6 +10,9 @@
         /// </summary>
         int EndColumn { get; }
 
+        /// <summary>
+        /// Gets the end line.
+        /// </summary>
         int EndLine { get; }
     }
 }

@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.TableRowHasNotBeenTerminated,
@@ -270,14 +270,14 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.TableRowHasNotBeenTerminated,
                 "Table cell has not been terminated. Expecting a table delimiter character '|'.",
                 9, 29, 9, 36),
 
-                new CompilerMessage(
+                new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.TableRowHasNotBeenTerminated,
@@ -302,7 +302,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
             ";
 
-            await CompileAndAssertErrors(TestFile, new CompilerMessage(
+            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
                 null,
                 CompilerMessageLevel.Error,
                 CompilerMessageCode.TableColumnsMismatch,

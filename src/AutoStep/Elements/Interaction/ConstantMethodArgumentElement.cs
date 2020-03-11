@@ -1,13 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
-
-namespace AutoStep.Elements.Interaction
+﻿namespace AutoStep.Elements.Interaction
 {
-
+    /// <summary>
+    /// Represents a constant argument to a method, e.g. TAB.
+    /// </summary>
     public class ConstantMethodArgumentElement : MethodArgumentElement
     {
-        public string ConstantName { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConstantMethodArgumentElement"/> class.
+        /// </summary>
+        /// <param name="name">The name of the constant.</param>
+        public ConstantMethodArgumentElement(string name)
+        {
+            ConstantName = name;
+        }
+
+        /// <summary>
+        /// Gets the name of the constant.
+        /// </summary>
+        public string ConstantName { get; }
     }
 }

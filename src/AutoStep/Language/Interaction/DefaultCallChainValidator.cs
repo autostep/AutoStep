@@ -10,7 +10,7 @@ namespace AutoStep.Language.Interaction
     internal class DefaultCallChainValidator : ICallChainValidator
     {
         /// <inheritdoc/>
-        public void ValidateCallChain(ICallChainSource definition, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<CompilerMessage> messages)
+        public void ValidateCallChain(ICallChainSource definition, MethodTable methodTable, InteractionConstantSet constants, bool requireMethodDefinitions, List<LanguageOperationMessage> messages)
         {
             // Get the set of variables available to the call chain at the time of compilation.
             var variableSet = definition.GetCompileTimeChainVariables();
@@ -46,7 +46,7 @@ namespace AutoStep.Language.Interaction
                         if (!constants.ContainsConstant(constantArg.ConstantName))
                         {
                             // Not a valid constant.
-                            messages.Add(CompilerMessageFactory.Create(sourceFileName, constantArg, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, constantArg.ConstantName));
+                            messages.Add(LanguageMessageFactory.Create(sourceFileName, constantArg, CompilerMessageLevel.Error, CompilerMessageCode.InteractionConstantNotDefined, constantArg.ConstantName));
                         }
                     }
                 }
@@ -61,7 +61,7 @@ namespace AutoStep.Language.Interaction
                         {
                             // Error.
                             // File-based method needs a definition.
-                            messages.Add(CompilerMessageFactory.Create(
+                            messages.Add(LanguageMessageFactory.Create(
                                 sourceFileName,
                                 call,
                                 CompilerMessageLevel.Error,
@@ -73,7 +73,7 @@ namespace AutoStep.Language.Interaction
                         if (ReferenceEquals(fileMethod.MethodDefinition, definition))
                         {
                             // Circular reference detection.
-                            messages.Add(CompilerMessageFactory.Create(
+                            messages.Add(LanguageMessageFactory.Create(
                                 sourceFileName,
                                 call,
                                 CompilerMessageLevel.Error,
@@ -85,7 +85,7 @@ namespace AutoStep.Language.Interaction
                     if (foundMethod.ArgumentCount != call.Arguments.Count)
                     {
                         // Argument count mismatch.
-                        messages.Add(CompilerMessageFactory.Create(
+                        messages.Add(LanguageMessageFactory.Create(
                             sourceFileName,
                             call,
                             CompilerMessageLevel.Error,
@@ -101,7 +101,7 @@ namespace AutoStep.Language.Interaction
                 {
                     // Error.
                     // Method does not exist (and 'needs-defining' is not allowed).
-                    messages.Add(CompilerMessageFactory.Create(
+                    messages.Add(LanguageMessageFactory.Create(
                         sourceFileName,
                         call,
                         CompilerMessageLevel.Error,
@@ -112,7 +112,7 @@ namespace AutoStep.Language.Interaction
                 {
                     // Error.
                     // Method does not exist.
-                    messages.Add(CompilerMessageFactory.Create(
+                    messages.Add(LanguageMessageFactory.Create(
                         sourceFileName,
                         call,
                         CompilerMessageLevel.Error,

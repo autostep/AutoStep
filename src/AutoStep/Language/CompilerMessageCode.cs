@@ -182,27 +182,142 @@ namespace AutoStep.Language
 
         //// Errors from the Interaction Language ////
 
+        /// <summary>
+        /// A name has already been provided for this entity.
+        /// </summary>
         InteractionNameAlreadySet = 30001,
 
+        /// <summary>
+        /// The requested constant is not defined.
+        /// </summary>
         InteractionConstantNotDefined = 30002,
 
+        /// <summary>
+        /// A duplicate trait has been specified in a trait definition list, either when naming a combination trait,
+        /// or when defining a component's traits.
+        /// </summary>
         InteractionDuplicateTrait = 30003,
 
+        /// <summary>
+        /// The specified variable is not defined.
+        /// </summary>
         InteractionVariableNotDefined = 30004,
 
+        /// <summary>
+        /// The specified variable exists, but is not an array type.
+        /// </summary>
         InteractionVariableNotAnArray = 30005,
 
+        /// <summary>
+        /// Entity name has not been provided.
+        /// </summary>
         InteractionMissingExpectedName = 30006,
+
+        /// <summary>
+        /// An interaction method referenced by a component method or step is not defined.
+        /// </summary>
         InteractionMethodRequiredButNotDefined = 30007,
+
+        /// <summary>
+        /// The specified interaction method is not available.
+        /// </summary>
         InteractionMethodNotAvailable = 30008,
+
+        /// <summary>
+        /// The specified interaction method does not have the same number of arguments as the call.
+        /// </summary>
         InteractionMethodArgumentMismatch = 30009,
+
+        /// <summary>
+        /// Interaction methods cannot call themselves.
+        /// </summary>
         InteractionMethodCircularReference = 30010,
+
+        /// <summary>
+        /// A step definition inside a trait has not specified a $component$ placeholder.
+        /// </summary>
         InteractionTraitStepDefinitionMustHaveComponent = 30011,
+
+        /// <summary>
+        /// A step definition inside a component has specified a $component$ placeholder.
+        /// </summary>
         InteractionComponentStepDefinitionCannotHaveComponentMarker = 30012,
+
+        /// <summary>
+        /// An interaction method is not available; custom message to indicate it can be created as needs-defining.
+        /// </summary>
         InteractionMethodNotAvailablePermitUndefined = 30013,
+
+        /// <summary>
+        /// A method is required by a component because of the traits it has applied,
+        /// but has not been defined by the component.
+        /// </summary>
         InteractionMethodFromTraitRequiredButNotDefined = 30014,
+
+        /// <summary>
+        /// Detected an direct or indirect component inheritance loop.
+        /// </summary>
         InteractionComponentInheritanceLoop = 30015,
+
+        /// <summary>
+        /// Interaction step missing the declaration.
+        /// </summary>
         InteractionMissingStepDeclaration = 30016,
+
+        /// <summary>
+        /// Interaction method call requires parentheses.
+        /// </summary>
+        InteractionMethodNeedsParentheses = 30017,
+
+        /// <summary>
+        /// Interaction block contains invalid content.
+        /// </summary>
+        InteractionInvalidContent = 30018,
+
+        /// <summary>
+        /// Interaction method has an unterminated declaration.
+        /// </summary>
+        InteractionMethodDeclUnterminated = 30019,
+
+        /// <summary>
+        /// Missing a parameter.
+        /// </summary>
+        InteractionMethodDeclMissingParameter = 30020,
+
+        /// <summary>
+        /// Missing a parameter separator.
+        /// </summary>
+        InteractionMethodDeclMissingParameterSeparator = 30021,
+
+        /// <summary>
+        /// Unexpected content in a method declaration.
+        /// </summary>
+        InteractionMethodDeclUnexpectedContent = 30022,
+
+        /// <summary>
+        /// Unterminated string.
+        /// </summary>
+        InteractionUnterminatedString = 30023,
+
+        /// <summary>
+        /// Method call has not been closed.
+        /// </summary>
+        InteractionMethodCallUnterminated = 30024,
+
+        /// <summary>
+        /// Missing method call separator (->).
+        /// </summary>
+        InteractionMethodCallMissingSeparator = 30025,
+
+        /// <summary>
+        /// Missing method call parameter separator.
+        /// </summary>
+        InteractionMethodCallMissingParameterSeparator = 30026,
+
+        /// <summary>
+        /// Specified component to inherit from cannot be found.
+        /// </summary>
+        InteractionComponentInheritedComponentNotFound = 30027,
 
         //// Errors from Exceptions ////
 
@@ -215,15 +330,5 @@ namespace AutoStep.Language
         /// Unknown error category (the catch-all).
         /// </summary>
         UncategorisedException = 90002,
-        InteractionMethodNeedsParentheses = 90003,
-        InteractionInvalidContent = 90004,
-        InteractionMethodDeclUnterminated = 90005,
-        InteractionMethodDeclMissingParameter = 90006,
-        InteractionMethodDeclMissingParameterSeparator = 90007,
-        InteractionMethodDeclUnexpectedContent = 90008,
-        InteractionUnterminatedString = 90009,
-        InteractionMethodCallUnterminated = 90010,
-        InteractionMethodCallMissingSeparator = 90011,
-        InteractionMethodCallMissingParameterSeparator = 90012,
     }
 }

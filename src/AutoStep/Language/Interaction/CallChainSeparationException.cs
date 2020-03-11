@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Atn;
-using Antlr4.Runtime.Misc;
-using AutoStep.Language.Interaction.Parser;
-using AutoStep.Language.Interaction.Visitors;
-using AutoStep.Language.Test;
-using AutoStep.Language.Test.Parser;
-using Microsoft.Extensions.Logging;
+﻿using Antlr4.Runtime;
 
 namespace AutoStep.Language.Interaction
 {
-    using static AutoStepInteractionsParser;
-
-    public class CallChainSeparationException : InputMismatchException
+    /// <summary>
+    /// Exception thrown internally from the language system when the custom error strategy <see cref="InteractionErrorStrategy"/>
+    /// detects a call chain separation issue.
+    /// </summary>
+    internal class CallChainSeparationException : InputMismatchException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CallChainSeparationException"/> class.
+        /// </summary>
+        /// <param name="recognizer">The parser.</param>
         public CallChainSeparationException(Antlr4.Runtime.Parser recognizer)
             : base(recognizer)
         {

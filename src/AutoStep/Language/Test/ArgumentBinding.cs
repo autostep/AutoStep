@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Elements.Parts;
-using AutoStep.Elements.StepTokens;
+﻿using AutoStep.Elements.Parts;
 
 namespace AutoStep.Language.Test
 {
-
     /// <summary>
     /// Represents a single argument binding to a step definition's argument, described as a range of tokens.
     /// </summary>

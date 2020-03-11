@@ -10,27 +10,31 @@ namespace AutoStep.Tests.Builders
     public class InteractionStringArgumentBuilder : BaseBuilder<StringMethodArgumentElement>
     {
         private readonly int startTokenIdx = 0;
-        private int nextTokenIdx = 0;
+        private readonly List<StepToken> tokens; 
+        private readonly Func<TokenisedArgumentValue, StringMethodArgumentElement> factory;
 
-        private List<StepToken> tokens;
+        private int nextTokenIdx = 0;
         
         public InteractionStringArgumentBuilder(string rawText, int line, int startColumn)
         {
-            Built = new StringMethodArgumentElement
+            factory = (t) => new StringMethodArgumentElement(rawText, t)
             {
                 StartColumn = startColumn,
                 SourceLine = line,
-                EndLine = line,
-                Text = rawText
+                EndLine = line
             };
-
+            
             startTokenIdx = startColumn;
             tokens = new List<StepToken>();
+
+            // Create a default start element.
+            Built = factory(null);
         }
 
         public void Complete()
         {
-            Built.Tokenised = new TokenisedArgumentValue(tokens.ToArray(), false, false);
+            // Rebuild.
+            Built = factory(new TokenisedArgumentValue(tokens.ToArray(), false, false));
 
             if(tokens.Count > 0)
             {

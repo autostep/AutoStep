@@ -15,10 +15,10 @@ namespace AutoStep.Tests.Language.Test.Matching
         [Fact]
         public void MatchesOneOfMultiplePlaceholders()
         {
-            var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);
+            var argPart = new PlaceholderMatchPart(StepPlaceholders.Component);
 
-            argPart.MatchValue("input");
-            argPart.MatchValue("button");
+            argPart.AddMatchingValue("input");
+            argPart.AddMatchingValue("button");
 
             var text = "button next";
 
@@ -39,9 +39,9 @@ namespace AutoStep.Tests.Language.Test.Matching
         [Fact]
         public void ComponentsWithMultipleWords()
         {
-            var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);
+            var argPart = new PlaceholderMatchPart(StepPlaceholders.Component);
 
-            argPart.MatchValue("text box");
+            argPart.AddMatchingValue("text box");
 
             var text = "text box next";
 
@@ -64,10 +64,10 @@ namespace AutoStep.Tests.Language.Test.Matching
         [Fact]
         public void PartialMatchMultiplePlaceholders()
         {
-            var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);
+            var argPart = new PlaceholderMatchPart(StepPlaceholders.Component);
 
-            argPart.MatchValue("input");
-            argPart.MatchValue("button");
+            argPart.AddMatchingValue("input");
+            argPart.AddMatchingValue("button");
 
             var text = "but next";
 
@@ -88,7 +88,7 @@ namespace AutoStep.Tests.Language.Test.Matching
         [Fact]
         public void NoMatchIfNoComponentValues()
         {
-            var argPart = new PlaceholderMatchPart(InteractionPlaceholders.Component);
+            var argPart = new PlaceholderMatchPart(StepPlaceholders.Component);
             
             var text = "button next";
 

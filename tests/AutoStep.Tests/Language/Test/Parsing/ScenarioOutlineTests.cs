@@ -263,7 +263,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                         )
                     )
                 ),
-                new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared,
                                     "You have specified an Example variable to insert, 'not a variable', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.",
                                     8, 28, 8, 43)
             );
@@ -414,7 +414,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                         )
                     )
                 ),
-                new CompilerMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Warning, CompilerMessageCode.ExampleVariableNotDeclared,
                                     "You have specified an Example variable to insert, 'not a variable', but you have not declared the variable in any of your Examples. This value will always be blank when the test runs.", 6, 47, 6, 62)
             );
         }
@@ -436,7 +436,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null,
+                new LanguageOperationMessage(null,
                 CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword,
                 "The 'Examples' keyword is case-sensitive, so 'ExampLes:' should be 'Examples:'",
                 8, 17, 8, 25
@@ -460,7 +460,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null,
+                new LanguageOperationMessage(null,
                 CompilerMessageLevel.Error, CompilerMessageCode.ExamplesBlockRequiresTable,
                 "Examples blocks must contain a table.",
                 8, 17, 8, 25
@@ -480,7 +480,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioOutlineTitleProvided,
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.NoScenarioOutlineTitleProvided,
                                     "Scenario Outlines must have a title.",
                                     4, 17, 4, 33));
         }
@@ -505,7 +505,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ";
 
             await CompileAndAssertErrors(TestFile,
-                new CompilerMessage(null,
+                new LanguageOperationMessage(null,
                 CompilerMessageLevel.Error, CompilerMessageCode.ExamplesBlockRequiresTable,
                 "Examples blocks must contain a table.",
                 8, 17, 8, 25

@@ -14,7 +14,7 @@ namespace AutoStep.Language.Test.Visitors
     /// </summary>
     internal class TableVisitor : BaseAutoStepTestVisitor<TableElement>
     {
-        private readonly Func<ParserRuleContext, string, CompilerMessage?> insertionNameValidator;
+        private readonly Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator;
         private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]
         {
             (AutoStepParser.CELL_ESCAPED_DELIMITER, "|"),
@@ -32,7 +32,7 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public TableVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, CompilerMessage?> insertionNameValidator)
+        public TableVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
             : base(sourceName, tokenStream, rewriter)
         {
             this.insertionNameValidator = insertionNameValidator;

@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Projects
         {
             var projFile = new ProjectTestFile("/test", new StringContentSource("something"));
 
-            var result = new LinkResult(false, Enumerable.Empty<CompilerMessage>());
+            var result = new LinkResult(false, Enumerable.Empty<LanguageOperationMessage>());
             projFile.UpdateLastLinkResult(result);
 
             projFile.LastLinkResult.Should().Be(result);
@@ -86,7 +86,7 @@ namespace AutoStep.Tests.Projects
 
             var defSource = new UpdatableTestStepDefinitionSource();
 
-            var result = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), new[] { defSource });
+            var result = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), new[] { defSource });
             projFile.UpdateLastLinkResult(result);
 
             projFile.LinkerDependencies.Should().Contain(defSource);
@@ -99,7 +99,7 @@ namespace AutoStep.Tests.Projects
 
             var defSource = new TestStepDefinitionSource();
 
-            var result = new LinkResult(true, Enumerable.Empty<CompilerMessage>(), new[] { defSource });
+            var result = new LinkResult(true, Enumerable.Empty<LanguageOperationMessage>(), new[] { defSource });
             projFile.UpdateLastLinkResult(result);
 
             projFile.LinkerDependencies.Should().BeEmpty();

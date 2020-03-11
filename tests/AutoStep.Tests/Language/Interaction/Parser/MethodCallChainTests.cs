@@ -52,7 +52,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                             .Call("call", 4, 31, 4, 35)
                         )
                     ),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallUnterminated, 4, 31, 4, 35));
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallUnterminated, 4, 31, 4, 35));
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                             .Call("call3", 4, 49, 4, 55)
                         )
                     ),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 38, 4, 42));
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 38, 4, 42));
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                             .Call("call", 6, 32, 6, 37)
                         )
                     ),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 49, 4, 53));
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 49, 4, 53));
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .Method("method2", 8, 21, m => m
                             .Call("call2", 8, 32, 8, 37)
                     )),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallUnterminated, 8, 32, 8, 37));
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallUnterminated, 8, 32, 8, 37));
         }
 
         [Fact]
@@ -202,8 +202,8 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                             .Call("call", 4, 31, 4, 36)
                         )
                     ),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 38, 4, 42),
-                    CompilerMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 46, 4, 50));
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 38, 4, 42),
+                    LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodCallMissingSeparator, 4, 46, 4, 50));
         }
     }
 }

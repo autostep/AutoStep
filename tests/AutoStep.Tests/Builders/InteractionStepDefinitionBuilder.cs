@@ -81,7 +81,7 @@ namespace AutoStep.Tests.Builders
         }
         public InteractionStepDefinitionBuilder ComponentMatch(int start)
         {
-            Built.AddPart(new PlaceholderMatchPart(InteractionPlaceholders.Component)
+            Built.AddPart(new PlaceholderMatchPart(StepPlaceholders.Component)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = start,

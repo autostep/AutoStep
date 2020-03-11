@@ -61,11 +61,11 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <summary>
-        /// Resolves an instance of the owning type.
+        /// Determines the target of the method.
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
-        /// <returns>An instance of the task.</returns>
-        protected abstract object GetMethodTarget(IServiceScope scope);
+        /// <returns>An instance of the method target.</returns>
+        protected abstract object? GetMethodTarget(IServiceScope scope);
 
         /// <summary>
         /// Invoke an instance method, generating a task wrapper if needed.
@@ -73,7 +73,7 @@ namespace AutoStep.Definitions.Interaction
         /// <param name="target">The target object.</param>
         /// <param name="args">The method arguments.</param>
         /// <returns>A task that will completed when the method exits.</returns>
-        private ValueTask InvokeInstanceMethod(object target, object?[] args)
+        private ValueTask InvokeInstanceMethod(object? target, object?[] args)
         {
             if (typeof(ValueTask).IsAssignableFrom(method.ReturnType))
             {

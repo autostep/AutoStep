@@ -7,7 +7,7 @@ namespace AutoStep.Language.Test
     /// Defines the result of a step definition compilation, returned from
     /// <see cref="AutoStepCompiler.CompileStepDefinitionElementFromStatementBody(StepType, string)"/>.
     /// </summary>
-    public class StepDefinitionFromBodyResult : CompilerResult<StepDefinitionElement>
+    public class StepDefinitionFromBodyResult : LanguageOperationResult<StepDefinitionElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StepDefinitionFromBodyResult"/> class.
@@ -15,7 +15,7 @@ namespace AutoStep.Language.Test
         /// <param name="success">Did it succeed.</param>
         /// <param name="messages">Any messages.</param>
         /// <param name="element">The resulting element.</param>
-        public StepDefinitionFromBodyResult(bool success, IEnumerable<CompilerMessage> messages, StepDefinitionElement? element)
+        public StepDefinitionFromBodyResult(bool success, IEnumerable<LanguageOperationMessage> messages, StepDefinitionElement? element)
             : base(success, messages, element)
         {
         }

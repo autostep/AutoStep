@@ -10,6 +10,9 @@
         /// </summary>
         public int EndColumn { get; set; }
 
+        /// <summary>
+        /// Gets or sets the line on which the element ends.
+        /// </summary>
         public int EndLine { get; set; }
     }
 }

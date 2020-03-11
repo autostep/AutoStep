@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Language.Interaction;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -11,6 +12,11 @@ namespace AutoStep.Projects
     /// </summary>
     public interface IProjectCompiler
     {
+        /// <summary>
+        /// Gets the interaction configuration, that allows the root set of methods and constants to be defined.
+        /// </summary>
+        IInteractionsConfiguration Interactions { get; }
+
         /// <summary>
         /// Add a static step definition source (i.e. one that cannot change after it is registered).
         /// </summary>
@@ -22,8 +28,6 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="source">The step definition source.</param>
         void AddUpdatableStepDefinitionSource(IUpdatableStepDefinitionSource source);
-
-        InteractionsGlobalConfiguration Interactions { get; }
 
         /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
@@ -52,7 +56,6 @@ namespace AutoStep.Projects
         /// <param name="cancelToken">A cancellation token for the linker process.</param>
         /// <returns>The overall project link result.</returns>
         ProjectCompilerResult Link(CancellationToken cancelToken = default);
-
 
         /// <summary>
         /// Tokenises a line of text, returning a set of line tokens. Used mostly for syntax highlighting; faster than a regular compile.

@@ -11,14 +11,14 @@ namespace AutoStep.Language
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Message only visible in tests.")]
     internal class CompilerDiagnosticException : Exception
     {
-        private readonly CompilerMessage[] parserErrors;
+        private readonly LanguageOperationMessage[] parserErrors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerDiagnosticException"/> class.
         /// </summary>
         /// <param name="parserErrors">The relevant parser errors.</param>
         /// <param name="tokenStreamDebugText">The token stream debug text block.</param>
-        public CompilerDiagnosticException(IEnumerable<CompilerMessage> parserErrors, string tokenStreamDebugText)
+        public CompilerDiagnosticException(IEnumerable<LanguageOperationMessage> parserErrors, string tokenStreamDebugText)
             : base("Compiler Diagnostic Exception; check Errors and TokenStream Details.")
         {
             this.parserErrors = parserErrors.ToArray();
@@ -28,7 +28,7 @@ namespace AutoStep.Language
         /// <summary>
         /// Gets the parser errors.
         /// </summary>
-        public IReadOnlyCollection<CompilerMessage> Errors => parserErrors;
+        public IReadOnlyCollection<LanguageOperationMessage> Errors => parserErrors;
 
         /// <summary>
         /// Gets the token debug text.

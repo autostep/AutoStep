@@ -69,13 +69,12 @@ namespace AutoStep.Tests.Builders
 
         public InteractionMethodArgumentSetBuilder Int(int value, int startColumn)
         {
-            Built.Arguments.Add(new IntMethodArgumentElement
+            Built.Arguments.Add(new IntMethodArgumentElement(value)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = startColumn,
                 EndLine = Built.SourceLine,
                 EndColumn = startColumn + value.ToString().Length - 1,
-                Value = value
             });
 
             return this;
@@ -83,13 +82,12 @@ namespace AutoStep.Tests.Builders
 
         public InteractionMethodArgumentSetBuilder Float(double value, int startColumn)
         {
-            Built.Arguments.Add(new FloatMethodArgumentElement
+            Built.Arguments.Add(new FloatMethodArgumentElement(value)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = startColumn,
                 EndLine = Built.SourceLine,
                 EndColumn = startColumn + value.ToString().Length - 1,
-                Value = value
             });
 
             return this;
@@ -97,12 +95,11 @@ namespace AutoStep.Tests.Builders
 
         public InteractionMethodArgumentSetBuilder Constant(string constantName, int startColumn)
         {
-            Built.Arguments.Add(new ConstantMethodArgumentElement
+            Built.Arguments.Add(new ConstantMethodArgumentElement(constantName)
             {
                 SourceLine = Built.SourceLine,
                 StartColumn = startColumn,
                 EndLine = Built.SourceLine,
-                ConstantName = constantName,
                 EndColumn = startColumn + constantName.Length - 1
             });
 
