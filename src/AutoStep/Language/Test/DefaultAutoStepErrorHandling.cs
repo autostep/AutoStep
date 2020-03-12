@@ -106,7 +106,7 @@ namespace AutoStep.Language.Test
         private bool DefinitionArgumentWhitespace()
         {
             if (Context is DeclarationArgumentContext &&
-                ExpectingTokens(DEF_RCURLY, DEF_WORD) && OffendingSymbolIs(DEF_WS))
+                ExpectingTokens(DEF_RCURLY, DEF_WORD) && OffendingSymbolIs(WS))
             {
                 ChangeError(CompilerMessageCode.StepVariableInvalidWhitespace);
 
@@ -172,7 +172,7 @@ namespace AutoStep.Language.Test
 
         private bool ExpectingTableRowTerminator()
         {
-            if (OffendingSymbolIs(ROW_NL))
+            if (OffendingSymbolIs(NEWLINE) && Context is TableRowContext)
             {
                 ChangeError(CompilerMessageCode.TableRowHasNotBeenTerminated);
                 UseOpeningTokenAsStart(TABLE_START, CELL_DELIMITER);

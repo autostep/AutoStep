@@ -88,7 +88,7 @@ namespace AutoStep.Language.Test.Visitors
 
             if (variableName is null)
             {
-                var cellWs = context.CELL_WS(0);
+                var cellWs = context.WS(0);
 
                 if (cellWs is object)
                 {
@@ -149,7 +149,7 @@ namespace AutoStep.Language.Test.Visitors
 
             if (cellContent == null)
             {
-                var cellWs = context.CELL_WS(0);
+                var cellWs = context.WS(0);
 
                 if (cellWs == null)
                 {
