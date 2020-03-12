@@ -105,11 +105,11 @@ namespace AutoStep.Language.Test.Visitors
                 return Result;
             }
 
-            var tag = context.TAG();
+            var tagBody = context.ANNOTATION_TEXT().GetText();
 
-            var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
+            tagBody = tagBody.TrimEnd();
 
-            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(tag));
+            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(context));
 
             return Result;
         }
@@ -129,9 +129,7 @@ namespace AutoStep.Language.Test.Visitors
                 return Result;
             }
 
-            var option = context.OPTION();
-
-            var optBody = option.GetText().Substring(1);
+            var optBody = context.ANNOTATION_TEXT().GetText();
 
             // Trim the body to get rid of trailing whitespace.
             optBody = optBody.TrimEnd();
@@ -155,7 +153,7 @@ namespace AutoStep.Language.Test.Visitors
 
                 if (string.IsNullOrEmpty(setting))
                 {
-                    MessageSet.Add(option, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
+                    MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
                     return Result;
                 }
             }
@@ -164,7 +162,7 @@ namespace AutoStep.Language.Test.Visitors
                 new OptionElement(name)
                 {
                     Setting = setting,
-                }.AddLineInfo(option));
+                }.AddLineInfo(context));
 
             return Result;
         }

@@ -126,12 +126,6 @@
   <data name="ArgumentTypeNotCompatible" xml:space="preserve">
     <value>Cannot use a value of type {0} for an argument declared as a {1}.</value>
   </data>
-  <data name="BadOptionFormat" xml:space="preserve">
-    <value>Bad option format. Option must the format '$optionName', optionally with a value separated by ':', e.g. '$optionName:value'.</value>
-  </data>
-  <data name="BadTagFormat" xml:space="preserve">
-    <value>Bad tag format. Tag must have the format '@tagName'.</value>
-  </data>
   <data name="CannotSpecifyDynamicValueInStepDefinition" xml:space="preserve">
     <value>You cannot use '{0}' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.</value>
   </data>
@@ -302,6 +296,12 @@
   </data>
   <data name="UnexpectedAnnotation" xml:space="preserve">
     <value>Not expecting an annotation at this position.</value>
+  </data>
+  <data name="UnexpectedAnnotationMarker" xml:space="preserve">
+    <value>Cannot use annotation markers ($, @) inside another annotation. Are you missing a newline?</value>
+  </data>
+  <data name="UnexpectedAnnotationWhiteSpace" xml:space="preserve">
+    <value>Not expecting whitespace at this point. Annotations should have the format @tag, $option or $option:value.</value>
   </data>
   <data name="UnexpectedEndOfFile" xml:space="preserve">
     <value>Unexpected end of file.</value>

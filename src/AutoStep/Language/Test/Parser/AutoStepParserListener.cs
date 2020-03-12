@@ -250,29 +250,17 @@ internal interface IAutoStepParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitAnnotations([NotNull] AutoStepParser.AnnotationsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>tagAnnotation</c>
+	/// Enter a parse tree produced by the <c>annotationLine</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	void EnterAnnotationLine([NotNull] AutoStepParser.AnnotationLineContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>tagAnnotation</c>
+	/// Exit a parse tree produced by the <c>annotationLine</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>optionAnnotation</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>optionAnnotation</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
+	void ExitAnnotationLine([NotNull] AutoStepParser.AnnotationLineContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
@@ -285,6 +273,30 @@ internal interface IAutoStepParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitBlank([NotNull] AutoStepParser.BlankContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// </summary>

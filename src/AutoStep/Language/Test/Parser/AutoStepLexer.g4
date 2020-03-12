@@ -38,14 +38,16 @@ fragment X : [xX];
 fragment Y : [yY];
 fragment Z : [zZ];
 
+fragment ANNOTATION_BODY: ~[ \t\r\n] ~[@$#\r\n]*;
+
 FEATURE: F E A T U R E ':' -> pushMode(name);
 SCENARIO: S C E N A R I O ':' -> pushMode(name);
 SCENARIO_OUTLINE: S C E N A R I O ' ' O U T L I N E ':' -> pushMode(name);
 EXAMPLES: E X A M P L E S ':';
 STEP_DEFINE: S T E P ':' -> pushMode(definition);
 BACKGROUND: 'Background:';
-TAG: '@' ~[ \t\r\n] ~[#\r\n]*;
-OPTION: '$' ~[ \t\r\n] ~[#\r\n]*;
+TAG: '@' -> pushMode(annotationBody);
+OPTION: '$' -> pushMode(annotationBody);
 
 GIVEN: 'Given' -> pushMode(statement);
 WHEN: 'When' -> pushMode(statement);
@@ -53,11 +55,18 @@ THEN: 'Then' -> pushMode(statement);
 AND: 'And' -> pushMode(statement);
 
 NEWLINE: NL;
-WORD: ~[ #\t\r\n|]+;
+WORD: ~[ #\t\r\n|]+?;
 WS: SPACE+;
 TEXT_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
 ESCAPED_TABLE_DELIMITER: '\\|';
 TABLE_START: '|' -> pushMode(tableRow);
+
+mode annotationBody;
+ANNOTATION_COMMENT: SPACE* '#' ~[\r\n]* -> channel(HIDDEN);
+ANNOTATION_TEXT: ~[ \t\r\n@$] ~[@$#\r\n]*;
+ANNOTATION_ERR_MARKER: [$@];
+ANNOTATION_WS: SPACE+;
+ANNOTATION_NEWLINE: (NL | EOF) -> popMode;
 
 mode name;
 NAME_WORD: ~[ #\t\r\n]+ -> type(WORD);

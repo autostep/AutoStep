@@ -88,24 +88,6 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bad option format. Option must the format &apos;$optionName&apos;, optionally with a value separated by &apos;:&apos;, e.g. &apos;$optionName:value&apos;..
-        /// </summary>
-        internal static string BadOptionFormat {
-            get {
-                return ResourceManager.GetString("BadOptionFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bad tag format. Tag must have the format &apos;@tagName&apos;..
-        /// </summary>
-        internal static string BadTagFormat {
-            get {
-                return ResourceManager.GetString("BadTagFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You cannot use &apos;{0}&apos; as a Step Parameter. Step Parameter variables must be literal names, e.g. &apos;variable1&apos; or &apos;total&apos;. You cannot specify dynamic values..
         /// </summary>
         internal static string CannotSpecifyDynamicValueInStepDefinition {
@@ -615,6 +597,24 @@ namespace AutoStep.Language {
         internal static string UnexpectedAnnotation {
             get {
                 return ResourceManager.GetString("UnexpectedAnnotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use annotation markers ($, @) inside another annotation. Are you missing a newline?.
+        /// </summary>
+        internal static string UnexpectedAnnotationMarker {
+            get {
+                return ResourceManager.GetString("UnexpectedAnnotationMarker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not expecting whitespace at this point. Annotations should have the format @tag, $option or $option:value..
+        /// </summary>
+        internal static string UnexpectedAnnotationWhiteSpace {
+            get {
+                return ResourceManager.GetString("UnexpectedAnnotationWhiteSpace", resourceCulture);
             }
         }
         

@@ -124,44 +124,44 @@ namespace AutoStep.Language
         UnexpectedEndOfFile = 10003,
 
         /// <summary>
-        /// Tag format (@tag) was invalid.
-        /// </summary>
-        BadTagFormat = 10004,
-
-        /// <summary>
-        /// Option format ($opt) was invalid.
-        /// </summary>
-        BadOptionFormat = 10005,
-
-        /// <summary>
         /// A statement argument has not been closed.
         /// </summary>
-        ArgumentHasNotBeenClosed = 10006,
+        ArgumentHasNotBeenClosed = 10004,
 
         /// <summary>
         /// A table row has not been terminated.
         /// </summary>
-        TableRowHasNotBeenTerminated = 10007,
+        TableRowHasNotBeenTerminated = 10005,
 
         /// <summary>
         /// An examples block has been specified, but with no table.
         /// </summary>
-        ExamplesBlockRequiresTable = 10008,
+        ExamplesBlockRequiresTable = 10006,
 
         /// <summary>
         /// A feature has been defined, but no title has been provided.
         /// </summary>
-        NoFeatureTitleProvided = 10009,
+        NoFeatureTitleProvided = 10007,
 
         /// <summary>
         /// Cannot use the 'And' keyword for step definition statements.
         /// </summary>
-        InvalidStepDefineKeyword = 10010,
+        InvalidStepDefineKeyword = 10008,
 
         /// <summary>
         /// Step variable contains invalid whitespace.
         /// </summary>
-        StepVariableInvalidWhitespace = 10011,
+        StepVariableInvalidWhitespace = 10009,
+
+        /// <summary>
+        /// Annotation (@ or $) found in the middle of an annotation.
+        /// </summary>
+        UnexpectedAnnotationMarker = 10010,
+
+        /// <summary>
+        /// Can't have whitespace here.
+        /// </summary>
+        UnexpectedAnnotationWhiteSpace = 10011,
 
         //// Linker Messages ////
 

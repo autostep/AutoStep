@@ -28,8 +28,8 @@ namespace AutoStep.Language.Test
                 DefinitionInvalidStepType,
                 DefinitionEmptyArgument,
                 DefinitionArgumentWhitespace,
-                InvalidTagDefinitionExpectingWord,
-                InvalidOptionDefinitionExpectingWord,
+                InvalidAnnotationFormat,
+                UnexpectedAnnotationCharacter,
                 FeatureTitleInputMismatchMissingTitle,
                 ExpectingTableRowTerminator,
                 ExampleBlockInputMismatchExpectingTable,
@@ -146,24 +146,22 @@ namespace AutoStep.Language.Test
             return false;
         }
 
-        private bool InvalidTagDefinitionExpectingWord()
+        private bool InvalidAnnotationFormat()
         {
-            if (OffendingSymbolIs(WORD) &&
-                OffendingSymbolTextIs("@"))
+            if (Exception is NoViableAltException && OffendingSymbolIsOneOf(ANNOTATION_WS, ANNOTATION_NEWLINE))
             {
-                ChangeError(CompilerMessageCode.BadTagFormat);
+                ChangeError(CompilerMessageCode.UnexpectedAnnotationWhiteSpace);
                 return true;
             }
 
             return false;
         }
 
-        private bool InvalidOptionDefinitionExpectingWord()
+        private bool UnexpectedAnnotationCharacter()
         {
-            if (OffendingSymbolIs(WORD) &&
-                OffendingSymbolTextIs("$"))
+            if (Exception is NoViableAltException && OffendingSymbolIs(ANNOTATION_ERR_MARKER))
             {
-                ChangeError(CompilerMessageCode.BadOptionFormat);
+                ChangeError(CompilerMessageCode.UnexpectedAnnotationMarker);
                 return true;
             }
 

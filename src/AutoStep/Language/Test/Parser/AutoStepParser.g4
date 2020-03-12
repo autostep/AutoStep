@@ -49,10 +49,13 @@ featureBlock: annotations
 
 annotations: annotation*;
 
-annotation: WS? TAG NEWLINE          #tagAnnotation
-          | WS? OPTION NEWLINE       #optionAnnotation
-          | NEWLINE                  #blank
+annotation: WS? annotationBody ANNOTATION_NEWLINE #annotationLine
+          | NEWLINE                    #blank
           ;
+
+annotationBody: TAG ANNOTATION_TEXT    #tagAnnotation
+              | OPTION ANNOTATION_TEXT #optionAnnotation
+              ;
 
 featureDefinition: WS? featureTitle NEWLINE
                    description?;
@@ -167,9 +170,9 @@ description: NEWLINE*
 // This parser rule is only used for line tokenisation
 // it doesn't natively understand more context than a single line.
 // It is also more forgiving than the normal parser.
-onlyLine: WS? TAG lineTerm                                    #lineTag
-        | WS? OPTION lineTerm                                 #lineOpt
-        | WS? STEP_DEFINE WS? stepDeclaration? lineTerm   #lineStepDefine
+onlyLine: WS? TAG ANNOTATION_TEXT lineTerm                    #lineTag
+        | WS? OPTION ANNOTATION_TEXT lineTerm                 #lineOpt
+        | WS? STEP_DEFINE WS? stepDeclaration? lineTerm       #lineStepDefine
         | WS? FEATURE WS? text? lineTerm                      #lineFeature
         | WS? BACKGROUND lineTerm                             #lineBackground
         | WS? SCENARIO WS? text? lineTerm                     #lineScenario

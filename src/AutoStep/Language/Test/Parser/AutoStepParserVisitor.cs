@@ -162,19 +162,12 @@ internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitAnnotations([NotNull] AutoStepParser.AnnotationsContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>tagAnnotation</c>
+	/// Visit a parse tree produced by the <c>annotationLine</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>optionAnnotation</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
+	Result VisitAnnotationLine([NotNull] AutoStepParser.AnnotationLineContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
@@ -182,6 +175,20 @@ internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitBlank([NotNull] AutoStepParser.BlankContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// </summary>
