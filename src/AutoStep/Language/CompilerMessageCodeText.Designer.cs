@@ -115,6 +115,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This scenario name, &apos;{0}&apos;, has already been used in this feature. Scenario names must be unique within a feature..
+        /// </summary>
+        internal static string DuplicateScenarioNames {
+            get {
+                return ResourceManager.GetString("DuplicateScenarioNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Examples blocks must contain a table..
         /// </summary>
         internal static string ExamplesBlockRequiresTable {

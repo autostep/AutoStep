@@ -19,6 +19,8 @@ namespace AutoStep.Language.Test.Visitors
         private readonly TableVisitor tableVisitor;
         private readonly StepDefinitionVisitor stepDefinitionVisitor;
 
+        private readonly HashSet<string> featureScenarioNames = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+
         private IAnnotatableElement? currentAnnotatable;
         private ScenarioElement? currentScenario;
 
@@ -62,6 +64,9 @@ namespace AutoStep.Language.Test.Visitors
         public override FileElement VisitFeatureBlock([NotNull] AutoStepParser.FeatureBlockContext context)
         {
             Debug.Assert(Result is object);
+
+            // Clear the set of feature scenario names.
+            featureScenarioNames.Clear();
 
             if (Result.Feature != null)
             {
@@ -363,11 +368,18 @@ namespace AutoStep.Language.Test.Visitors
                 Visit(annotations);
             }
 
+            scenario.AddLineInfo(title);
+            scenario.Name = titleText;
+
+            // Try to add our scenario name to the unique set.
+            if (!string.IsNullOrEmpty(scenario.Name) && !featureScenarioNames.Add(scenario.Name))
+            {
+                // This scenario name is already in-use in this feature, add an error.
+                MessageSet.Add(title, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, scenario.Name);
+            }
+
             var description = ExtractDescription(definition.description());
 
-            scenario.AddLineInfo(title);
-
-            scenario.Name = titleText;
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
             currentAnnotatable = null;

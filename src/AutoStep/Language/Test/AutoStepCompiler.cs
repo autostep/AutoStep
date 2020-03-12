@@ -139,7 +139,7 @@ namespace AutoStep.Language.Test
             var allMessages = parserMessages.Concat(compilerVisitor.MessageSet.Messages);
 
             // Compile the file.
-            return new FileCompilerResult(success, allMessages, compilerVisitor.Success ? builtFile : null);
+            return new FileCompilerResult(success, allMessages, builtFile);
         }
 
         /// <summary>

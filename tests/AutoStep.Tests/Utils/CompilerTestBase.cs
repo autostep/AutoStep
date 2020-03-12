@@ -46,6 +46,30 @@ namespace AutoStep.Tests.Utils
             Assert.False(result.Success);
         }
 
+        protected async Task CompileAndAssertErrors(string content, Action<FileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
+        {
+            if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
+
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var source = new StringContentSource(content);
+
+            var result = await compiler.CompileAsync(source, LogFactory);
+
+            foreach (var message in result.Messages)
+            {
+                TestOutput.WriteLine(message.ToString());
+            }
+
+            // Make sure the messages are the same.
+            Assert.Equal(expectedMessages, result.Messages);
+            Assert.False(result.Success);
+
+            var expectedBuilder = new FileBuilder();
+            cfg(expectedBuilder);
+
+            AssertElementComparison(expectedBuilder.Built, result.Output, false);
+        }
+
         protected async Task CompileAndAssertWarnings(string content, Action<FileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));

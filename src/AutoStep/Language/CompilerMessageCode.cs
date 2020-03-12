@@ -96,6 +96,11 @@ namespace AutoStep.Language
         /// </summary>
         StepVariableNameRequired = 00017,
 
+        /// <summary>
+        /// A scenario name has been duplicated.
+        /// </summary>
+        DuplicateScenarioNames = 00018,
+
         //// Syntax Errors ////
 
         /// <summary>

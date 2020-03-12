@@ -135,6 +135,9 @@
   <data name="CannotSpecifyDynamicValueInStepDefinition" xml:space="preserve">
     <value>You cannot use '{0}' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.</value>
   </data>
+  <data name="DuplicateScenarioNames" xml:space="preserve">
+    <value>This scenario name, '{0}', has already been used in this feature. Scenario names must be unique within a feature.</value>
+  </data>
   <data name="ExamplesBlockRequiresTable" xml:space="preserve">
     <value>Examples blocks must contain a table.</value>
   </data>

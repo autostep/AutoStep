@@ -139,6 +139,69 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/37")]
+        public async Task FeatureWithDuplicateScenarioNameGivesError()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+                        
+                        Given I have
+
+                    Scenario: My Scenario
+                        
+                        # Check we can still get errors from a duplicate
+                        And I click
+            ";
+
+            await CompileAndAssertErrors(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("I have", 6, 25)
+                    )
+                    .Scenario("My Scenario", 8, 21, scen => scen
+                        .And("I click", null, 11, 25)
+                    )
+                ),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, 8, 21, 8, 41, "My Scenario"),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep, 11, 25, 11, 35)
+            );
+        }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/37")]
+        public async Task FeatureWithDuplicateScenarioNameDetectionCaseInsensitive()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+                        
+                        Given I have
+
+                    Scenario: My scenario
+                        
+                        # Check we can still get errors from a duplicate
+                        And I click
+            ";
+
+            await CompileAndAssertErrors(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("I have", 6, 25)
+                    )
+                    .Scenario("My scenario", 8, 21, scen => scen
+                        .And("I click", null, 11, 25)
+                    )
+                ),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, 8, 21, 8, 41, "My scenario"),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep, 11, 25, 11, 35)
+            );
+        }
 
         [Fact]
         public async Task CommentedFeatureWithScenarioPasses()
