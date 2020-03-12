@@ -319,5 +319,54 @@ namespace AutoStep.Tests.Projects
             // Linker was called.
             addedSource.Should().NotBeNull();
         }
+
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/42")]
+        public void InvokesUpdateStepDefinitionSourceAfterEachRecompile()
+        {
+            var project = new Project();
+            var mockSource = new Mock<IContentSource>();
+            mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.Today);
+            var mockCompiler = new Mock<IAutoStepCompiler>();
+
+            var compiledFile = new FileBuilder()
+                                .StepDefinition(StepType.Given, "I have defined something", 2, 2)
+                                .Built;
+
+            // Compilation will return a compilation result (with an empty file).
+            mockCompiler.Setup(x => x.CompileAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<FileCompilerResult>(
+                new FileCompilerResult(true, compiledFile)
+            ));
+
+            var mockLinker = new Mock<IAutoStepLinker>();
+
+            int updatedSourceCount = 0;
+
+            // Check that the linker is invoked.
+            mockLinker.Setup(x => x.AddOrUpdateStepDefinitionSource(It.IsAny<IUpdatableStepDefinitionSource>()))
+                      .Callback((IUpdatableStepDefinitionSource s) => updatedSourceCount++);
+
+            var projFile = new ProjectTestFile("/file1", mockSource.Object);
+            project.TryAddFile(projFile);
+
+            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+
+            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+
+            projFile.StepDefinitionSource.Should().NotBeNull();
+
+            // Linker was called.
+            updatedSourceCount.Should().Be(1);
+
+            // Indicate the file has changed.
+            mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(projFile.LastCompileTime + TimeSpan.FromSeconds(10));
+
+            // Compile again.
+            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+
+            // We should have updated the source.
+            updatedSourceCount.Should().Be(2);
+        }
     }
 }
