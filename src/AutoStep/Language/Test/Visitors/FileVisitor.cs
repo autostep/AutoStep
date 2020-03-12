@@ -19,6 +19,8 @@ namespace AutoStep.Language.Test.Visitors
         private readonly TableVisitor tableVisitor;
         private readonly StepDefinitionVisitor stepDefinitionVisitor;
 
+        private readonly HashSet<string> featureScenarioNames = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+
         private IAnnotatableElement? currentAnnotatable;
         private ScenarioElement? currentScenario;
 
@@ -63,6 +65,9 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
+            // Clear the set of feature scenario names.
+            featureScenarioNames.Clear();
+
             if (Result.Feature != null)
             {
                 // We already have a feature, don't go any deeper, add an error.
@@ -76,7 +81,7 @@ namespace AutoStep.Language.Test.Visitors
 
             VisitChildren(context);
 
-            if (Result.Feature.Scenarios.Count == 0)
+            if (!string.IsNullOrEmpty(Result.Feature.Name) && Result.Feature.Scenarios.Count == 0)
             {
                 // Warning should be associated to the title.
                 MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result.Feature.Name ?? "unknown");
@@ -100,11 +105,11 @@ namespace AutoStep.Language.Test.Visitors
                 return Result;
             }
 
-            var tag = context.TAG();
+            var tagBody = context.ANNOTATION_TEXT().GetText();
 
-            var tagBody = context.TAG().GetText().Substring(1).TrimEnd();
+            tagBody = tagBody.TrimEnd();
 
-            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(tag));
+            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(context));
 
             return Result;
         }
@@ -124,9 +129,7 @@ namespace AutoStep.Language.Test.Visitors
                 return Result;
             }
 
-            var option = context.OPTION();
-
-            var optBody = option.GetText().Substring(1);
+            var optBody = context.ANNOTATION_TEXT().GetText();
 
             // Trim the body to get rid of trailing whitespace.
             optBody = optBody.TrimEnd();
@@ -150,7 +153,7 @@ namespace AutoStep.Language.Test.Visitors
 
                 if (string.IsNullOrEmpty(setting))
                 {
-                    MessageSet.Add(option, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
+                    MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
                     return Result;
                 }
             }
@@ -159,7 +162,7 @@ namespace AutoStep.Language.Test.Visitors
                 new OptionElement(name)
                 {
                     Setting = setting,
-                }.AddLineInfo(option));
+                }.AddLineInfo(context));
 
             return Result;
         }
@@ -185,7 +188,7 @@ namespace AutoStep.Language.Test.Visitors
                 MessageSet.Add(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
             }
 
-            var title = titleTree.text().GetText();
+            var title = titleTree.text()?.GetText() ?? string.Empty;
             var description = ExtractDescription(context.description());
 
             // Past this point, annotations aren't valid.
@@ -233,17 +236,32 @@ namespace AutoStep.Language.Test.Visitors
 
             var declaration = definition.stepDeclaration();
 
-            var type = declaration switch
+            StepType? type = declaration switch
             {
                 AutoStepParser.DeclareGivenContext _ => StepType.Given,
                 AutoStepParser.DeclareWhenContext _ => StepType.When,
                 AutoStepParser.DeclareThenContext _ => StepType.Then,
-                _ => throw new LanguageEngineAssertException()
+                _ => null
             };
 
-            var stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+            StepDefinitionElement stepDefinition;
+            var bodyContext = declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0);
+            var isProcessedStep = false;
 
-            MergeVisitorAndReset(stepDefinitionVisitor);
+            if (type is null || bodyContext is null)
+            {
+                // Create a 'dummy' step definition.
+                stepDefinition = new StepDefinitionElement();
+                stepDefinition.AddLineInfo(declaration);
+            }
+            else
+            {
+                stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type.Value, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+
+                isProcessedStep = true;
+
+                MergeVisitorAndReset(stepDefinitionVisitor);
+            }
 
             currentAnnotatable = stepDefinition;
 
@@ -273,7 +291,10 @@ namespace AutoStep.Language.Test.Visitors
 
             Visit(context.stepDefinitionBody());
 
-            Result.AddStepDefinition(stepDefinition);
+            if (isProcessedStep)
+            {
+                Result.AddStepDefinition(stepDefinition);
+            }
 
             currentStepSet = null;
             currentStepDefinition = null;
@@ -311,7 +332,7 @@ namespace AutoStep.Language.Test.Visitors
                 }
 
                 scenario = new ScenarioElement();
-                titleText = scenarioTitle.text().GetText();
+                titleText = scenarioTitle.text()?.GetText() ?? string.Empty;
             }
             else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
             {
@@ -327,7 +348,7 @@ namespace AutoStep.Language.Test.Visitors
                 }
 
                 scenario = new ScenarioOutlineElement();
-                titleText = scenariOutlineTitle.text().GetText();
+                titleText = scenariOutlineTitle.text()?.GetText() ?? string.Empty;
             }
             else
             {
@@ -345,11 +366,18 @@ namespace AutoStep.Language.Test.Visitors
                 Visit(annotations);
             }
 
+            scenario.AddLineInfo(title);
+            scenario.Name = titleText;
+
+            // Try to add our scenario name to the unique set.
+            if (!string.IsNullOrEmpty(scenario.Name) && !featureScenarioNames.Add(scenario.Name))
+            {
+                // This scenario name is already in-use in this feature, add an error.
+                MessageSet.Add(title, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, scenario.Name);
+            }
+
             var description = ExtractDescription(definition.description());
 
-            scenario.AddLineInfo(title);
-
-            scenario.Name = titleText;
             scenario.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
             currentAnnotatable = null;

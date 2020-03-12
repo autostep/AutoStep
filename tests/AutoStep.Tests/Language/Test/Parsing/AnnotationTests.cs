@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Tests.Utils;
 using Xunit;
@@ -89,12 +90,12 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.BadTagFormat,
-                "Bad tag format. Tag must have the format '@tagName'.",
-                2, 15, 2, 15)
+                CompilerMessageCode.UnexpectedAnnotationWhiteSpace,
+                2, 16, 2, 16)
             );
         }
 
@@ -111,13 +112,12 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Given I have
             ";
 
-            await CompileAndAssertErrors(TestFile, new LanguageOperationMessage(
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
                 null,
                 CompilerMessageLevel.Error,
-                CompilerMessageCode.BadOptionFormat,
-                "Bad option format. Option must the format '$optionName', " +
-                "optionally with a value separated by ':', e.g. '$optionName:value'.",
-                2, 15, 2, 15)
+                CompilerMessageCode.UnexpectedAnnotationWhiteSpace,
+                2, 16, 2, 16)
             );
         }
 
@@ -242,6 +242,40 @@ namespace AutoStep.Tests.Language.Test.Parsing
                         .Option("opt3", "setting3", 11, 17)
                         .Given("I have", 15, 21)
             )));
+        }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/35")]
+        public async Task AdjacentTagAnnotationsNoWhiteSpace()
+        {
+            const string TestFile =
+            @"
+              @tag@TAG
+              Feature: My Feature
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotationMarker, 2, 19, 2, 19)
+            );
+        }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/35")]
+        public async Task AdjacentOptionAnnotationsNoWhiteSpace()
+        {
+            const string TestFile =
+            @"
+              $opt@TAG
+              Feature: My Feature
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotationMarker, 2, 19, 2, 19)
+            );
         }
 
     }

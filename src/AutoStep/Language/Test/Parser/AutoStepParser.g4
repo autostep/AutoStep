@@ -3,24 +3,25 @@ parser grammar AutoStepParser;
 options { tokenVocab=AutoStepLexer; }
 
 file: NEWLINE*
-      (featureBlock|stepDefinitionBlock)+ // Multiple feature blocks aren't valid, 
-                                          // but we want to give an error later instead of failing
-                                          // the parse stage.
+      fileEntity+ // Multiple feature blocks aren't valid, 
+                  // but we want to give an error later instead of failing
+                  // the parse stage.
       WS? EOF;
 
+fileEntity: featureBlock | stepDefinitionBlock;
 
 stepDefinitionBlock: annotations
                      stepDefinition
                      stepDefinitionBody;
 
-stepDefinition: WS? STEP_DEFINE DEF_WS? stepDeclaration (DEF_NEWLINE | EOF)
+stepDefinition: WS? STEP_DEFINE WS? stepDeclaration (NEWLINE | EOF)
                     description?;
 
 stepDefinitionBody: stepCollectionBodyLine*;
 
-stepDeclaration: DEF_GIVEN DEF_WS? stepDeclarationBody #declareGiven
-               | DEF_WHEN DEF_WS? stepDeclarationBody  #declareWhen
-               | DEF_THEN DEF_WS? stepDeclarationBody  #declareThen
+stepDeclaration: DEF_GIVEN WS? stepDeclarationBody #declareGiven
+               | DEF_WHEN WS? stepDeclarationBody  #declareWhen
+               | DEF_THEN WS? stepDeclarationBody  #declareThen
                ;
 
 stepDeclarationBody: stepDeclarationSection+;
@@ -37,7 +38,7 @@ stepDeclarationTypeHint: DEF_WORD;
 
 stepDeclarationSectionContent: (DEF_WORD | DEF_GIVEN | DEF_WHEN | DEF_THEN)   # declarationWord
                              | (DEF_ESCAPED_LCURLY | DEF_ESCAPED_RCURLY)      # declarationEscaped
-                             | DEF_WS                                         # declarationWs
+                             | WS                                             # declarationWs
                              | DEF_COLON                                      # declarationColon
                              ;
 
@@ -48,10 +49,13 @@ featureBlock: annotations
 
 annotations: annotation*;
 
-annotation: WS? TAG NEWLINE          #tagAnnotation
-          | WS? OPTION NEWLINE       #optionAnnotation
-          | NEWLINE                  #blank
+annotation: WS? annotationBody ANNOTATION_NEWLINE #annotationLine
+          | NEWLINE                    #blank
           ;
+
+annotationBody: TAG ANNOTATION_TEXT    #tagAnnotation
+              | OPTION ANNOTATION_TEXT #optionAnnotation
+              ;
 
 featureDefinition: WS? featureTitle NEWLINE
                    description?;
@@ -83,15 +87,15 @@ stepCollectionBodyLine: statementBlock
                       | NEWLINE
                       ;
 
-statementBlock: WS? statement STATEMENT_NEWLINE NEWLINE* tableBlock #statementWithTable
-              | WS? statement STATEMENT_NEWLINE                     #statementLineTerminated
-              | WS? statement WS? EOF                               #statementEofTerminated
+statementBlock: WS? statement NEWLINE NEWLINE* tableBlock #statementWithTable
+              | WS? statement NEWLINE                     #statementLineTerminated
+              | WS? statement WS? EOF                     #statementEofTerminated
               ;
 
-statement: GIVEN STATEMENT_WS statementBody #given
-         | WHEN STATEMENT_WS statementBody  #when
-         | THEN STATEMENT_WS statementBody  #then
-         | AND STATEMENT_WS statementBody   #and
+statement: GIVEN WS statementBody #given
+         | WHEN WS statementBody  #when
+         | THEN WS statementBody  #then
+         | AND WS statementBody   #and
          ;
 
 statementBody: statementSection+;
@@ -111,10 +115,10 @@ statementSection:   STATEMENT_QUOTE                                             
                   | STATEMENT_COLON                                               # statementColon
                   | STATEMENT_WORD                                                # statementWord
                   | (STATEMENT_VAR_START | STATEMENT_VAR_STOP)                    # statementVarUnmatched  
-                  | STATEMENT_WS                                                  # statementBlockWs
+                  | WS                                                            # statementBlockWs
                   ;
 
-statementVariableName: statementVarPhrase (STATEMENT_WS statementVarPhrase)*;
+statementVariableName: statementVarPhrase (WS statementVarPhrase)*;
 
 statementVarPhrase: (STATEMENT_WORD | STATEMENT_INT)+;
 
@@ -127,15 +131,15 @@ exampleBlock: annotations
 tableBlock: WS? tableHeader
             (WS? tableRow | NEWLINE)*;
 
-tableHeader: tableHeaderCell+ CELL_DELIMITER (ROW_NL | EOF);
+tableHeader: tableHeaderCell+ CELL_DELIMITER (NEWLINE | EOF);
 
-tableHeaderCell: (TABLE_START | CELL_DELIMITER) CELL_WS? cellVariableName? CELL_WS?;
+tableHeaderCell: (TABLE_START | CELL_DELIMITER) WS? cellVariableName? WS?;
 
-tableRow: tableRowCell+ CELL_DELIMITER (ROW_NL | EOF);
+tableRow: tableRowCell+ CELL_DELIMITER (NEWLINE | EOF);
 
-tableRowCell: (TABLE_START | CELL_DELIMITER) CELL_WS? tableRowCellContent? CELL_WS?;
+tableRowCell: (TABLE_START | CELL_DELIMITER) WS? tableRowCellContent? WS?;
 
-tableRowCellContent: (CELL_WS? cellContentBlock)+;
+tableRowCellContent: (WS? cellContentBlock)+;
 
 cellContentBlock:       (
                           CELL_ESCAPED_DELIMITER
@@ -150,10 +154,12 @@ cellContentBlock:       (
                   | CELL_WORD                                       # cellWord
                   ;
 
-cellVariableName: cellVarPhrase (CELL_WS cellVarPhrase)*;
+cellVariableName: cellVarPhrase (WS cellVarPhrase)*;
 
 cellVarPhrase: (CELL_WORD | CELL_INT)+;
 
+// Need to include the special tokens that might appear inside a normal
+// sentence.
 text: (WS? WORD)+;
 line: WS? text? NEWLINE;
 description: NEWLINE*
@@ -164,9 +170,9 @@ description: NEWLINE*
 // This parser rule is only used for line tokenisation
 // it doesn't natively understand more context than a single line.
 // It is also more forgiving than the normal parser.
-onlyLine: WS? TAG lineTerm                                    #lineTag
-        | WS? OPTION lineTerm                                 #lineOpt
-        | WS? STEP_DEFINE DEF_WS? stepDeclaration? lineTerm   #lineStepDefine
+onlyLine: WS? TAG ANNOTATION_TEXT lineTerm                    #lineTag
+        | WS? OPTION ANNOTATION_TEXT lineTerm                 #lineOpt
+        | WS? STEP_DEFINE WS? stepDeclaration? lineTerm       #lineStepDefine
         | WS? FEATURE WS? text? lineTerm                      #lineFeature
         | WS? BACKGROUND lineTerm                             #lineBackground
         | WS? SCENARIO WS? text? lineTerm                     #lineScenario
@@ -180,7 +186,5 @@ onlyLine: WS? TAG lineTerm                                    #lineTag
         | WS? text? lineTerm                                  #lineText
         ;
 
-lineTerm: STATEMENT_NEWLINE 
-        | DEF_NEWLINE
-        | ROW_NL
+lineTerm: NEWLINE
         | WS? EOF;

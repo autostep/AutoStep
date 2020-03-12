@@ -512,5 +512,23 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 )
             );
         }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/38")]
+        public async Task ScenarioOutlineNameWithStepPrefixes()
+        {
+            const string TestFile =
+            @"                
+              Feature: Test Feature
+
+                Scenario Outline: Test the Given, When, Then functionality
+            ";
+
+            await CompileAndAssertSuccess(TestFile, cfg => cfg
+                .Feature("Test Feature", 2, 15, feat => feat
+                    .ScenarioOutline("Test the Given, When, Then functionality", 4, 17)
+                )
+            );
+        }
     }
 }

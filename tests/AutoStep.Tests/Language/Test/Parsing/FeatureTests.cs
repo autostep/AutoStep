@@ -139,6 +139,69 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/37")]
+        public async Task FeatureWithDuplicateScenarioNameGivesError()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+                        
+                        Given I have
+
+                    Scenario: My Scenario
+                        
+                        # Check we can still get errors from a duplicate
+                        And I click
+            ";
+
+            await CompileAndAssertErrors(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("I have", 6, 25)
+                    )
+                    .Scenario("My Scenario", 8, 21, scen => scen
+                        .And("I click", null, 11, 25)
+                    )
+                ),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, 8, 21, 8, 41, "My Scenario"),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep, 11, 25, 11, 35)
+            );
+        }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/37")]
+        public async Task FeatureWithDuplicateScenarioNameDetectionCaseInsensitive()
+        {
+            const string TestFile =
+            @"
+                Feature: My Feature
+
+                    Scenario: My Scenario
+                        
+                        Given I have
+
+                    Scenario: My scenario
+                        
+                        # Check we can still get errors from a duplicate
+                        And I click
+            ";
+
+            await CompileAndAssertErrors(TestFile, file => file
+                .Feature("My Feature", 2, 17, feat => feat
+                    .Scenario("My Scenario", 4, 21, scen => scen
+                        .Given("I have", 6, 25)
+                    )
+                    .Scenario("My scenario", 8, 21, scen => scen
+                        .And("I click", null, 11, 25)
+                    )
+                ),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.DuplicateScenarioNames, 8, 21, 8, 41, "My scenario"),
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.AndMustFollowNormalStep, 11, 25, 11, 35)
+            );
+        }
 
         [Fact]
         public async Task CommentedFeatureWithScenarioPasses()
@@ -166,6 +229,81 @@ namespace AutoStep.Tests.Language.Test.Parsing
                       .Given("I have clicked on", 9, 25)
                       .And("I have gone to", StepType.Given, 11, 25)
                    )
+                )
+            );
+        }
+
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/39")]
+        public async Task OnlyOneFeatureAllowed()
+        {
+            const string TestFile =
+            @"                
+              Feature: Feature 1
+
+                Scenario: My Scenario
+
+              Feature: Feature 2
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.OnlyOneFeatureAllowed,
+                    6, 15, 6, 32
+                )
+            );
+        }
+        
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/39")]
+        public async Task OnlyOneFeatureAllowedErrorRaisedIfEarlierSyntaxError()
+        {
+            const string TestFile =
+            @"                
+              Scenario: Error
+
+              Feature: Feature 1
+
+                Scenario: My Scenario
+
+              Feature: Feature 2
+
+                Scenario: My Scenario
+            ";
+
+            await CompileAndAssertErrors(TestFile,
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.SyntaxError,
+                    2, 15, 2, 23, "no viable alternative at input '              Scenario:'"),
+                LanguageMessageFactory.Create(
+                    null,
+                    CompilerMessageLevel.Error,
+                    CompilerMessageCode.OnlyOneFeatureAllowed,
+                    8, 15, 8, 32
+                )
+            );
+        }
+        
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/38")]
+        public async Task ScenarioOutlineNameWithStepPrefixes()
+        {
+            const string TestFile =
+            @"                
+              Feature: Test the Given, When, Then functionality
+
+                Scenario: Scenario 1
+            ";
+
+            await CompileAndAssertSuccess(TestFile, cfg => cfg
+                .Feature("Test the Given, When, Then functionality", 2, 15, feat => feat
+                    .Scenario("Scenario 1", 4, 17)
                 )
             );
         }

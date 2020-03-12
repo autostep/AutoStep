@@ -48,6 +48,18 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFile([NotNull] AutoStepParser.FileContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFileEntity([NotNull] AutoStepParser.FileEntityContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepParser.fileEntity"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFileEntity([NotNull] AutoStepParser.FileEntityContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.stepDefinitionBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -282,33 +294,19 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitAnnotations([NotNull] AutoStepParser.AnnotationsContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>tagAnnotation</c>
+	/// Enter a parse tree produced by the <c>annotationLine</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context) { }
+	public virtual void EnterAnnotationLine([NotNull] AutoStepParser.AnnotationLineContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>tagAnnotation</c>
+	/// Exit a parse tree produced by the <c>annotationLine</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>optionAnnotation</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>optionAnnotation</c>
-	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context) { }
+	public virtual void ExitAnnotationLine([NotNull] AutoStepParser.AnnotationLineContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>blank</c>
 	/// labeled alternative in <see cref="AutoStepParser.annotation"/>.
@@ -323,6 +321,34 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBlank([NotNull] AutoStepParser.BlankContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>tagAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTagAnnotation([NotNull] AutoStepParser.TagAnnotationContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>optionAnnotation</c>
+	/// labeled alternative in <see cref="AutoStepParser.annotationBody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitOptionAnnotation([NotNull] AutoStepParser.OptionAnnotationContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepParser.featureDefinition"/>.
 	/// <para>The default implementation does nothing.</para>
