@@ -77,7 +77,8 @@ namespace AutoStep.Language.Test
                 trackedSources.Add(stepDefinitionSource.Uid, tracked);
             }
 
-            tracked.UpdateSteps(linkerTree, stepDefinitionSource.GetStepDefinitions());
+            // Load all the step definitions we have.
+            RefreshStepDefinitions(tracked);
         }
 
         /// <summary>

@@ -31,9 +31,14 @@ namespace AutoStep.Tests.Utils
 
         public bool ConfigureServicesCalled { get; private set; }
 
-        public void AddStepDefinition(StepType type, string declaration)
+        public virtual void AddStepDefinition(StepType type, string declaration)
         {
             defs.Add(new LocalStepDef(this, type, declaration));
+        }
+
+        public virtual void RemoveStepDefinition(StepDefinition def)
+        {
+            defs.Remove(def);
         }
 
         public IEnumerable<StepDefinition> GetStepDefinitions()

@@ -5,6 +5,8 @@ namespace AutoStep.Tests.Utils
 {
     public class UpdatableTestStepDefinitionSource : TestStepDefinitionSource, IUpdatableStepDefinitionSource
     {
+        private DateTime lastModifyTime = DateTime.MinValue;
+
         public UpdatableTestStepDefinitionSource(params StepDefinition[] defs) : base(defs)
         {
         }
@@ -15,7 +17,19 @@ namespace AutoStep.Tests.Utils
 
         public DateTime GetLastModifyTime()
         {
-            return DateTime.MinValue;
+            return lastModifyTime;
+        }
+
+        public override void AddStepDefinition(StepType type, string declaration)
+        {
+            base.AddStepDefinition(type, declaration);
+            lastModifyTime = DateTime.UtcNow;
+        }
+
+        public override void RemoveStepDefinition(StepDefinition def)
+        {
+            base.RemoveStepDefinition(def);
+            lastModifyTime = DateTime.UtcNow;
         }
     }
 }

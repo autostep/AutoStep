@@ -804,6 +804,53 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].GetText(refText).Should().Be("a <var>");
         }
 
+        [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/42")]
+        public void RemovingStepUnbindsOnNextLink()
+        {
+            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new AutoStepLinker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            var stepSource = new UpdatableTestStepDefinitionSource(def);
+
+            linker.AddOrUpdateStepDefinitionSource(stepSource);
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                    )
+                ));
+
+            var file = fileBuilder.Built;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeTrue();
+
+            // The failing definition should not have a bound definition.
+            file.AllStepReferences.First.Value.Binding.Should().NotBeNull();
+
+            stepSource.RemoveStepDefinition(def);
+
+            // Need to update the step definition source.
+            linker.AddOrUpdateStepDefinitionSource(stepSource);
+
+            linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeFalse();
+
+            file.AllStepReferences.First.Value.Binding.Should().BeNull();
+        }
+
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
             var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);

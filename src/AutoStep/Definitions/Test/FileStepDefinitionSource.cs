@@ -53,8 +53,12 @@ namespace AutoStep.Definitions.Test
         /// <returns>The set of available definitions.</returns>
         public IEnumerable<StepDefinition> GetStepDefinitions()
         {
-            return File.LastCompileResult?.Output?.StepDefinitions.Select(d => new FileStepDefinition(this, d))
-                   ?? Enumerable.Empty<FileStepDefinition>();
+            if (File.LastCompileResult?.Output?.StepDefinitions is null)
+            {
+                return Enumerable.Empty<FileStepDefinition>();
+            }
+
+            return File.LastCompileResult.Output.StepDefinitions.Select(d => new FileStepDefinition(this, d));
         }
 
         /// <inheritdoc/>
