@@ -7,7 +7,6 @@ using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
-using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Test;
 using AutoStep.Language.Test.LineTokeniser;
 using Microsoft.Extensions.Logging;
@@ -22,10 +21,11 @@ namespace AutoStep.Projects
         private readonly Project project;
         private readonly IAutoStepCompiler compiler;
         private readonly IAutoStepLinker linker;
-        private readonly TestLineTokeniser lineTokeniser;
+        private readonly TestLineTokeniser testLineTokeniser;
 
         private readonly IAutoStepInteractionCompiler? interactionCompiler;
         private readonly ICallChainValidator interactionCallChainValidator;
+        private readonly InteractionLineTokeniser interactionLineTokeniser;
         private InteractionStepDefinitionSource? interactionSteps;
 
         /// <summary>
@@ -42,7 +42,8 @@ namespace AutoStep.Projects
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
             this.interactionCompiler = interactionCompiler;
             this.interactionCallChainValidator = new DefaultCallChainValidator();
-            this.lineTokeniser = new TestLineTokeniser(linker);
+            this.testLineTokeniser = new TestLineTokeniser(linker);
+            this.interactionLineTokeniser = new InteractionLineTokeniser();
         }
 
         /// <summary>
@@ -322,18 +323,16 @@ namespace AutoStep.Projects
             return false;
         }
 
-        /// <summary>
-        /// Tokenises a line of text, returning a set of line tokens. Used mostly for syntax highlighting; faster than a regular compile.
-        /// </summary>
-        /// <param name="line">The line of text to tokenise.</param>
-        /// <param name="lastTokeniserState">
-        /// The value of <see cref="LineTokeniseResult{TStateIndicator}.EndState"/> from
-        /// the previous call to this method for the same file.
-        /// </param>
-        /// <returns>The tokenisation result.</returns>
-        public LineTokeniseResult<LineTokeniserState> TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
+        /// <inheritdoc/>
+        public LineTokeniseResult<LineTokeniserState> TokeniseTestLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
         {
-            return lineTokeniser.Tokenise(line, lastTokeniserState);
+            return testLineTokeniser.Tokenise(line, lastTokeniserState);
+        }
+
+        /// <inheritdoc/>
+        public LineTokeniseResult<int> TokeniseInteractionLine(string line, int lastTokeniserState = 0)
+        {
+            return interactionLineTokeniser.Tokenise(line, lastTokeniserState);
         }
 
         private class InteractionsConfiguration : IInteractionsConfiguration
