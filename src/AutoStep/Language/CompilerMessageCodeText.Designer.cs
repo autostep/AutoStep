@@ -187,7 +187,7 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The method being called requires {0} argument(s), but you are only providing {1}..
+        ///   Looks up a localized string similar to The method being called requires {0} argument(s), but you are providing {1}..
         /// </summary>
         internal static string InteractionMethodArgumentMismatch {
             get {

@@ -208,7 +208,7 @@ namespace AutoStep.Language.Interaction.Traits
                 // For each node, start at the simplest, searching back down towards this one.
                 var matchingSet = new TraitNameMatchingSet(currentTrait.Value.Ref);
                 var currentSearchTrait = allTraits.Last;
-                var methodTable = rootTable;
+                var methodTable = new MethodTable(rootTable);
 
                 // Walk back down until we reach this one.
                 while (currentSearchTrait != currentTrait)
