@@ -1,4 +1,4 @@
-﻿namespace AutoStep
+﻿namespace AutoStep.Language
 {
     /// <summary>
     /// Defines the line token sub-categories.

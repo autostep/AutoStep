@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Execution;
-using AutoStep.Logging;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AutoStep.Projects
 {
@@ -14,6 +11,8 @@ namespace AutoStep.Projects
     {
         private readonly Dictionary<string, ProjectTestFile> allTestFiles = new Dictionary<string, ProjectTestFile>();
         private readonly Dictionary<string, ProjectInteractionFile> allInteractionfiles = new Dictionary<string, ProjectInteractionFile>();
+
+        private int lastInteractionFileOrder = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
@@ -87,6 +86,8 @@ namespace AutoStep.Projects
 
             if (allInteractionfiles.TryAdd(file.Path, file))
             {
+                lastInteractionFileOrder++;
+                file.Order = lastInteractionFileOrder;
                 file.IsAttachedToProject = true;
                 return true;
             }
