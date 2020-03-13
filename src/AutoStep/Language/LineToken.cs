@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoStep
+namespace AutoStep.Language
 {
     /// <summary>
     /// Defines a line token as output from line tokenisation.

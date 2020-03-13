@@ -1,4 +1,4 @@
-﻿namespace AutoStep
+﻿namespace AutoStep.Language
 {
     /// <summary>
     /// Defines the possible line token categories.
@@ -54,5 +54,40 @@
         /// A bound argument value.
         /// </summary>
         BoundArgument,
+
+        /// <summary>
+        /// The left-hand side of an interaction property name, e.g. 'name:', 'traits:', 'inherits:'.
+        /// </summary>
+        InteractionPropertyName,
+
+        /// <summary>
+        /// needs-defining keyword.
+        /// </summary>
+        InteractionNeedsDefining,
+
+        /// <summary>
+        /// A name (method, trait name, component name, etc).
+        /// </summary>
+        InteractionName,
+
+        /// <summary>
+        /// A separator character of some form.s
+        /// </summary>
+        InteractionSeparator,
+
+        /// <summary>
+        /// A literal string.
+        /// </summary>
+        InteractionString,
+
+        /// <summary>
+        /// An argument to a method.
+        /// </summary>
+        InteractionArguments,
+
+        /// <summary>
+        /// A step placeholder.
+        /// </summary>
+        Placeholder,
     }
 }

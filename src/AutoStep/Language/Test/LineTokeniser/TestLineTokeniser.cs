@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Antlr4.Runtime;
-using AutoStep.Language;
-using AutoStep.Language.Test;
 using AutoStep.Language.Test.Parser;
-using Microsoft.Extensions.Logging;
 using static AutoStep.Language.Test.Parser.AutoStepParser;
 
-namespace AutoStep
+namespace AutoStep.Language.Test.LineTokeniser
 {
     /// <summary>
     /// Provides line tokenisation. Outputs a set of line tokens, optimised for syntax highlighting rather than full compilation.
     /// The line tokeniser is much more forgiving of errors, and generally strives to extract as much info as it can.
     /// </summary>
-    internal class AutoStepLineTokeniser
+    internal class TestLineTokeniser : ILineTokeniser<LineTokeniserState>
     {
         private readonly IAutoStepLinker linker;
         private readonly bool enableDiagnosticException;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLineTokeniser"/> class.
+        /// Initializes a new instance of the <see cref="TestLineTokeniser"/> class.
         /// </summary>
         /// <param name="linker">The linker to use for step reference binding.</param>
         /// <param name="enableDiagnosticException">Set to true to enable the throwing of a diagnostic exception if tokenisation cannot parse the input.</param>
-        public AutoStepLineTokeniser(IAutoStepLinker linker, bool enableDiagnosticException = false)
+        public TestLineTokeniser(IAutoStepLinker linker, bool enableDiagnosticException = false)
         {
             this.linker = linker;
             this.enableDiagnosticException = enableDiagnosticException;
@@ -37,7 +31,7 @@ namespace AutoStep
         /// <param name="text">The text to tokenise (no line terminators expected).</param>
         /// <param name="lastState">The state of the tokeniser as returned from this method for the previous line in a file.</param>
         /// <returns>The result of tokenisation.</returns>
-        public LineTokeniseResult Tokenise(string text, LineTokeniserState lastState)
+        public LineTokeniseResult<LineTokeniserState> Tokenise(string text, LineTokeniserState lastState)
         {
             var parseTree = CompileLine(text, out var tokenStream);
 
@@ -48,13 +42,13 @@ namespace AutoStep
             else
             {
                 // null means that the parser really had no idea, so yield an empty token set, still in the previous state.
-                return new LineTokeniseResult(lastState, Enumerable.Empty<LineToken>());
+                return new LineTokeniseResult<LineTokeniserState>(lastState, Enumerable.Empty<LineToken>());
             }
         }
 
-        private LineTokeniseResult VisitParseTree(OnlyLineContext ctxt, CommonTokenStream tokenStream, LineTokeniserState lastState)
+        private LineTokeniseResult<LineTokeniserState> VisitParseTree(OnlyLineContext ctxt, CommonTokenStream tokenStream, LineTokeniserState lastState)
         {
-            var visitor = new AutoStepLineVisitor(linker, ctxt, tokenStream, lastState);
+            var visitor = new TestLineVisitor(linker, ctxt, tokenStream, lastState);
 
             return visitor.BuildLineResult();
         }

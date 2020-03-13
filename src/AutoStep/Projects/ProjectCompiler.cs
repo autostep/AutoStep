@@ -9,6 +9,7 @@ using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Test;
+using AutoStep.Language.Test.LineTokeniser;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -21,7 +22,7 @@ namespace AutoStep.Projects
         private readonly Project project;
         private readonly IAutoStepCompiler compiler;
         private readonly IAutoStepLinker linker;
-        private readonly AutoStepLineTokeniser lineTokeniser;
+        private readonly TestLineTokeniser lineTokeniser;
 
         private readonly IAutoStepInteractionCompiler? interactionCompiler;
         private readonly ICallChainValidator interactionCallChainValidator;
@@ -41,7 +42,7 @@ namespace AutoStep.Projects
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
             this.interactionCompiler = interactionCompiler;
             this.interactionCallChainValidator = new DefaultCallChainValidator();
-            this.lineTokeniser = new AutoStepLineTokeniser(linker);
+            this.lineTokeniser = new TestLineTokeniser(linker);
         }
 
         /// <summary>
@@ -326,11 +327,11 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="line">The line of text to tokenise.</param>
         /// <param name="lastTokeniserState">
-        /// The value of <see cref="LineTokeniseResult.EndState"/> from
+        /// The value of <see cref="LineTokeniseResult{TStateIndicator}.EndState"/> from
         /// the previous call to this method for the same file.
         /// </param>
         /// <returns>The tokenisation result.</returns>
-        public LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
+        public LineTokeniseResult<LineTokeniserState> TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default)
         {
             return lineTokeniser.Tokenise(line, lastTokeniserState);
         }

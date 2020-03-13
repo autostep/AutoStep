@@ -1,4 +1,4 @@
-﻿namespace AutoStep
+﻿namespace AutoStep.Language.Test.LineTokeniser
 {
     /// <summary>
     /// Represents the state of the line tokeniser after a line has been tokenised.

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoStep.Language.Test.LineTokeniser;
 
 namespace AutoStep.Language
 {
     /// <summary>
-    /// Represents a compiler diagnostic exception, currently only thrown by the <see cref="AutoStepLineTokeniser"/>.
+    /// Represents a compiler diagnostic exception, currently only thrown by the <see cref="TestLineTokeniser"/>.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1064:Exceptions should be public", Justification = "Exception only thrown from internal type, and only consumed by tests.")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Message only visible in tests.")]

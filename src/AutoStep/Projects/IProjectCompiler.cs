@@ -2,7 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Language;
 using AutoStep.Language.Interaction;
+using AutoStep.Language.Test.LineTokeniser;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -62,10 +64,10 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="line">The line of text to tokenise.</param>
         /// <param name="lastTokeniserState">
-        /// The value of <see cref="LineTokeniseResult.EndState"/> from
+        /// The value of <see cref="LineTokeniseResult{TStateIndicator}.EndState"/> from
         /// the previous call to this method for the same file.
         /// </param>
         /// <returns>The tokenisation result.</returns>
-        LineTokeniseResult TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default);
+        LineTokeniseResult<LineTokeniserState> TokeniseLine(string line, LineTokeniserState lastTokeniserState = LineTokeniserState.Default);
     }
 }
