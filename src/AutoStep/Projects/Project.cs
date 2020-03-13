@@ -9,8 +9,7 @@ namespace AutoStep.Projects
     /// </summary>
     public class Project
     {
-        private readonly Dictionary<string, ProjectTestFile> allTestFiles = new Dictionary<string, ProjectTestFile>();
-        private readonly Dictionary<string, ProjectInteractionFile> allInteractionfiles = new Dictionary<string, ProjectInteractionFile>();
+        private readonly Dictionary<string, ProjectFile> allFiles = new Dictionary<string, ProjectFile>();
 
         private int lastInteractionFileOrder = 0;
 
@@ -32,14 +31,9 @@ namespace AutoStep.Projects
         }
 
         /// <summary>
-        /// Gets the set of all test files in the project.
+        /// Gets the set of all files in the project.
         /// </summary>
-        public IReadOnlyDictionary<string, ProjectTestFile> AllTestFiles => allTestFiles;
-
-        /// <summary>
-        /// Gets the set of all interaction files in the project.
-        /// </summary>
-        public IReadOnlyDictionary<string, ProjectInteractionFile> AllInteractionFiles => allInteractionfiles;
+        public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
 
         /// <summary>
         /// Gets the active project configuration.
@@ -63,7 +57,7 @@ namespace AutoStep.Projects
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (allTestFiles.TryAdd(file.Path, file))
+            if (allFiles.TryAdd(file.Path, file))
             {
                 file.IsAttachedToProject = true;
                 return true;
@@ -84,7 +78,7 @@ namespace AutoStep.Projects
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (allInteractionfiles.TryAdd(file.Path, file))
+            if (allFiles.TryAdd(file.Path, file))
             {
                 lastInteractionFileOrder++;
                 file.Order = lastInteractionFileOrder;
@@ -107,7 +101,7 @@ namespace AutoStep.Projects
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (allTestFiles.Remove(file.Path))
+            if (allFiles.Remove(file.Path))
             {
                 file.IsAttachedToProject = false;
                 return true;
