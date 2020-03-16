@@ -20,7 +20,7 @@ namespace AutoStep.Projects
     /// </summary>
     public class ProjectCompiler : IProjectCompiler
     {
-        private static readonly InteractionsFileSetBuildResult emptySuccess = new InteractionsFileSetBuildResult(true, Enumerable.Empty<LanguageOperationMessage>());
+        private static readonly InteractionsFileSetBuildResult EmptySuccess = new InteractionsFileSetBuildResult(true, Enumerable.Empty<LanguageOperationMessage>());
 
         private readonly Project project;
         private readonly ITestCompiler compiler;
@@ -227,7 +227,7 @@ namespace AutoStep.Projects
                     }
                     else
                     {
-                        projectFile.UpdateLastSetBuildResult(emptySuccess);
+                        projectFile.UpdateLastSetBuildResult(EmptySuccess);
                     }
                 }
 
