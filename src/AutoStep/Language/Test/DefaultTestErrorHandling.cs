@@ -10,16 +10,16 @@ namespace AutoStep.Language.Test
     /// <summary>
     /// Provides the default syntax error handling.
     /// </summary>
-    internal class DefaultAutoStepErrorHandling : BaseAutoStepErrorHandlingContext<AutoStepParser>
+    internal class DefaultTestErrorHandling : BaseErrorHandlingContext<AutoStepParser>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultAutoStepErrorHandling"/> class.
+        /// Initializes a new instance of the <see cref="DefaultTestErrorHandling"/> class.
         /// </summary>
         /// <param name="tokenStream">The token stream for the file being parsed.</param>
         /// <param name="recognizer">The Antlr recogniser.</param>
         /// <param name="offendingSymbol">The offending symbol from the syntax error.</param>
         /// <param name="ex">The syntax parse exception (if there is one).</param>
-        public DefaultAutoStepErrorHandling(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
+        public DefaultTestErrorHandling(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
             : base(tokenStream, recognizer, offendingSymbol, ex)
         {
             SetErrorHandlers(

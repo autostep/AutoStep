@@ -12,6 +12,7 @@ using Moq;
 using Xunit;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
+using AutoStep.Language.Interaction;
 
 namespace AutoStep.Tests.Projects
 {
@@ -20,8 +21,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void LinksForTheFirstTime()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
             
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -36,7 +37,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             var result = projectCompiler.Link();
 
@@ -49,8 +50,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void DoNotLinkFileThatHasNotBeenCompiled()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -58,7 +59,7 @@ namespace AutoStep.Tests.Projects
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -68,8 +69,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void DoNotRelinkLinkedFile()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -84,7 +85,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -97,8 +98,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void RelinkFileIfPreviousLinkHadErrors()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -116,7 +117,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -129,8 +130,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void RelinkFileIfPreviousLinkHadWarnings()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -148,7 +149,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -161,8 +162,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void RelinkFileIfCompileResultChanged()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -177,7 +178,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -196,8 +197,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void FileLinkerMessagesIncludedInOverall()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -217,7 +218,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             var overallLink = projectCompiler.Link();
 
@@ -227,8 +228,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void RelinkFileIfLinkerDependencyUpdated()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -249,7 +250,7 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             projectCompiler.Link();
 
@@ -265,8 +266,8 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void LinkCanBeCancelled()
         {
-            var mockCompiler = new Mock<IAutoStepCompiler>();
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockCompiler = new Mock<ITestCompiler>();
+            var mockLinker = new Mock<ILinker>();
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -275,11 +276,18 @@ namespace AutoStep.Tests.Projects
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
-            var projectCompiler = new ProjectCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             var cancelledToken = new CancellationToken(true);
 
             projectCompiler.Invoking(c => c.Link(cancelledToken)).Should().Throw<OperationCanceledException>();
+        }
+
+        private ProjectCompiler GetCompiler(Project project, ITestCompiler compiler, ILinker linker)
+        {
+            return new ProjectCompiler(project, compiler, linker,
+                                       new Mock<IInteractionCompiler>().Object,
+                                       () => new Mock<IInteractionSetBuilder>().Object);
         }
     }
 }

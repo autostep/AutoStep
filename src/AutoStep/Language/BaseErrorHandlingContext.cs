@@ -10,19 +10,19 @@ namespace AutoStep.Language
     /// error matching based on the state of the parser and the position in the token stream.
     /// </summary>
     /// <typeparam name="TParser">The ANTLR parser implementation.</typeparam>
-    internal abstract class BaseAutoStepErrorHandlingContext<TParser>
+    internal abstract class BaseErrorHandlingContext<TParser>
         where TParser : Parser
     {
         private Func<bool>[]? handlers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseAutoStepErrorHandlingContext{TParser}"/> class.
+        /// Initializes a new instance of the <see cref="BaseErrorHandlingContext{TParser}"/> class.
         /// </summary>
         /// <param name="tokenStream">The token stream for the file being parsed.</param>
         /// <param name="recognizer">The Antlr recogniser.</param>
         /// <param name="offendingSymbol">The offending symbol from the syntax error.</param>
         /// <param name="ex">The syntax parse exception (if there is one).</param>
-        public BaseAutoStepErrorHandlingContext(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
+        public BaseErrorHandlingContext(ITokenStream tokenStream, IRecognizer recognizer, IToken offendingSymbol, RecognitionException? ex)
         {
             TokenStream = tokenStream;
             Parser = (TParser)recognizer;

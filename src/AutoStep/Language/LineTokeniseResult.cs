@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
 
-namespace AutoStep
+namespace AutoStep.Language
 {
     /// <summary>
     /// Represents the result of a line tokenisation.
     /// </summary>
-    public class LineTokeniseResult
+    /// <typeparam name="TStateIndicator">The state value used to indicate the end state of the tokeniser.</typeparam>
+    public class LineTokeniseResult<TStateIndicator>
+        where TStateIndicator : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineTokeniseResult"/> class for an IEnumerable.
+        /// Initializes a new instance of the <see cref="LineTokeniseResult{TStateIndicator}"/> class for an IEnumerable.
         /// </summary>
         /// <param name="endState">The end state of the tokeniser.</param>
         /// <param name="tokens">The set of tokens.</param>
-        public LineTokeniseResult(LineTokeniserState endState, IEnumerable<LineToken> tokens)
+        public LineTokeniseResult(TStateIndicator endState, IEnumerable<LineToken> tokens)
         {
             EndState = endState;
             Tokens = tokens;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineTokeniseResult"/> class for a fixed array.
+        /// Initializes a new instance of the <see cref="LineTokeniseResult{TStateIndicator}"/> class for a fixed array.
         /// </summary>
         /// <param name="endState">The end state of the tokeniser.</param>
         /// <param name="tokens">The set of tokens.</param>
-        public LineTokeniseResult(LineTokeniserState endState, params LineToken[] tokens)
+        public LineTokeniseResult(TStateIndicator endState, params LineToken[] tokens)
         {
             EndState = endState;
             Tokens = tokens;
@@ -32,7 +34,7 @@ namespace AutoStep
         /// <summary>
         /// Gets the end state of the tokeniser.
         /// </summary>
-        public LineTokeniserState EndState { get; }
+        public TStateIndicator EndState { get; }
 
         /// <summary>
         /// Gets the set of tokens.

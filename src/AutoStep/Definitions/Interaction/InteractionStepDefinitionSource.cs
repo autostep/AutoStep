@@ -13,7 +13,7 @@ namespace AutoStep.Definitions.Interaction
     /// </summary>
     internal class InteractionStepDefinitionSource : IUpdatableStepDefinitionSource
     {
-        private AutoStepInteractionSet? interactions;
+        private IInteractionSet? interactions;
         private List<StepDefinition>? cachedSteps;
         private DateTime lastModifyTime;
 
@@ -27,7 +27,7 @@ namespace AutoStep.Definitions.Interaction
         /// Updates the steps from a new interaction set.
         /// </summary>
         /// <param name="interactions">The interaction set.</param>
-        internal void UpdateInteractionSet(AutoStepInteractionSet interactions)
+        internal void UpdateInteractionSet(IInteractionSet interactions)
         {
             this.interactions = interactions;
             lastModifyTime = DateTime.UtcNow;

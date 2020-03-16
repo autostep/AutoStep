@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace AutoStep.Language
 {
@@ -7,7 +6,7 @@ namespace AutoStep.Language
     /// Base class for all compilation/link results.
     /// </summary>
     /// <typeparam name="TOutput">The output of the operation.</typeparam>
-    public abstract class LanguageOperationResult<TOutput>
+    public abstract class LanguageOperationResult<TOutput> : LanguageOperationResult
         where TOutput : class
     {
         /// <summary>
@@ -16,9 +15,8 @@ namespace AutoStep.Language
         /// <param name="success">Indicates a successful operation.</param>
         /// <param name="output">The built output (if the operation succeeded).</param>
         public LanguageOperationResult(bool success, TOutput? output = null)
+            : base(success)
         {
-            Success = success;
-            Messages = Enumerable.Empty<LanguageOperationMessage>();
             Output = output;
         }
 
@@ -29,27 +27,14 @@ namespace AutoStep.Language
         /// <param name="messages">The set of messages resulting from a operation.</param>
         /// <param name="output">The built output (if the operation succeeded).</param>
         public LanguageOperationResult(bool success, IEnumerable<LanguageOperationMessage> messages, TOutput? output = null)
+            : base(success, messages)
         {
-            Success = success;
-
-            // Freeze the messages
-            Messages = messages.ToArray();
             Output = output;
         }
-
-        /// <summary>
-        /// Gets a value indicating whether the operation succeeded.
-        /// </summary>
-        public bool Success { get; }
 
         /// <summary>
         /// Gets the built file (or null if operation failed).
         /// </summary>
         public TOutput? Output { get; }
-
-        /// <summary>
-        /// Gets the set of compilation messages.
-        /// </summary>
-        public IEnumerable<LanguageOperationMessage> Messages { get; }
     }
 }

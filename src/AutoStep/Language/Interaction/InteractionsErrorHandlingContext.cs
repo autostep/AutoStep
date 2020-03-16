@@ -8,7 +8,7 @@ namespace AutoStep.Language.Interaction
     /// <summary>
     /// Error handling for the interactions language.
     /// </summary>
-    internal class InteractionsErrorHandlingContext : BaseAutoStepErrorHandlingContext<AutoStepInteractionsParser>
+    internal class InteractionsErrorHandlingContext : BaseErrorHandlingContext<AutoStepInteractionsParser>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionsErrorHandlingContext"/> class.

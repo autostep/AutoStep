@@ -13,7 +13,7 @@ namespace AutoStep.Language.Test.Visitors
     /// <summary>
     /// Handles generating step references from the Antlr parse context.
     /// </summary>
-    internal class StepReferenceVisitor : BaseAutoStepTestVisitor<StepReferenceElement>
+    internal class StepReferenceVisitor : BaseTestVisitor<StepReferenceElement>
     {
         private readonly (int TokenType, string Replace)[] escapeReplacements = new[]
         {

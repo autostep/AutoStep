@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Language.Test
         {
             const string TestStep = "I have done something";
 
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
             var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
@@ -40,7 +40,7 @@ namespace AutoStep.Tests.Language.Test
         {
             const string TestStep = "I have {argument1}";
 
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
             var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
@@ -59,7 +59,7 @@ namespace AutoStep.Tests.Language.Test
         {
             const string TestStep = "I have done something with {}";
 
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
             var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Language.Test
         {
             const string TestStep = "I have done something with 'value <insert>'";
 
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
             var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 
@@ -96,7 +96,7 @@ namespace AutoStep.Tests.Language.Test
         {
             const string TestStep = "I have done something with ':interpolate'";
 
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
             var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
 

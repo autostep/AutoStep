@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
+            var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileInteractionsAsync(source, LogFactory);
@@ -64,7 +64,7 @@ namespace AutoStep.Tests.Utils
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one warning.", nameof(expectedMessages));
 
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
+            var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileInteractionsAsync(source, LogFactory);
@@ -80,7 +80,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssert(string content, Action<InteractionFileBuilder> cfg)
         {
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
+            var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileInteractionsAsync(source, LogFactory);
@@ -98,7 +98,7 @@ namespace AutoStep.Tests.Utils
 
         protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder> cfg = null)
         {   
-            var compiler = new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
+            var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
             var result = await compiler.CompileInteractionsAsync(source, LogFactory);

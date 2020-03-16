@@ -21,23 +21,23 @@ namespace AutoStep.Language.Test
     ///
     /// The AutoStepLinker will go through the built output and bind it against a given project's available steps.
     /// </remarks>
-    public class AutoStepCompiler : IAutoStepCompiler
+    public class TestCompiler : ITestCompiler
     {
         private readonly TestCompilerOptions options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
+        /// Initializes a new instance of the <see cref="TestCompiler"/> class.
         /// </summary>
-        public AutoStepCompiler()
+        public TestCompiler()
             : this(TestCompilerOptions.Default)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepCompiler"/> class.
+        /// Initializes a new instance of the <see cref="TestCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
-        public AutoStepCompiler(TestCompilerOptions options)
+        public TestCompiler(TestCompilerOptions options)
         {
             this.options = options;
         }
@@ -167,7 +167,7 @@ namespace AutoStep.Language.Test
             // Create the source stream, the lexer itself, and the resulting token stream.
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepLexer(inputStream);
-            var logger = logFactory.CreateLogger<AutoStepCompiler>();
+            var logger = logFactory.CreateLogger<TestCompiler>();
 
             if (customLexerStartMode.HasValue)
             {
@@ -187,7 +187,7 @@ namespace AutoStep.Language.Test
 
             TContext context;
 
-            var errorListener = new AutoStepParserErrorListener(sourceName, commonTokenStream);
+            var errorListener = new TestParserErrorListener(sourceName, commonTokenStream);
 
             try
             {

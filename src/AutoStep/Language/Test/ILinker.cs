@@ -7,7 +7,7 @@ namespace AutoStep.Language.Test
     /// <summary>
     /// Defines the interface for the AutoStep Linker, responsible for linking an individual file.
     /// </summary>
-    public interface IAutoStepLinker
+    public interface ILinker
     {
         /// <summary>
         /// Gets the set of all sources of step definitions registered with the linker.

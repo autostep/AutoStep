@@ -13,7 +13,7 @@ namespace AutoStep.Language.Test.Visitors
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
     /// and builts a <see cref="FileElement"/> from that tree.
     /// </summary>
-    internal class FileVisitor : BaseAutoStepTestVisitor<FileElement>
+    internal class FileVisitor : BaseTestVisitor<FileElement>
     {
         private readonly StepReferenceVisitor stepVisitor;
         private readonly TableVisitor tableVisitor;

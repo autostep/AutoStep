@@ -16,15 +16,15 @@ namespace AutoStep.Language.Interaction
     /// <summary>
     /// Provides the compilation of AutoStep interaction files.
     /// </summary>
-    public class AutoStepInteractionCompiler : IAutoStepInteractionCompiler
+    public class InteractionCompiler : IInteractionCompiler
     {
         private readonly InteractionsCompilerOptions options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepInteractionCompiler"/> class.
+        /// Initializes a new instance of the <see cref="InteractionCompiler"/> class.
         /// </summary>
         /// <param name="options">Compiler options.</param>
-        public AutoStepInteractionCompiler(InteractionsCompilerOptions options)
+        public InteractionCompiler(InteractionsCompilerOptions options)
         {
             this.options = options;
         }
@@ -81,7 +81,7 @@ namespace AutoStep.Language.Interaction
             var inputStream = new AntlrInputStream(content);
             var lexer = new AutoStepInteractionsLexer(inputStream);
 
-            var logger = logFactory.CreateLogger<AutoStepInteractionCompiler>();
+            var logger = logFactory.CreateLogger<InteractionCompiler>();
 
             if (customLexerStartMode.HasValue)
             {

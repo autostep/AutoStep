@@ -22,14 +22,14 @@ namespace AutoStep.Language.Test {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AutoStepLinkerMessages {
+    internal class LinkerMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AutoStepLinkerMessages() {
+        internal LinkerMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace AutoStep.Language.Test {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Language.Test.AutoStepLinkerMessages", typeof(AutoStepLinkerMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Language.Test.LinkerMessages", typeof(LinkerMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

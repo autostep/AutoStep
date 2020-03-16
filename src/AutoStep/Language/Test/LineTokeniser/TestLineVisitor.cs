@@ -4,33 +4,32 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements.StepTokens;
-using AutoStep.Language.Test;
 using AutoStep.Language.Test.Parser;
 using AutoStep.Language.Test.Visitors;
 
-namespace AutoStep
+namespace AutoStep.Language.Test.LineTokeniser
 {
     using static AutoStep.Language.Test.Parser.AutoStepParser;
 
     /// <summary>
     /// Provides a visitor for handling single-line tokenisation.
     /// </summary>
-    internal class AutoStepLineVisitor : AutoStepParserBaseVisitor<LineTokeniserState>
+    internal class TestLineVisitor : AutoStepParserBaseVisitor<LineTokeniserState>
     {
-        private readonly IAutoStepLinker linker;
+        private readonly ILinker linker;
         private readonly OnlyLineContext lineContext;
         private readonly CommonTokenStream tokenStream;
         private readonly LineTokeniserState lastState;
         private List<LineToken>? lineTokens;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLineVisitor"/> class.
+        /// Initializes a new instance of the <see cref="TestLineVisitor"/> class.
         /// </summary>
         /// <param name="linker">The linker to use for binding step lines (for better tokenisation).</param>
         /// <param name="lineContext">The parsed line context.</param>
         /// <param name="tokenStream">The parsed token stream.</param>
         /// <param name="lastState">The last state of the tokeniser (i.e. the state of the previous line).</param>
-        public AutoStepLineVisitor(IAutoStepLinker linker, OnlyLineContext lineContext, CommonTokenStream tokenStream, LineTokeniserState lastState)
+        public TestLineVisitor(ILinker linker, OnlyLineContext lineContext, CommonTokenStream tokenStream, LineTokeniserState lastState)
         {
             this.linker = linker;
             this.lineContext = lineContext;
@@ -42,7 +41,7 @@ namespace AutoStep
         /// Build a line result from the information provided in the constructor.
         /// </summary>
         /// <returns>A line tokenisation result.</returns>
-        public LineTokeniseResult BuildLineResult()
+        public LineTokeniseResult<LineTokeniserState> BuildLineResult()
         {
             lineTokens = null;
 
@@ -82,7 +81,7 @@ namespace AutoStep
 
                 if (lineTokens is null)
                 {
-                    return new LineTokeniseResult(finalState, new LineToken(commentColumn, LineTokenCategory.Comment));
+                    return new LineTokeniseResult<LineTokeniserState>(finalState, new LineToken(commentColumn, LineTokenCategory.Comment));
                 }
                 else
                 {
@@ -92,10 +91,10 @@ namespace AutoStep
 
             if (lineTokens is null)
             {
-                return new LineTokeniseResult(finalState, Enumerable.Empty<LineToken>());
+                return new LineTokeniseResult<LineTokeniserState>(finalState, Enumerable.Empty<LineToken>());
             }
 
-            return new LineTokeniseResult(finalState, lineTokens);
+            return new LineTokeniseResult<LineTokeniserState>(finalState, lineTokens);
         }
 
         /// <inheritdoc/>
@@ -428,7 +427,7 @@ namespace AutoStep
                 var currentArgumentIdx = 0;
                 var currentArgumentTokenIdx = 0;
 
-                for (int tokenIdx = 0; tokenIdx < tokens.Length; tokenIdx++)
+                for (var tokenIdx = 0; tokenIdx < tokens.Length; tokenIdx++)
                 {
                     var token = tokens[tokenIdx];
 

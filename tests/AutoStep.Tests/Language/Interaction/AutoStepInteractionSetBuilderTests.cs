@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanBuiltInteractionSetFromTraitAndComponent()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -123,7 +123,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void ComponentSteps()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -172,7 +172,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanInheritFromExistingCopyOfSelf()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -221,7 +221,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanInheritFromADifferentControl()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -270,7 +270,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void DirectCircularInheritanceReferenceErrorDetected()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -304,7 +304,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void InDirectCircularInheritanceReferenceErrorDetected()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -335,7 +335,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void NeedsDefiningMethodGivesError()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -381,6 +381,47 @@ namespace AutoStep.Tests.Language.Interaction
 
             result.Messages.Should().HaveCount(1);
             result.Messages.First().Code.Should().Be(CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined);
+        }
+
+
+        [Fact]
+        public void ComponentWithNoTraitsDoesNotRequireTheirMethods()
+        {
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
+
+            var interactions = new InteractionsConfig();
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Trait("clickable", 1, 1, t => t
+                .NamePart("clickable", 1)
+                // Define locateNamed here, but without indicating it needs defining.
+                .Method("call", 3, 1, c => c
+                    .Argument("name", 4, 1)
+                    .NeedsDefining()
+                )
+                .StepDefinition(StepType.Given, "I have clicked on the {name} $component$", 7, 1, s => s
+                    .WordPart("I", 1)
+                    .WordPart("have", 3)
+                    .WordPart("clicked", 8)
+                    .WordPart("on", 16)
+                    .WordPart("the", 19)
+                    .Argument("{name}", "name", 23)
+                    .ComponentMatch(30)
+                    .Expression(e => e
+                        .Call("call", 8, 1, 8, 1, m => m.Variable("name", 1))
+                    )
+                )
+            );
+
+            // Component without traits should not claim it needs defining.
+            file.Component("button", 10, 1);
+
+            setBuilder.AddInteractionFile(file.Built);
+
+            var result = setBuilder.Build(interactions);
+
+            result.Success.Should().BeTrue();
         }
 
         private class InteractionsConfig : IInteractionsConfiguration

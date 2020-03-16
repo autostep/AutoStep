@@ -27,9 +27,9 @@ namespace AutoStep.Tests.Projects
 
             project.TryAddFile(file).Should().BeTrue();
 
-            project.AllTestFiles.Should().HaveCount(1);
-            project.AllTestFiles.ContainsKey("/test").Should().BeTrue();
-            project.AllTestFiles["/test"].Should().Be(file);
+            project.AllFiles.Should().HaveCount(1);
+            project.AllFiles.ContainsKey("/test").Should().BeTrue();
+            project.AllFiles["/test"].Should().Be(file);
             file.IsAttachedToProject.Should().BeTrue();
         }
 
@@ -44,9 +44,9 @@ namespace AutoStep.Tests.Projects
 
             project.TryAddFile(file).Should().BeFalse();
 
-            project.AllTestFiles.Should().HaveCount(1);
-            project.AllTestFiles.ContainsKey("/test").Should().BeTrue();
-            project.AllTestFiles["/test"].Should().Be(file);
+            project.AllFiles.Should().HaveCount(1);
+            project.AllFiles.ContainsKey("/test").Should().BeTrue();
+            project.AllFiles["/test"].Should().Be(file);
         }
 
         [Fact]

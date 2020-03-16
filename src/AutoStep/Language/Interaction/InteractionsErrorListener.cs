@@ -19,7 +19,7 @@ namespace AutoStep.Language.Interaction
         }
 
         /// <inheritdoc/>
-        protected override BaseAutoStepErrorHandlingContext<AutoStepInteractionsParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e)
+        protected override BaseErrorHandlingContext<AutoStepInteractionsParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e)
         {
             return new InteractionsErrorHandlingContext(TokenStream, recognizer, offendingSymbol, e);
         }

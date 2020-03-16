@@ -1,4 +1,4 @@
-﻿namespace AutoStep
+﻿namespace AutoStep.Language
 {
     /// <summary>
     /// Defines the line token sub-categories.
@@ -104,5 +104,65 @@
         /// A description block.
         /// </summary>
         Description,
+
+        /// <summary>
+        /// App Entity
+        /// </summary>
+        InteractionApp,
+
+        /// <summary>
+        /// Trait Entity
+        /// </summary>
+        InteractionTrait,
+
+        /// <summary>
+        /// Component Entity
+        /// </summary>
+        InteractionComponent,
+
+        /// <summary>
+        /// A name.
+        /// </summary>
+        InteractionName,
+
+        /// <summary>
+        /// The inherits property name.
+        /// </summary>
+        InteractionInherits,
+
+        /// <summary>
+        /// A method call separator '->'.
+        /// </summary>
+        InteractionCallSeparator,
+
+        /// <summary>
+        /// A constant reference.
+        /// </summary>
+        InteractionConstant,
+
+        /// <summary>
+        /// A variable reference.
+        /// </summary>
+        InteractionVariable,
+
+        /// <summary>
+        /// An interaction array reference.
+        /// </summary>
+        InteractionArray,
+
+        /// <summary>
+        /// A numeric literal.
+        /// </summary>
+        InteractionLiteral,
+
+        /// <summary>
+        /// $component$
+        /// </summary>
+        InteractionComponentPlaceholder,
+
+        /// <summary>
+        /// Method open or close ( or ).
+        /// </summary>
+        InteractionParentheses,
     }
 }

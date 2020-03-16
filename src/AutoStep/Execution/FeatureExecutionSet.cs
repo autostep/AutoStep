@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.Test;
 using AutoStep.Projects;
@@ -58,7 +59,7 @@ namespace AutoStep.Execution
 
         private void Populate()
         {
-            foreach (var file in project.AllTestFiles.Values)
+            foreach (var file in project.AllFiles.Values.OfType<ProjectTestFile>())
             {
                 if (filter.MatchesFile(file))
                 {
