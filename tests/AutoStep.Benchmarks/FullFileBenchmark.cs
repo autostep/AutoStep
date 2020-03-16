@@ -18,7 +18,7 @@ namespace AutoStep.Benchmarks
         [Benchmark]
         public void CompileFile()
         {
-            var compiler = new AutoStepCompiler();
+            var compiler = new TestCompiler();
 
             var compileResult = compiler.CompileAsync(new StringContentSource(fileContent)).Result;
 

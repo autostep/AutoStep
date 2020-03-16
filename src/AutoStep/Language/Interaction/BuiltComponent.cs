@@ -1,11 +1,11 @@
 ﻿namespace AutoStep.Language.Interaction
 {
     /// <summary>
-    /// Represents the final state of a component as exposed in a <see cref="AutoStepInteractionSet"/>.
+    /// Represents the final state of a component as exposed in a <see cref="IInteractionSet"/>.
     /// Step definitions are registered elsewhere, so the only responsibility of this type is to hold the method table
     /// specific to the component.
     /// </summary>
-    internal class BuiltComponent
+    public class BuiltComponent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BuiltComponent"/> class.

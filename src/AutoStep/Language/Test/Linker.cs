@@ -5,7 +5,6 @@ using AutoStep.Definitions;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Test.Matching;
-using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Language.Test
 {
@@ -16,17 +15,17 @@ namespace AutoStep.Language.Test
     /// Linker can hold state, to be able to know what has changed.
     /// The output of the compiler can be fed repeatedly into the linker, to update the references.
     /// </remarks>
-    public class AutoStepLinker : IAutoStepLinker
+    public class Linker : ILinker
     {
-        private readonly IAutoStepCompiler compiler;
+        private readonly ITestCompiler compiler;
         private readonly IMatchingTree linkerTree;
         private readonly Dictionary<string, StepSourceWithTracking> trackedSources = new Dictionary<string, StepSourceWithTracking>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepLinker"/> class.
+        /// Initializes a new instance of the <see cref="Linker"/> class.
         /// </summary>
         /// <param name="compiler">The autostep compiler to use when processing definition statements.</param>
-        public AutoStepLinker(IAutoStepCompiler compiler)
+        public Linker(ITestCompiler compiler)
         {
             this.compiler = compiler;
             linkerTree = new MatchingTree();
@@ -98,7 +97,7 @@ namespace AutoStep.Language.Test
             }
             else
             {
-                throw new InvalidOperationException(AutoStepLinkerMessages.CannotRemoveDefinitionSource);
+                throw new InvalidOperationException(LinkerMessages.CannotRemoveDefinitionSource);
             }
         }
 

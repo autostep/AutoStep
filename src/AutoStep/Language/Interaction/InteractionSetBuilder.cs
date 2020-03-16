@@ -9,25 +9,22 @@ namespace AutoStep.Language.Interaction
     /// <summary>
     /// Provides the functionality to generate an interaction set from a set of files.
     /// </summary>
-    internal class AutoStepInteractionSetBuilder
+    internal class InteractionSetBuilder : IInteractionSetBuilder
     {
         private readonly TraitGraph traits = new TraitGraph();
         private readonly Dictionary<string, ComponentResolutionData> allComponents = new Dictionary<string, ComponentResolutionData>();
         private readonly ICallChainValidator callChainValidator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepInteractionSetBuilder"/> class.
+        /// Initializes a new instance of the <see cref="InteractionSetBuilder"/> class.
         /// </summary>
         /// <param name="callChainValidator">The call chain validator.</param>
-        public AutoStepInteractionSetBuilder(ICallChainValidator callChainValidator)
+        public InteractionSetBuilder(ICallChainValidator callChainValidator)
         {
             this.callChainValidator = callChainValidator;
         }
 
-        /// <summary>
-        /// Add an interaction file to consider during <see cref="Build(IInteractionsConfiguration)"/>.
-        /// </summary>
-        /// <param name="interactionFile">The file.</param>
+        /// <inheritdoc/>
         public void AddInteractionFile(InteractionFileElement interactionFile)
         {
             interactionFile = interactionFile.ThrowIfNull(nameof(interactionFile));
@@ -47,18 +44,8 @@ namespace AutoStep.Language.Interaction
             }
         }
 
-        /// <summary>
-        /// Builds the interaction set.
-        /// </summary>
-        /// <param name="interactionsConfig">
-        /// The interactions config, that provides the root method table,
-        /// containing all of the system-provided methods, plus the set of available constants.</param>
-        /// <returns>The set build result.</returns>
-        /// <remarks>
-        /// This method goes through all the full trait graph and component list and determines the actual method table and step set for each
-        /// component.
-        /// </remarks>
-        public AutoStepInteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig)
+        /// <inheritdoc/>
+        public InteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig)
         {
             // Building the autostep interaction group involves:
             // 1. Going through the complete list of traits, resolving the method table for each one, and validating
@@ -182,10 +169,10 @@ namespace AutoStep.Language.Interaction
                 builtComponents[componentEntry.Name] = finalComponent;
             }
 
-            return new AutoStepInteractionSetBuilderResult(
+            return new InteractionSetBuilderResult(
                 messages.All(x => x.Level != CompilerMessageLevel.Error),
                 messages,
-                new AutoStepInteractionSet(interactionsConfig.Constants, builtComponents, allBoundSteps));
+                new InteractionSet(interactionsConfig.Constants, builtComponents, allBoundSteps));
         }
 
         private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<LanguageOperationMessage> messages)

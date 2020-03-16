@@ -12,7 +12,7 @@ namespace AutoStep.Language.Test.Visitors
     /// <summary>
     /// Generates table elements from table parse contexts.
     /// </summary>
-    internal class TableVisitor : BaseAutoStepTestVisitor<TableElement>
+    internal class TableVisitor : BaseTestVisitor<TableElement>
     {
         private readonly Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator;
         private readonly (int TokenType, string Replace)[] tableCellReplacements = new[]

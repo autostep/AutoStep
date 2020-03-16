@@ -10,17 +10,17 @@ namespace AutoStep.Language.Interaction
     /// Defines an interaction set, defining the set of components available for interaction behaviour,
     /// and access to the set of step definitions.
     /// </summary>
-    internal class AutoStepInteractionSet
+    public class InteractionSet : IInteractionSet
     {
         private readonly IEnumerable<InteractionStepDefinitionElement> steps;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutoStepInteractionSet"/> class.
+        /// Initializes a new instance of the <see cref="InteractionSet"/> class.
         /// </summary>
         /// <param name="constants">The set of available constants.</param>
         /// <param name="components">The set of all components, indexed by name.</param>
         /// <param name="steps">The set of all step definitions.</param>
-        public AutoStepInteractionSet(InteractionConstantSet constants, IReadOnlyDictionary<string, BuiltComponent> components, IEnumerable<InteractionStepDefinitionElement> steps)
+        public InteractionSet(InteractionConstantSet constants, IReadOnlyDictionary<string, BuiltComponent> components, IEnumerable<InteractionStepDefinitionElement> steps)
         {
             this.Components = components;
             this.Constants = constants;
@@ -46,5 +46,5 @@ namespace AutoStep.Language.Interaction
         {
             return steps.Select(s => new InteractionStepDefinition(stepSource, s));
         }
-  }
+    }
 }

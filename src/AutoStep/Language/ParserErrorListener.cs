@@ -45,7 +45,7 @@ namespace AutoStep.Language
         /// <param name="offendingSymbol">The offending symbol.</param>
         /// <param name="e">The recognition exception.</param>
         /// <returns>An error context.</returns>
-        protected abstract BaseAutoStepErrorHandlingContext<TParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e);
+        protected abstract BaseErrorHandlingContext<TParser> CreateErrorContext(IRecognizer recognizer, IToken offendingSymbol, RecognitionException e);
 
         /// <inheritdoc/>
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)

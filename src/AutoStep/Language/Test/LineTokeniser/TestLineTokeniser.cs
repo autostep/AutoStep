@@ -11,7 +11,7 @@ namespace AutoStep.Language.Test.LineTokeniser
     /// </summary>
     internal class TestLineTokeniser : ILineTokeniser<LineTokeniserState>
     {
-        private readonly IAutoStepLinker linker;
+        private readonly ILinker linker;
         private readonly bool enableDiagnosticException;
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace AutoStep.Language.Test.LineTokeniser
         /// </summary>
         /// <param name="linker">The linker to use for step reference binding.</param>
         /// <param name="enableDiagnosticException">Set to true to enable the throwing of a diagnostic exception if tokenisation cannot parse the input.</param>
-        public TestLineTokeniser(IAutoStepLinker linker, bool enableDiagnosticException = false)
+        public TestLineTokeniser(ILinker linker, bool enableDiagnosticException = false)
         {
             this.linker = linker;
             this.enableDiagnosticException = enableDiagnosticException;
@@ -67,12 +67,12 @@ namespace AutoStep.Language.Test.LineTokeniser
             // (yes, I know that sounds odd, but tokenisation should just quietly return empty contexts, rather than generating useful error messages).
             parser.RemoveErrorListeners();
 
-            AutoStepParserErrorListener? diagnosticParser = null;
+            TestParserErrorListener? diagnosticParser = null;
 
             if (enableDiagnosticException)
             {
                 // Ok, so if we are in tests, we want to be able to collect those errors.
-                diagnosticParser = new AutoStepParserErrorListener(null, tokenStream);
+                diagnosticParser = new TestParserErrorListener(null, tokenStream);
                 parser.AddErrorListener(diagnosticParser);
             }
 

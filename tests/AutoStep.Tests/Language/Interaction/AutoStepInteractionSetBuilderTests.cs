@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanBuiltInteractionSetFromTraitAndComponent()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -123,7 +123,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void ComponentSteps()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -172,7 +172,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanInheritFromExistingCopyOfSelf()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -221,7 +221,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void CanInheritFromADifferentControl()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -270,7 +270,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void DirectCircularInheritanceReferenceErrorDetected()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -304,7 +304,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void InDirectCircularInheritanceReferenceErrorDetected()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -335,7 +335,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void NeedsDefiningMethodGivesError()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
             interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
@@ -387,7 +387,7 @@ namespace AutoStep.Tests.Language.Interaction
         [Fact]
         public void ComponentWithNoTraitsDoesNotRequireTheirMethods()
         {
-            var setBuilder = new AutoStepInteractionSetBuilder(new DefaultCallChainValidator());
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
             var interactions = new InteractionsConfig();
 

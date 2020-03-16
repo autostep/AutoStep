@@ -46,9 +46,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void SourceLoadPopulatesDefinition()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -60,9 +60,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void AddStepDefinitionSourceNullArgument()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             linker.Invoking(l => l.AddStepDefinitionSource(null)).Should().Throw<ArgumentNullException>();
         }
@@ -70,9 +70,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void LinksStepToDefinition()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -108,9 +108,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void CanRemoveDefinitionSource()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -152,9 +152,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void CannotRemoveUnregisteredStepDefinition()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -166,9 +166,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void LinkingErrorOnOneStepAllowsContinue()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -219,9 +219,9 @@ namespace AutoStep.Tests.Language.Test
         [Fact]
         public void LinkingErrorMultipleDefinitions()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var src1 = new TestStepDefinitionSource("src1");
 
@@ -808,9 +808,9 @@ namespace AutoStep.Tests.Language.Test
         [Issue("https://github.com/autostep/AutoStep/issues/42")]
         public void RemovingStepUnbindsOnNextLink()
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(StepType.Given, "I have done something");
 
@@ -853,9 +853,9 @@ namespace AutoStep.Tests.Language.Test
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.EnableDiagnostics);
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
 
-            var linker = new AutoStepLinker(compiler);
+            var linker = new Linker(compiler);
 
             var def = new TestDef(type, defText);
 

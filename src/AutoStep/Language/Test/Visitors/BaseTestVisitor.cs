@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using AutoStep.Elements;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
@@ -13,28 +9,28 @@ namespace AutoStep.Language.Test.Visitors
     /// Base class for all autostep visitors.
     /// </summary>
     /// <typeparam name="TVisitResult">The visitor result.</typeparam>
-    internal abstract class BaseAutoStepTestVisitor<TVisitResult> : AutoStepParserBaseVisitor<TVisitResult>
+    internal abstract class BaseTestVisitor<TVisitResult> : AutoStepParserBaseVisitor<TVisitResult>
         where TVisitResult : class
     {
         private readonly CompilerMessageSet messageSet;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseAutoStepTestVisitor{TVisitResult}"/> class.
+        /// Initializes a new instance of the <see cref="BaseTestVisitor{TVisitResult}"/> class.
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
-        protected BaseAutoStepTestVisitor(string? sourceName, ITokenStream tokenStream)
+        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream)
             : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseAutoStepTestVisitor{TVisitResult}"/> class.
+        /// Initializes a new instance of the <see cref="BaseTestVisitor{TVisitResult}"/> class.
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The shared rewriter.</param>
-        protected BaseAutoStepTestVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
         {
             SourceName = sourceName;
             TokenStream = tokenStream;
@@ -86,7 +82,7 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <typeparam name="TOtherVisitorResult">Type of the other visitor.</typeparam>
         /// <param name="other">The message.</param>
-        protected void MergeVisitorAndReset<TOtherVisitorResult>(BaseAutoStepTestVisitor<TOtherVisitorResult> other)
+        protected void MergeVisitorAndReset<TOtherVisitorResult>(BaseTestVisitor<TOtherVisitorResult> other)
             where TOtherVisitorResult : class
         {
             messageSet.AddRange(other.MessageSet.Messages);

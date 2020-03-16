@@ -4,7 +4,7 @@
     /// Defines an interface for a class that can tokenise lines of text and output line tokens.
     /// </summary>
     /// <typeparam name="TStateIndicator">The type of the value used to indicate the tokeniser state.</typeparam>
-    internal interface ILineTokeniser<TStateIndicator>
+    public interface ILineTokeniser<TStateIndicator>
         where TStateIndicator : struct
     {
         /// <summary>

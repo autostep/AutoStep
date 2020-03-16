@@ -5,7 +5,7 @@ namespace AutoStep.Language.Test
 {
     /// <summary>
     /// Defines the result of a step definition compilation, returned from
-    /// <see cref="AutoStepCompiler.CompileStepDefinitionElementFromStatementBody(StepType, string)"/>.
+    /// <see cref="TestCompiler.CompileStepDefinitionElementFromStatementBody(StepType, string)"/>.
     /// </summary>
     public class StepDefinitionFromBodyResult : LanguageOperationResult<StepDefinitionElement>
     {

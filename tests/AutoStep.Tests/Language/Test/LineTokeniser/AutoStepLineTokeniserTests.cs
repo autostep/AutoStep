@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Feature: My Feature";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "just some text";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -58,7 +58,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "  ";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -74,7 +74,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "just some text";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Scenario: My Scenario";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -111,7 +111,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Scenario Outline: My Scenario Outline";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -131,7 +131,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Examples:";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -149,7 +149,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Background:";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -167,7 +167,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "   Given I have <var> something";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -189,7 +189,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "   Given I have # A comment";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -210,7 +210,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = " # A line comment";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -228,7 +228,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "    Then the 'Client Management - Client Location' page should be displayed";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -242,7 +242,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "    Given I have logged in to my app as 'USER', password 'PWD' # scenario has no description, this is a comment";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -257,7 +257,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "    When I have ";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -276,7 +276,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "@Tag2";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -292,7 +292,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "$Option2: Setting 1";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -308,8 +308,8 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Given I have entered 'My Name' into 'Name'";
 
-            var compiler = new AutoStepCompiler();
-            var linker = new AutoStepLinker(compiler);
+            var compiler = new TestCompiler();
+            var linker = new Linker(compiler);
 
             var source = new CallbackDefinitionSource();
             source.Given("I have entered {arg1} into {arg2}", () => { });
@@ -341,8 +341,8 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Given I have entered '<My Name>' into 'Name'";
 
-            var compiler = new AutoStepCompiler();
-            var linker = new AutoStepLinker(compiler);
+            var compiler = new TestCompiler();
+            var linker = new Linker(compiler);
 
             var source = new CallbackDefinitionSource();
             source.Given("I have entered {arg1} into {arg2}", () => { });
@@ -373,8 +373,8 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "And I have entered 'My Name'";
 
-            var compiler = new AutoStepCompiler();
-            var linker = new AutoStepLinker(compiler);
+            var compiler = new TestCompiler();
+            var linker = new Linker(compiler);
 
             var source = new CallbackDefinitionSource();
             source.Given("I have entered {arg1}", () => { });
@@ -402,7 +402,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "| header1 | header 2 |";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -426,7 +426,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "| header1 | header 2 |";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -451,7 +451,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "| header1 | header 2 ";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object);
 
@@ -474,7 +474,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Step:";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object, true);
 
@@ -493,7 +493,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Step: Given";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object);
 
@@ -512,7 +512,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Step: Given I {arg} with {arg2}";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object);
 
@@ -535,7 +535,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Step: When I {arg} with {arg2}";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object);
 
@@ -558,7 +558,7 @@ namespace AutoStep.Tests.Language.Test.LineTokeniser
         {
             const string Test = "Step: Then I {arg} with {arg2}";
 
-            var mockLinker = new Mock<IAutoStepLinker>();
+            var mockLinker = new Mock<ILinker>();
 
             var lineTokeniser = new TestLineTokeniser(mockLinker.Object);
 

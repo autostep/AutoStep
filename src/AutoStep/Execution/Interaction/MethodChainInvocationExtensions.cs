@@ -32,7 +32,7 @@ namespace AutoStep.Execution.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.Resolve<AutoStepInteractionSet>();
+            var interactionSet = stepScope.Resolve<IInteractionSet>();
 
             // Get the execution manager.
             var executionManager = stepScope.Resolve<IExecutionStateManager>();

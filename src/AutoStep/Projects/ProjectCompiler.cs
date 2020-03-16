@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -19,13 +20,15 @@ namespace AutoStep.Projects
     /// </summary>
     public class ProjectCompiler : IProjectCompiler
     {
+        private static readonly InteractionsFileSetBuildResult emptySuccess = new InteractionsFileSetBuildResult(true, Enumerable.Empty<LanguageOperationMessage>());
+
         private readonly Project project;
-        private readonly IAutoStepCompiler compiler;
-        private readonly IAutoStepLinker linker;
+        private readonly ITestCompiler compiler;
+        private readonly ILinker linker;
         private readonly TestLineTokeniser testLineTokeniser;
 
-        private readonly IAutoStepInteractionCompiler? interactionCompiler;
-        private readonly ICallChainValidator interactionCallChainValidator;
+        private readonly IInteractionCompiler interactionCompiler;
+        private readonly Func<IInteractionSetBuilder> setBuilderFactory;
         private readonly InteractionLineTokeniser interactionLineTokeniser;
         private InteractionStepDefinitionSource? interactionSteps;
 
@@ -36,13 +39,20 @@ namespace AutoStep.Projects
         /// <param name="compiler">The compiler implementation to use.</param>
         /// <param name="linker">The linker implementation to use.</param>
         /// <param name="interactionCompiler">The interaction compiler.</param>
-        public ProjectCompiler(Project project, IAutoStepCompiler compiler, IAutoStepLinker linker, IAutoStepInteractionCompiler? interactionCompiler = null)
+        /// <param name="setBuilderFactory">A factory for creating instances of <see cref="IInteractionSetBuilder" />.</param>
+        public ProjectCompiler(
+            Project project,
+            ITestCompiler compiler,
+            ILinker linker,
+            IInteractionCompiler interactionCompiler,
+            Func<IInteractionSetBuilder> setBuilderFactory)
         {
             this.project = project ?? throw new ArgumentNullException(nameof(project));
             this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
-            this.interactionCompiler = interactionCompiler;
-            this.interactionCallChainValidator = new DefaultCallChainValidator();
+            this.interactionCompiler = interactionCompiler ?? throw new ArgumentNullException(nameof(interactionCompiler));
+            this.setBuilderFactory = setBuilderFactory;
+
             this.testLineTokeniser = new TestLineTokeniser(linker);
             this.interactionLineTokeniser = new InteractionLineTokeniser();
         }
@@ -59,8 +69,16 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateDefault(Project project)
         {
-            var compiler = new AutoStepCompiler(TestCompilerOptions.Default);
-            return new ProjectCompiler(project, compiler, new AutoStepLinker(compiler), new AutoStepInteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics));
+            var compiler = new TestCompiler(TestCompilerOptions.Default);
+
+            var defaultCallChainValidator = new DefaultCallChainValidator();
+
+            return new ProjectCompiler(
+                project,
+                compiler,
+                new Linker(compiler),
+                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                () => new InteractionSetBuilder(defaultCallChainValidator));
         }
 
         /// <summary>
@@ -184,9 +202,10 @@ namespace AutoStep.Projects
 
             if (fileWasCompiled)
             {
-                // Regenerate the interaction set.
-                var interactionSetBuilder = new AutoStepInteractionSetBuilder(interactionCallChainValidator);
+                // Create an interaction set builder.
+                var interactionSetBuilder = setBuilderFactory();
 
+                // Add our compiled files to it.
                 foreach (var projectFile in project.AllFiles.Values.OfType<ProjectInteractionFile>())
                 {
                     if (projectFile.LastCompileResult?.Output is object)
@@ -198,11 +217,17 @@ namespace AutoStep.Projects
                 var setBuild = interactionSetBuilder.Build(Interactions);
 
                 // Now we need to go through the messages and add them to the appropriate interaction files.
-                foreach (var msgsByFile in setBuild.Messages.GroupBy(x => x.SourceName))
+                var fileMessages = setBuild.Messages.GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
+
+                foreach (var projectFile in project.AllFiles.Values.OfType<ProjectInteractionFile>())
                 {
-                    if (msgsByFile.Key is object && project.AllFiles.TryGetValue(msgsByFile.Key, out var file) && file is ProjectInteractionFile intFile)
+                    if (fileMessages.TryGetValue(projectFile.Path, out var messages))
                     {
-                        intFile.UpdateLastSetBuildResult(new InteractionsFileSetBuildResult(msgsByFile.Any(x => x.Level == CompilerMessageLevel.Error), msgsByFile));
+                        projectFile.UpdateLastSetBuildResult(new InteractionsFileSetBuildResult(!messages.Any(x => x.Level == CompilerMessageLevel.Error), messages));
+                    }
+                    else
+                    {
+                        projectFile.UpdateLastSetBuildResult(emptySuccess);
                     }
                 }
 

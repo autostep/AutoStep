@@ -7,7 +7,7 @@ namespace AutoStep.Language.Interaction
     /// <summary>
     /// Provides interaction file compilation.
     /// </summary>
-    public interface IAutoStepInteractionCompiler
+    public interface IInteractionCompiler
     {
         /// <summary>
         /// Compile an interaction file, giving an asynchronous compilation result. This method is responsible for generating the file elements, and checking for

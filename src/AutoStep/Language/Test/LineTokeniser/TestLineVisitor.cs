@@ -16,7 +16,7 @@ namespace AutoStep.Language.Test.LineTokeniser
     /// </summary>
     internal class TestLineVisitor : AutoStepParserBaseVisitor<LineTokeniserState>
     {
-        private readonly IAutoStepLinker linker;
+        private readonly ILinker linker;
         private readonly OnlyLineContext lineContext;
         private readonly CommonTokenStream tokenStream;
         private readonly LineTokeniserState lastState;
@@ -29,7 +29,7 @@ namespace AutoStep.Language.Test.LineTokeniser
         /// <param name="lineContext">The parsed line context.</param>
         /// <param name="tokenStream">The parsed token stream.</param>
         /// <param name="lastState">The last state of the tokeniser (i.e. the state of the previous line).</param>
-        public TestLineVisitor(IAutoStepLinker linker, OnlyLineContext lineContext, CommonTokenStream tokenStream, LineTokeniserState lastState)
+        public TestLineVisitor(ILinker linker, OnlyLineContext lineContext, CommonTokenStream tokenStream, LineTokeniserState lastState)
         {
             this.linker = linker;
             this.lineContext = lineContext;

@@ -61,7 +61,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.Resolve<AutoStepInteractionSet>();
+            var interactionSet = stepScope.Resolve<IInteractionSet>();
 
             if (interactionSet.Components.TryGetValue(componentName, out var component))
             {

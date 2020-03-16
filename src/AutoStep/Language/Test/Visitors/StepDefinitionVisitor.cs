@@ -10,7 +10,7 @@ namespace AutoStep.Language.Test.Visitors
     /// <summary>
     /// Handles generating step definitions from the Antlr parse context.
     /// </summary>
-    internal class StepDefinitionVisitor : BaseAutoStepTestVisitor<StepDefinitionElement>
+    internal class StepDefinitionVisitor : BaseTestVisitor<StepDefinitionElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StepDefinitionVisitor"/> class.

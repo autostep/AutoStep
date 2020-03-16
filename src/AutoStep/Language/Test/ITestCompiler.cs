@@ -7,7 +7,7 @@ namespace AutoStep.Language.Test
     /// <summary>
     /// Provides the autostep compiler as a service, and allows text content to be turned into a built structure of AutoStep content.
     /// </summary>
-    public interface IAutoStepCompiler
+    public interface ITestCompiler
     {
         /// <summary>
         /// Compile a source of AutoStep content (e.g. a file) and output the result.

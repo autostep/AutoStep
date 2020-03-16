@@ -57,10 +57,10 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Language\Test\AutoStepLinkerMessages.Designer.cs">
+    <Compile Update="Language\Test\LinkerMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>AutoStepLinkerMessages.resx</DependentUpon>
+      <DependentUpon>LinkerMessages.resx</DependentUpon>
     </Compile>
     <Compile Update="Language\Test\CompilerLogMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -118,9 +118,9 @@
       <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Language\Test\AutoStepLinkerMessages.resx">
+    <EmbeddedResource Update="Language\Test\LinkerMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AutoStepLinkerMessages.Designer.cs</LastGenOutput>
+      <LastGenOutput>LinkerMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Language\Test\CompilerLogMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

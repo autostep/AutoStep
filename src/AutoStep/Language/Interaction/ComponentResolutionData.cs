@@ -6,7 +6,7 @@ namespace AutoStep.Language.Interaction
 {
     /// <summary>
     /// Holds a temporary component resolution state while determining a component's inheritance chain.
-    /// Used by the <see cref="AutoStepInteractionSetBuilder"/> when it needs to determine a component's final version.
+    /// Used by the <see cref="InteractionSetBuilder"/> when it needs to determine a component's final version.
     /// </summary>
     internal class ComponentResolutionData
     {
