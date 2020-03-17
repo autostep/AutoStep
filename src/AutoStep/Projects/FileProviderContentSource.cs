@@ -46,11 +46,9 @@ namespace AutoStep.Projects
         /// <returns>The content of the source.</returns>
         public async ValueTask<string> GetContentAsync(CancellationToken cancelToken = default)
         {
-            using (var stream = fileProvider.GetFileInfo(SourceName).CreateReadStream())
-            using (var streamReader = new StreamReader(stream))
-            {
-                return await streamReader.ReadToEndAsync().ConfigureAwait(false);
-            }
+            await using var stream = fileProvider.GetFileInfo(SourceName).CreateReadStream();
+            using var streamReader = new StreamReader(stream);
+            return await streamReader.ReadToEndAsync().ConfigureAwait(false);
         }
     }
 }
