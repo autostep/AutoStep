@@ -16,7 +16,6 @@
     <RepositoryUrl>https://github.com/autostep/autostep</RepositoryUrl>
     <PackageTags>testing, gherkin</PackageTags>
     <PackageIcon>nuget-icon.png</PackageIcon>
-    <PackageIconUrl>https://raw.githubusercontent.com/autostep/autostep/develop/build/nuget-icon.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
