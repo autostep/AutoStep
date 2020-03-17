@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Language.Interaction
             var traitE = CreateTrait("E");
             var traitF = CreateTrait("F");
             var traitG = CreateTrait("G");
-            
+
             var traitAB = CreateTrait("A", "B");
             var traitBD = CreateTrait("B", "D");
             var traitCD = CreateTrait("C", "D");
@@ -82,7 +82,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             // Find all traits.
             traitGraph.SearchTraits(new string[] { "A", "B", "C", "E", "F" }, traits, (set, el) => set.Add(el));
-            
+
             traits.Should().Equal(traitA, traitB, traitC, traitE, traitF,
                                   traitAB, traitCE, traitEF,
                                   traitABC, traitABCE
@@ -128,7 +128,7 @@ namespace AutoStep.Tests.Language.Interaction
             traitGraph.AddOrExtendTrait(traitCDE);
             traitGraph.AddOrExtendTrait(traitABCD);
             traitGraph.AddOrExtendTrait(traitABCE);
-            
+
             var traits = new List<TraitDefinitionElement>();
 
             // Find all traits.
@@ -199,7 +199,7 @@ namespace AutoStep.Tests.Language.Interaction
                                   traitAB, traitCE, traitEF,
                                   traitABC, traitABCE);
         }
-        
+
         private TraitDefinitionElement CreateTrait(params string[] nameParts)
         {
             var newElement = new TraitDefinitionElement(string.Join(" + ", nameParts), GetNameParts(nameParts));

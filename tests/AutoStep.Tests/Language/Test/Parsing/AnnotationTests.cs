@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -59,7 +59,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -85,7 +85,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -107,7 +107,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -130,7 +130,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -151,7 +151,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -163,7 +163,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
             )));
         }
 
-
         [Fact]
         public async Task OptionEmptySettingValueError()
         {
@@ -173,7 +172,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -196,7 +195,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
               Feature: My Feature
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 
@@ -226,7 +225,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 $opt3:setting3
 
                 Scenario: My Scenario
-                
+
                     Given I have
             ";
 

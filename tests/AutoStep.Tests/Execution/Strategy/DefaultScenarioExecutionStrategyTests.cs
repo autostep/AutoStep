@@ -23,7 +23,6 @@ namespace AutoStep.Tests.Execution.Strategy
         {
         }
 
-
         [Fact]
         public async ValueTask ScenarioWithBackground()
         {
@@ -33,7 +32,7 @@ namespace AutoStep.Tests.Execution.Strategy
                                             .Built;
 
             await DoTest(feature, feature.Scenarios[0], VariableSet.Blank, false,
-                         (feature.Background, VariableSet.Blank),
+                         (feature.Background!, VariableSet.Blank),
                          (feature.Scenarios[0], VariableSet.Blank));
         }
 
@@ -46,7 +45,7 @@ namespace AutoStep.Tests.Execution.Strategy
                                             .Built;
 
             await DoTest(feature, feature.Scenarios[0], VariableSet.Blank, true,
-                         (feature.Background, VariableSet.Blank));
+                         (feature.Background!, VariableSet.Blank));
         }
 
         [Fact]
@@ -84,7 +83,7 @@ namespace AutoStep.Tests.Execution.Strategy
             variables.Set("var", "value1");
 
             await DoTest(feature, feature.Scenarios[0], variables, false,
-                         (feature.Background, variables),
+                         (feature.Background!, variables),
                          (feature.Scenarios[0], variables));
         }
 
@@ -134,7 +133,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
-            
+
             public ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
             {
                 owningScope.Should().NotBeNull();
@@ -155,9 +154,9 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<ScenarioContext> callBefore;
             private readonly Action<ScenarioContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<ScenarioContext> callBefore, Action<ScenarioContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<ScenarioContext> callBefore, Action<ScenarioContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;
@@ -217,7 +216,6 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-
         }
     }
 }

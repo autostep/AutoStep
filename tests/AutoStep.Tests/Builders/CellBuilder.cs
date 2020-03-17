@@ -8,16 +8,16 @@ namespace AutoStep.Tests.Builders
     {
         private int nextTokenIdx = 0;
 
-        public CellBuilder(string body, int line, int start, int end)
+        public CellBuilder(string? body, int line, int start, int end)
         {
             Built = new TableCellElement
-            {   
+            {
                 Text = body,
                 SourceLine = line,
                 StartColumn = start,
-                EndColumn = end, 
+                EndColumn = end,
                 EndLine = line
-            };            
+            };
         }
 
         public CellBuilder Text(string text)
@@ -68,7 +68,7 @@ namespace AutoStep.Tests.Builders
         private CellBuilder Part<TPartType>(string text, Func<int, int, TPartType> creator)
             where TPartType : StepToken
         {
-            var startIdx = Built.Text.IndexOf(text, nextTokenIdx);
+            var startIdx = Built.Text!.IndexOf(text, nextTokenIdx);
 
             if (startIdx == -1)
             {

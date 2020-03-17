@@ -33,7 +33,7 @@ namespace AutoStep.Tests.Utils
             return CompileAndAssertErrors(content, null, expectedMessages);
         }
 
-        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
+        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder>? cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 
@@ -96,8 +96,8 @@ namespace AutoStep.Tests.Utils
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
-        protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder> cfg = null)
-        {   
+        protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder>? cfg = null)
+        {
             var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
@@ -117,7 +117,7 @@ namespace AutoStep.Tests.Utils
             }
         }
 
-        protected void AssertElementComparison(BuiltElement expected, BuiltElement actual, bool includeStatementParts)
+        protected void AssertElementComparison(BuiltElement expected, BuiltElement? actual, bool includeStatementParts)
         {
             Assert.NotNull(actual);
 
@@ -130,7 +130,7 @@ namespace AutoStep.Tests.Utils
                     .AllowingInfiniteRecursion()
                     .IncludingAllRuntimeProperties()
                     .ComparingByMembers<TraitNode>()
-                ); 
+                );
             }
             catch
             {
@@ -166,7 +166,7 @@ namespace AutoStep.Tests.Utils
                 IMemberInfo context,
                 IEquivalencyAssertionOptions config)
             {
-                return selectedMembers.Except(context.RuntimeType.GetNonPrivateProperties().Where(p => p.GetMethod.IsAssembly).Select(SelectedMemberInfo.Create));
+                return selectedMembers.Except(context.RuntimeType.GetNonPrivateProperties().Where(p => p.GetMethod!.IsAssembly).Select(SelectedMemberInfo.Create));
             }
         }
 
@@ -185,7 +185,7 @@ namespace AutoStep.Tests.Utils
 
             public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
             {
-                JsonSerializer.Serialize(writer, value, value.GetType(), myOptions);
+                JsonSerializer.Serialize(writer, value, value!.GetType(), myOptions);
             }
         }
     }

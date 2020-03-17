@@ -63,11 +63,11 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
-            Result.Header.AddLineInfo(context);
+            Result!.Header.AddLineInfo(context);
 
             base.VisitTableHeader(context);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace AutoStep.Language.Test.Visitors
                 header.AddPositionalLineInfo(variableName);
             }
 
-            Result.Header.AddHeader(header);
+            Result!.Header.AddHeader(header);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -123,14 +123,14 @@ namespace AutoStep.Language.Test.Visitors
             base.VisitTableRow(context);
 
             // Check if the number of cells in the row doesn't match the headings.
-            if (currentRow.Cells.Count != Result.ColumnCount)
+            if (currentRow.Cells.Count != Result!.ColumnCount)
             {
-                MessageSet.AddStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result.ColumnCount);
+                MessageSet.AddStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result!.ColumnCount);
             }
 
-            Result.AddRow(currentRow);
+            Result!.AddRow(currentRow);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace AutoStep.Language.Test.Visitors
                     cell.AddPositionalLineInfo(cellWs);
                 }
 
-                currentRow.AddCell(cell);
+                currentRow!.AddCell(cell);
             }
             else
             {
@@ -180,10 +180,10 @@ namespace AutoStep.Language.Test.Visitors
                     currentCell = null;
                 }
 
-                currentRow.AddCell(cell);
+                currentRow!.AddCell(cell);
             }
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(currentCell is object);
 
-            currentCell.AddToken(part);
+            currentCell!.AddToken(part);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)
@@ -309,7 +309,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(currentCell is object);
 
-            var offset = currentCell.StartColumn;
+            var offset = currentCell!.StartColumn;
             var start = ctxt.Start.Column + 1 - offset;
             var startIndex = ctxt.Start.StartIndex;
 
@@ -325,7 +325,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(currentCell is object);
 
-            var offset = currentCell.StartColumn;
+            var offset = currentCell!.StartColumn;
             var start = ctxt.Symbol.Column + 1 - offset;
             var startIndex = ctxt.Symbol.StartIndex;
 

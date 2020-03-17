@@ -21,12 +21,12 @@ namespace AutoStep.Tests.Execution.Events
 
             var mockEventHandler1 = new Mock<IEventHandler>();
             var mockEventHandler2 = new Mock<IEventHandler>();
-            mockEventHandler1.Setup(x => x.ConfigureServices(null, null)).Callback(() => order.Add(1));
-            mockEventHandler2.Setup(x => x.ConfigureServices(null, null)).Callback(() => order.Add(2));
+            mockEventHandler1.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(1));
+            mockEventHandler2.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(2));
 
             var pipeline = new EventPipeline(new List<IEventHandler> { mockEventHandler1.Object, mockEventHandler2.Object });
 
-            pipeline.ConfigureServices(null, null);
+            pipeline.ConfigureServices(null!, null!);
 
             order[0].Should().Be(1);
             order[1].Should().Be(2);
@@ -133,7 +133,7 @@ namespace AutoStep.Tests.Execution.Events
             var scope = scopeMock.Object;
             var context = new RunContext(new RunConfiguration());
             var mockStepReference = new StepReferenceElement();
-            Exception foundException = null;
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
 
@@ -143,8 +143,9 @@ namespace AutoStep.Tests.Execution.Events
                 throw new StepFailureException(mockStepReference, new NullReferenceException());
             });
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<StepFailureException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         [Fact]
@@ -152,8 +153,8 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());            
-            Exception foundException = null;
+            var context = new RunContext(new RunConfiguration());
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
             var errHandler = new MyEventHandler(() => { }, () => throw new EventHandlingException(new NullReferenceException()));
@@ -162,8 +163,9 @@ namespace AutoStep.Tests.Execution.Events
 
             await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         [Fact]
@@ -172,7 +174,7 @@ namespace AutoStep.Tests.Execution.Events
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(new RunConfiguration());
-            Exception foundException = null;
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
             var errHandler = new MyEventHandler(() => { }, () => throw new NullReferenceException());
@@ -181,17 +183,18 @@ namespace AutoStep.Tests.Execution.Events
 
             await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         private class MyEventHandler : IEventHandler
         {
             private readonly Action callBefore;
             private readonly Action callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action callBefore, Action callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action callBefore, Action callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;

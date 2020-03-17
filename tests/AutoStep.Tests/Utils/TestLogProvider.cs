@@ -27,8 +27,7 @@ namespace AutoStep.Tests.Utils
         }
 
         public void Dispose()
-        {   
+        {
         }
     }
-
 }

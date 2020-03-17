@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         {
             const string Test = @"
                 Trait: clickable + editable
-                
+
                 Trait: clickable + editable + visible
             ";
 
@@ -129,7 +129,6 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                  )
              );
         }
-
 
         [Fact]
         public async Task CanDefineTraitWithMethods()

@@ -16,9 +16,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineCanBeDefined()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I am in a scenario outline
@@ -27,8 +27,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 @tag1
                 Examples:
                     | heading1   | heading2   |
-                    | something1 | something2 | 
-                
+                    | something1 | something2 |
+
                 $opt2
                 @tag2
                 Examples:
@@ -78,17 +78,17 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineCanInsertExamplesVariable()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument '<variable1>'
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
@@ -120,14 +120,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task ScenarioOutlineCanInsertExamplesVariableIntoStepTable()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument for this table:
@@ -136,8 +135,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertSuccess(TestFile, file => file
@@ -168,14 +167,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task ScenarioOutlineCanInsertMultipleExamplesVariablesIntoStepTable()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument for this table:
@@ -184,8 +182,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertSuccess(TestFile, file => file
@@ -218,14 +216,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task ScenarioOutlineUndeclaredExamplesVariableInStepTable()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument for this table:
@@ -234,8 +231,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertWarnings(TestFile, file => file
@@ -273,17 +270,17 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineCanInsertMultipleVariablesInOneArgument()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument '<variable1> something <variable2>'
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
@@ -317,26 +314,25 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task ScenarioOutlineCanInsertVariablesFromMultipleExamples()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument '<variable1> something <variable2>'
 
                 Examples:
-                    | variable1   | 
-                    | something1  | 
+                    | variable1   |
+                    | something1  |
 
                 Examples:
                     | variable2   |
                     | something2  |
-                
+
             ";
 
             await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
@@ -382,17 +378,17 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineUndeclaredExamplesVariableProducesWarning()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I pass an argument '<not a variable>'
 
                 Examples:
                     | variable1   | variable2   |
-                    | something1  | something2  | 
-                
+                    | something1  | something2  |
+
             ";
 
             await CompileAndAssertWarnings(TestFile, file => file
@@ -423,9 +419,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ExamplesKeywordCasing()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I am in a scenario outline
@@ -444,14 +440,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task ExamplesWithNoTableFollowedByEofProducesError()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I am in a scenario outline
@@ -472,9 +467,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineBlankTitle()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline:
 
             ";
@@ -485,14 +480,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
                                     4, 17, 4, 33));
         }
 
-
         [Fact]
         public async Task ExamplesWithNoTableFollowedByScenarioProducesError()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario Outline: My Scenario Outline
 
                     Given I am in a scenario outline
@@ -518,7 +512,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioOutlineNameWithStepPrefixes()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: Test Feature
 
                 Scenario Outline: Test the Given, When, Then functionality

@@ -15,7 +15,7 @@ namespace AutoStep.Execution.Contexts
         /// <param name="parentContext">The parent collection context.</param>
         /// <param name="step">The step reference metadata.</param>
         /// <param name="variables">The variables currently in scope.</param>
-        public StepContext(int stepIndex, StepCollectionContext parentContext, IStepReferenceInfo step, VariableSet variables)
+        public StepContext(int stepIndex, StepCollectionContext? parentContext, IStepReferenceInfo step, VariableSet variables)
         {
             StepIndex = stepIndex;
             ParentContext = parentContext;
@@ -31,7 +31,7 @@ namespace AutoStep.Execution.Contexts
         /// <summary>
         /// Gets the parent context, the collection of steps.
         /// </summary>
-        public StepCollectionContext ParentContext { get; }
+        public StepCollectionContext? ParentContext { get; }
 
         /// <summary>
         /// Gets the step metadata.

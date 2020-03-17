@@ -19,5 +19,4 @@ namespace AutoStep.Tests.Utils
             return new LoggerFactory();
         }
     }
-
 }

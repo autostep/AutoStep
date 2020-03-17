@@ -77,6 +77,4 @@ namespace AutoStep.Tests.Builders
             return this;
         }
     }
-
-
 }
