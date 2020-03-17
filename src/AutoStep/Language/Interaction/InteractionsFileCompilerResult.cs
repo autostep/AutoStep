@@ -4,7 +4,7 @@ using AutoStep.Elements.Interaction;
 namespace AutoStep.Language.Interaction
 {
     /// <summary>
-    /// Represents the reuslt of an interactions file compilation.
+    /// Represents the result of an interactions file compilation.
     /// </summary>
     public class InteractionsFileCompilerResult : LanguageOperationResult<InteractionFileElement>
     {

@@ -3,7 +3,7 @@
 namespace AutoStep.Elements.Metadata
 {
     /// <summary>
-    /// Metada for an examples block in a scenario outline.
+    /// Metadata for an examples block in a scenario outline.
     /// </summary>
     public interface IExampleInfo : IElementInfo
     {
