@@ -9,16 +9,17 @@ namespace AutoStep.Tests.Builders
         private int nextTokenIdx = 0;
         private readonly int startTokenIdx = 0;
 
-        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column) :
-            base(new StepReferenceElement
+        public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
+        {
+            Built = new StepReferenceElement
             {
                 Type = type,
                 BindingType = bindingType,
                 SourceLine = line,
                 StartColumn = column,
                 RawText = body
-            })
-        {
+            };
+
             startTokenIdx = column + type.ToString().Length;
         }
 

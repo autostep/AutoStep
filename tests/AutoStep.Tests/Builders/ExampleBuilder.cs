@@ -5,13 +5,13 @@ namespace AutoStep.Tests.Builders
 {
     public class ExampleBuilder : BaseBuilder<ExampleElement>
     {
-        public ExampleBuilder(int line, int column) :
-            base(new ExampleElement
+        public ExampleBuilder(int line, int column)
+        {
+            Built = new ExampleElement
             {
                 SourceLine = line,
                 StartColumn = column
-            })
-        {
+            };
         }
 
         public ExampleBuilder Table(int line, int column, Action<TableBuilder> cfg)

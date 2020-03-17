@@ -5,14 +5,14 @@ namespace AutoStep.Tests.Builders
 {
     public class ScenarioOutlineBuilder : BaseBuilder<ScenarioOutlineElement>, IStepCollectionBuilder<ScenarioOutlineElement>
     {
-        public ScenarioOutlineBuilder(string name, int line, int column) :
-            base(new ScenarioOutlineElement
+        public ScenarioOutlineBuilder(string name, int line, int column)
+        {
+            Built = new ScenarioOutlineElement
             {
                 SourceLine = line,
                 StartColumn = column,
                 Name = name
-            })
-        {
+            };
         }
 
         public ScenarioOutlineBuilder Description(string description)

@@ -5,8 +5,9 @@ namespace AutoStep.Tests.Builders
 {
     public class InteractionFileBuilder : BaseBuilder<InteractionFileElement>
     {
-        public InteractionFileBuilder() : base(new InteractionFileElement())
+        public InteractionFileBuilder()
         {
+            Built = new InteractionFileElement();
         }
 
         public InteractionFileBuilder Trait(string fullName, int line, int column, Action<InteractionTraitBuilder>? traitCfg = null)

@@ -6,8 +6,9 @@ namespace AutoStep.Tests.Builders
     internal class InteractionMethodCallChainBuilder<TMethodCallSource> : BaseBuilder<TMethodCallSource>
         where TMethodCallSource : ICallChainSource
     {
-        public InteractionMethodCallChainBuilder(TMethodCallSource methodSource) : base(methodSource)
+        public InteractionMethodCallChainBuilder(TMethodCallSource methodSource)
         {
+            Built = methodSource;
         }
 
         public InteractionMethodCallChainBuilder<TMethodCallSource> Call(string name, int startLine, int startCol, int endLine, int endCol, Action<InteractionMethodArgumentSetBuilder>? cfg = null)

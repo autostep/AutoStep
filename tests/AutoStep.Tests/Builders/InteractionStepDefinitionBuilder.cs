@@ -7,15 +7,15 @@ namespace AutoStep.Tests.Builders
 {
     internal class InteractionStepDefinitionBuilder : BaseBuilder<InteractionStepDefinitionElement>
     {
-        public InteractionStepDefinitionBuilder(StepType type, string declaration, int line, int column) :
-            base(new InteractionStepDefinitionElement
+        public InteractionStepDefinitionBuilder(StepType type, string declaration, int line, int column)
+        {
+            Built = new InteractionStepDefinitionElement
             {
                 SourceLine = line,
                 StartColumn = column,
                 Type = type,
                 Declaration = declaration
-            })
-        {
+            };
         }
 
         public InteractionStepDefinitionBuilder Description(string description)

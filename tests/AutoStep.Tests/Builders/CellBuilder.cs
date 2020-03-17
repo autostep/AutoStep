@@ -8,16 +8,16 @@ namespace AutoStep.Tests.Builders
     {
         private int nextTokenIdx = 0;
 
-        public CellBuilder(string body, int line, int start, int end) :
-            base(new TableCellElement
+        public CellBuilder(string body, int line, int start, int end)
+        {
+            Built = new TableCellElement
             {
                 Text = body,
                 SourceLine = line,
                 StartColumn = start,
                 EndColumn = end,
                 EndLine = line
-            })
-        {
+            };
         }
 
         public CellBuilder Text(string text)

@@ -5,14 +5,14 @@ namespace AutoStep.Tests.Builders
 {
     public class FeatureBuilder : BaseBuilder<FeatureElement>
     {
-        public FeatureBuilder(string name, int line, int column) :
-            base(new FeatureElement
+        public FeatureBuilder(string name, int line, int column)
+        {
+            Built = new FeatureElement
             {
                 SourceLine = line,
                 StartColumn = column,
                 Name = name
-            })
-        {
+            };
         }
 
         public FeatureBuilder Description(string description)
