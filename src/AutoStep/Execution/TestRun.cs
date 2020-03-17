@@ -178,10 +178,7 @@ namespace AutoStep.Execution
                 source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
-            if (serviceRegistration is object)
-            {
-                serviceRegistration(exposedServiceRegistration);
-            }
+            serviceRegistration?.Invoke(exposedServiceRegistration);
 
             return exposedServiceRegistration.BuildRootScope();
         }
