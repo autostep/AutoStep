@@ -5,6 +5,9 @@
 AutoStep is a new compiler and runner for Gherkin-style BDD tests, with some extra language features on top of standard Gherkin that add useful functionality.
 Unlike some existing BDD tools, there is no test code generation or separate code compilation process. The tests compile and execute directly inside AutoStep.
 
+On top of the normal Gherkin test files, AutoStep provides a compiled language for defining how a user interface test might interact with your UI, to allow you to
+express your application's UI behaviour and components without writing code.
+
 This repository contains the core .NET library that provides compilation and execution behaviour.
 
 ---
@@ -15,7 +18,7 @@ AutoStep is currently under development (in alpha). You can grab the CI package
 from our feedz.io package feed: https://f.feedz.io/autostep/ci/nuget/index.json.
 Get the 'develop' tagged pre-release package for latest develop. 
 
-At the moment the compiler and linker is mostly stable (but need a couple of extra features), and tests can be executed.
+At the moment the compiler (for test and interactions) and linker is mostly stable (but need a couple of extra features), and tests can be executed.
 
 We're about to add our own results collector, at the moment you would have to add an event handler to do that.
 Shouldn't be too long though.
@@ -54,69 +57,71 @@ In order to run this test, I can use the following C# code:
 
 ```csharp
 
-// Create a project
-var project = new Project();
+    // Create a project
+    var project = new Project();
 
-// Define some steps based on callbacks.
-// You can actually define anything as a source of steps if you
-// want to!
-var steps = new CallbackDefinitionSource();
+    // Define some steps based on callbacks.
+    // You can actually define anything as a source of steps if you
+    // want to!
+    var steps = new CallbackDefinitionSource();
 
-// You can put arguments in curly braces:
-steps.Given("I have entered {value} into {field}", (string val, string field) =>
-{
-    // Run the selenium/manipulation code as needed
-});
+    // You can put arguments in curly braces:
+    steps.Given("I have entered {value} into {field}", (string val, string field) =>
+    {
+        // Run the selenium/manipulation code as needed
+    });
 
-// You can inject a DI scope and resolve services:
-steps.When("I click {button}", (IServiceScope scope, string buttonName) =>
-{
-    // Click the button
-});
+    // You can inject a DI scope and resolve services:
+    steps.When("I click {button}", (IServiceScope scope, string buttonName) =>
+    {
+        // Click the button
+    });
 
-// Step methods can be async:
-steps.Then("the {title} page should be displayed", async (string title) => 
-{
-    // Check for the title page
-});
+    // Step methods can be async:
+    steps.Then("the {title} page should be displayed", async (string title) =>
+    {
+        // Check for the title page
+    });
 
-// You can do type hinting.
-// Test compilation will give an error if someone tries to pass a string as count.
-steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) => 
-{
-});
+    // You can do type hinting.
+    // Test compilation will give an error if someone tries to pass a string as count.
+    steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) =>
+    {
+    });
 
-// Add your source to the project compiler.
-project.Compiler.AddStaticStepDefinitionSource(steps);
+    // Add your source to the project compiler.
+    project.Compiler.AddStaticStepDefinitionSource(steps);
 
-// Read a file that you want to run
-var content = new File.ReadAllText("testfile.as");
+    // Read a file that you want to run
+    var content = File.ReadAllText("testfile.as");
 
-var file = new ProjectFile("/test", new StringContentSource(TestFile)); 
+    var file = new ProjectTestFile("/test", new StringContentSource(content));
 
-// Add your file to the project (you can have as many files as you like)
-// Steps defined in one project file can be used in any other.
-project.TryAddFile(file);
+    // Add your file to the project (you can have as many files as you like)
+    // Steps defined in one project file can be used in any other.
+    project.TryAddFile(file);
 
-// Compile the project (will return any errors).
-// After compilation, file.LastCompilationResult will be set.
-await project.Compiler.CompileAsync();
+    // Compile the project (will return any errors).
+    // After compilation, file.LastCompilationResult will be set.
+    await project.Compiler.CompileAsync();
 
-// Link the project.
-// After linking, file.LastLinkResult will be set.
-project.Compiler.Link();
+    // Link the project.
+    // After linking, file.LastLinkResult will be set.
+    project.Compiler.Link();
 
-// Create a test run.
-var testRun = project.CreateTestRun();
+    // Create a test run.
+    var testRun = project.CreateTestRun();
 
-// The test will run:
-await testRun.Execute();
+    // The test will run:
+    await testRun.ExecuteAsync();
 
 ```
 
 # Why AutoStep
 
-Why does AutoStep exist? The team behind AutoStep has spent years testing enterprise-level web applications using the existing Gherkin technologies (mostly SpecFlow) and while we are a big fan of these, we've also identified a couple of things we'd like to add. Here are a few of the useful features in AutoStep that help us with that.
+Why does AutoStep exist? The team behind AutoStep has spent years testing enterprise-level web applications using the existing Gherkin 
+technologies (mostly SpecFlow) and while we are a big fan of these, we've also identified a couple of things we'd like to add. 
+Here are a few of the useful features in AutoStep that help us with that.
 
 ## Defining Steps in the same Language as the Tests
 
@@ -202,6 +207,125 @@ Scenario: Shipping an Order Increments the User Shipped Count
     Then the user's shipped count should be 1
 ```
 
+## AutoStep Interactions - Testing User Interfaces
+
+A lot of people are now using BDD tools, combined with Selenium, to perform BDD User Interface Tests. 
+
+This can require quite a lot of up-front work to integrate Selenium, and write the necessary code to tell
+your tests what a button is, or a menu, or any other custom component. This code is then potentially brittle
+if not managed properly, or if there is no developer to maintain it.
+
+In the section above, we talked about defining steps in the AutoStep language, and we want to extend that to UI manipulation steps,
+adding language support for telling AutoStep how to interact with a UI, using the AutoStep Interaction language.
+
+### Components and Traits
+
+From our perspective, most user interfaces are made up of various 'components'. For example, a button, an input field,
+a menu, a grid, etc.  So, let's define a file that describes our components:
+
+```gherkin
+Component: button
+
+Component: field
+
+Component: menu
+```
+
+Every component has 'traits'. A trait is any behaviour or classification for a component. Some traits might be:
+
+- named: A name can be used to locate this component. Perhaps by a label, or the text in a button.
+- clickable: An element can be clicked on.
+- editable: An element can be typed into.
+- draggable: An element can be dragged.
+
+Most components can be described as having traits; buttons are named and clickable, fields are named and editable, etc.
+
+We can indicate the traits a component has like so:
+
+```gherkin
+Component: button
+
+  traits: named, clickable
+
+Component: field
+
+  traits: named, editable
+```
+
+In the AutoStep world, a trait can imply test steps, and 'methods'. Here's how we define a couple of traits,
+and apply them to a component:
+
+```gherkin
+Trait: named
+
+  # This is a method definition.
+  # Any component that has the 'named' trait must say how to find it.
+  locateNamed(name): needs-defining
+
+# Any component that is both clickable and named will have this combined trait
+# applied to it.
+Trait: clickable + named
+
+  # This step will be applied to every component that has this trait applied
+  # The $component$ is a dynamic placeholder that will bind on the component name.
+  #
+  # When a step is invoked, it executes a set of methods (in order). 
+  # These methods might be defined in code, or defined in a trait.
+  # The method that is used will be the one specific to a given component.
+  Step: When I click the {name} $component$
+    locateNamed(name)
+    -> click()
+  
+Component: button
+
+  traits: clickable, named
+
+  # select is an example of a method that might be exposed
+  # by an integration library (in C#)
+  locateNamed(name): select('input[name=<name>]')
+
+``` 
+
+The behaviour above means we can now use the step in our test:
+
+```gherkin
+
+# Submit matches the {name} argument
+# button matches the $component$ placeholder.
+When I click the Submit button
+
+```
+
+Components can be inherited from another (or the same) component.
+
+This allows you to define 'general' behaviour, and custom overrides.
+
+For example, let's say I want to define a 'Clear' button that behaves differently.
+
+```gherkin
+
+Component: clear-button
+
+  # Specifying an exact name changes the binding text in steps, which can have whitespace.
+  name: 'clear button'
+
+  inherits: 'button'
+
+  # Override the locateNamed method from 'button' to be more specific
+  locateNamed(name): select('input.clear[name=<name>]')
+
+```
+
+### Web Testing Support
+
+The AutoStep Interactions language is not targeted at a specific UI system. It's intended that
+people can build/contribute built-in methods for a variety of UI platforms (e.g. WinForms, WPF, Mobile, etc).
+
+That being said, our experience is around web application testing, so we will be creating a set of Web Bindings for
+AutoStep interactions that should allow tests to be created for the web without needing to build an integration package in C#.
+
+You can find that package at https://github.com/autostep/AutoStep.Web (which is a work in progress).
+
 ## No Visual Studio/MSBuild Dependency
 
 One of the frustrations we've had in the past is that the writing and building
@@ -251,7 +375,8 @@ Feature: Customer Orders
 
 ## Sourcing Steps from Anywhere
 
-While AutoStep will support the standard notation of binding functionality to methods in classes people write, we also believe that a step definition should be able to come from almost anywhere.
+While AutoStep will support the standard notation of binding functionality to methods in classes people write, we also believe that a 
+step definition should be able to come from almost anywhere.
 
 For example, we want to create steps automatically from control configuration,
 or application options, without having to write the step bindings.
