@@ -16,9 +16,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepNoArguments()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have done something
-                
+
                 Given I have done this
                 Then this is true
             ";
@@ -47,12 +47,12 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepWithArguments()
         {
             const string TestFile =
-            @"                
+            @"
               @tag1
               $opt1
               Step: Given I have defined a step with {argument1} and {argument2}
                 A description
-                
+
                 Given I have used '<argument1>'
                 Then this is <argument2>
                  And this is <argument2>
@@ -97,9 +97,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepUsingAndGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: And I have done something
-                
+
                 Given I have done this
                 Then this is true
             ";
@@ -115,9 +115,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepUsingUndeclaredVariableGivesWarning()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {arg} to this
-                
+
                 Given I have referenced another '<not an arg>'
             ";
 
@@ -132,9 +132,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepBodyHasUnBoundAndGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {arg} to this
-                
+
                 And I have referenced another
             ";
 
@@ -149,9 +149,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepUsingEmptyVariableGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {}
-                
+
                 Given this is just a step
             ";
 
@@ -167,9 +167,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task DefineStepUsingInsertionVariableGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {normal} with <arg> to this
-                
+
                 Given I have referenced another '<normal>'
             ";
 
@@ -178,16 +178,15 @@ namespace AutoStep.Tests.Language.Test.Parsing
                                     "You cannot use '<arg>' as a Step Parameter. Step Parameter variables must be literal names, e.g. 'variable1' or 'total'. You cannot specify dynamic values.",
                                     2, 55, 2, 61)
             );
-
         }
 
         [Fact(Skip = "This is future compiler functionality; the ability to give an error for putting interpolation statements inside definitions")]
         public async Task DefineStepUsingInterpolationGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {normal} with ':interpolated' to this
-                
+
                 Given I have referenced another '<normal>'
             ";
 
@@ -202,9 +201,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task StepArgumentBadPaddingGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Step: Given I have passed {normal }
-                
+
                 Given I have referenced another '<normal>'
             ";
 

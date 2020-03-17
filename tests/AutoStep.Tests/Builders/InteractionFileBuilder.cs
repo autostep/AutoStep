@@ -10,7 +10,7 @@ namespace AutoStep.Tests.Builders
             Built = new InteractionFileElement();
         }
 
-        public InteractionFileBuilder Trait(string fullName, int line, int column, Action<InteractionTraitBuilder> traitCfg = null)
+        public InteractionFileBuilder Trait(string fullName, int line, int column, Action<InteractionTraitBuilder>? traitCfg = null)
         {
             var traitBuilder = new InteractionTraitBuilder(fullName, line, column);
 
@@ -21,7 +21,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public InteractionFileBuilder Component(string name, int line, int column, Action<InteractionComponentBuilder> componentCfg = null)
+        public InteractionFileBuilder Component(string name, int line, int column, Action<InteractionComponentBuilder>? componentCfg = null)
         {
             var componentBuilder = new InteractionComponentBuilder(name, line, column);
 

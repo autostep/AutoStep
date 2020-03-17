@@ -16,7 +16,7 @@ namespace AutoStep.Tests.Execution
         {
             var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
             stepDef.Argument("{arg}", "arg", 3);
-            
+
             var stepRef = new StepReferenceBuilder("I argument1", StepType.Given, StepType.Given, 1, 1);
             stepRef.Text("I");
             stepRef.Text("argument");
@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Execution
             var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
             stepDef.Argument("{arg}", "arg", 3);
 
-            var stepRef = new StepReferenceBuilder("I 'argument'", StepType.Given, StepType.Given, 1, 1);            
+            var stepRef = new StepReferenceBuilder("I 'argument'", StepType.Given, StepType.Given, 1, 1);
             stepRef.Text("I");
             stepRef.Quote();
             stepRef.Text("argument");
@@ -287,7 +287,7 @@ namespace AutoStep.Tests.Execution
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
             var fakeScope = new Mock<IServiceScope>().Object;
-            
+
             var text = binding.GetFullText(fakeScope, stepRef.Built.RawText, VariableSet.Blank);
 
             text.Should().Be("?");
@@ -305,7 +305,6 @@ namespace AutoStep.Tests.Execution
 
             text.Should().Be("value1");
         }
-
 
         [Fact]
         public void CellBindWhiteSpace()

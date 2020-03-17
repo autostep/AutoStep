@@ -21,7 +21,7 @@ namespace AutoStep.Tests.Projects
         {
             var mockCompiler = new Mock<ITestCompiler>();
             var mockLinker = new Mock<ILinker>();
-            
+
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
@@ -222,7 +222,7 @@ namespace AutoStep.Tests.Projects
 
             overallLink.Messages.First().Should().Be(msg);
         }
-        
+
         [Fact]
         public void RelinkFileIfLinkerDependencyUpdated()
         {
@@ -253,7 +253,7 @@ namespace AutoStep.Tests.Projects
             projectCompiler.Link();
 
             // Change the linker dependency modification time.
-            linkerDepLastModify = projFile.LastLinkTime.Value.AddMinutes(1);
+            linkerDepLastModify = projFile.LastLinkTime!.Value.AddMinutes(1);
 
             // This should relink.
             projectCompiler.Link();
@@ -269,7 +269,7 @@ namespace AutoStep.Tests.Projects
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
-            
+
             project.TryAddFile(projFile);
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();

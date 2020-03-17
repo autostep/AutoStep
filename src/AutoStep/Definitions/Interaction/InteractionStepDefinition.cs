@@ -74,7 +74,7 @@ namespace AutoStep.Definitions.Interaction
 
                     var argText = argValue.GetFullText(stepScope, context.Step.Text, variables);
 
-                    initialContext.Variables.Set(Definition.Arguments[argIdx].Name, argText);
+                    initialContext.Variables.Set(Definition!.Arguments[argIdx].Name, argText);
                 }
 
                 await stepDef.InvokeChainAsync(stepScope, initialContext, component.MethodTable);

@@ -73,7 +73,7 @@ namespace AutoStep.Tests.Elements.Test
                                      )
                                      .Built;
 
-            var cloned = featureElement.CloneWithFilteredScenarios((scen, ex) => ex.Annotations.OfType<TagElement>().Any(t => t.Tag != "notvalid"));
+            var cloned = featureElement.CloneWithFilteredScenarios((scen, ex) => ex!.Annotations.OfType<TagElement>().Any(t => t.Tag != "notvalid"));
 
             var originalScenario = (ScenarioOutlineElement)featureElement.Scenarios[0];
             var clonedScenario = (ScenarioOutlineElement)cloned.Scenarios[0];

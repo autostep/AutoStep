@@ -64,8 +64,8 @@ namespace AutoStep.Tests.Execution.Binding
         public void NullArgumentOnScopeThrows()
         {
             var binderRegistry = new ArgumentBinderRegistry();
-            
-            Action act = () => binderRegistry.GetBinderForType(null, typeof(decimal));
+
+            Action act = () => binderRegistry.GetBinderForType(null!, typeof(decimal));
 
             act.Should().Throw<ArgumentNullException>();
 
@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            Action act = () => binderRegistry.GetBinderForType(new Mock<IServiceScope>().Object, null);
+            Action act = () => binderRegistry.GetBinderForType(new Mock<IServiceScope>().Object, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -86,7 +86,7 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            Action act = () => binderRegistry.RegisterArgumentBinder<MyCustomBinder<decimal>>(null);
+            Action act = () => binderRegistry.RegisterArgumentBinder<MyCustomBinder<decimal>>(null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -98,6 +98,5 @@ namespace AutoStep.Tests.Execution.Binding
                 throw new NotImplementedException();
             }
         }
-
     }
 }

@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void NullCompilerNullArgumentException()
         {
-            Action act = () => new Project(null);
+            Action act = () => new Project(null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -52,7 +52,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-            project.Invoking(p => p.TryAddFile((ProjectTestFile)null)).Should().Throw<ArgumentNullException>();
+            project.Invoking(p => p.TryAddFile((ProjectTestFile)null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-            project.Invoking(p => p.TryAddFile((ProjectInteractionFile)null)).Should().Throw<ArgumentNullException>();
+            project.Invoking(p => p.TryAddFile((ProjectInteractionFile)null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-            project.Invoking(p => p.TryRemoveFile(null)).Should().Throw<ArgumentNullException>();
+            project.Invoking(p => p.TryRemoveFile(null!)).Should().Throw<ArgumentNullException>();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace AutoStep.Tests.Builders
                 StartColumn = column
             };
         }
-        
+
         public ExampleBuilder Table(int line, int column, Action<TableBuilder> cfg)
         {
             var tableBuilder = new TableBuilder(line, column);
@@ -25,6 +25,4 @@ namespace AutoStep.Tests.Builders
             return this;
         }
     }
-
-
 }

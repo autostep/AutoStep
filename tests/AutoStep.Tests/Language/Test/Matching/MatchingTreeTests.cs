@@ -68,10 +68,11 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             list.Should().HaveCount(1);
             partsMatched.Should().Be(3);
-            list.First.Should().NotBeNull();
-            list.First.Value.IsExact.Should().BeTrue();
-            list.First.Value.Confidence.Should().Be(int.MaxValue);
-            list.First.Value.Definition.Should().Be(stepDef);
+            var first = list.First!;
+            first.Should().NotBeNull();
+            first.Value.IsExact.Should().BeTrue();
+            first.Value.Confidence.Should().Be(int.MaxValue);
+            first.Value.Definition.Should().Be(stepDef);
         }
 
         [Fact]
@@ -188,7 +189,6 @@ namespace AutoStep.Tests.Language.Test.Matching
             list[1].Definition.Should().Be(stepDef2);
         }
 
-
         [Fact]
         public void CanRemoveStepDefinitionsWithOtherDeeperNode()
         {
@@ -212,7 +212,7 @@ namespace AutoStep.Tests.Language.Test.Matching
             list = tree.Match(stepRef1, false, out partsMatched);
 
             list.Should().HaveCount(1);
-            list.First.Value.Definition.Should().Be(stepDef2);
+            list.First!.Value.Definition.Should().Be(stepDef2);
         }
 
         [Fact]
@@ -231,11 +231,11 @@ namespace AutoStep.Tests.Language.Test.Matching
             tree.AddOrUpdateDefinition(stepDef1);
             tree.AddOrUpdateDefinition(stepDef2);
 
-            tree.Match(stepRef1, true, out var partsMatched).First.Value.Definition.Should().Be(stepDef1);
+            tree.Match(stepRef1, true, out var partsMatched).First!.Value.Definition.Should().Be(stepDef1);
 
             tree.AddOrUpdateDefinition(stepDefReplace);
 
-            tree.Match(stepRef1, true, out partsMatched).First.Value.Definition.Should().Be(stepDefReplace);
+            tree.Match(stepRef1, true, out partsMatched).First!.Value.Definition.Should().Be(stepDefReplace);
         }
 
         [Fact]
@@ -284,7 +284,7 @@ namespace AutoStep.Tests.Language.Test.Matching
             var stepDef = new TestDef(manualDefEl);
 
             tree.AddOrUpdateDefinition(stepDef);
-            
+
             var stepRef1 = CreateSimpleRef(StepType.Given, "I click button");
 
             var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
@@ -472,14 +472,14 @@ namespace AutoStep.Tests.Language.Test.Matching
 
         private class TestDef : StepDefinition
         {
-            private readonly string stepId;
+            private readonly string? stepId;
 
-            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 Definition = definition;
             }
 
-            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 this.stepId = stepId;
                 Definition = definition;

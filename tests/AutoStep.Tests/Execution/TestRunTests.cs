@@ -25,8 +25,8 @@ namespace AutoStep.Tests.Execution
         public void NullProjectArgumentException()
         {
             var project = new Project();
-            
-            Action act = () => new TestRun(null, new RunConfiguration());
+
+            Action act = () => new TestRun(null!, new RunConfiguration());
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Execution
         {
             var project = new Project();
 
-            Action act = () => new TestRun(project, null);
+            Action act = () => new TestRun(project, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -61,7 +61,7 @@ namespace AutoStep.Tests.Execution
             var runStrategyInvoked = false;
 
             var mockRunStrategy = new Mock<IRunExecutionStrategy>();
-            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>()))                
+            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>()))
                            .Callback((IServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet) =>
                            {
                                runStrategyInvoked = true;
@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Execution
 
             var runResult = await testRun.ExecuteAsync(logCfg =>
             {
-                
+
             });
 
             runResult.Should().NotBeNull();

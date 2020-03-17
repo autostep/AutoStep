@@ -9,7 +9,7 @@ namespace AutoStep.Benchmarks
 {
     public class TraitGraphBenchmarks
     {
-        private Random random;
+        private Random random = null!;
         private int rootNodeSize;
         private int numberOfCombos;
         private int maxComboSize;
@@ -38,7 +38,7 @@ namespace AutoStep.Benchmarks
 
             var _ = first.NameElements.Union(second.NameElements).ToArray();
         }
-        
+
         [Benchmark]
         public void MatchAllForward()
         {
@@ -48,7 +48,7 @@ namespace AutoStep.Benchmarks
             // Go through every item (top down) and match it.
             foreach(var trait in graph.AllTraits)
             {
-                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object) null, (c, el) => { });
+                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object?) null, (c, el) => { });
             }
         }
 
@@ -60,7 +60,7 @@ namespace AutoStep.Benchmarks
 
             foreach (var trait in graph.AllTraits.Reverse())
             {
-                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object)null, (c, el) => { });
+                graph.SearchTraits(trait.NameElements.Select(x => x.Name), (object?)null, (c, el) => { });
             }
         }
 
@@ -75,7 +75,7 @@ namespace AutoStep.Benchmarks
             var lookup = first.NameElements.Select(x => x.Name).Union(second.NameElements.Select(x => x.Name)).ToArray();
 
             // Find all traits.
-            freshGraph.SearchTraits(lookup, (object)null, (c, el) => { });
+            freshGraph.SearchTraits(lookup, (object?)null, (c, el) => { });
         }
 
         private TraitGraph BuildGraph(int rootTraitCount, int numberOfCombos, int maxComboSize, Random random)

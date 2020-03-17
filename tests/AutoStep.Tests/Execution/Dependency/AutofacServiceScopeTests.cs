@@ -19,7 +19,7 @@ namespace AutoStep.Tests.Execution.Dependency
             autofacBuilder.RegisterInstance(testInstance);
 
             var container = autofacBuilder.Build();
-            
+
             var scope = new AutofacServiceScope("mytag", container);
 
             scope.Resolve<MyService>().Should().Be(testInstance);

@@ -22,7 +22,7 @@ namespace AutoStep.Tests.Language
         {
             // Compile a file.
             const string TestFileWithDef =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -31,10 +31,10 @@ namespace AutoStep.Tests.Language
 
                Step: When I press {button}
 
-            "; 
-            
+            ";
+
             const string TestFileWithoutDef =
-             @"                
+             @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -55,10 +55,10 @@ namespace AutoStep.Tests.Language
 
             project.Compiler.Link();
 
-            projFile.LastLinkResult.Success.Should().BeTrue();
+            projFile.LastLinkResult!.Success.Should().BeTrue();
 
             // First step should have bound.
-            projFile.LastLinkResult.Output.AllStepReferences.First.Value.Binding.Should().NotBeNull();
+            projFile.LastLinkResult!.Output!.AllStepReferences!.First!.Value.Binding.Should().NotBeNull();
 
             // Now update the source to remove the step definition.
             source.Content = TestFileWithoutDef;
@@ -68,10 +68,10 @@ namespace AutoStep.Tests.Language
 
             project.Compiler.Link();
 
-            projFile.LastLinkResult.Success.Should().BeFalse();
+            projFile.LastLinkResult!.Success.Should().BeFalse();
 
             // First step should have bound.
-            projFile.LastLinkResult.Output.AllStepReferences.First.Value.Binding.Should().BeNull();
+            projFile.LastLinkResult!.Output!.AllStepReferences.First!.Value.Binding.Should().BeNull();
         }
 
         private class UpdatableContentSource : IContentSource
@@ -82,7 +82,7 @@ namespace AutoStep.Tests.Language
                 LastModify = DateTime.Now;
             }
 
-            public string SourceName => null;
+            public string? SourceName => null;
 
             public string Content { get; set; }
 

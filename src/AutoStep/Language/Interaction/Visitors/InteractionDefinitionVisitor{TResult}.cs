@@ -104,11 +104,11 @@ namespace AutoStep.Language.Interaction.Visitors
             if (ExplicitNameProvided)
             {
                 // An explicit name has already been set. Can't do it twice.
-                MessageSet.Add(nameItemContext, CompilerMessageLevel.Error, CompilerMessageCode.InteractionNameAlreadySet, Result.Name);
+                MessageSet.Add(nameItemContext, CompilerMessageLevel.Error, CompilerMessageCode.InteractionNameAlreadySet, Result!.Name);
             }
             else
             {
-                Result.Name = name;
+                Result!.Name = name;
                 ExplicitNameProvided = true;
             }
         }
