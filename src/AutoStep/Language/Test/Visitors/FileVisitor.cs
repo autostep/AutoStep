@@ -11,7 +11,7 @@ namespace AutoStep.Language.Test.Visitors
 {
     /// <summary>
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
-    /// and builts a <see cref="FileElement"/> from that tree.
+    /// and builds a <see cref="FileElement"/> from that tree.
     /// </summary>
     internal class FileVisitor : BaseTestVisitor<FileElement>
     {
@@ -334,9 +334,9 @@ namespace AutoStep.Language.Test.Visitors
                 scenario = new ScenarioElement();
                 titleText = scenarioTitle.text()?.GetText() ?? string.Empty;
             }
-            else if (title is AutoStepParser.ScenarioOutlineTitleContext scenariOutlineTitle)
+            else if (title is AutoStepParser.ScenarioOutlineTitleContext scenarioOutlineTitle)
             {
-                var scenarioOutlineToken = scenariOutlineTitle.SCENARIO_OUTLINE();
+                var scenarioOutlineToken = scenarioOutlineTitle.SCENARIO_OUTLINE();
                 var scenarioOutlineKeyWordText = scenarioOutlineToken.GetText();
 
                 // We want the parser to allow case-insensitive keywords through, so we can assert on them
@@ -348,7 +348,7 @@ namespace AutoStep.Language.Test.Visitors
                 }
 
                 scenario = new ScenarioOutlineElement();
-                titleText = scenariOutlineTitle.text()?.GetText() ?? string.Empty;
+                titleText = scenarioOutlineTitle.text()?.GetText() ?? string.Empty;
             }
             else
             {
@@ -457,7 +457,7 @@ namespace AutoStep.Language.Test.Visitors
         }
 
         /// <summary>
-        /// Vists a statement that contains a table.
+        /// Visits a statement that contains a table.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The Result.</returns>

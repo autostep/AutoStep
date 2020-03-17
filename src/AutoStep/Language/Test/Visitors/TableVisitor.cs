@@ -55,7 +55,7 @@ namespace AutoStep.Language.Test.Visitors
         }
 
         /// <summary>
-        /// Vists a table header.
+        /// Visits a table header.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -71,7 +71,7 @@ namespace AutoStep.Language.Test.Visitors
         }
 
         /// <summary>
-        /// Vists a table header cell.
+        /// Visits a table header cell.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -110,7 +110,7 @@ namespace AutoStep.Language.Test.Visitors
         }
 
         /// <summary>
-        /// Vists a table data row.
+        /// Visits a table data row.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>
@@ -134,7 +134,7 @@ namespace AutoStep.Language.Test.Visitors
         }
 
         /// <summary>
-        /// Vists the cell of a table data row.
+        /// Visits the cell of a table data row.
         /// </summary>
         /// <param name="context">The parse context.</param>
         /// <returns>The file.</returns>

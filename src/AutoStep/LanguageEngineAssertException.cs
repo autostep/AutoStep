@@ -3,7 +3,7 @@
 namespace AutoStep
 {
     /// <summary>
-    /// Represents an internal language excepion, when the compilation system hits a point that shouldn't be possible due to the parser specification.
+    /// Represents an internal language exception, when the compilation system hits a point that shouldn't be possible due to the parser specification.
     /// </summary>
     public class LanguageEngineAssertException : Exception
     {

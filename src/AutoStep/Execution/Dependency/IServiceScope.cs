@@ -4,7 +4,7 @@ using AutoStep.Execution.Contexts;
 namespace AutoStep.Execution.Dependency
 {
     /// <summary>
-    /// Providess access to services in the current scope.
+    /// Provides access to services in the current scope.
     /// </summary>
     public interface IServiceScope : IDisposable
     {
