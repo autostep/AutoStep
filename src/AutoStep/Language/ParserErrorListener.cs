@@ -39,7 +39,7 @@ namespace AutoStep.Language
         public IReadOnlyList<LanguageOperationMessage> ParserErrors => messages;
 
         /// <summary>
-        /// A derived implementation should create a new appopriate error handling context when this method is called.
+        /// A derived implementation should create a new appropriate error handling context when this method is called.
         /// </summary>
         /// <param name="recognizer">The recognizer.</param>
         /// <param name="offendingSymbol">The offending symbol.</param>
@@ -56,7 +56,7 @@ namespace AutoStep.Language
 
             if (ctxt.Code == CompilerMessageCode.UnexpectedEndOfFile && swallowEndOfFileErrors)
             {
-                // Do not raise the end of file message if we've been told to ignore it by a precediing error.
+                // Do not raise the end of file message if we've been told to ignore it by a preceding error.
                 return;
             }
 

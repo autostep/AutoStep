@@ -123,7 +123,7 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <summary>
         /// Visits a word declaration part.
         /// </summary>
-        /// <param name="context">The partser context.</param>
+        /// <param name="context">The parser context.</param>
         /// <returns>The step definition.</returns>
         public override InteractionStepDefinitionElement VisitDeclarationWord([NotNull] DeclarationWordContext context)
         {
@@ -135,7 +135,7 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <summary>
         /// Visits an escaped character part.
         /// </summary>
-        /// <param name="context">The partser context.</param>
+        /// <param name="context">The parser context.</param>
         /// <returns>The step definition.</returns>
         public override InteractionStepDefinitionElement VisitDeclarationEscaped(DeclarationEscapedContext context)
         {
