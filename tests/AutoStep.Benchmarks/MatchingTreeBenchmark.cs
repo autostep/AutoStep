@@ -16,8 +16,8 @@ namespace AutoStep.Benchmarks
 {
     public class MatchingTreeBenchmark
     {
-        private MatchingTree tree;
-        private StepReferenceElement knownStepRef;
+        private MatchingTree tree = null!;
+        private StepReferenceElement knownStepRef = null!;
         private readonly string[] words = new[]
         {
             "I",
@@ -151,14 +151,14 @@ namespace AutoStep.Benchmarks
 
         private class TestDef : StepDefinition
         {
-            private readonly string stepId;
+            private readonly string? stepId;
 
-            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 Definition = definition;
             }
 
-            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 this.stepId = stepId;
                 Definition = definition;

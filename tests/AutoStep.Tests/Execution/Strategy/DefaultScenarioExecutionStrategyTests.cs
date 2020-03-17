@@ -32,7 +32,7 @@ namespace AutoStep.Tests.Execution.Strategy
                                             .Built;
 
             await DoTest(feature, feature.Scenarios[0], VariableSet.Blank, false,
-                         (feature.Background, VariableSet.Blank),
+                         (feature.Background!, VariableSet.Blank),
                          (feature.Scenarios[0], VariableSet.Blank));
         }
 
@@ -45,7 +45,7 @@ namespace AutoStep.Tests.Execution.Strategy
                                             .Built;
 
             await DoTest(feature, feature.Scenarios[0], VariableSet.Blank, true,
-                         (feature.Background, VariableSet.Blank));
+                         (feature.Background!, VariableSet.Blank));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Execution.Strategy
             variables.Set("var", "value1");
 
             await DoTest(feature, feature.Scenarios[0], variables, false,
-                         (feature.Background, variables),
+                         (feature.Background!, variables),
                          (feature.Scenarios[0], variables));
         }
 

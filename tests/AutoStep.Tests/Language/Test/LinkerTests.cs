@@ -613,7 +613,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
             linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, span[0],
-                                                    span[0].DeterminedType, span[0].Part.TypeHint));
+                                                    span[0].DeterminedType!, span[0].Part.TypeHint!));
         }
 
         [Fact]
@@ -640,7 +640,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
             linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, arguments[0],
-                                                    arguments[0].DeterminedType, arguments[0].Part.TypeHint));
+                                                    arguments[0].DeterminedType!, arguments[0].Part.TypeHint!));
         }
 
         [Fact]
@@ -667,7 +667,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
             linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.ArgumentTypeNotCompatible, arguments[0],
-                                                    arguments[0].DeterminedType, arguments[0].Part.TypeHint));
+                                                    arguments[0].DeterminedType!, arguments[0].Part.TypeHint!));
         }
 
         [Fact]
@@ -695,7 +695,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
             linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.TypeRequiresValueForArgument, arguments[0],
-                                                    arguments[0].Part.TypeHint));
+                                                    arguments[0].Part.TypeHint!));
         }
 
         [Fact]
@@ -723,7 +723,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
             linkResult.Messages.First().Should().Be(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error,
                                                     CompilerMessageCode.TypeRequiresValueForArgument, arguments[0],
-                                                    arguments[0].Part.TypeHint));
+                                                    arguments[0].Part.TypeHint!));
         }
 
         [Fact]

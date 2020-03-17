@@ -179,7 +179,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<FeatureContext> callBefore;
             private readonly Action<FeatureContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
             public MyEventHandler(Action<FeatureContext> callBefore, Action<FeatureContext> callAfter, Action<Exception>? exception = null)
             {

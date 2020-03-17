@@ -253,7 +253,7 @@ namespace AutoStep.Tests.Projects
             projectCompiler.Link();
 
             // Change the linker dependency modification time.
-            linkerDepLastModify = projFile.LastLinkTime.Value.AddMinutes(1);
+            linkerDepLastModify = projFile.LastLinkTime!.Value.AddMinutes(1);
 
             // This should relink.
             projectCompiler.Link();

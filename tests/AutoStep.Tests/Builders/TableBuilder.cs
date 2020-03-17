@@ -14,7 +14,7 @@ namespace AutoStep.Tests.Builders
             };
         }
 
-        public TableBuilder Headers(int lineNo, int column, params (string headerName, int startColumn, int endColumn)[] headers)
+        public TableBuilder Headers(int lineNo, int column, params (string? headerName, int startColumn, int endColumn)[] headers)
         {
             Built.Header.SourceLine = lineNo;
             Built.Header.StartColumn = column;
@@ -34,7 +34,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public TableBuilder Row(int lineNo, int column, params (string rawValue, int startColumn, int endColumn, Action<CellBuilder> cfg)[] cells)
+        public TableBuilder Row(int lineNo, int column, params (string? rawValue, int startColumn, int endColumn, Action<CellBuilder>? cfg)[] cells)
         {
             var row = new TableRowElement
             {

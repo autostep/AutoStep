@@ -472,14 +472,14 @@ namespace AutoStep.Tests.Language.Test.Matching
 
         private class TestDef : StepDefinition
         {
-            private readonly string stepId;
+            private readonly string? stepId;
 
-            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 Definition = definition;
             }
 
-            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 this.stepId = stepId;
                 Definition = definition;

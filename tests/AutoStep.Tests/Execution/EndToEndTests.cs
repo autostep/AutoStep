@@ -314,7 +314,7 @@ namespace AutoStep.Tests.Execution
 
         private class StepExceptionCollector : BaseEventHandler
         {
-            public Exception FoundException { get; set; }
+            public Exception? FoundException { get; set; }
 
             public override async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
             {

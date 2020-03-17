@@ -8,7 +8,7 @@ namespace AutoStep.Tests.Builders
     {
         private int nextTokenIdx = 0;
 
-        public CellBuilder(string body, int line, int start, int end)
+        public CellBuilder(string? body, int line, int start, int end)
         {
             Built = new TableCellElement
             {

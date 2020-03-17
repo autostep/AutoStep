@@ -9,7 +9,7 @@ namespace AutoStep.Benchmarks
 {
     public class TraitGraphBenchmarks
     {
-        private Random random;
+        private Random random = null!;
         private int rootNodeSize;
         private int numberOfCombos;
         private int maxComboSize;
