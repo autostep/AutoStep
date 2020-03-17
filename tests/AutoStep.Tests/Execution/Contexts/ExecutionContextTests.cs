@@ -68,7 +68,7 @@ namespace AutoStep.Tests.Execution.Contexts
         public void SetNullKeyThrows()
         {
             var context = new RunContext(new RunConfiguration());
-            context.Invoking(r => r.Set(null, 1)).Should().Throw<ArgumentException>();
+            context.Invoking(r => r.Set(null!, 1)).Should().Throw<ArgumentException>();
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace AutoStep.Tests.Execution.Contexts
         public void SetNullValueThrows()
         {
             var context = new RunContext(new RunConfiguration());
-            context.Invoking(r => r.Set<string>("val", null)).Should().Throw<ArgumentNullException>();
+            context.Invoking(r => r.Set<string>("val", null!)).Should().Throw<ArgumentNullException>();
         }
     }
 }

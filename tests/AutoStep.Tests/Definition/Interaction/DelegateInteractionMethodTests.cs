@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(null, new MethodContext(), Array.Empty<object>()))
+            method.Invoking(async m => await m.InvokeAsync(null!, new MethodContext(), Array.Empty<object>()))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, null, Array.Empty<object>()))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, null!, Array.Empty<object>()))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, new MethodContext(), null))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, new MethodContext(), null!))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -87,7 +87,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { null });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null });
 
             invokedValue.Should().Be(0);
         }
@@ -101,7 +101,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { null });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null });
 
             invokedValue.Should().BeNull();
         }

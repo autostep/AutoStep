@@ -33,7 +33,7 @@ namespace AutoStep.Tests.Utils
             return CompileAndAssertErrors(content, null, expectedMessages);
         }
 
-        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder> cfg, params LanguageOperationMessage[] expectedMessages)
+        protected async Task CompileAndAssertErrors(string content, Action<InteractionFileBuilder>? cfg, params LanguageOperationMessage[] expectedMessages)
         {
             if (expectedMessages.Length == 0) throw new ArgumentException("Must provide at least one error.", nameof(expectedMessages));
 

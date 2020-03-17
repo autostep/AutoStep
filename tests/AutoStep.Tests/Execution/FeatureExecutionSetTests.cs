@@ -260,7 +260,7 @@ namespace AutoStep.Tests.Execution
                 return true;
             }
 
-            public bool MatchesScenario(IScenarioInfo scen, IExampleInfo example)
+            public bool MatchesScenario(IScenarioInfo scen, IExampleInfo? example)
             {
                 return true;
             }
@@ -284,7 +284,7 @@ namespace AutoStep.Tests.Execution
                 return file.Path != path;
             }
 
-            public bool MatchesScenario(IScenarioInfo scen, IExampleInfo example)
+            public bool MatchesScenario(IScenarioInfo scen, IExampleInfo? example)
             {
                 return true;
             }

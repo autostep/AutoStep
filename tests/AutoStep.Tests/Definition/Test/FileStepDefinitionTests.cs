@@ -12,7 +12,7 @@ namespace AutoStep.Tests.Definition
         [Fact]
         public void FileStepDefinitionNullElementException()
         {
-            Action act = () => new FileStepDefinition(TestStepDefinitionSource.Blank, null);
+            Action act = () => new FileStepDefinition(TestStepDefinitionSource.Blank, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }

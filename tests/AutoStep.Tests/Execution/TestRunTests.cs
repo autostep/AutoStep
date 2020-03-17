@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Execution
         {
             var project = new Project();
 
-            Action act = () => new TestRun(null, new RunConfiguration());
+            Action act = () => new TestRun(null!, new RunConfiguration());
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Execution
         {
             var project = new Project();
 
-            Action act = () => new TestRun(project, null);
+            Action act = () => new TestRun(project, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }

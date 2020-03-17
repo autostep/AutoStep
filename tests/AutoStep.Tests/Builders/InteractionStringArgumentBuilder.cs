@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Builders
     {
         private readonly int startTokenIdx = 0;
         private readonly List<StepToken> tokens;
-        private readonly Func<TokenisedArgumentValue, StringMethodArgumentElement> factory;
+        private readonly Func<TokenisedArgumentValue?, StringMethodArgumentElement> factory;
 
         private int nextTokenIdx = 0;
 

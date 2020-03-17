@@ -21,7 +21,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorThrowsProjectNullArgumentException()
         {
-            Action act = () => GetCompiler(null, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object);
+            Action act = () => GetCompiler(null!, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorThrowsCompilerNullArgumentException()
         {
-            Action act = () => GetCompiler(new Project(), null, new Mock<ILinker>().Object);
+            Action act = () => GetCompiler(new Project(), null!, new Mock<ILinker>().Object);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorThrowsLinkerNullArgumentException()
         {
-            Action act = () => GetCompiler(new Project(), new Mock<ITestCompiler>().Object, null);
+            Action act = () => GetCompiler(new Project(), new Mock<ITestCompiler>().Object, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }

@@ -16,7 +16,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorPathCannotBeNull()
         {
-            Action act = () => new ProjectTestFile(null, new StringContentSource("something"));
+            Action act = () => new ProjectTestFile(null!, new StringContentSource("something"));
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -24,7 +24,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorSourceCannotBeNull()
         {
-            Action act = () => new ProjectTestFile("/test", null);
+            Action act = () => new ProjectTestFile("/test", null!);
 
             act.Should().Throw<ArgumentNullException>();
         }

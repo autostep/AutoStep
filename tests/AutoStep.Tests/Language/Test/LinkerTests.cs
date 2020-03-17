@@ -64,7 +64,7 @@ namespace AutoStep.Tests.Language.Test
 
             var linker = new Linker(compiler);
 
-            linker.Invoking(l => l.AddStepDefinitionSource(null)).Should().Throw<ArgumentNullException>();
+            linker.Invoking(l => l.AddStepDefinitionSource(null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

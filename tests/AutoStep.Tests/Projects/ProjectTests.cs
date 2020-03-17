@@ -11,9 +11,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void NullCompilerNullArgumentException()
         {
-#pragma warning disable 8625
-            Action act = () => new Project(null);
-#pragma warning restore 8625
+            Action act = () => new Project(null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -54,9 +52,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-#pragma warning disable 8600
-            project.Invoking(p => p.TryAddFile((ProjectTestFile)null)).Should().Throw<ArgumentNullException>();
-#pragma warning restore 8600
+            project.Invoking(p => p.TryAddFile((ProjectTestFile)null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -64,9 +60,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-#pragma warning disable 8600
-            project.Invoking(p => p.TryAddFile((ProjectInteractionFile)null)).Should().Throw<ArgumentNullException>();
-#pragma warning restore 8600
+            project.Invoking(p => p.TryAddFile((ProjectInteractionFile)null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -98,9 +92,7 @@ namespace AutoStep.Tests.Projects
         {
             var project = new Project();
 
-#pragma warning disable 8625
-            project.Invoking(p => p.TryRemoveFile(null)).Should().Throw<ArgumentNullException>();
-#pragma warning restore 8625
+            project.Invoking(p => p.TryRemoveFile(null!)).Should().Throw<ArgumentNullException>();
         }
     }
 }
