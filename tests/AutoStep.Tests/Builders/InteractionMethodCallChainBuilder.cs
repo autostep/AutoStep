@@ -4,7 +4,7 @@ using AutoStep.Elements.Interaction;
 namespace AutoStep.Tests.Builders
 {
     internal class InteractionMethodCallChainBuilder<TMethodCallSource> : BaseBuilder<TMethodCallSource>
-        where TMethodCallSource : ICallChainSource
+        where TMethodCallSource : class, ICallChainSource
     {
         public InteractionMethodCallChainBuilder(TMethodCallSource methodSource)
         {

@@ -6,8 +6,9 @@
     }
 
     public class BaseBuilder<TBuiltComponent> : IBuilder<TBuiltComponent>
+        where TBuiltComponent : class
     {
-        public TBuiltComponent Built { get; set; }
+        public TBuiltComponent Built { get; set; } = null!;
 
         public TBuiltComponent GetBuilt()
         {
