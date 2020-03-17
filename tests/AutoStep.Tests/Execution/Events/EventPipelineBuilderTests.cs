@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using FluentAssertions;
 using Moq;

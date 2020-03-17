@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoStep.Definitions;
 using AutoStep.Elements.Interaction;
-using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Execution.Interaction
 {

@@ -11,7 +11,6 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;

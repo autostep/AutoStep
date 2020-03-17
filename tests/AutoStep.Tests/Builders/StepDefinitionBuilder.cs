@@ -1,5 +1,4 @@
-﻿using System;
-using AutoStep.Elements;
+﻿using AutoStep.Elements;
 using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Builders

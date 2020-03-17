@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;

@@ -1,7 +1,5 @@
 ﻿using System;
 using AutoStep.Elements.Interaction;
-using AutoStep.Elements.StepTokens;
-using AutoStep.Language;
 
 namespace AutoStep.Tests.Builders
 {

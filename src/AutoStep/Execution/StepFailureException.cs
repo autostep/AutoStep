@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Elements;
 using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Execution

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Autofac;
 using Autofac.Core;
 using Autofac.Util;

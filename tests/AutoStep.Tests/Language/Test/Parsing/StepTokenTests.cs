@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Language;
-using AutoStep.Elements.Parts;
 
 namespace AutoStep.Tests.Language.Test.Parsing
 {
