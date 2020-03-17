@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace AutoStep.Elements.StepTokens
+﻿namespace AutoStep.Elements.StepTokens
 {
     /// <summary>
     /// Represents a numerical token within a step reference.

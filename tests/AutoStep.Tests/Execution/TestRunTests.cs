@@ -7,12 +7,10 @@ using AutoStep.Language;
 using Xunit;
 using AutoStep.Tests.Utils;
 using AutoStep.Tests.Builders;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoStep.Execution.Strategy;
 using AutoStep.Execution.Dependency;
 using Xunit.Abstractions;
-using AutoStep.Execution.Events;
 using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Execution

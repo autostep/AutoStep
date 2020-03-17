@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoStep.Language;
-using AutoStep.Definitions;
-using AutoStep.Execution;
-using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
-using AutoStep.Execution.Events;
 using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
-using AutoStep.Definitions.Test;
 using System.Threading;
 
 namespace AutoStep.Tests.Language

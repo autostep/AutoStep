@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
-using AutoStep.Language.Interaction;
 
 namespace AutoStep.Definitions.Interaction
 {

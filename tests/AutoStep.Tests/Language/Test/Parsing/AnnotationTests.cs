@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Tests.Utils;
 using Xunit;

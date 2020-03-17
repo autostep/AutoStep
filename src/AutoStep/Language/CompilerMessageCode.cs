@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AutoStep.Language
+﻿namespace AutoStep.Language
 {
 #pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
 

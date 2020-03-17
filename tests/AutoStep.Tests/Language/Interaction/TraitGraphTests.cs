@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Traits;
 using FluentAssertions;

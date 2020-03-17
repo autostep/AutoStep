@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;

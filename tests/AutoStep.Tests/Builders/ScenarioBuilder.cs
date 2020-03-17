@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using AutoStep.Elements.Test;
+﻿using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {

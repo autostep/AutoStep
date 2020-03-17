@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Autofac;
-using Autofac.Core;
-using AutoStep.Execution;
+﻿using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;

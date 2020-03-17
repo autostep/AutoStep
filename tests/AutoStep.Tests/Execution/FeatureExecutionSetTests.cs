@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using AutoStep.Language;
-using AutoStep.Elements;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Projects;
@@ -11,7 +7,6 @@ using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Language.Test;

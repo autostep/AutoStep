@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Elements.Parts;
+﻿using AutoStep.Elements.Parts;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Tests.Builders;

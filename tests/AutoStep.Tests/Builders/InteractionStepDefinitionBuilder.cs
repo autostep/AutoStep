@@ -1,5 +1,4 @@
 ﻿using System;
-using AutoStep.Elements;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
 using AutoStep.Language;

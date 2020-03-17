@@ -1,6 +1,5 @@
 ﻿using System;
 using AutoStep.Language;
-using AutoStep.Definitions;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Moq;
