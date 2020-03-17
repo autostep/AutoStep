@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Builders
             Built = methodSource;
         }
 
-        public InteractionMethodCallChainBuilder<TMethodCallSource> Call(string name, int startLine, int startCol, int endLine, int endCol, Action<InteractionMethodArgumentSetBuilder> cfg = null)
+        public InteractionMethodCallChainBuilder<TMethodCallSource> Call(string name, int startLine, int startCol, int endLine, int endCol, Action<InteractionMethodArgumentSetBuilder>? cfg = null)
         {
             var methodCall = new MethodCallElement(name)
             {

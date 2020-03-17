@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Builders
             Built = new FileElement();
         }
 
-        public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder> cfg = null)
+        public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder>? cfg = null)
         {
             if(Built.Feature != null)
             {
@@ -44,7 +44,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public FileBuilder StepDefinition(StepType type, string declaration, int line, int column, Action<StepDefinitionBuilder> cfg = null)
+        public FileBuilder StepDefinition(StepType type, string declaration, int line, int column, Action<StepDefinitionBuilder>? cfg = null)
         {
             var stepDefinitionBuilder = new StepDefinitionBuilder(type, declaration, line, column);
 

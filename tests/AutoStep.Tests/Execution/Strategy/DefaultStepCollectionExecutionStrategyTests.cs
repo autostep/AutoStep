@@ -220,9 +220,9 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<StepContext> callBefore;
             private readonly Action<StepContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<StepContext> callBefore, Action<StepContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<StepContext> callBefore, Action<StepContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;

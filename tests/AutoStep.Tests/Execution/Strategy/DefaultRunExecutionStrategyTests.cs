@@ -194,9 +194,9 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<ThreadContext> callBefore;
             private readonly Action<ThreadContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<ThreadContext> callBefore, Action<ThreadContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<ThreadContext> callBefore, Action<ThreadContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;

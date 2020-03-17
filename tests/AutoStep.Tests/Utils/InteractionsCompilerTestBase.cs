@@ -96,7 +96,7 @@ namespace AutoStep.Tests.Utils
             AssertElementComparison(expectedBuilder.Built, result.Output, false);
         }
 
-        protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder> cfg = null)
+        protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder>? cfg = null)
         {
             var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);

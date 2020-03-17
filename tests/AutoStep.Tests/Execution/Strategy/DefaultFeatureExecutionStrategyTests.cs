@@ -181,7 +181,7 @@ namespace AutoStep.Tests.Execution.Strategy
             private readonly Action<FeatureContext> callAfter;
             private readonly Action<Exception> exception;
 
-            public MyEventHandler(Action<FeatureContext> callBefore, Action<FeatureContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<FeatureContext> callBefore, Action<FeatureContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;

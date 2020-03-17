@@ -191,7 +191,7 @@ namespace AutoStep.Tests.Execution.Events
             private readonly Action callAfter;
             private readonly Action<Exception> exception;
 
-            public MyEventHandler(Action callBefore, Action callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action callBefore, Action callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;

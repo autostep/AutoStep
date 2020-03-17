@@ -6,7 +6,7 @@ namespace AutoStep.Tests.Builders
 {
     internal static class InteractionEntityBuilderExtensions
     {
-        public static TEntityBuilder StepDefinition<TEntityBuilder>(this TEntityBuilder entityBuilder, StepType type, string declaration, int line, int column, Action<InteractionStepDefinitionBuilder> cfg = null)
+        public static TEntityBuilder StepDefinition<TEntityBuilder>(this TEntityBuilder entityBuilder, StepType type, string declaration, int line, int column, Action<InteractionStepDefinitionBuilder>? cfg = null)
             where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
         {
             var stepDefinitionBuilder = new InteractionStepDefinitionBuilder(type, declaration, line, column);

@@ -154,9 +154,9 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<ScenarioContext> callBefore;
             private readonly Action<ScenarioContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<ScenarioContext> callBefore, Action<ScenarioContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<ScenarioContext> callBefore, Action<ScenarioContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;
