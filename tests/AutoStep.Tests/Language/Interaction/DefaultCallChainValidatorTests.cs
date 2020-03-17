@@ -262,12 +262,12 @@ namespace AutoStep.Tests.Language.Interaction
 
         private class PassingVariableSet : CallChainCompileTimeVariables
         {
-            public override LanguageOperationMessage ValidateVariable(string? sourceName, VariableArrayRefMethodArgument nameRefToken)
+            public override LanguageOperationMessage? ValidateVariable(string? sourceName, VariableArrayRefMethodArgument nameRefToken)
             {
                 return null;
             }
 
-            public override LanguageOperationMessage ValidateVariable(string? sourceName, VariableRefMethodArgumentElement nameRefToken)
+            public override LanguageOperationMessage? ValidateVariable(string? sourceName, VariableRefMethodArgumentElement nameRefToken)
             {
                 return null;
             }

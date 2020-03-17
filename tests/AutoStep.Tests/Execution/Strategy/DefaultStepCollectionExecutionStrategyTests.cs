@@ -87,8 +87,9 @@ namespace AutoStep.Tests.Execution.Strategy
 
             ranSteps.Should().Be(2);
 
+            owningContext.FailException.Should().NotBeNull();
             owningContext.FailException.Should().BeOfType<StepFailureException>();
-            owningContext.FailException.InnerException.Should().BeOfType<NullReferenceException>();
+            owningContext.FailException!.InnerException.Should().BeOfType<NullReferenceException>();
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
 
@@ -135,8 +136,9 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeFeat.Should().Be(2);
             afterFeat.Should().Be(1);
 
+            owningContext.FailException.Should().NotBeNull();
             owningContext.FailException.Should().BeOfType<EventHandlingException>();
-            owningContext.FailException.InnerException.Should().BeOfType<NullReferenceException>();
+            owningContext.FailException!.InnerException.Should().BeOfType<NullReferenceException>();
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
 

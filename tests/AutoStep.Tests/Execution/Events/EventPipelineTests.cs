@@ -143,8 +143,9 @@ namespace AutoStep.Tests.Execution.Events
                 throw new StepFailureException(mockStepReference, new NullReferenceException());
             });
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<StepFailureException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         [Fact]
@@ -162,8 +163,9 @@ namespace AutoStep.Tests.Execution.Events
 
             await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         [Fact]
@@ -190,7 +192,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             private readonly Action callBefore;
             private readonly Action callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
             public MyEventHandler(Action callBefore, Action callAfter, Action<Exception>? exception = null)
             {

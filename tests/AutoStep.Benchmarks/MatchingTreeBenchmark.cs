@@ -120,7 +120,7 @@ namespace AutoStep.Benchmarks
         {
             var matches = tree.Match(knownStepRef, true, out var partsMatched);
 
-            if(!matches.First.Value.IsExact)
+            if(!matches.First!.Value.IsExact)
             {
                 throw new Exception("That's not right.");
             }

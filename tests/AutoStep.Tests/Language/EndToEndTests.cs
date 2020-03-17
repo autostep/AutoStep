@@ -82,7 +82,7 @@ namespace AutoStep.Tests.Language
                 LastModify = DateTime.Now;
             }
 
-            public string SourceName => null;
+            public string? SourceName => null;
 
             public string Content { get; set; }
 

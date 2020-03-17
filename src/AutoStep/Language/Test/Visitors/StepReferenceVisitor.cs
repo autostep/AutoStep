@@ -114,7 +114,7 @@ namespace AutoStep.Language.Test.Visitors
 
             VisitChildren(context);
 
-            Result.RawText = context.GetText();
+            Result!.RawText = context.GetText();
 
             return Result;
         }

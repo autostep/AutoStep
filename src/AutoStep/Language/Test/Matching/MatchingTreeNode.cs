@@ -328,7 +328,7 @@ namespace AutoStep.Language.Test.Matching
             Debug.Assert(matchingPart is object);
 
             // Check for match quality between the part assigned to this node and the part we are looking for.
-            var match = matchingPart.DoStepReferenceMatch(referenceText, remainingTokenSpan);
+            var match = matchingPart!.DoStepReferenceMatch(referenceText, remainingTokenSpan);
 
             finalSpan = match.RemainingTokens;
 
