@@ -15,7 +15,7 @@ namespace AutoStep.Definitions.Interaction
         /// Initializes a new instance of the <see cref="ClassBackedInteractionMethod"/> class.
         /// </summary>
         /// <param name="name">The method name.</param>
-        /// <param name="classType">The containin type.</param>
+        /// <param name="classType">The containing type.</param>
         /// <param name="method">The method info.</param>
         public ClassBackedInteractionMethod(string name, Type classType, MethodInfo method)
             : base(name, method)
