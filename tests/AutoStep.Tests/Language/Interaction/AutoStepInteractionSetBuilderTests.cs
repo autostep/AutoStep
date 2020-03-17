@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             public override int ArgumentCount => argCount;
 
-            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
             {
                 throw new NotImplementedException();
             }
@@ -87,7 +87,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             result.Success.Should().BeTrue();
 
-            var builtSet = result.Output;
+            var builtSet = result.Output!;
 
             builtSet.Components.Should().HaveCount(1);
             var button = builtSet.Components["button"];
@@ -147,7 +147,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             result.Success.Should().BeTrue();
 
-            var builtSet = result.Output;
+            var builtSet = result.Output!;
 
             builtSet.Components.Should().HaveCount(1);
             var button = builtSet.Components["button"];

@@ -240,7 +240,7 @@ namespace AutoStep.Tests.Projects
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent,
                                                                "", 0, 0);
 
-            projFile.LastSetBuildResult.Messages.Should().Contain(expectedMessage);
+            projFile.LastSetBuildResult!.Messages.Should().Contain(expectedMessage);
 
             resultSet = new InteractionSetBuilderResult(true, Enumerable.Empty<LanguageOperationMessage>(), null);
 
@@ -249,7 +249,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
-            projFile.LastSetBuildResult.Messages.Should().BeEmpty();
+            projFile.LastSetBuildResult!.Messages.Should().BeEmpty();
         }
 
         [Fact]

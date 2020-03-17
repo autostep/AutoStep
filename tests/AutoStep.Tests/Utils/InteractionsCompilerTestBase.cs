@@ -166,7 +166,7 @@ namespace AutoStep.Tests.Utils
                 IMemberInfo context,
                 IEquivalencyAssertionOptions config)
             {
-                return selectedMembers.Except(context.RuntimeType.GetNonPrivateProperties().Where(p => p.GetMethod.IsAssembly).Select(SelectedMemberInfo.Create));
+                return selectedMembers.Except(context.RuntimeType.GetNonPrivateProperties().Where(p => p.GetMethod!.IsAssembly).Select(SelectedMemberInfo.Create));
             }
         }
 
@@ -185,7 +185,7 @@ namespace AutoStep.Tests.Utils
 
             public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
             {
-                JsonSerializer.Serialize(writer, value, value.GetType(), myOptions);
+                JsonSerializer.Serialize(writer, value, value!.GetType(), myOptions);
             }
         }
     }

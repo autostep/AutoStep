@@ -68,7 +68,7 @@ namespace AutoStep.Tests.Builders
         private CellBuilder Part<TPartType>(string text, Func<int, int, TPartType> creator)
             where TPartType : StepToken
         {
-            var startIdx = Built.Text.IndexOf(text, nextTokenIdx);
+            var startIdx = Built.Text!.IndexOf(text, nextTokenIdx);
 
             if (startIdx == -1)
             {

@@ -71,7 +71,7 @@ namespace AutoStep.Tests.Builders
         private StepReferenceBuilder Part<TPartType>(string text, Func<int, int, TPartType> creator)
             where TPartType : StepToken
         {
-            var startIdx = Built.RawText.IndexOf(text, nextTokenIdx);
+            var startIdx = Built.RawText!.IndexOf(text, nextTokenIdx);
 
             if(startIdx == -1)
             {

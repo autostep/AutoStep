@@ -98,7 +98,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
-            var binding = file.AllStepReferences.First.Value.Binding;
+            var binding = file.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             // After linking, the step reference should have a definition assigned.
             binding!.Definition.Should().Be(def);
@@ -207,10 +207,10 @@ namespace AutoStep.Tests.Language.Test
             });
 
             // The failing definition should not have a bound definition.
-            file.AllStepReferences.First.Value.Binding.Should().BeNull();
+            file.AllStepReferences.First!.Value.Binding.Should().BeNull();
 
             // After linking, the last step reference should have a definition assigned.
-            var binding = file.AllStepReferences.Last.Value.Binding;
+            var binding = file.AllStepReferences.Last!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().Be(def);
             binding!.Arguments.IsEmpty.Should().BeTrue();
@@ -259,7 +259,7 @@ namespace AutoStep.Tests.Language.Test
             });
 
             // The failing definition should not have a bound definition.
-            file.AllStepReferences.First.Value.Binding.Should().BeNull();
+            file.AllStepReferences.First!.Value.Binding.Should().BeNull();
         }
 
         [Fact]
@@ -277,15 +277,17 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
-            binding.Definition.Should().NotBeNull();
-            binding.Arguments.Length.Should().Be(1);
-            binding.Arguments[0].Part.Name.Should().Be("arg");
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
+            binding.Should().NotBeNull();
+            binding!.Definition.Should().NotBeNull();
+            var arguments = binding!.Arguments;
+            arguments.Length.Should().Be(1);
+            arguments[0].Part.Name.Should().Be("arg");
             // Start and end are the same.
-            binding.Arguments[0].MatchedTokens.Length.Should().Be(1);
-            binding.Arguments[0].GetText(refText).Should().Be("value");
-            binding.Arguments[0].StartExclusive.Should().BeFalse();
-            binding.Arguments[0].EndExclusive.Should().BeFalse();
+            arguments[0].MatchedTokens.Length.Should().Be(1);
+            arguments[0].GetText(refText).Should().Be("value");
+            arguments[0].StartExclusive.Should().BeFalse();
+            arguments[0].EndExclusive.Should().BeFalse();
         }
 
         [Fact]
@@ -306,7 +308,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -346,7 +348,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -378,7 +380,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -407,7 +409,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -438,7 +440,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -465,7 +467,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -492,7 +494,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -514,7 +516,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             binding!.Arguments.Length.Should().Be(1);
@@ -534,13 +536,12 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             binding!.Arguments.Length.Should().Be(1);
             binding!.Arguments[0].DeterminedType.Should().Be(ArgumentType.NumericInteger);
         }
-
 
         [Fact]
         public void StepArgumentIntTypeDetectedInsideQuotes()
@@ -557,7 +558,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             binding!.Arguments.Length.Should().Be(1);
@@ -581,7 +582,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
             linkResult.Messages.Should().BeEmpty();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             binding!.Arguments.Length.Should().Be(1);
@@ -602,7 +603,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var span = binding!.Arguments;
@@ -629,7 +630,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -656,7 +657,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -684,7 +685,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -712,7 +713,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -742,7 +743,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -772,7 +773,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -798,7 +799,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -827,7 +828,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEmpty();
 
             // After linking, the step reference should have a definition assigned.
-            var binding = linkResult.Output.AllStepReferences.First.Value.Binding;
+            var binding = linkResult.Output!.AllStepReferences.First!.Value.Binding;
             binding.Should().NotBeNull();
             binding!.Definition.Should().NotBeNull();
             var arguments = binding!.Arguments;
@@ -870,7 +871,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeTrue();
 
             // The failing definition should not have a bound definition.
-            file.AllStepReferences.First.Value.Binding.Should().NotBeNull();
+            file.AllStepReferences.First!.Value.Binding.Should().NotBeNull();
 
             stepSource.RemoveStepDefinition(def);
 
@@ -881,7 +882,7 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
 
-            file.AllStepReferences.First.Value.Binding.Should().BeNull();
+            file.AllStepReferences.First!.Value.Binding.Should().BeNull();
         }
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
