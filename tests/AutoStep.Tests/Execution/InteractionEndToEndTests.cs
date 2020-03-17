@@ -147,10 +147,10 @@ namespace AutoStep.Tests.Execution
 
             var testElements = new[]
             {
-                new TestElement { Type = "label", Text = "Name", For = "name" },
-                new TestElement { Type = "label", Text = "Age", For = "age" },
-                new TestElement { Type = "input", Id = "name" },
-                new TestElement { Type = "input", Id = "age" }
+                new TestElement("label") { Text = "Name", For = "name" },
+                new TestElement("label") { Text = "Age", For = "age" },
+                new TestElement("input") { Id = "name" },
+                new TestElement("input") { Id = "age" }
             };
 
             project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
@@ -307,13 +307,18 @@ namespace AutoStep.Tests.Execution
 
         private class TestElement
         {
-            public string Type { get; set; }
+            public TestElement(string type)
+            {
+                Type = type;
+            }
 
-            public string For { get; set;  }
+            public string Type { get; }
 
-            public string Id { get; set; }
+            public string? For { get; set;  }
 
-            public string Text { get; set; }
+            public string? Id { get; set; }
+
+            public string? Text { get; set; }
         }
 
         private class AttributeToVariableMethod : InteractionMethod
