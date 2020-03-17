@@ -318,7 +318,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         |
+                            | heading1         | 
                             | 123              |
 
                             | 123.50           |
