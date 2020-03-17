@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Builders

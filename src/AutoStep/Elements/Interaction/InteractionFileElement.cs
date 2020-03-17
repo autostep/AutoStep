@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime.Tree;
-using AutoStep.Language.Interaction.Parser;
+﻿using System.Collections.Generic;
 using AutoStep.Language.Interaction.Traits;
 
 namespace AutoStep.Elements.Interaction

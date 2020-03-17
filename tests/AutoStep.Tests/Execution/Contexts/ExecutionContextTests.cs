@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using FluentAssertions;

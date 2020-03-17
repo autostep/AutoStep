@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using AutoStep.Execution;
+﻿using System.Reflection;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions.Test

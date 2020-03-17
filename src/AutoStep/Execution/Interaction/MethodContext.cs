@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using AutoStep.Definitions.Interaction;
+﻿using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Contexts;
 

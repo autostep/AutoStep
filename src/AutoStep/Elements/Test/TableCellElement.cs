@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 

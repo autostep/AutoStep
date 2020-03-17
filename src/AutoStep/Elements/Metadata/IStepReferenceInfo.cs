@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Test;
 

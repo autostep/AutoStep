@@ -1,5 +1,4 @@
-﻿using AutoStep.Elements;
-using AutoStep.Elements.Metadata;
+﻿using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Execution.Contexts
 {
