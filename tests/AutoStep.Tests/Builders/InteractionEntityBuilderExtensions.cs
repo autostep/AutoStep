@@ -11,10 +11,7 @@ namespace AutoStep.Tests.Builders
         {
             var stepDefinitionBuilder = new InteractionStepDefinitionBuilder(type, declaration, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepDefinitionBuilder);
-            }
+            cfg?.Invoke(stepDefinitionBuilder);
 
             if (entityBuilder is InteractionComponentBuilder)
             {

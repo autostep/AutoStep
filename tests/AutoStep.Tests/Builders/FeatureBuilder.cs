@@ -42,10 +42,7 @@ namespace AutoStep.Tests.Builders
         {
             var scenarioBuilder = new ScenarioBuilder(name, line, column);
 
-            if (cfg is object)
-            {
-                cfg(scenarioBuilder);
-            }
+            cfg?.Invoke(scenarioBuilder);
 
             Built.Scenarios.Add(scenarioBuilder.Built);
 
@@ -56,10 +53,7 @@ namespace AutoStep.Tests.Builders
         {
             var scenarioOutlineBuilder = new ScenarioOutlineBuilder(name, line, column);
 
-            if(cfg is object)
-            {
-                cfg(scenarioOutlineBuilder);
-            }
+            cfg?.Invoke(scenarioOutlineBuilder);
 
             Built.Scenarios.Add(scenarioOutlineBuilder.Built);
 

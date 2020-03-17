@@ -11,10 +11,7 @@ namespace AutoStep.Tests.Utils
         {
             var stepBuilder = new StepReferenceBuilder(body, StepType.Given, StepType.Given, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepBuilder);
-            }
+            cfg?.Invoke(stepBuilder);
 
             stepBuilder.Built.FreezeTokens();
 
@@ -28,10 +25,7 @@ namespace AutoStep.Tests.Utils
         {
             var stepBuilder = new StepReferenceBuilder(body, StepType.When, StepType.When, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepBuilder);
-            }
+            cfg?.Invoke(stepBuilder);
 
             stepBuilder.Built.FreezeTokens();
 
@@ -45,10 +39,7 @@ namespace AutoStep.Tests.Utils
         {
             var stepBuilder = new StepReferenceBuilder(body, StepType.Then, StepType.Then, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepBuilder);
-            }
+            cfg?.Invoke(stepBuilder);
 
             stepBuilder.Built.FreezeTokens();
 
@@ -62,10 +53,7 @@ namespace AutoStep.Tests.Utils
         {
             var stepBuilder = new StepReferenceBuilder(body, StepType.And, actualType, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepBuilder);
-            }
+            cfg?.Invoke(stepBuilder);
 
             stepBuilder.Built.FreezeTokens();
 

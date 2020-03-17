@@ -48,10 +48,7 @@ namespace AutoStep.Tests.Builders
         {
             var stepDefinitionBuilder = new StepDefinitionBuilder(type, declaration, line, column);
 
-            if (cfg is object)
-            {
-                cfg(stepDefinitionBuilder);
-            }
+            cfg?.Invoke(stepDefinitionBuilder);
 
             Built.AddStepDefinition(stepDefinitionBuilder.Built);
 

@@ -156,20 +156,14 @@ namespace AutoStep.Language.Test
             if (matches.Count == 0 || !matches.First.Value.IsExact)
             {
                 // No matches.
-                if (messages is object)
-                {
-                    messages.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
-                }
+                messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition));
 
                 stepReference.Unbind();
                 success = false;
             }
             else if (matches.Count > 1)
             {
-                if (messages is object)
-                {
-                    messages.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
-                }
+                messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions));
 
                 stepReference.Unbind();
                 success = false;
