@@ -68,26 +68,26 @@ namespace AutoStep.Language.Test.Visitors
             // Clear the set of feature scenario names.
             featureScenarioNames.Clear();
 
-            if (Result.Feature != null)
+            if (Result!.Feature != null)
             {
                 // We already have a feature, don't go any deeper, add an error.
                 MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Error, CompilerMessageCode.OnlyOneFeatureAllowed);
-                return Result;
+                return Result!;
             }
 
-            Result.Feature = new FeatureElement();
+            Result!.Feature = new FeatureElement();
 
-            currentAnnotatable = Result.Feature;
+            currentAnnotatable = Result!.Feature;
 
             VisitChildren(context);
 
-            if (!string.IsNullOrEmpty(Result.Feature.Name) && Result.Feature.Scenarios.Count == 0)
+            if (!string.IsNullOrEmpty(Result!.Feature.Name) && Result!.Feature.Scenarios.Count == 0)
             {
                 // Warning should be associated to the title.
-                MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result.Feature.Name ?? "unknown");
+                MessageSet.Add(context.featureDefinition().featureTitle(), CompilerMessageLevel.Warning, CompilerMessageCode.NoScenarios, Result!.Feature.Name ?? "unknown");
             }
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace AutoStep.Language.Test.Visitors
             if (currentAnnotatable == null)
             {
                 MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
-                return Result;
+                return Result!;
             }
 
             var tagBody = context.ANNOTATION_TEXT().GetText();
@@ -111,7 +111,7 @@ namespace AutoStep.Language.Test.Visitors
 
             currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(context));
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace AutoStep.Language.Test.Visitors
             if (currentAnnotatable == null)
             {
                 MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.UnexpectedAnnotation);
-                return Result;
+                return Result!;
             }
 
             var optBody = context.ANNOTATION_TEXT().GetText();
@@ -154,7 +154,7 @@ namespace AutoStep.Language.Test.Visitors
                 if (string.IsNullOrEmpty(setting))
                 {
                     MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
-                    return Result;
+                    return Result!;
                 }
             }
 
@@ -194,12 +194,12 @@ namespace AutoStep.Language.Test.Visitors
             // Past this point, annotations aren't valid.
             currentAnnotatable = null;
 
-            Result.Feature!.AddLineInfo(titleTree);
+            Result!.Feature!.AddLineInfo(titleTree);
 
-            Result.Feature!.Name = title;
-            Result.Feature.Description = string.IsNullOrWhiteSpace(description) ? null : description;
+            Result!.Feature!.Name = title;
+            Result!.Feature!.Description = string.IsNullOrWhiteSpace(description) ? null : description;
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace AutoStep.Language.Test.Visitors
 
             background.AddLineInfo(context.BACKGROUND());
 
-            Result.Feature!.Background = background;
+            Result!.Feature!.Background = background;
 
             currentStepSet = background.Steps;
             currentStepSetLastConcrete = null;
@@ -293,7 +293,7 @@ namespace AutoStep.Language.Test.Visitors
 
             if (isProcessedStep)
             {
-                Result.AddStepDefinition(stepDefinition);
+                Result!.AddStepDefinition(stepDefinition);
             }
 
             currentStepSet = null;
@@ -328,7 +328,7 @@ namespace AutoStep.Language.Test.Visitors
                 if (scenarioKeyWordText != "Scenario:")
                 {
                     MessageSet.Add(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
-                    return Result;
+                    return Result!;
                 }
 
                 scenario = new ScenarioElement();
@@ -355,7 +355,7 @@ namespace AutoStep.Language.Test.Visitors
                 const string assertFailure = "Cannot reach here if the parser rules are valid; parser will not enter the " +
                                              "scenario block if neither SCENARIO or SCENARIO_OUTLINE tokens are present.";
                 Debug.Assert(false, assertFailure);
-                return Result;
+                return Result!;
             }
 
             currentAnnotatable = scenario;
@@ -395,9 +395,9 @@ namespace AutoStep.Language.Test.Visitors
             currentStepSet = null;
             currentScenario = null;
 
-            Result.Feature!.Scenarios.Add(scenario);
+            Result!.Feature!.Scenarios.Add(scenario);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -411,7 +411,7 @@ namespace AutoStep.Language.Test.Visitors
 
             AddStep(StepType.Given, context);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace AutoStep.Language.Test.Visitors
 
             AddStep(StepType.Then, context);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -439,7 +439,7 @@ namespace AutoStep.Language.Test.Visitors
 
             AddStep(StepType.When, context);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace AutoStep.Language.Test.Visitors
 
             AddStep(StepType.And, context);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -478,7 +478,7 @@ namespace AutoStep.Language.Test.Visitors
 
             MergeVisitorAndReset(tableVisitor);
 
-            return Result;
+            return Result!;
         }
 
         /// <summary>
@@ -497,13 +497,13 @@ namespace AutoStep.Language.Test.Visitors
             if (exampleTokenText != "Examples:")
             {
                 MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
-                return Result;
+                return Result!;
             }
 
             if (outline == null)
             {
-                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario.Name!);
-                return Result;
+                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario!.Name!);
+                return Result!;
             }
 
             var example = new ExampleElement();
@@ -524,7 +524,7 @@ namespace AutoStep.Language.Test.Visitors
 
             outline.AddExample(example);
 
-            return Result;
+            return Result!;
         }
 
         private LanguageOperationMessage? ValidateVariableInsertionName(ParserRuleContext context, string insertionName)
@@ -606,7 +606,7 @@ namespace AutoStep.Language.Test.Visitors
                     currentStepSet.Add(step);
 
                     // Update the global step list.
-                    Result.AllStepReferences.AddLast(step);
+                    Result!.AllStepReferences.AddLast(step);
                 }
 
                 lastStep = step;

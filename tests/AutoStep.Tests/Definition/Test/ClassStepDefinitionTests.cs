@@ -18,7 +18,7 @@ namespace AutoStep.Tests.Definition
         [Fact]
         public void NoDeclaringAttributeThrowsNullArgument()
         {
-            Action act = () => new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), typeof(MyStepDef).GetMethod(nameof(MyStepDef.GivenIHaveClicked)), null);
+            Action act = () => new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), typeof(MyStepDef).GetMethod(nameof(MyStepDef.GivenIHaveClicked))!, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -26,8 +26,8 @@ namespace AutoStep.Tests.Definition
         [Fact]
         public async Task CanInvokeClassMethod()
         {
-            var method = typeof(MyStepDef).GetMethod(nameof(MyStepDef.GivenIHaveClicked));
-            var attr = method.GetCustomAttribute<GivenAttribute>();
+            var method = typeof(MyStepDef).GetMethod(nameof(MyStepDef.GivenIHaveClicked))!;
+            var attr = method.GetCustomAttribute<GivenAttribute>()!;
             var stepDef = new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), method, attr);
 
             var builder = new AutofacServiceBuilder();
@@ -56,6 +56,5 @@ namespace AutoStep.Tests.Definition
                 ClickCount++;
             }
         }
-
     }
 }

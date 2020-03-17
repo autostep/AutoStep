@@ -3,7 +3,6 @@ using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Builders
 {
-
     public class InteractionMethodArgumentSetBuilder : BaseBuilder<MethodCallElement>
     {
         public InteractionMethodArgumentSetBuilder(MethodCallElement methodCall)

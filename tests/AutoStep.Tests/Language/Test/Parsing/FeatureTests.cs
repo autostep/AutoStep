@@ -16,7 +16,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task FeatureWithNoScenariosProducesWarning()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
                 Description words
 
@@ -40,8 +40,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task FeatureWithNoTitleError()
         {
             const string TestFile =
-            @"                
-              Feature: 
+            @"
+              Feature:
             ";
 
             await CompileAndAssertWarnings(TestFile,
@@ -62,7 +62,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task FeatureWithNoTitleImmediateEofError()
         {
             const string TestFile =
-            @"                
+            @"
               Feature:";
 
             await CompileAndAssertWarnings(TestFile,
@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task BadFeatureTokenSyntaxError()
         {
             const string TestFile =
-            @"                
+            @"
               FeaturE: My Feature
                 Description words
 
@@ -148,11 +148,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 Feature: My Feature
 
                     Scenario: My Scenario
-                        
+
                         Given I have
 
                     Scenario: My Scenario
-                        
+
                         # Check we can still get errors from a duplicate
                         And I click
             ";
@@ -180,11 +180,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 Feature: My Feature
 
                     Scenario: My Scenario
-                        
+
                         Given I have
 
                     Scenario: My scenario
-                        
+
                         # Check we can still get errors from a duplicate
                         And I click
             ";
@@ -238,7 +238,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task OnlyOneFeatureAllowed()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: Feature 1
 
                 Scenario: My Scenario
@@ -257,13 +257,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 )
             );
         }
-        
+
         [Fact]
         [Issue("https://github.com/autostep/AutoStep/issues/39")]
         public async Task OnlyOneFeatureAllowedErrorRaisedIfEarlierSyntaxError()
         {
             const string TestFile =
-            @"                
+            @"
               Scenario: Error
 
               Feature: Feature 1
@@ -289,13 +289,13 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 )
             );
         }
-        
+
         [Fact]
         [Issue("https://github.com/autostep/AutoStep/issues/38")]
         public async Task ScenarioOutlineNameWithStepPrefixes()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: Test the Given, When, Then functionality
 
                 Scenario: Scenario 1

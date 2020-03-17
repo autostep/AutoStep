@@ -82,7 +82,7 @@ namespace AutoStep.Tests.Language.Interaction.LineTokeniser
             result.AssertToken(4, 24, LineTokenCategory.InteractionSeparator);
             result.AssertToken(5, 26, LineTokenCategory.InteractionName);
         }
-        
+
         [Fact]
         public void TokenisesInheritsKeyword()
         {
@@ -235,6 +235,5 @@ namespace AutoStep.Tests.Language.Interaction.LineTokeniser
             result.AssertToken(6, 12, LineTokenCategory.InteractionString);
             result.AssertToken(7, 13, LineTokenCategory.InteractionString);
         }
-
     }
 }

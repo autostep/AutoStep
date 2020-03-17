@@ -7,6 +7,4 @@ namespace AutoStep.Tests.Builders
     {
         TBuilt Built { get; }
     }
-
-
 }

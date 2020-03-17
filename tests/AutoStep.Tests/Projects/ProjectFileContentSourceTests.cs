@@ -11,7 +11,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorNullFileProviderThrowsException()
         {
-            Action act = () => new FileProviderContentSource("/path", null);
+            Action act = () => new FileProviderContentSource("/path", null!);
             act.Should().Throw<ArgumentNullException>();
         }
 

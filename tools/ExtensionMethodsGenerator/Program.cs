@@ -16,7 +16,7 @@ namespace ExtensionMethodsGenerator
             var codeCompileUnit = new CodeCompileUnit();
 
             var myNameSpace = new CodeNamespace("AutoStep");
-            
+
             if(args.Length > 0 && args[0] == "interactions")
             {
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
@@ -65,11 +65,11 @@ namespace ExtensionMethodsGenerator
 
             fullContent = fullContent.Replace("public class", "public static class");
 
-            // Now we need to go through each line, and only output those that don't result in 
+            // Now we need to go through each line, and only output those that don't result in
             // duplicated whitespace.
             // Workaround for .NET defect (https://github.com/dotnet/runtime/issues/31614).
             var stringReader = new StringReader(fullContent);
-            string line;
+            string? line;
             bool lastLineEndsWithParen = false;
             while ((line = stringReader.ReadLine()) != null)
             {
@@ -296,7 +296,7 @@ namespace ExtensionMethodsGenerator
             if (isValueTask)
             {
                 callbackType = new CodeTypeReference("Func");
-                
+
                 foreach(var tParam in typeParameters)
                 {
                     callbackType.TypeArguments.Add(tParam.Name);

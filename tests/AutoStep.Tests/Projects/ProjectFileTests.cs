@@ -16,7 +16,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorPathCannotBeNull()
         {
-            Action act = () => new ProjectTestFile(null, new StringContentSource("something"));
+            Action act = () => new ProjectTestFile(null!, new StringContentSource("something"));
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -24,7 +24,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorSourceCannotBeNull()
         {
-            Action act = () => new ProjectTestFile("/test", null);
+            Action act = () => new ProjectTestFile("/test", null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Projects
             projFile.UpdateLastLinkResult(result);
 
             projFile.LastLinkResult.Should().Be(result);
-            projFile.LastLinkResult.Should().NotBe(DateTime.MinValue);            
+            projFile.LastLinkResult.Should().NotBe(DateTime.MinValue);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace AutoStep.Tests.Projects
 
             projFile.LinkerDependencies.Should().Contain(defSource);
         }
-        
+
         [Fact]
         public void UpdateLastLinkResultDoesNotTrackNonUpdatableSources()
         {
@@ -104,6 +104,5 @@ namespace AutoStep.Tests.Projects
 
             projFile.LinkerDependencies.Should().BeEmpty();
         }
-
     }
 }

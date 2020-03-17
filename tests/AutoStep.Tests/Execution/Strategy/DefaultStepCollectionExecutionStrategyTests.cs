@@ -75,7 +75,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ctxt.Step.Should().Be(stepCollection.Steps[ranSteps]);
                 ctxt.Variables.Should().Be(variables);
                 varSet.Should().Be(variables);
-                
+
                 ranSteps++;
 
                 if (ctxt.Step.Type == StepType.Then)
@@ -87,8 +87,9 @@ namespace AutoStep.Tests.Execution.Strategy
 
             ranSteps.Should().Be(2);
 
+            owningContext.FailException.Should().NotBeNull();
             owningContext.FailException.Should().BeOfType<StepFailureException>();
-            owningContext.FailException.InnerException.Should().BeOfType<NullReferenceException>();
+            owningContext.FailException!.InnerException.Should().BeOfType<NullReferenceException>();
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
 
@@ -135,11 +136,12 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeFeat.Should().Be(2);
             afterFeat.Should().Be(1);
 
+            owningContext.FailException.Should().NotBeNull();
             owningContext.FailException.Should().BeOfType<EventHandlingException>();
-            owningContext.FailException.InnerException.Should().BeOfType<NullReferenceException>();
+            owningContext.FailException!.InnerException.Should().BeOfType<NullReferenceException>();
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
-               
+
         private async ValueTask DoTest(
             IStepCollectionInfo stepCollection,
             int executionManagerInvokes,
@@ -167,7 +169,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             var threadContext = new ThreadContext(1);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            
+
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var stepExecuteStrategy = new MyStepExecutionStrategy(stepCallback);
 
@@ -187,7 +189,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep), 
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
 
             if(owningContext.FailException != null)
@@ -204,7 +206,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 this.stepCallback = stepCallback;
             }
-            
+
             public ValueTask ExecuteStep(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 stepScope.Should().NotBeNull();
@@ -220,9 +222,9 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             private readonly Action<StepContext> callBefore;
             private readonly Action<StepContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<StepContext> callBefore, Action<StepContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<StepContext> callBefore, Action<StepContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;
@@ -255,7 +257,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            
+
             public  ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
@@ -285,7 +287,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
                 callAfter(ctxt);
             }
-
         }
     }
 }

@@ -23,7 +23,6 @@ namespace AutoStep.Tests.Execution.Strategy
         {
         }
 
-
         [Fact]
         public async ValueTask SingleScenarioTest()
         {
@@ -129,7 +128,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 (feature.Scenarios[0], secondVariableSet)
             );
         }
-                
+
         private async ValueTask DoTest(IFeatureInfo feature, params (IScenarioInfo scenario, VariableSet variables)[] scenarios)
         {
             var threadContext = new ThreadContext(1);
@@ -167,7 +166,7 @@ namespace AutoStep.Tests.Execution.Strategy
         private class MyScenarioStrategy : IScenarioExecutionStrategy
         {
             public List<(IScenarioInfo scenario, VariableSet variables)> AddedScenarios { get; } = new List<(IScenarioInfo, VariableSet)>();
-            
+
             public ValueTask Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables)
             {
                 AddedScenarios.Add((scenario, variables));
@@ -176,14 +175,13 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-
         private class MyEventHandler : IEventHandler
         {
             private readonly Action<FeatureContext> callBefore;
             private readonly Action<FeatureContext> callAfter;
-            private readonly Action<Exception> exception;
+            private readonly Action<Exception>? exception;
 
-            public MyEventHandler(Action<FeatureContext> callBefore, Action<FeatureContext> callAfter, Action<Exception> exception = null)
+            public MyEventHandler(Action<FeatureContext> callBefore, Action<FeatureContext> callAfter, Action<Exception>? exception = null)
             {
                 this.callBefore = callBefore;
                 this.callAfter = callAfter;
@@ -196,7 +194,6 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.callAfter = c => { };
                 this.exception = exception;
             }
-
 
             public async ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
             {
@@ -244,7 +241,6 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-
         }
     }
 }

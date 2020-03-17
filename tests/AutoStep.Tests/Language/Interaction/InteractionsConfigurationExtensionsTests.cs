@@ -13,19 +13,19 @@ namespace AutoStep.Tests.Language.Interaction
         {
             Action method = () => { };
 
-            Assert.Throws<ArgumentNullException>(() => InteractionsConfigurationExtensions.AddOrReplaceMethod(null, new DelegateInteractionMethod("method", method)));
+            Assert.Throws<ArgumentNullException>(() => InteractionsConfigurationExtensions.AddOrReplaceMethod(null!, new DelegateInteractionMethod("method", method)));
         }
 
         [Fact]
         public void AddOrReplaceMethodDoesNotAllowNullMethod()
         {
-            Assert.Throws<ArgumentNullException>(() => new InteractionsConfig().AddOrReplaceMethod(null));
+            Assert.Throws<ArgumentNullException>(() => new InteractionsConfig().AddOrReplaceMethod(null!));
         }
 
         [Fact]
         public void AddMethodsDoesNotAllowNullConfig()
         {
-            Assert.Throws<ArgumentNullException>(() => InteractionsConfigurationExtensions.AddMethods<MethodsClass>(null));
+            Assert.Throws<ArgumentNullException>(() => InteractionsConfigurationExtensions.AddMethods<MethodsClass>(null!));
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Language.Interaction
             config.AddMethods<MethodsClass>();
 
             config.RootMethodTable.TryGetMethod("myMethod", out var _).Should().BeTrue();
-            config.RootMethodTable.TryGetMethod("myProtectedMethod", out var _).Should().BeFalse();            
+            config.RootMethodTable.TryGetMethod("myProtectedMethod", out var _).Should().BeFalse();
         }
 
         [Fact]
