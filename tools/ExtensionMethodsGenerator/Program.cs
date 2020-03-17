@@ -69,7 +69,7 @@ namespace ExtensionMethodsGenerator
             // duplicated whitespace.
             // Workaround for .NET defect (https://github.com/dotnet/runtime/issues/31614).
             var stringReader = new StringReader(fullContent);
-            string line;
+            string? line;
             bool lastLineEndsWithParen = false;
             while ((line = stringReader.ReadLine()) != null)
             {

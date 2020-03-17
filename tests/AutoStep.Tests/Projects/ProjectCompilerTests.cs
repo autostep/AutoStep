@@ -302,7 +302,7 @@ namespace AutoStep.Tests.Projects
 
             var mockLinker = new Mock<ILinker>();
 
-            IUpdatableStepDefinitionSource addedSource = null;
+            IUpdatableStepDefinitionSource? addedSource = null;
 
             // Check that the linker is invoked.
             mockLinker.Setup(x => x.AddOrUpdateStepDefinitionSource(It.IsAny<IUpdatableStepDefinitionSource>()))

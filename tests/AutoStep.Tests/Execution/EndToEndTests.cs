@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Execution
             var steps = new CallbackDefinitionSource();
 
             var doneSomethingCalled = false;
-            string argumentValue = null;
+            string? argumentValue = null;
             var whenCalled = false;
             var thenCalled = false;
 
@@ -226,7 +226,7 @@ namespace AutoStep.Tests.Execution
             var steps = new CallbackDefinitionSource();
 
             var doneSomethingCalled = false;
-            string argumentValue = null;
+            string? argumentValue = null;
 
             steps.Given("I have done something", () =>
             {
@@ -279,7 +279,7 @@ namespace AutoStep.Tests.Execution
             var steps = new CallbackDefinitionSource();
 
             var doneSomethingCalled = false;
-            string argumentValue = null;
+            string? argumentValue = null;
 
             steps.Given("I have done something", () =>
             {
@@ -357,7 +357,7 @@ namespace AutoStep.Tests.Execution
             var steps = new CallbackDefinitionSource();
 
             var doneSomethingCalled = false;
-            string argumentValue = null;
+            string? argumentValue = null;
 
             steps.Given("I have done something", () =>
             {

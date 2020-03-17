@@ -131,7 +131,7 @@ namespace AutoStep.Tests.Definition
             var scopeBuilder = new AutofacServiceBuilder();
             scopeBuilder.RegisterSingleInstance(new ArgumentBinderRegistry());
 
-            string argValue = null;
+            string? argValue = null;
 
             Action<string> callback = arg1 =>
             {

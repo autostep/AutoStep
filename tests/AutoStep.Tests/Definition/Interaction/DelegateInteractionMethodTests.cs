@@ -136,7 +136,7 @@ namespace AutoStep.Tests.Definition.Interaction
         [Fact]
         public async Task ArgumentBinding_DerivedAssignmentBinding()
         {
-            BaseClass value = null;
+            BaseClass? value = null;
 
             Action<BaseClass> action = val => value = val;
 
@@ -180,7 +180,7 @@ namespace AutoStep.Tests.Definition.Interaction
         [Fact]
         public void ArgumentBinding_CannotCastIncompatibleTypes()
         {
-            string value = null;
+            string? value = null;
 
             Action<string> action = val => value = val;
 
@@ -193,16 +193,15 @@ namespace AutoStep.Tests.Definition.Interaction
         [Fact]
         public async Task ArgumentBinding_CanBindWithSpecialArguments()
         {
-            string value = null;
-            MethodContext passedCtxt = null;
-            IServiceScope passedScope = null;
+            string? value = null;
+            MethodContext? passedCtxt = null;
+            IServiceScope? passedScope = null;
 
             Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) =>
             {
                 passedCtxt = ctxt;
                 value = val;
                 passedScope = scope;
-
             };
 
             var methodInstance = new DelegateInteractionMethod("method", action);
@@ -219,9 +218,9 @@ namespace AutoStep.Tests.Definition.Interaction
         [Fact]
         public void ArgumentBinding_SpecialArgumentsExcludedFromCount()
         {
-            string value = null;
-            MethodContext passedCtxt = null;
-            IServiceScope passedScope = null;
+            string? value = null;
+            MethodContext? passedCtxt = null;
+            IServiceScope? passedScope = null;
 
             Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) =>
             {

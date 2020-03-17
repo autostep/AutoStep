@@ -133,7 +133,7 @@ namespace AutoStep.Tests.Execution.Events
             var scope = scopeMock.Object;
             var context = new RunContext(new RunConfiguration());
             var mockStepReference = new StepReferenceElement();
-            Exception foundException = null;
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
 
@@ -153,7 +153,7 @@ namespace AutoStep.Tests.Execution.Events
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(new RunConfiguration());
-            Exception foundException = null;
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
             var errHandler = new MyEventHandler(() => { }, () => throw new EventHandlingException(new NullReferenceException()));
@@ -172,7 +172,7 @@ namespace AutoStep.Tests.Execution.Events
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(new RunConfiguration());
-            Exception foundException = null;
+            Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
             var errHandler = new MyEventHandler(() => { }, () => throw new NullReferenceException());
@@ -181,8 +181,9 @@ namespace AutoStep.Tests.Execution.Events
 
             await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
 
+            foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
-            foundException.InnerException.Should().BeOfType<NullReferenceException>();
+            foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
         private class MyEventHandler : IEventHandler
