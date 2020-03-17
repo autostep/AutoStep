@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Execution.Binding
             try
             {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("fr");
-                
+
                 var result = binder.Bind("123,05", typeof(double));
 
                 result.Should().Be(123.05);

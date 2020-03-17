@@ -90,7 +90,6 @@ namespace AutoStep.Tests.Language.Test
                                     ));
         }
 
-
         [Fact(Skip = "Future functionality; warn people when they have declared a step with an interpolation statement")]
         public void InterpolationArgument()
         {

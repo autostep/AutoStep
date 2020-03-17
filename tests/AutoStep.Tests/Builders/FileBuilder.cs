@@ -4,7 +4,6 @@ using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {
-
     public class FileBuilder : BaseBuilder<FileElement>
     {
         public FileBuilder()
@@ -65,6 +64,4 @@ namespace AutoStep.Tests.Builders
             return this;
         }
     }
-
-
 }

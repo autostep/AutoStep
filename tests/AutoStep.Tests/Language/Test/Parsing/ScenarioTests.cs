@@ -16,9 +16,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioCanHaveNoSteps()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario: My Scenario
 
             ";
@@ -34,9 +34,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioBlankTitle()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario:
 
             ";
@@ -51,12 +51,12 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioEachStepType()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario: My Scenario
 
-                    Given I have 
+                    Given I have
                     Then I have
                     When I have
                     And I have
@@ -78,7 +78,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task BadScenarioTokenSyntaxError()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
                 Description words
 
@@ -114,11 +114,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task UnexpectedExampleGivesError()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
-                
+
                 Scenario: My Scenario
-    
+
                     Given I have done something
 
                 Examples:
@@ -139,7 +139,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task ScenarioNameWithStepPrefixes()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: Test Feature
 
                 Scenario: Test the Given, When, Then functionality
@@ -151,6 +151,5 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 )
             );
         }
-
     }
 }

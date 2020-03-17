@@ -30,7 +30,7 @@ namespace AutoStep.Tests.Language
         {
             // Compile a file.
             const string TestFileWithDef =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -39,10 +39,10 @@ namespace AutoStep.Tests.Language
 
                Step: When I press {button}
 
-            "; 
-            
+            ";
+
             const string TestFileWithoutDef =
-             @"                
+             @"
               Feature: My Feature
 
                 Scenario: My Scenario

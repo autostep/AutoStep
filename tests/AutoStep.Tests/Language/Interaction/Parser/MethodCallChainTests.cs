@@ -23,9 +23,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task SingleCallTargetNoArgs()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call()
             ";
 
@@ -36,13 +36,13 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         )
                     ));
         }
-        
+
         [Fact]
         public async Task SingleUnterminatedCallNoArgs()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call(
             ";
 
@@ -58,9 +58,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleCallNoArgs()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call() -> call2() -> call3()
             ";
 
@@ -77,9 +77,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleCallSingleMissingSeparatorError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call() call2() -> call3()
             ";
 
@@ -96,12 +96,12 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task CallChainMultiLineWithComments()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call() # comment
                            # comment
-                           -> call2() 
+                           -> call2()
                            # comment
                            -> call3()
             ";
@@ -119,9 +119,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleDefinitionSingleMissingSeparatorParseContinuesWithError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call() -> call2() call3()
 
                     method2(): call()
@@ -143,9 +143,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleDefinitionSingleCall()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call()
 
                     method2(): call2()
@@ -164,11 +164,11 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleComponentDefinitionSeparateCallWithLaterError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call()
-                
+
                 Component: field
 
                     method2(): call2(
@@ -190,9 +190,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MultipleCallMissingSeparatorsError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call() call2() call3()
             ";
 

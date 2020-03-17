@@ -33,7 +33,7 @@ namespace AutoStep.Tests.Projects
             mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<InteractionsFileCompilerResult>(
                 new InteractionsFileCompilerResult(true, Enumerable.Empty<LanguageOperationMessage>(), new InteractionFileElement())
             ));
-            
+
             var projFile = new ProjectInteractionFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
@@ -58,7 +58,7 @@ namespace AutoStep.Tests.Projects
             var mockSource2 = new Mock<IContentSource>();
             mockSource1.SetupGet(x => x.SourceName).Returns("/file2");
             mockSource2.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.Today);
-            
+
             var mockInteractionsCompiler = new Mock<IInteractionCompiler>();
 
             // First compile result
@@ -120,7 +120,7 @@ namespace AutoStep.Tests.Projects
             // Result should be the same.
             projFile.LastCompileResult.Should().BeSameAs(originalCompilationresult);
         }
-               
+
         [Fact]
         public async Task ReCompilesInteractionFileThatHasBeenChanged()
         {
@@ -131,7 +131,7 @@ namespace AutoStep.Tests.Projects
 
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(() => changeTime);
 
-            var mockCompiler = new Mock<ITestCompiler>(); 
+            var mockCompiler = new Mock<ITestCompiler>();
             var mockInteractionCompiler = new Mock<IInteractionCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<InteractionsFileCompilerResult>(
@@ -275,7 +275,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
-            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,                                                      
+            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
 
             overallResult.Messages.Should().Contain(expectedMessage);
@@ -285,7 +285,7 @@ namespace AutoStep.Tests.Projects
         public void InteractionCompileCanBeCancelled()
         {
             var project = new Project();
-            
+
             var projectCompiler = GetProjectCompiler(project, new Mock<IInteractionCompiler>().Object);
 
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);

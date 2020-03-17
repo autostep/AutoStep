@@ -210,7 +210,7 @@ namespace AutoStep.Tests.Utils
                             }
                         }
                     }).WhenTypeIs<StepReferenceElement>()
-                ); 
+                );
             }
             catch
             {

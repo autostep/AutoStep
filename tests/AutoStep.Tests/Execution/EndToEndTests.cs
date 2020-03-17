@@ -28,14 +28,14 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
 
                     Given I have done something
                       And I have passed argument1 to something
-                    
+
                     When I do this
                     Then it should be true
 
@@ -95,7 +95,7 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario Outline: My Scenario Outline
@@ -149,15 +149,15 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
 
                     Given I have done something
-                    
+
                     When I have clicked something
-                    
+
                     Then this should have happened
             ";
 
@@ -207,7 +207,7 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Step: Given I have called my defined step with {arg}
 
                     Given I have done something
@@ -259,7 +259,7 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Step: Given I have called my defined step with {arg}
 
                     Given I have done something
@@ -301,7 +301,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
             var errorCollector = new StepExceptionCollector();
-            
+
             testRun.Events.Add(errorCollector);
 
             await testRun.ExecuteAsync(LogFactory);
@@ -320,9 +320,8 @@ namespace AutoStep.Tests.Execution
 
             public override async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
             {
-                
                 await nextHandler(scope, ctxt);
-                
+
                 if(ctxt.FailException is object)
                 {
                     FoundException = ctxt.FailException;
@@ -335,7 +334,7 @@ namespace AutoStep.Tests.Execution
         {
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario

@@ -66,7 +66,7 @@ namespace AutoStep.Tests.Execution.Binding
         public void NullArgumentOnScopeThrows()
         {
             var binderRegistry = new ArgumentBinderRegistry();
-            
+
             Action act = () => binderRegistry.GetBinderForType(null, typeof(decimal));
 
             act.Should().Throw<ArgumentNullException>();
@@ -100,6 +100,5 @@ namespace AutoStep.Tests.Execution.Binding
                 throw new NotImplementedException();
             }
         }
-
     }
 }

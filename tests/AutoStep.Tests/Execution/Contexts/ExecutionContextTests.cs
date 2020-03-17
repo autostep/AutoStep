@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Execution.Contexts
             context.TryGet<string>("val", out var result).Should().BeFalse();
             result.Should().BeNull();
         }
-        
+
         [Fact]
         public void TryGetExistingValueNoSuchName()
         {

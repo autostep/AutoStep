@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Projects
         {
             var mockCompiler = new Mock<ITestCompiler>();
             var mockLinker = new Mock<ILinker>();
-            
+
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
@@ -224,7 +224,7 @@ namespace AutoStep.Tests.Projects
 
             overallLink.Messages.First().Should().Be(msg);
         }
-        
+
         [Fact]
         public void RelinkFileIfLinkerDependencyUpdated()
         {
@@ -271,7 +271,7 @@ namespace AutoStep.Tests.Projects
 
             var project = new Project();
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
-            
+
             project.TryAddFile(projFile);
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();

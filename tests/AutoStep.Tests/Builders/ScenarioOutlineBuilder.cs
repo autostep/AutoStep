@@ -4,7 +4,6 @@ using AutoStep.Elements.Test;
 
 namespace AutoStep.Tests.Builders
 {
-
     public class ScenarioOutlineBuilder : BaseBuilder<ScenarioOutlineElement>, IStepCollectionBuilder<ScenarioOutlineElement>
     {
         public ScenarioOutlineBuilder(string name, int line, int column)
@@ -16,7 +15,7 @@ namespace AutoStep.Tests.Builders
                 Name = name
             };
         }
-        
+
         public ScenarioOutlineBuilder Description(string description)
         {
             Built.Description = description;
@@ -35,6 +34,4 @@ namespace AutoStep.Tests.Builders
             return this;
         }
     }
-
-
 }

@@ -47,7 +47,7 @@ namespace AutoStep.Tests.Builders
         {
             return Part(text, (s, l) => new FloatToken(s, l));
         }
-        
+
         public StepReferenceBuilder InterpolateStart()
         {
             return Part(":", (s, l) => new InterpolateStartToken(s));
@@ -77,7 +77,7 @@ namespace AutoStep.Tests.Builders
             {
                 throw new ArgumentException("Bad text; not present in step definition.");
             }
-            
+
             var part = creator(startIdx, text.Length);
 
             part.SourceLine = Built.SourceLine;
@@ -86,7 +86,7 @@ namespace AutoStep.Tests.Builders
             part.EndLine = Built.SourceLine;
 
             Built.AddToken(part);
-            
+
             nextTokenIdx = startIdx + text.Length;
 
             return this;

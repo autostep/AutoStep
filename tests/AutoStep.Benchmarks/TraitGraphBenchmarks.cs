@@ -38,7 +38,7 @@ namespace AutoStep.Benchmarks
 
             var _ = first.NameElements.Union(second.NameElements).ToArray();
         }
-        
+
         [Benchmark]
         public void MatchAllForward()
         {

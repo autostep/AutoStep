@@ -81,7 +81,6 @@ namespace AutoStep.Tests.Definition.Interaction
             invoked.Should().Be(1);
         }
 
-
         [Fact]
         public async Task ArgumentBinding_NullValueBecomesDefaultValue()
         {
@@ -90,7 +89,7 @@ namespace AutoStep.Tests.Definition.Interaction
             Action<int> action = val => invokedValue = val;
 
             var methodInstance = new DelegateInteractionMethod("method", action);
-            
+
             await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { null });
 
             invokedValue.Should().Be(0);
@@ -109,7 +108,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             invokedValue.Should().BeNull();
         }
-        
+
         [Fact]
         public async Task ArgumentBinding_StringConvertBinding()
         {
@@ -161,7 +160,7 @@ namespace AutoStep.Tests.Definition.Interaction
             Action<double> action = val => value = val;
 
             var methodInstance = new DelegateInteractionMethod("method", action);
-            
+
             // Pass in a decimal.
             await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { 128.5M });
 
@@ -193,7 +192,7 @@ namespace AutoStep.Tests.Definition.Interaction
             methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { new DerivedClass() }))
                           .Should().Throw<InvalidCastException>();
         }
-        
+
         [Fact]
         public async Task ArgumentBinding_CanBindWithSpecialArguments()
         {
@@ -201,7 +200,7 @@ namespace AutoStep.Tests.Definition.Interaction
             MethodContext passedCtxt = null;
             IServiceScope passedScope = null;
 
-            Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) => 
+            Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) =>
             {
                 passedCtxt = ctxt;
                 value = val;
@@ -219,7 +218,7 @@ namespace AutoStep.Tests.Definition.Interaction
             passedCtxt.Should().Be(ctxt);
             passedScope.Should().Be(scope);
         }
-        
+
         [Fact]
         public void ArgumentBinding_SpecialArgumentsExcludedFromCount()
         {
@@ -232,7 +231,6 @@ namespace AutoStep.Tests.Definition.Interaction
                 passedCtxt = ctxt;
                 value = val;
                 passedScope = scope;
-
             };
 
             var methodInstance = new DelegateInteractionMethod("method", action);

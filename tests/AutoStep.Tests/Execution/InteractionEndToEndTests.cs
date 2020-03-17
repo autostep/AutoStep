@@ -36,13 +36,13 @@ namespace AutoStep.Tests.Execution
             const string InteractionsFile =
             @"
                 Trait: named
-                    
+
                     locateNamed(name): needs-defining
 
                 Trait: clickable + named
 
                     Step: Given I have clicked the {name} $component$
-                        locateNamed(name) 
+                        locateNamed(name)
                           -> click()
 
                 Component: button
@@ -54,7 +54,7 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Execution
                 ctxt.ChainValue.Should().Be("element");
                 clickCalled = true;
             });
-                        
+
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             compileResult.Messages.Should().BeEmpty();
@@ -106,7 +106,7 @@ namespace AutoStep.Tests.Execution
             const string InteractionsFile =
             @"
                 Trait: named
-                    
+
                     locateNamed(name): needs-defining
 
                     Step: Then the {name} $component$ should exist
@@ -134,7 +134,7 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -252,14 +252,14 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
 
                     Given I have clicked the Name field
                       And I have clicked the Age text box
-                      
+
                     Then the Name field should exist
                      And the Age text box should exist
             ";

@@ -142,7 +142,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         | 
+                            | heading1         |
                             | 123              |
                             | 123.50           |
                             | £123.50          |
@@ -187,7 +187,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task UnterminatedTableError()
         {
@@ -198,9 +197,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         | 
+                            | heading1         |
                             | 123              |
-                            | 123.50           
+                            | 123.50
                             | £123.50          |
                             | :interpolated    |
                             | text             |
@@ -250,7 +249,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task MultipleUnterminatedRows()
         {
@@ -261,10 +259,10 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         | 
+                            | heading1         |
                             | 123              |
-                            | 123.50           
-                            | £123.50          
+                            | 123.50
+                            | £123.50
                             | :interpolated    |
                             | text             |
 
@@ -285,7 +283,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
                 10, 29, 10, 37));
         }
 
-
         [Fact]
         public async Task TableWithMismatchedCellCounts()
         {
@@ -296,8 +293,8 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         | 
-                            | 123              | another value |   
+                            | heading1         |
+                            | 123              | another value |
                             | 123.50           |
 
             ";
@@ -311,7 +308,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
             );
         }
 
-
         [Fact]
         public async Task TableBlankRowGap()
         {
@@ -322,9 +318,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1         | 
+                            | heading1         |
                             | 123              |
-                            
+
                             | 123.50           |
 
                         Then another thing happens
@@ -363,7 +359,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
 
                         Given this step has a table:
                             # comment before table
-                            | heading1         | 
+                            | heading1         |
                             | 123              | # comment after table
                             # comment inside blank line
                             | 123.50           |
@@ -413,7 +409,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     Scenario: My Scenario
 
                         Given this step has a table:
-                            | heading1 | 
+                            | heading1 |
                             | this: 1  |
 
             ";

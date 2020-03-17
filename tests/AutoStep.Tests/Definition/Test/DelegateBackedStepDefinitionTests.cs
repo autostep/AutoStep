@@ -64,7 +64,7 @@ namespace AutoStep.Tests.Definition
             {
                 callbackInvoked = true;
             };
-            
+
             var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
@@ -110,7 +110,7 @@ namespace AutoStep.Tests.Definition
             var callbackInvoked = false;
 
             Func<IServiceScope, ValueTask> callback = sc =>
-            {   
+            {
                 callbackInvoked = true;
                 return default;
             };
@@ -144,7 +144,7 @@ namespace AutoStep.Tests.Definition
                                 .Text("I").Text("test").Built;
 
             step.FreezeTokens();
-            
+
             var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I {arg1}");
 
             step.Bind(new StepReferenceBinding(delDefinition, new[] {

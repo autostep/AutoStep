@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Projects
     {
         [Fact]
         public void ConstructorThrowsProjectNullArgumentException()
-        { 
+        {
             Action act = () => GetCompiler(null, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object);
 
             act.Should().Throw<ArgumentNullException>();
@@ -144,7 +144,7 @@ namespace AutoStep.Tests.Projects
             // Result should be the same.
             projFile.LastCompileResult.Should().BeSameAs(originalCompilationresult);
         }
-               
+
         [Fact]
         public async Task ReCompilesFileThatHasBeenChanged()
         {
@@ -259,7 +259,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
 
-            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,                                                      
+            var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
 
             overallResult.Messages.Should().Contain(expectedMessage);
@@ -271,7 +271,7 @@ namespace AutoStep.Tests.Projects
             var project = new Project();
             var mockCompiler = new Mock<ITestCompiler>();
             var mockLinker = new Mock<ILinker>();
-            
+
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
@@ -319,7 +319,6 @@ namespace AutoStep.Tests.Projects
             // Linker was called.
             addedSource.Should().NotBeNull();
         }
-
 
         [Fact]
         [Issue("https://github.com/autostep/AutoStep/issues/42")]

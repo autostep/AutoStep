@@ -154,7 +154,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());            
+            var context = new RunContext(new RunConfiguration());
             Exception foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);

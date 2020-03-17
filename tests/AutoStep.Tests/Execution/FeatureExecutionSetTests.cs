@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Execution
 {
     public class FeatureExecutionSetTests : LoggingTestBase
     {
-        public FeatureExecutionSetTests(ITestOutputHelper outputHelper) 
+        public FeatureExecutionSetTests(ITestOutputHelper outputHelper)
             : base(outputHelper)
         {
         }
@@ -43,7 +43,7 @@ namespace AutoStep.Tests.Execution
 
             featureSet.Features.Should().HaveCount(1);
             featureSet.Features[0].Name.Should().Be("My Feature");
-            
+
             // Assert that the feature is a clone.
             featureSet.Features[0].Should().NotBe(builtFile.Feature);
         }

@@ -23,9 +23,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task DeclareMethod()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, name2): call('label')
             ";
 
@@ -44,9 +44,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task UnterminatedDeclaration()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, name2: call('label')
             ";
 
@@ -59,16 +59,16 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                             .String("label", 47)
                         )
                     )
-                ), 
+                ),
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnterminated, 4, 40, 4, 40));
         }
 
         [Fact]
         public async Task MissingExtraArg()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, ): call('label')
             ";
 
@@ -83,13 +83,13 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 ),
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameter, 4, 33, 4, 35));
         }
-        
+
         [Fact]
         public async Task MethodDefinitionMissingSeparator()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1 name2): call('label')
             ";
 
@@ -108,9 +108,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnexpectedString()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 'something'): call('label')
             ";
 
@@ -129,9 +129,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnexpectedFloat()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 123.5): call('label')
             ";
 
@@ -150,9 +150,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnexpectedInt()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 123): call('label')
             ";
 
@@ -171,9 +171,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnexpectedConstant()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, TAB): call('label')
             ";
 
@@ -189,13 +189,12 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclUnexpectedContent, 4, 35, 4, 37));
         }
 
-
         [Fact]
         public async Task MethodDefinitionUnterminatedString()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 'something): call()
             ";
 
@@ -211,9 +210,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnterminatedStringCanContinueParseWithPartialDefinitionMatch()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 'something): call()
                         -> call2()
 
@@ -232,13 +231,13 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 ),
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionUnterminatedString, 4, 35, 4, 53));
         }
-        
+
         [Fact]
         public async Task MethodDefinitionUnterminatedStringCanContinueParseWithCallOnNextLine()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 'something):
                         -> call()
 
@@ -261,9 +260,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodDefinitionUnterminatedStringCanContinueParse()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(name1, 'something): call()
 
                     method2(): needs-defining

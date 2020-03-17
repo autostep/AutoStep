@@ -89,7 +89,7 @@ namespace AutoStep.Tests.Language.Test.Matching
         public void NoMatchIfNoComponentValues()
         {
             var argPart = new PlaceholderMatchPart(StepPlaceholders.Component);
-            
+
             var text = "button next";
 
             var firstPart = WordFromString(text, "button");

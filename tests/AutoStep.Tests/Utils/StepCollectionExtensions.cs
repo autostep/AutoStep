@@ -4,8 +4,7 @@ using AutoStep.Tests.Builders;
 
 namespace AutoStep.Tests.Utils
 {
-
-    public static class StepCollectionExtensions        
+    public static class StepCollectionExtensions
     {
         public static TBuilder Given<TBuilder>(this TBuilder builder, string body, int line, int column, Action<StepReferenceBuilder> cfg = null)
             where TBuilder : IStepCollectionBuilder<StepCollectionElement>
@@ -75,6 +74,4 @@ namespace AutoStep.Tests.Utils
             return builder;
         }
     }
-
-
 }

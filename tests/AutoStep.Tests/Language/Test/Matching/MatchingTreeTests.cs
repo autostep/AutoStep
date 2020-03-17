@@ -188,7 +188,6 @@ namespace AutoStep.Tests.Language.Test.Matching
             list[1].Definition.Should().Be(stepDef2);
         }
 
-
         [Fact]
         public void CanRemoveStepDefinitionsWithOtherDeeperNode()
         {
@@ -284,7 +283,7 @@ namespace AutoStep.Tests.Language.Test.Matching
             var stepDef = new TestDef(manualDefEl);
 
             tree.AddOrUpdateDefinition(stepDef);
-            
+
             var stepRef1 = CreateSimpleRef(StepType.Given, "I click button");
 
             var result = tree.Match(stepRef1, true, out var partsMatched).ToList();

@@ -487,7 +487,6 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].GetText(refText).Should().Be(" 100.5 ");
         }
 
-
         [Fact]
         public void StepArgumentFloatTypeDetected()
         {
@@ -621,7 +620,6 @@ namespace AutoStep.Tests.Language.Test
                                                     binding.Arguments[0].DeterminedType, binding.Arguments[0].Part.TypeHint));
         }
 
-
         [Fact]
         public void StepArgumentFloatToIntCompilerError()
         {
@@ -723,7 +721,6 @@ namespace AutoStep.Tests.Language.Test
             binding.Arguments[0].DeterminedType.Should().BeNull();
             binding.Arguments[0].GetText(refText).Should().Be(":time");
         }
-
 
         [Fact]
         public void StepArgumentInterpolatedWithMultipleTokensGivesUnknownType()
@@ -874,6 +871,5 @@ namespace AutoStep.Tests.Language.Test
 
             return linker.Link(file);
         }
-
     }
 }

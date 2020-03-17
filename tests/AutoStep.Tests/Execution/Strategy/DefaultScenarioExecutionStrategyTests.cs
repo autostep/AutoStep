@@ -23,7 +23,6 @@ namespace AutoStep.Tests.Execution.Strategy
         {
         }
 
-
         [Fact]
         public async ValueTask ScenarioWithBackground()
         {
@@ -134,7 +133,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
-            
+
             public ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
             {
                 owningScope.Should().NotBeNull();
@@ -217,7 +216,6 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-
         }
     }
 }

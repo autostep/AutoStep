@@ -53,5 +53,5 @@ namespace AutoStep.Tests.Builders
                 EndColumn = startColumn + varName.Length - 1
             };
         }
-    }    
+    }
 }

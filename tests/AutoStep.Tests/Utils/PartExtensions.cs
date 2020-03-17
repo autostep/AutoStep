@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Utils
 
         private static string GetText(string text, ReadOnlySpan<StepToken> tokens, bool startExclusive, bool endExclusive)
         {
-            var first = tokens[0];            
+            var first = tokens[0];
             var last = tokens[tokens.Length - 1];
             int startIndex = first.StartIndex;
             int length = (last.StartIndex - startIndex) + last.Length;

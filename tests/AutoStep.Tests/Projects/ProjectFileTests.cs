@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Projects
             projFile.UpdateLastLinkResult(result);
 
             projFile.LastLinkResult.Should().Be(result);
-            projFile.LastLinkResult.Should().NotBe(DateTime.MinValue);            
+            projFile.LastLinkResult.Should().NotBe(DateTime.MinValue);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace AutoStep.Tests.Projects
 
             projFile.LinkerDependencies.Should().Contain(defSource);
         }
-        
+
         [Fact]
         public void UpdateLastLinkResultDoesNotTrackNonUpdatableSources()
         {
@@ -104,6 +104,5 @@ namespace AutoStep.Tests.Projects
 
             projFile.LinkerDependencies.Should().BeEmpty();
         }
-
     }
 }

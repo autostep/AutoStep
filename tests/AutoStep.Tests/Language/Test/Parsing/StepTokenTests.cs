@@ -17,7 +17,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task StepCanHaveQuotedString()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task StepCanContainGreaterThan()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -65,12 +65,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ))));
         }
 
-
         [Fact]
         public async Task StepCanContainLessThan()
         {
             const string TestFile =
-                        @"                
+                        @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -89,12 +88,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ))));
         }
 
-
         [Fact]
         public async Task StepCanContainLessThanFollowedByGreaterThan()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -115,12 +113,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ))));
         }
 
-
         [Fact]
         public async Task VariableInScenarioRaisesWarning()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -152,7 +149,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task QuoteAsAnApostrophe()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -174,12 +171,11 @@ namespace AutoStep.Tests.Language.Test.Parsing
             ))));
         }
 
-
         [Fact]
         public async Task StepEscapedQuote()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -203,7 +199,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task InterpolatedArgument()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -236,7 +232,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task IntegerPart()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -260,7 +256,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task IntegerPartNoSpaces()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -284,7 +280,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task FloatArgument()
         {
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario

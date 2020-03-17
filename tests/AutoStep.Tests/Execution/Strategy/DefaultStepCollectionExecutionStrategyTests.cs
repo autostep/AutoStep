@@ -76,7 +76,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ctxt.Step.Should().Be(stepCollection.Steps[ranSteps]);
                 ctxt.Variables.Should().Be(variables);
                 varSet.Should().Be(variables);
-                
+
                 ranSteps++;
 
                 if (ctxt.Step.Type == StepType.Then)
@@ -140,7 +140,7 @@ namespace AutoStep.Tests.Execution.Strategy
             owningContext.FailException.InnerException.Should().BeOfType<NullReferenceException>();
             owningContext.FailingStep.Should().Be(stepCollection.Steps[1]);
         }
-               
+
         private async ValueTask DoTest(
             IStepCollectionInfo stepCollection,
             int executionManagerInvokes,
@@ -168,7 +168,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             var threadContext = new ThreadContext(1);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            
+
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var stepExecuteStrategy = new MyStepExecutionStrategy(stepCallback);
 
@@ -188,7 +188,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep), 
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
 
             if(owningContext.FailException != null)
@@ -205,7 +205,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 this.stepCallback = stepCallback;
             }
-            
+
             public ValueTask ExecuteStep(IServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 stepScope.Should().NotBeNull();
@@ -256,7 +256,7 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-            
+
             public  ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
             {
                 throw new NotImplementedException();
@@ -286,7 +286,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
                 callAfter(ctxt);
             }
-
         }
     }
 }

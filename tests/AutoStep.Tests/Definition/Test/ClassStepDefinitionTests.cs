@@ -56,6 +56,5 @@ namespace AutoStep.Tests.Definition
                 ClickCount++;
             }
         }
-
     }
 }

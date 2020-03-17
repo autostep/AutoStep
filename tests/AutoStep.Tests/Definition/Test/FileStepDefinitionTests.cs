@@ -36,6 +36,5 @@ namespace AutoStep.Tests.Definition
 
             originalDef.IsSameDefinition(otherDef).Should().BeTrue();
         }
-
     }
 }

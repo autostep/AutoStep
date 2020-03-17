@@ -65,7 +65,7 @@ namespace AutoStep.Benchmarks
             // Pre-load the matching tree with a lot of definitions.
             // Seed the random so we always get the same set.
             var seededRandom = new Random(702561960);
-            
+
             for(int idx = 0; idx < SizeOfTree; idx++)
             {
                 // Determine the number of parts in the statement.
@@ -75,7 +75,7 @@ namespace AutoStep.Benchmarks
                 for(int partIdx = 0; partIdx < parts; partIdx++)
                 {
                     var isArgument = seededRandom.Next(0, 1) == 1;
-                    
+
                     if(isArgument)
                     {
                         stepDef.AddPart(new ArgumentPart());
@@ -138,7 +138,7 @@ namespace AutoStep.Benchmarks
         private StepReferenceElement CreateSimpleRef(StepType type, string text)
         {
             var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-            
+
             foreach (var item in text.Split(' '))
             {
                 refBuilder.Text(item);
@@ -148,7 +148,7 @@ namespace AutoStep.Benchmarks
 
             return refBuilder.Built;
         }
-        
+
         private class TestDef : StepDefinition
         {
             private readonly string stepId;

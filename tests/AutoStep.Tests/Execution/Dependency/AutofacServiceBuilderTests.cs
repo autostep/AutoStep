@@ -181,7 +181,7 @@ namespace AutoStep.Tests.Execution.Dependency
             }
         }
 
-        private class TestService 
+        private class TestService
         {
             public TestService()
             {

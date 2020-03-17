@@ -65,7 +65,7 @@ namespace AutoStep.Tests.Language.Interaction
                     .WordPart("clicked", 8)
                     .WordPart("on", 16)
                     .WordPart("the", 19)
-                    .Argument("{name}", "name", 23)                    
+                    .Argument("{name}", "name", 23)
                     .ComponentMatch(30)
                     .Expression(e => e
                         .Call("locateNamed", 8, 1, 8, 1, m => m.Variable("name", 1))
@@ -119,7 +119,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             match.IsExact.Should().BeTrue();
         }
-        
+
         [Fact]
         public void ComponentSteps()
         {
@@ -132,7 +132,7 @@ namespace AutoStep.Tests.Language.Interaction
             // Create an example file.
             var file = new InteractionFileBuilder();
             file.Component("button", 1, 1, c => c
-                .StepDefinition(StepType.Given, "I have done", 2, 1, s => s 
+                .StepDefinition(StepType.Given, "I have done", 2, 1, s => s
                     .WordPart("I", 1)
                     .WordPart("have", 3)
                     .WordPart("done", 8)
@@ -217,7 +217,7 @@ namespace AutoStep.Tests.Language.Interaction
             foundAnotherMethod.Should().BeOfType<FileDefinedInteractionMethod>()
                                        .Subject.MethodDefinition.Calls[0].MethodName.Should().Be("click");
         }
-        
+
         [Fact]
         public void CanInheritFromADifferentControl()
         {

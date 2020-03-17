@@ -43,7 +43,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ctxt.TestThreadId.Should().Be(1);
                 beforeThread++;
             }, c => afterThread++);
-            
+
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var featureStrategy = new MyFeatureStrategy();
 
@@ -192,7 +192,6 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-
         private class MyEventHandler : IEventHandler
         {
             private readonly Action<ThreadContext> callBefore;
@@ -260,7 +259,6 @@ namespace AutoStep.Tests.Execution.Strategy
             {
                 throw new NotImplementedException();
             }
-
         }
     }
 }

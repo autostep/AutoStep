@@ -11,13 +11,13 @@ namespace AutoStep.Tests.Builders
         public CellBuilder(string body, int line, int start, int end)
         {
             Built = new TableCellElement
-            {   
+            {
                 Text = body,
                 SourceLine = line,
                 StartColumn = start,
-                EndColumn = end, 
+                EndColumn = end,
                 EndLine = line
-            };            
+            };
         }
 
         public CellBuilder Text(string text)

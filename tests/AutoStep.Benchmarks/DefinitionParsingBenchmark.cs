@@ -13,7 +13,7 @@ namespace AutoStep.Benchmarks
         {
             compiler = new TestCompiler();
         }
-        
+
         [Benchmark]
         public void NoArguments()
         {

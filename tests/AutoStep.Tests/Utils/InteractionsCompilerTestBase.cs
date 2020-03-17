@@ -97,7 +97,7 @@ namespace AutoStep.Tests.Utils
         }
 
         protected async Task CompileAndAssertSuccess(string content, Action<InteractionFileBuilder> cfg = null)
-        {   
+        {
             var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics);
             var source = new StringContentSource(content);
 
@@ -130,7 +130,7 @@ namespace AutoStep.Tests.Utils
                     .AllowingInfiniteRecursion()
                     .IncludingAllRuntimeProperties()
                     .ComparingByMembers<TraitNode>()
-                ); 
+                );
             }
             catch
             {

@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Language.Interaction
             config.AddMethods<MethodsClass>();
 
             config.RootMethodTable.TryGetMethod("myMethod", out var _).Should().BeTrue();
-            config.RootMethodTable.TryGetMethod("myProtectedMethod", out var _).Should().BeFalse();            
+            config.RootMethodTable.TryGetMethod("myProtectedMethod", out var _).Should().BeFalse();
         }
 
         [Fact]
