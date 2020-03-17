@@ -95,7 +95,7 @@ namespace ExtensionMethodsGenerator
 
             classDecl.Attributes = MemberAttributes.Public | MemberAttributes.Static;
 
-            /// Add a summary comment
+            // Add a summary comment
             AddDocComments(classDecl.Comments,
                 "<summary>",
                 "Defines extension methods for registering callback variants.",
@@ -121,7 +121,7 @@ namespace ExtensionMethodsGenerator
 
             classDecl.Attributes = MemberAttributes.Public | MemberAttributes.Static;
 
-            /// Add a summary comment
+            // Add a summary comment
             AddDocComments(classDecl.Comments,
                 "<summary>",
                 "Defines extension methods for registering interaction methods.",
