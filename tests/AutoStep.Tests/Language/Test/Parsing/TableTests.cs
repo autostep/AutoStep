@@ -199,7 +199,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                         Given this step has a table:
                             | heading1         |
                             | 123              |
-                            | 123.50
+                            | 123.50           
                             | £123.50          |
                             | :interpolated    |
                             | text             |
@@ -261,7 +261,7 @@ namespace AutoStep.Tests.Language.Test.Parsing
                         Given this step has a table:
                             | heading1         |
                             | 123              |
-                            | 123.50
+                            | 123.50           
                             | £123.50
                             | :interpolated    |
                             | text             |
