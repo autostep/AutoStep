@@ -117,7 +117,7 @@ namespace AutoStep.Tests.Utils
             }
         }
 
-        protected void AssertElementComparison(BuiltElement expected, BuiltElement actual, bool includeStatementParts)
+        protected void AssertElementComparison(BuiltElement expected, BuiltElement? actual, bool includeStatementParts)
         {
             Assert.NotNull(actual);
 

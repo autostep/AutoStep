@@ -27,9 +27,9 @@ namespace AutoStep.Tests.Definition
 
             Action<IServiceScope> callback = sc => { };
 
-            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
-            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             delDefinition1.IsSameDefinition(delDefinition2).Should().BeTrue();
         }
@@ -43,9 +43,9 @@ namespace AutoStep.Tests.Definition
             Action<IServiceScope> callback = sc => { };
             Action<IServiceScope> callback2 = sc => { };
 
-            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
-            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback2.Target, callback2.Method, StepType.Given, "I test");
+            var delDefinition2 = new DelegateBackedStepDefinition(source.Object, callback2.Target!, callback2.Method, StepType.Given, "I test");
 
             delDefinition1.IsSameDefinition(delDefinition2).Should().BeFalse();
         }
@@ -63,7 +63,7 @@ namespace AutoStep.Tests.Definition
                 callbackInvoked = true;
             };
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
@@ -88,7 +88,7 @@ namespace AutoStep.Tests.Definition
                 callbackInvoked = true;
             };
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
@@ -113,7 +113,7 @@ namespace AutoStep.Tests.Definition
                 return default;
             };
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
@@ -143,7 +143,7 @@ namespace AutoStep.Tests.Definition
 
             step.FreezeTokens();
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I {arg1}");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I {arg1}");
 
             step.Bind(new StepReferenceBinding(delDefinition, new[] {
                 new ArgumentBinding(new ArgumentPart("{arg1}", "arg1", ArgumentType.Text),
@@ -171,7 +171,7 @@ namespace AutoStep.Tests.Definition
 
             step.FreezeTokens();
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I {arg1}");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I {arg1}");
 
             step.Bind(new StepReferenceBinding(delDefinition, new[] {
                 new ArgumentBinding(new ArgumentPart("{arg1}", "arg1", ArgumentType.Text),
@@ -198,7 +198,7 @@ namespace AutoStep.Tests.Definition
                 callbackInvoked = true;
             };
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();
@@ -220,7 +220,7 @@ namespace AutoStep.Tests.Definition
                 throw new InvalidOperationException();
             };
 
-            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target, callback.Method, StepType.Given, "I test");
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
             var stepRefInfo = new StepReferenceElement();
             stepRefInfo.FreezeTokens();

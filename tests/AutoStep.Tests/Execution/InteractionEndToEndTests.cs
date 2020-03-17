@@ -343,18 +343,18 @@ namespace AutoStep.Tests.Execution
 
             public override int ArgumentCount => 2;
 
-            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments)
+            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
             {
                 // Get the chain value, and update the variables with a name variable.
-                var propName = arguments[0].ToString();
-                var varName = arguments[1].ToString();
+                var propName = arguments[0]!.ToString();
+                var varName = arguments[1]!.ToString();
 
                 // Get the first chain value.
                 var first = (context.ChainValue as IEnumerable<TestElement>).First();
 
                 if(propName == "for")
                 {
-                    context.Variables.Set(varName, first.For);
+                    context.Variables.Set(varName!, first.For);
                 }
 
                 return default;
