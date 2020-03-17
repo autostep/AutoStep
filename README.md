@@ -6,6 +6,7 @@ AutoStep is a new compiler and runner for Gherkin-style BDD tests, with some ext
 Unlike some existing BDD tools, there is no test code generation or separate code compilation process. The tests compile and execute directly inside AutoStep.
 
 On top of the normal Gherkin test files, AutoStep provides a compiled language for defining how a user interface test might interact with your UI, to allow you to
+express your application's UI behaviour and components without writing code.
 
 This repository contains the core .NET library that provides compilation and execution behaviour.
 
