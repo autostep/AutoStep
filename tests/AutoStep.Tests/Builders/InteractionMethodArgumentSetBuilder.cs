@@ -5,9 +5,8 @@ namespace AutoStep.Tests.Builders
 {
     public class InteractionMethodArgumentSetBuilder : BaseBuilder<MethodCallElement>
     {
-        public InteractionMethodArgumentSetBuilder(MethodCallElement methodCall)
+        public InteractionMethodArgumentSetBuilder(MethodCallElement methodCall) : base(methodCall)
         {
-            Built = methodCall;
         }
 
         public InteractionMethodArgumentSetBuilder String(string content, int startColumn)

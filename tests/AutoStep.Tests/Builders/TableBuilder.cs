@@ -5,13 +5,13 @@ namespace AutoStep.Tests.Builders
 {
     public class TableBuilder : BaseBuilder<TableElement>
     {
-        public TableBuilder(int line, int column)
-        {
-            Built = new TableElement
+        public TableBuilder(int line, int column) : base(
+            new TableElement
             {
                 SourceLine = line,
                 StartColumn = column
-            };
+            })
+        {
         }
 
         public TableBuilder Headers(int lineNo, int column, params (string headerName, int startColumn, int endColumn)[] headers)

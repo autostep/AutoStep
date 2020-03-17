@@ -7,7 +7,12 @@
 
     public class BaseBuilder<TBuiltComponent> : IBuilder<TBuiltComponent>
     {
-        public TBuiltComponent Built { get; set; }
+        public TBuiltComponent Built { get; }
+
+        public BaseBuilder(TBuiltComponent built)
+        {
+            Built = built;
+        }
 
         public TBuiltComponent GetBuilt()
         {

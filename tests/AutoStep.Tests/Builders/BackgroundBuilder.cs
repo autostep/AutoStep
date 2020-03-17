@@ -4,13 +4,13 @@ namespace AutoStep.Tests.Builders
 {
     public class BackgroundBuilder : BaseBuilder<BackgroundElement>, IStepCollectionBuilder<BackgroundElement>
     {
-        public BackgroundBuilder(int line, int column)
+        public BackgroundBuilder(int line, int column) :
+            base(new BackgroundElement
         {
-            Built = new BackgroundElement
-            {
-                SourceLine = line,
-                StartColumn = column
-            };
+            SourceLine = line,
+            StartColumn = column
+        })
+        {
         }
     }
 }

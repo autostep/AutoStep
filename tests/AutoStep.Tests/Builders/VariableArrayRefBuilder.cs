@@ -5,9 +5,8 @@ namespace AutoStep.Tests.Builders
 {
     public class VariableArrayRefBuilder : BaseBuilder<VariableArrayRefMethodArgument>
     {
-        public VariableArrayRefBuilder(VariableArrayRefMethodArgument arrayRefArg)
+        public VariableArrayRefBuilder(VariableArrayRefMethodArgument arrayRefArg) : base(arrayRefArg)
         {
-            Built = arrayRefArg;
         }
 
         public void String(string content, int startColumn)

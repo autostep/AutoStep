@@ -4,14 +4,14 @@ namespace AutoStep.Tests.Builders
 {
     public class ScenarioBuilder : BaseBuilder<ScenarioElement>, IStepCollectionBuilder<ScenarioElement>
     {
-        public ScenarioBuilder(string name, int line, int column)
+        public ScenarioBuilder(string name, int line, int column) : base(
+            new ScenarioElement
         {
-            Built = new ScenarioElement
-            {
-                SourceLine = line,
-                StartColumn = column,
-                Name = name
-            };
+            SourceLine = line,
+            StartColumn = column,
+            Name = name
+        })
+        {
         }
 
         public ScenarioBuilder Description(string description)

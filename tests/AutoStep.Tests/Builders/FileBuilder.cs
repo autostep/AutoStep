@@ -6,9 +6,8 @@ namespace AutoStep.Tests.Builders
 {
     public class FileBuilder : BaseBuilder<FileElement>
     {
-        public FileBuilder()
+        public FileBuilder() : base(new FileElement())
         {
-            Built = new FileElement();
         }
 
         public FileBuilder Feature(string featureName, int line, int column, Action<FeatureBuilder>? cfg = null)

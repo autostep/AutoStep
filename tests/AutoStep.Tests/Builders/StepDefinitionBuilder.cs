@@ -5,15 +5,15 @@ namespace AutoStep.Tests.Builders
 {
     public class StepDefinitionBuilder : BaseBuilder<StepDefinitionElement>, IStepCollectionBuilder<StepDefinitionElement>
     {
-        public StepDefinitionBuilder(StepType type, string declaration, int line, int column)
-        {
-            Built = new StepDefinitionElement
+        public StepDefinitionBuilder(StepType type, string declaration, int line, int column) :
+            base(new StepDefinitionElement
             {
                 SourceLine = line,
                 StartColumn = column,
                 Type = type,
                 Declaration = declaration
-            };
+            })
+        {
         }
 
         public StepDefinitionBuilder Description(string description)

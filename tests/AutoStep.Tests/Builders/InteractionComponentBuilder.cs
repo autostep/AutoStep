@@ -4,13 +4,13 @@ namespace AutoStep.Tests.Builders
 {
     public class InteractionComponentBuilder : BaseBuilder<ComponentDefinitionElement>, IInteractionEntityBuilder<ComponentDefinitionElement>
     {
-        public InteractionComponentBuilder(string name, int line, int column)
-        {
-            Built = new ComponentDefinitionElement(name)
+        public InteractionComponentBuilder(string name, int line, int column) :
+            base(new ComponentDefinitionElement(name)
             {
                 SourceLine = line,
                 StartColumn = column
-            };
+            })
+        {
         }
 
         public InteractionComponentBuilder Name(string name)
