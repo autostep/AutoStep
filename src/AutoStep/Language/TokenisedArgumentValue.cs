@@ -12,7 +12,7 @@ namespace AutoStep.Language
         /// </summary>
         /// <param name="matchedTokens">The set of matched tokens.</param>
         /// <param name="startExclusive">Indicates whether the actual value of the argument is exclusive of the first token.</param>
-        /// <param name="endExclusive">Indicates whether the actual value of the argument is exclusive of the klast token.</param>
+        /// <param name="endExclusive">Indicates whether the actual value of the argument is exclusive of the last token.</param>
         internal TokenisedArgumentValue(StepToken[] matchedTokens, bool startExclusive, bool endExclusive)
         {
             MatchedTokens = matchedTokens;

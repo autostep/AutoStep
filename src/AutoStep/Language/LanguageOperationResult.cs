@@ -21,7 +21,7 @@ namespace AutoStep.Language
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageOperationResult"/> class.
         /// </summary>
-        /// <param name="success">Indicates whether the operation was a sucess.</param>
+        /// <param name="success">Indicates whether the operation was a success.</param>
         /// <param name="messages">The set of messages.</param>
         public LanguageOperationResult(bool success, IEnumerable<LanguageOperationMessage> messages)
         {

@@ -55,7 +55,7 @@ namespace AutoStep.Execution.Strategy
                         }
                     }
 
-                    // Any errors will be udated on the scenario context.
+                    // Any errors will be updated on the scenario context.
                     await collectionExecutor.Execute(
                             scenarioScope,
                             scenarioContext,

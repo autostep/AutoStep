@@ -16,7 +16,7 @@
         Warning,
 
         /// <summary>
-        /// Error level message, prevents succesful compilation.
+        /// Error level message, prevents successful compilation.
         /// </summary>
         Error,
     }
