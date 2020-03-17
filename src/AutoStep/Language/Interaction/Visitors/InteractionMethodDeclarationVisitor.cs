@@ -4,10 +4,11 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.StepTokens;
+using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
-    using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
+    using static AutoStepInteractionsParser;
 
     /// <summary>
     /// Base class for any section of the parse tree that visits a method call chain (in-file method definitions and steps).

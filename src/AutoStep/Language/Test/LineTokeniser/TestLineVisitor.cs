@@ -9,7 +9,7 @@ using AutoStep.Language.Test.Visitors;
 
 namespace AutoStep.Language.Test.LineTokeniser
 {
-    using static AutoStep.Language.Test.Parser.AutoStepParser;
+    using static AutoStepParser;
 
     /// <summary>
     /// Provides a visitor for handling single-line tokenisation.
