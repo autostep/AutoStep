@@ -2,10 +2,11 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
+using AutoStep.Language.Interaction.Parser;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
-    using static AutoStep.Language.Interaction.Parser.AutoStepInteractionsParser;
+    using static AutoStepInteractionsParser;
 
     /// <summary>
     /// Base class for visitors that generate interaction definition elements.
