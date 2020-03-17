@@ -96,14 +96,7 @@ namespace AutoStep.Language.Interaction
 
             // Reference the steps set if there are any (note this takes a reference to avoid duplication);
             // a subsequent merge can optionally replace this with a copy.
-            if (baseData.Steps is object)
-            {
-                Steps = baseData.Steps;
-            }
-            else
-            {
-                Steps = null;
-            }
+            Steps = baseData.Steps ?? null;
 
             // Traits are a direct overwrite.
             Traits = baseData.Traits;

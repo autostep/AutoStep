@@ -14,10 +14,7 @@ namespace AutoStep.Tests.Builders
         {
             var traitBuilder = new InteractionTraitBuilder(fullName, line, column);
 
-            if(traitCfg is object)
-            {
-                traitCfg(traitBuilder);
-            }
+            traitCfg?.Invoke(traitBuilder);
 
             Built.TraitGraph.AddOrExtendTrait(traitBuilder.Built);
 
@@ -28,10 +25,7 @@ namespace AutoStep.Tests.Builders
         {
             var componentBuilder = new InteractionComponentBuilder(name, line, column);
 
-            if(componentCfg is object)
-            {
-                componentCfg(componentBuilder);
-            }
+            componentCfg?.Invoke(componentBuilder);
 
             Built.Components.Add(componentBuilder.Built);
 
