@@ -7,7 +7,7 @@ namespace AutoStep.Benchmarks
 {
     public class FullFileBenchmark
     {
-        private string fileContent;
+        private string fileContent = null!;
 
         [GlobalSetup]
         public void Setup()

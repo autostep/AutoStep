@@ -6,14 +6,14 @@ namespace AutoStep.Benchmarks
 {
     public class DefinitionParsingBenchmark
     {
-        private TestCompiler compiler;
+        private TestCompiler compiler = null!;
 
         [GlobalSetup]
         public void Setup()
         {
             compiler = new TestCompiler();
         }
-        
+
         [Benchmark]
         public void NoArguments()
         {

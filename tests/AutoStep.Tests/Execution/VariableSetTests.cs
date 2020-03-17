@@ -36,7 +36,6 @@ namespace AutoStep.Tests.Execution
             variableSet.Set("variable1", "value2");
 
             variableSet.Get("variable1").Should().Be("value2");
-
         }
 
         [Fact]

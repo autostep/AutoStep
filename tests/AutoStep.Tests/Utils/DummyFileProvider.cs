@@ -10,10 +10,6 @@ namespace AutoStep.Tests.Utils
     {
         private readonly DummyFileInfo fileInfo;
 
-        public DummyFileProvider()
-        {
-        }
-
         public DummyFileProvider(string fileContent, DateTime fileLastModifyTime)
         {
             fileInfo = new DummyFileInfo(fileContent, fileLastModifyTime);

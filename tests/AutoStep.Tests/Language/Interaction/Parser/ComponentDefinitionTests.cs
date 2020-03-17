@@ -16,9 +16,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task CanDefineComponent()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     traits: clickable, editable, displayable
 
                     locateNamed(name): select('label') -> withName(name)
@@ -41,7 +41,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task NoComponentNameError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component:
             ";
 
@@ -52,7 +52,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task CanDefineComponentWithComments()
         {
-            const string Test = @"                
+            const string Test = @"
                 # comment
                 Component: button
                     ## doc comment
@@ -60,10 +60,10 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
                     traits: clickable,
                             # comment
-                            editable, 
+                            editable,
                             displayable # comment
 
-                    locateNamed(name): select('label') 
+                    locateNamed(name): select('label')
                         # comment
                         -> withName(name)
             ";
@@ -85,9 +85,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentCanBeBasedOnAnother()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     inherits: button
 
                     locateNamed(name): select('label') -> withName(name)
@@ -108,9 +108,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentCanDefineSteps()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     inherits: button
 
                     Step: Given I have clicked on {name}
@@ -145,9 +145,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentBlankInheritsError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     inherits:
 
                     Step: Given I have clicked on {name}
@@ -162,10 +162,10 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentBlankStepError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
-                    Step: 
+
+                    Step:
                         select(""btn[text='<name>']"")
                         -> click()
             ";
@@ -178,9 +178,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentMissingMethodParensError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method
             ";
 
@@ -191,9 +191,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentMultipleRandomNamesError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     not a valid set
             ";
 
@@ -208,9 +208,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task ComponentJunkContentError()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     name: 'abc'
 
                     <<!!3214FFF-_ @@@!

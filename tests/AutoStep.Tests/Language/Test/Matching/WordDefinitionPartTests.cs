@@ -109,7 +109,6 @@ namespace AutoStep.Tests.Language.Test.Matching
             result.RemainingTokens.Length.Should().Be(0);
         }
 
-
         [Fact]
         public void MatchesAllTokenTypes()
         {

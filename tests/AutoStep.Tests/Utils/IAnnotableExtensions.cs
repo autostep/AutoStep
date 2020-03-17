@@ -42,6 +42,4 @@ namespace AutoStep.Tests.Utils
             return builder;
         }
     }
-
-
 }

@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder> cfg = null)
+        public FeatureBuilder Scenario(string name, int line, int column, Action<ScenarioBuilder>? cfg = null)
         {
             var scenarioBuilder = new ScenarioBuilder(name, line, column);
 
@@ -49,7 +49,7 @@ namespace AutoStep.Tests.Builders
             return this;
         }
 
-        public FeatureBuilder ScenarioOutline(string name, int line, int column, Action<ScenarioOutlineBuilder> cfg = null)
+        public FeatureBuilder ScenarioOutline(string name, int line, int column, Action<ScenarioOutlineBuilder>? cfg = null)
         {
             var scenarioOutlineBuilder = new ScenarioOutlineBuilder(name, line, column);
 
@@ -60,6 +60,4 @@ namespace AutoStep.Tests.Builders
             return this;
         }
     }
-
-
 }

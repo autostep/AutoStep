@@ -47,7 +47,7 @@ namespace AutoStep.Tests.Definition
         {
             var assemblySource = new AssemblyStepDefinitionSource(typeof(BasicSteps).Assembly, LogFactory);
 
-            assemblySource.Invoking(a => a.ConfigureServices(null, new AutoStep.Execution.RunConfiguration())).Should().Throw<ArgumentNullException>();
+            assemblySource.Invoking(a => a.ConfigureServices(null!, new AutoStep.Execution.RunConfiguration())).Should().Throw<ArgumentNullException>();
         }
     }
 }

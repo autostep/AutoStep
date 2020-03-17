@@ -28,13 +28,13 @@ namespace AutoStep.Tests.Execution
             const string InteractionsFile =
             @"
                 Trait: named
-                    
+
                     locateNamed(name): needs-defining
 
                 Trait: clickable + named
 
                     Step: Given I have clicked the {name} $component$
-                        locateNamed(name) 
+                        locateNamed(name)
                           -> click()
 
                 Component: button
@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -75,7 +75,7 @@ namespace AutoStep.Tests.Execution
                 ctxt.ChainValue.Should().Be("element");
                 clickCalled = true;
             });
-                        
+
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
             compileResult.Messages.Should().BeEmpty();
@@ -98,7 +98,7 @@ namespace AutoStep.Tests.Execution
             const string InteractionsFile =
             @"
                 Trait: named
-                    
+
                     locateNamed(name): needs-defining
 
                     Step: Then the {name} $component$ should exist
@@ -126,7 +126,7 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
@@ -147,10 +147,10 @@ namespace AutoStep.Tests.Execution
 
             var testElements = new[]
             {
-                new TestElement { Type = "label", Text = "Name", For = "name" },
-                new TestElement { Type = "label", Text = "Age", For = "age" },
-                new TestElement { Type = "input", Id = "name" },
-                new TestElement { Type = "input", Id = "age" }
+                new TestElement("label") { Text = "Name", For = "name" },
+                new TestElement("label") { Text = "Age", For = "age" },
+                new TestElement("input") { Id = "name" },
+                new TestElement("input") { Id = "age" }
             };
 
             project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
@@ -244,14 +244,14 @@ namespace AutoStep.Tests.Execution
 
             // Compile a file.
             const string TestFile =
-            @"                
+            @"
               Feature: My Feature
 
                 Scenario: My Scenario
 
                     Given I have clicked the Name field
                       And I have clicked the Age text box
-                      
+
                     Then the Name field should exist
                      And the Age text box should exist
             ";
@@ -307,13 +307,18 @@ namespace AutoStep.Tests.Execution
 
         private class TestElement
         {
-            public string Type { get; set; }
+            public TestElement(string type)
+            {
+                Type = type;
+            }
 
-            public string For { get; set;  }
+            public string Type { get; }
 
-            public string Id { get; set; }
+            public string? For { get; set;  }
 
-            public string Text { get; set; }
+            public string? Id { get; set; }
+
+            public string? Text { get; set; }
         }
 
         private class AttributeToVariableMethod : InteractionMethod
@@ -343,18 +348,18 @@ namespace AutoStep.Tests.Execution
 
             public override int ArgumentCount => 2;
 
-            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object[] arguments)
+            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
             {
                 // Get the chain value, and update the variables with a name variable.
-                var propName = arguments[0].ToString();
-                var varName = arguments[1].ToString();
+                var propName = arguments[0]!.ToString();
+                var varName = arguments[1]!.ToString();
 
                 // Get the first chain value.
                 var first = (context.ChainValue as IEnumerable<TestElement>).First();
 
                 if(propName == "for")
                 {
-                    context.Variables.Set(varName, first.For);
+                    context.Variables.Set(varName!, first.For);
                 }
 
                 return default;
