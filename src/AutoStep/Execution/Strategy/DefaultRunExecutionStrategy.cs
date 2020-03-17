@@ -22,7 +22,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="runContext">The run context.</param>
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        public async Task Execute(IServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet)
+        public Task Execute(IServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet)
         {
             runScope = runScope.ThrowIfNull(nameof(runScope));
             runContext = runContext.ThrowIfNull(nameof(runContext));
@@ -61,7 +61,7 @@ namespace AutoStep.Execution.Strategy
             }
 
             // Wait for test threads to finish.
-            await Task.WhenAll(parallelTasks).ConfigureAwait(false);
+            return Task.WhenAll(parallelTasks);
         }
 
         private async Task TestThreadFeatureParallel(IServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature)
