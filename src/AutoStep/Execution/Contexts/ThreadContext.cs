@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using AutoStep.Definitions;
-
-namespace AutoStep.Execution.Contexts
+﻿namespace AutoStep.Execution.Contexts
 {
     /// <summary>
     /// The context type for a single thread of test execution.

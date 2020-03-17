@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Tests.Builders;
 using FluentAssertions;
-using Moq;
 using Xunit;
 
 namespace AutoStep.Tests.Language.Interaction

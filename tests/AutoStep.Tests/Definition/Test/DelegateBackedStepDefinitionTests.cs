@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
-using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;

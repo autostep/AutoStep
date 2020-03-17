@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
-using AutoStep.Tests.Execution.Dependency;
 using FluentAssertions;
 using Moq;
 using Xunit;

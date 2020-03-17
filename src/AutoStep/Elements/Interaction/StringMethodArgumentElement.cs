@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
+﻿using AutoStep.Language;
 
 namespace AutoStep.Elements.Interaction
 {

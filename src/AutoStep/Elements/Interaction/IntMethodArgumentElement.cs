@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoStep.Language;
-
-namespace AutoStep.Elements.Interaction
+﻿namespace AutoStep.Elements.Interaction
 {
     /// <summary>
     /// Represents a literal integer method argument.
