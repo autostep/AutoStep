@@ -118,7 +118,7 @@ namespace AutoStep.Benchmarks
         [Benchmark]
         public void LookupKnownStep()
         {
-            var matches = tree.Match(knownStepRef, true, out var partsMatched);
+            var matches = tree.Match(knownStepRef, true, out _);
 
             if(!matches.First!.Value.IsExact)
             {

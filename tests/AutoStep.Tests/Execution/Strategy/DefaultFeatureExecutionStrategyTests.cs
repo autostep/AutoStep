@@ -135,13 +135,12 @@ namespace AutoStep.Tests.Execution.Strategy
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             var beforeFeat = 0;
             var afterFeat = 0;
-            var eventHandler = new MyEventHandler((FeatureContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 ctxt.Feature.Should().Be(feature);
                 beforeFeat++;
             }, c => afterFeat++);
 
-            var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var scenarioStrategy = new MyScenarioStrategy();
 
             var builder = new AutofacServiceBuilder();

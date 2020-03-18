@@ -109,7 +109,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             var stepRef = CreateSimpleRef(StepType.Given, "Not going to match");
 
-            var list = tree.Match(stepRef, false, out var partsMatched);
+            var list = tree.Match(stepRef, false, out _);
 
             list.Should().HaveCount(0);
         }
@@ -287,7 +287,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             var stepRef1 = CreateSimpleRef(StepType.Given, "I click button");
 
-            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+            var result = tree.Match(stepRef1, true, out _).ToList();
 
             result.Should().HaveCount(1);
             result[0].IsExact.Should().BeTrue();
@@ -319,7 +319,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             var stepRef1 = CreateSimpleRef(StepType.Given, "I click button and input");
 
-            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+            var result = tree.Match(stepRef1, true, out _).ToList();
 
             result.Should().HaveCount(0);
         }
@@ -346,7 +346,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             var stepRef1 = CreateSimpleRef(StepType.Given, "I click button and button");
 
-            var result = tree.Match(stepRef1, true, out var partsMatched).ToList();
+            var result = tree.Match(stepRef1, true, out _).ToList();
 
             result.Should().HaveCount(1);
             result[0].IsExact.Should().BeTrue();

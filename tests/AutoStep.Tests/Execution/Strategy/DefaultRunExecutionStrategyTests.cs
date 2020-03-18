@@ -36,13 +36,12 @@ namespace AutoStep.Tests.Execution.Strategy
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             var beforeThread = 0;
             var afterThread = 0;
-            var eventHandler = new MyEventHandler((ThreadContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 ctxt.TestThreadId.Should().Be(1);
                 beforeThread++;
             }, c => afterThread++);
 
-            var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var featureStrategy = new MyFeatureStrategy();
 
             var builder = new AutofacServiceBuilder();
@@ -74,7 +73,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var beforeThread = 0;
             var afterThread = 0;
             var threadBag = new ConcurrentBag<int>();
-            var eventHandler = new MyEventHandler((ThreadContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 Interlocked.Increment(ref beforeThread);
                 threadBag.Add(ctxt.TestThreadId);
@@ -122,7 +121,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var beforeThread = 0;
             var afterThread = 0;
             var threadBag = new ConcurrentBag<int>();
-            var eventHandler = new MyEventHandler((ThreadContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 Interlocked.Increment(ref beforeThread);
                 threadBag.Add(ctxt.TestThreadId);

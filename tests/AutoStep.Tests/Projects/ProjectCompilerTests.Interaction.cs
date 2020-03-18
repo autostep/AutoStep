@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Projects
     public partial class ProjectCompilerTests
     {
         [Fact]
-        public void CompilesNewInteractionFile()
+        public async Task CompilesNewInteractionFile()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = GetProjectCompiler(project, mockInteractionCompiler.Object);
 
-            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var result = await projectCompiler.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -129,13 +129,11 @@ namespace AutoStep.Tests.Projects
 
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(() => changeTime);
 
-            var mockCompiler = new Mock<ITestCompiler>();
             var mockInteractionCompiler = new Mock<IInteractionCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<InteractionsFileCompilerResult>(
                 new InteractionsFileCompilerResult(true, Enumerable.Empty<LanguageOperationMessage>(), new InteractionFileElement())
             ));
-            var mockLinker = new Mock<ILinker>();
 
             var projFile = new ProjectInteractionFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
@@ -146,9 +144,6 @@ namespace AutoStep.Tests.Projects
             await projectCompiler.CompileAsync();
 
             var originalCompilationresult = projFile.LastCompileResult;
-
-            // Change the file timestamp.
-            changeTime = projFile.LastCompileTime.AddMinutes(1);
 
             // Run it again.
             await projectCompiler.CompileAsync();
@@ -184,7 +179,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void AddsIOExceptionCompilerMessageIfIOExceptionThrownInInteractionCompiler()
+        public async Task AddsIOExceptionCompilerMessageIfIOExceptionThrownInInteractionCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -200,7 +195,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
@@ -209,7 +204,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void RebuildingInteractionSetAfterErrorResetsFileMessages()
+        public async Task RebuildingInteractionSetAfterErrorResetsFileMessages()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -235,7 +230,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object, interactionSetBuilder.Object);
 
             // Compile once.
-            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent,
                                                                "", 0, 0);
@@ -247,13 +242,13 @@ namespace AutoStep.Tests.Projects
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.UtcNow.AddHours(1));
 
             // Compile once.
-            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             projFile.LastSetBuildResult!.Messages.Should().BeEmpty();
         }
 
         [Fact]
-        public void AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInInteractionCompiler()
+        public async Task AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInInteractionCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -263,15 +258,13 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IInteractionCompiler>();
             mockCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Throws(new ApplicationException("Unknown Error"));
 
-            var mockLinker = new Mock<ILinker>();
-
             var projFile = new ProjectInteractionFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
@@ -292,7 +285,7 @@ namespace AutoStep.Tests.Projects
             var cancelledToken = new CancellationToken(true);
 
             // Compile once.
-            var overallResult = projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
+            projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
         private ProjectCompiler GetProjectCompiler(Project project, IInteractionCompiler interactionCompiler, IInteractionSetBuilder setBuilder)

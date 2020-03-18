@@ -33,8 +33,6 @@ namespace AutoStep.Tests.Execution.Binding
 
             var scope = new Mock<IServiceScope>(MockBehavior.Strict);
 
-            var binder = new MyCustomBinder<DateTime>();
-
             binderRegistry.RegisterArgumentBinder<MyCustomBinder<DateTime>>(typeof(DateTime));
 
             var foundBinder = binderRegistry.GetBinderForType(scope.Object, typeof(decimal));

@@ -24,8 +24,6 @@ namespace AutoStep.Tests.Execution
         [Fact]
         public void NullProjectArgumentException()
         {
-            var project = new Project();
-
             Action act = () => new TestRun(null!, new RunConfiguration());
 
             act.Should().Throw<ArgumentNullException>();
