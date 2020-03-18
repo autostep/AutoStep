@@ -143,13 +143,16 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             await projectCompiler.CompileAsync();
 
-            var originalCompilationresult = projFile.LastCompileResult;
+            var originalCompilationResult = projFile.LastCompileResult;
+
+            // Change the file timestamp.
+            changeTime = projFile.LastCompileTime.AddMinutes(1);
 
             // Run it again.
             await projectCompiler.CompileAsync();
 
             // Result should have changed.
-            projFile.Should().NotBeSameAs(originalCompilationresult);
+            projFile.LastCompileResult.Should().NotBeSameAs(originalCompilationResult);
         }
 
         [Fact]
