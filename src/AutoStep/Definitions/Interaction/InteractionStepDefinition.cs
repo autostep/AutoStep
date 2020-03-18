@@ -87,12 +87,6 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override object GetSignature()
-        {
-            return base.GetSignature();
-        }
-
-        /// <inheritdoc/>
         public override bool IsSameDefinition(StepDefinition def)
         {
             // A definition is the same if the IDs are the same and it matches all the same components.
