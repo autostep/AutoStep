@@ -89,8 +89,8 @@ namespace AutoStep.Definitions.Test
                 // Returning task directly, we don't need to do anything else with it here.
                 return new ValueTask(taskResult);
             }
-            Method.Invoke(target, args);
 
+            Method.Invoke(target, args);
             return default;
         }
 

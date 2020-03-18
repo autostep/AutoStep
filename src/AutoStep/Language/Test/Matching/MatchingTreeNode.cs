@@ -495,6 +495,7 @@ namespace AutoStep.Language.Test.Matching
                 var matched = matchedTokens[0];
                 return referenceText.Substring(matched.StartIndex, matched.Length);
             }
+
             var start = matchedTokens[0].StartIndex;
             var lastToken = matchedTokens[matchedTokens.Length - 1];
             var length = (lastToken.StartIndex - start) + lastToken.Length;
