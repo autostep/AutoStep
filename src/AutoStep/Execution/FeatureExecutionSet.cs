@@ -111,19 +111,17 @@ namespace AutoStep.Execution
 
                                 return true;
                             }
+
+                            if (example is null)
+                            {
+                                logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedScenario, scen.Name, built.Feature.Name);
+                            }
                             else
                             {
-                                if (example is null)
-                                {
-                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedScenario, scen.Name, built.Feature.Name);
-                                }
-                                else
-                                {
-                                    logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedExample, scen.Name, built.Feature.Name);
-                                }
-
-                                return false;
+                                logger.LogDebug(ExecutionText.FeatureExecutionSet_ExcludedExample, scen.Name, built.Feature.Name);
                             }
+
+                            return false;
                         });
 
                         if (clonedFeature.Scenarios.Count > 0)

@@ -70,10 +70,8 @@ namespace AutoStep.Elements.Parts
                 {
                     return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(0, 1));
                 }
-                else
-                {
-                    startExclusive = true;
-                }
+
+                startExclusive = true;
             }
 
             while (!remainingParts.IsEmpty)
@@ -105,11 +103,9 @@ namespace AutoStep.Elements.Parts
                     endExclusive = true;
                     break;
                 }
-                else
-                {
-                    contentPartsLength++;
-                    remainingParts = remainingParts.Slice(1);
-                }
+
+                contentPartsLength++;
+                remainingParts = remainingParts.Slice(1);
             }
 
             return new StepReferenceMatchResult(matchedPartsCount, true, remainingParts, referenceParts.Slice(0, matchedPartsCount), startExclusive, endExclusive);

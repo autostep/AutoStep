@@ -121,7 +121,8 @@ namespace AutoStep.Language.Interaction
                        // We've reached a 'safe' point.
                        break;
                     }
-                    else if (token.Type == METHOD_STRING_ERRNL)
+
+                    if (token.Type == METHOD_STRING_ERRNL)
                     {
                         // Not safe to recover.
                         throw new InputMismatchException(recognizer);

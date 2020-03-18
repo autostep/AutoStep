@@ -51,10 +51,8 @@ namespace AutoStep.Execution.Dependency
             {
                 return srv;
             }
-            else
-            {
-                throw new DependencyException(ExecutionText.AutofacServiceScope_NotAssignable.FormatWith(serviceType.Name, typeof(TServiceType).Name));
-            }
+
+            throw new DependencyException(ExecutionText.AutofacServiceScope_NotAssignable.FormatWith(serviceType.Name, typeof(TServiceType).Name));
         }
 
         /// <inheritdoc/>

@@ -82,7 +82,8 @@ namespace AutoStep.Definitions.Interaction
             {
                 return (ValueTask)method.Invoke(target, args);
             }
-            else if (typeof(Task).IsAssignableFrom(method.ReturnType))
+
+            if (typeof(Task).IsAssignableFrom(method.ReturnType))
             {
                 // This is an async method.
                 var taskResult = (Task)method.Invoke(target, args);
@@ -90,12 +91,9 @@ namespace AutoStep.Definitions.Interaction
                 // Returning task directly, we don't need to do anything else with it here.
                 return new ValueTask(taskResult);
             }
-            else
-            {
-                method.Invoke(target, args);
 
-                return default;
-            }
+            method.Invoke(target, args);
+            return default;
         }
 
         private object?[] BindArguments(IServiceScope scope, object?[] providedArgs, MethodContext methodContext)

@@ -90,10 +90,8 @@ namespace AutoStep.Language.Interaction.Traits
                     {
                         break;
                     }
-                    else
-                    {
-                        existingNode = existingNode.Next;
-                    }
+
+                    existingNode = existingNode.Next;
                 }
 
                 // Add before the existing node.
