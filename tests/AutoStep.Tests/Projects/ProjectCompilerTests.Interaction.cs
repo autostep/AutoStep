@@ -20,7 +20,7 @@ namespace AutoStep.Tests.Projects
     public partial class ProjectCompilerTests
     {
         [Fact]
-        public void CompilesNewInteractionFile()
+        public async Task CompilesNewInteractionFile()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = GetProjectCompiler(project, mockInteractionCompiler.Object);
 
-            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var result = await projectCompiler.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -184,7 +184,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void AddsIOExceptionCompilerMessageIfIOExceptionThrownInInteractionCompiler()
+        public async Task AddsIOExceptionCompilerMessageIfIOExceptionThrownInInteractionCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -200,7 +200,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
@@ -209,7 +209,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void RebuildingInteractionSetAfterErrorResetsFileMessages()
+        public async Task RebuildingInteractionSetAfterErrorResetsFileMessages()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -235,7 +235,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object, interactionSetBuilder.Object);
 
             // Compile once.
-            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent,
                                                                "", 0, 0);
@@ -247,13 +247,13 @@ namespace AutoStep.Tests.Projects
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(DateTime.UtcNow.AddHours(1));
 
             // Compile once.
-            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             projFile.LastSetBuildResult!.Messages.Should().BeEmpty();
         }
 
         [Fact]
-        public void AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInInteractionCompiler()
+        public async Task AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInInteractionCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -271,7 +271,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
