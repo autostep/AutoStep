@@ -83,10 +83,8 @@ namespace AutoStep.Language.Test.LineTokeniser
                 {
                     return new LineTokeniseResult<LineTokeniserState>(finalState, new LineToken(commentColumn, LineTokenCategory.Comment));
                 }
-                else
-                {
-                    lineTokens.Add(new LineToken(commentColumn, LineTokenCategory.Comment));
-                }
+
+                lineTokens.Add(new LineToken(commentColumn, LineTokenCategory.Comment));
             }
 
             if (lineTokens is null)

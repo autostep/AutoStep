@@ -80,7 +80,8 @@ namespace AutoStep.Definitions.Test
             {
                 return (ValueTask)Method.Invoke(target, args);
             }
-            else if (typeof(Task).IsAssignableFrom(Method.ReturnType))
+
+            if (typeof(Task).IsAssignableFrom(Method.ReturnType))
             {
                 // This is an async method.
                 var taskResult = (Task)Method.Invoke(target, args);
@@ -88,12 +89,9 @@ namespace AutoStep.Definitions.Test
                 // Returning task directly, we don't need to do anything else with it here.
                 return new ValueTask(taskResult);
             }
-            else
-            {
-                Method.Invoke(target, args);
 
-                return default;
-            }
+            Method.Invoke(target, args);
+            return default;
         }
 
         /// <summary>

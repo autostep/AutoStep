@@ -103,10 +103,8 @@ namespace AutoStep.Language
             {
                 return $"{SourceName}({StartLineNo},{StartColumn}): {Level} ASC{(int)Code:D5}: {Message}";
             }
-            else
-            {
-                return $"{SourceName}({StartLineNo},{StartColumn},{EndLineNo},{EndColumn}): {Level} ASC{(int)Code:D5}: {Message}";
-            }
+
+            return $"{SourceName}({StartLineNo},{StartColumn},{EndLineNo},{EndColumn}): {Level} ASC{(int)Code:D5}: {Message}";
         }
 
         /// <inheritdoc/>

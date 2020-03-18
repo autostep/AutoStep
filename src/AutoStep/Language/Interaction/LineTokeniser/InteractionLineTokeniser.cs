@@ -149,7 +149,8 @@ namespace AutoStep.Language.Interaction
                 lineToken = default;
                 return false;
             }
-            else if (primary == LineTokenCategory.Comment)
+
+            if (primary == LineTokenCategory.Comment)
             {
                 lineToken = GetCommentToken(token);
             }

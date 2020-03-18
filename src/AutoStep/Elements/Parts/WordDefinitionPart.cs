@@ -67,12 +67,10 @@ namespace AutoStep.Elements.Parts
                             // Out of reference parts; suggests a partial match on this part.
                             return new StepReferenceMatchResult(matchedLength, false, currentPartSpan, originalPartSpan.Slice(0, consumedTokens));
                         }
-                        else
-                        {
-                            currentPart = currentPartSpan[0];
-                            consumedTokens++;
-                            refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
-                        }
+
+                        currentPart = currentPartSpan[0];
+                        consumedTokens++;
+                        refTextSpan = referenceText.AsSpan(currentPart.StartIndex, currentPart.Length);
                     }
                     else
                     {
