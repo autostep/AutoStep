@@ -25,15 +25,11 @@ namespace AutoStep.Execution.Contexts
                 {
                     return result;
                 }
-                else
-                {
-                    throw new InvalidOperationException(ExecutionText.TextExecutionContext_NotExpectedType.FormatWith(name, foundValue.GetType().Name));
-                }
+
+                throw new InvalidOperationException(ExecutionText.TextExecutionContext_NotExpectedType.FormatWith(name, foundValue.GetType().Name));
             }
-            else
-            {
-                throw new KeyNotFoundException(ExecutionText.TextExecutionContext_NotFound.FormatWith(name));
-            }
+
+            throw new KeyNotFoundException(ExecutionText.TextExecutionContext_NotFound.FormatWith(name));
         }
 
         /// <summary>
@@ -77,10 +73,8 @@ namespace AutoStep.Execution.Contexts
             {
                 return result;
             }
-            else
-            {
-                throw new InvalidOperationException(ExecutionText.TextExecutionContext_NotExpectedType.FormatWith(name, foundValue.GetType().Name));
-            }
+
+            throw new InvalidOperationException(ExecutionText.TextExecutionContext_NotExpectedType.FormatWith(name, foundValue.GetType().Name));
         }
 
         /// <summary>

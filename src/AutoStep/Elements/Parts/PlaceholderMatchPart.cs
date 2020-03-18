@@ -68,7 +68,8 @@ namespace AutoStep.Elements.Parts
                     bestResult = match;
                     break;
                 }
-                else if (match.Length > bestResult.Length)
+
+                if (match.Length > bestResult.Length)
                 {
                     // Take the better match.
                     bestResult = match;

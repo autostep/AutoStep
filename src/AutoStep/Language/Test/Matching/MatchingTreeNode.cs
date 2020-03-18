@@ -337,145 +337,143 @@ namespace AutoStep.Language.Test.Matching
                 // No match, nothing at this node or below.
                 return false;
             }
-            else
+
+            var addAllRemaining = true;
+            var ignoreExact = false;
+            var addedSomething = false;
+
+            if (matchingPart is PlaceholderMatchPart placeholderPart)
             {
-                var addAllRemaining = true;
-                var ignoreExact = false;
-                var addedSomething = false;
+                var placeholderValue = GetContent(referenceText, match.MatchedTokens);
 
-                if (matchingPart is PlaceholderMatchPart placeholderPart)
+                // A placeholder value needs to be the same for all parts in order to match.
+                // We need to take the matched placeholder and remember it for this search path.
+                if (placeHolderDictionary.TryGetValue(placeholderPart.PlaceholderValueName, out var existingValue))
                 {
-                    var placeholderValue = GetContent(referenceText, match.MatchedTokens);
-
-                    // A placeholder value needs to be the same for all parts in order to match.
-                    // We need to take the matched placeholder and remember it for this search path.
-                    if (placeHolderDictionary.TryGetValue(placeholderPart.PlaceholderValueName, out var existingValue))
+                    // If the existing value does not have the same value, then we do not match, and we will jump out
+                    // (return false).
+                    if (!string.Equals(placeholderValue, existingValue, StringComparison.CurrentCulture))
                     {
-                        // If the existing value does not have the same value, then we do not match, and we will jump out
-                        // (return false).
-                        if (!string.Equals(placeholderValue, existingValue, StringComparison.CurrentCulture))
-                        {
-                            // Different placeholder value; not okay.
-                            // Do not match on this placeholder.
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        placeHolderDictionary.Set(placeholderPart.PlaceholderValueName, placeholderValue);
+                        // Different placeholder value; not okay.
+                        // Do not match on this placeholder.
+                        return false;
                     }
                 }
-
-                // The current match has consumed the entirety of the rest of the reference.
-                if (match.RemainingTokens.IsEmpty)
+                else
                 {
-                    // If this is an exact match, do we have an exact step def for it?
-                    if (match.IsExact && exactMatchNodes is object && exactMatchNodes.Count > 0)
-                    {
-                        ignoreExact = true;
-
-                        foreach (var exact in exactMatchNodes)
-                        {
-                            results.AddFirst(new MatchResult(true, int.MaxValue, exact.Value));
-                        }
-
-                        addedSomething = true;
-                    }
+                    placeHolderDictionary.Set(placeholderPart.PlaceholderValueName, placeholderValue);
                 }
-                else if (children is object)
-                {
-                    // There's no point looking at the children unless this node was an exact match. If it's not an exact match
-                    // then there's no point going further in the tree.
-                    if (match.IsExact)
-                    {
-                        var currentChild = children.First;
-
-                        while (currentChild is object)
-                        {
-                            var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, placeHolderDictionary.Copy(), out var searchDepthSpan);
-
-                            if (childMatched)
-                            {
-                                // A more specific match was found, so don't use any results from higher in the tree.
-                                addAllRemaining = false;
-                                addedSomething = true;
-                                finalSpan = searchDepthSpan;
-                            }
-
-                            currentChild = currentChild.Next;
-                        }
-                    }
-                }
-
-                if (addAllRemaining)
-                {
-                    if (!exactOnly)
-                    {
-                        // Add whatever items we have between left and right definitions.
-                        var currentNode = leftDefinition;
-
-                        // Add every node up until the right-hand side.
-                        while (currentNode != null)
-                        {
-                            if (!ignoreExact || (exactMatchNodes is object && !exactMatchNodes.Contains(currentNode)))
-                            {
-                                addedSomething = true;
-                                results.AddLast(new MatchResult(false, match.Length, currentNode.Value));
-                            }
-
-                            if (currentNode == rightDefinition)
-                            {
-                                currentNode = null;
-                            }
-                            else
-                            {
-                                currentNode = currentNode.Next;
-                            }
-                        }
-                    }
-                }
-
-                if (addedSomething && results.First.Value.IsExact)
-                {
-                    if (matchingPart is ArgumentPart arg)
-                    {
-                        var currentResult = results.First;
-
-                        // Only worry about exact matches (and all the exacts come at the start of the list).
-                        while (currentResult is object && currentResult.Value.IsExact)
-                        {
-                            // When at least one exact match has been added, it means that this node's
-                            // argument binding resulted in a final match.
-                            var exactMatch = currentResult.Value;
-
-                            // Add to the list of 'argument token spans'.
-                            exactMatch.PrependArgumentSet(arg, match);
-
-                            currentResult = currentResult.Next;
-                        }
-                    }
-                    else if (matchingPart is PlaceholderMatchPart placeholder &&
-                             placeHolderDictionary.TryGetValue(placeholder.PlaceholderValueName, out var placeholderValue))
-                    {
-                        var currentResult = results.First;
-
-                        // Only worry about exact matches (and all the exacts come at the start of the list).
-                        while (currentResult is object && currentResult.Value.IsExact)
-                        {
-                            // When at least one exact match has been added, it means that this node's
-                            // placeholder binding resulted in a final match.
-                            var exactMatch = currentResult.Value;
-
-                            // Set the placeholder result in the final item.
-                            exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
-
-                            currentResult = currentResult.Next;
-                        }
-                    }
-                }
-
-                return addedSomething;
             }
+
+            // The current match has consumed the entirety of the rest of the reference.
+            if (match.RemainingTokens.IsEmpty)
+            {
+                // If this is an exact match, do we have an exact step def for it?
+                if (match.IsExact && exactMatchNodes is object && exactMatchNodes.Count > 0)
+                {
+                    ignoreExact = true;
+
+                    foreach (var exact in exactMatchNodes)
+                    {
+                        results.AddFirst(new MatchResult(true, int.MaxValue, exact.Value));
+                    }
+
+                    addedSomething = true;
+                }
+            }
+            else if (children is object)
+            {
+                // There's no point looking at the children unless this node was an exact match. If it's not an exact match
+                // then there's no point going further in the tree.
+                if (match.IsExact)
+                {
+                    var currentChild = children.First;
+
+                    while (currentChild is object)
+                    {
+                        var childMatched = currentChild.Value.SearchMatches(results, referenceText, match.RemainingTokens, exactOnly, placeHolderDictionary.Copy(), out var searchDepthSpan);
+
+                        if (childMatched)
+                        {
+                            // A more specific match was found, so don't use any results from higher in the tree.
+                            addAllRemaining = false;
+                            addedSomething = true;
+                            finalSpan = searchDepthSpan;
+                        }
+
+                        currentChild = currentChild.Next;
+                    }
+                }
+            }
+
+            if (addAllRemaining)
+            {
+                if (!exactOnly)
+                {
+                    // Add whatever items we have between left and right definitions.
+                    var currentNode = leftDefinition;
+
+                    // Add every node up until the right-hand side.
+                    while (currentNode != null)
+                    {
+                        if (!ignoreExact || (exactMatchNodes is object && !exactMatchNodes.Contains(currentNode)))
+                        {
+                            addedSomething = true;
+                            results.AddLast(new MatchResult(false, match.Length, currentNode.Value));
+                        }
+
+                        if (currentNode == rightDefinition)
+                        {
+                            currentNode = null;
+                        }
+                        else
+                        {
+                            currentNode = currentNode.Next;
+                        }
+                    }
+                }
+            }
+
+            if (addedSomething && results.First.Value.IsExact)
+            {
+                if (matchingPart is ArgumentPart arg)
+                {
+                    var currentResult = results.First;
+
+                    // Only worry about exact matches (and all the exacts come at the start of the list).
+                    while (currentResult is object && currentResult.Value.IsExact)
+                    {
+                        // When at least one exact match has been added, it means that this node's
+                        // argument binding resulted in a final match.
+                        var exactMatch = currentResult.Value;
+
+                        // Add to the list of 'argument token spans'.
+                        exactMatch.PrependArgumentSet(arg, match);
+
+                        currentResult = currentResult.Next;
+                    }
+                }
+                else if (matchingPart is PlaceholderMatchPart placeholder &&
+                         placeHolderDictionary.TryGetValue(placeholder.PlaceholderValueName, out var placeholderValue))
+                {
+                    var currentResult = results.First;
+
+                    // Only worry about exact matches (and all the exacts come at the start of the list).
+                    while (currentResult is object && currentResult.Value.IsExact)
+                    {
+                        // When at least one exact match has been added, it means that this node's
+                        // placeholder binding resulted in a final match.
+                        var exactMatch = currentResult.Value;
+
+                        // Set the placeholder result in the final item.
+                        exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
+
+                        currentResult = currentResult.Next;
+                    }
+                }
+            }
+
+            return addedSomething;
         }
 
         /// <summary>
@@ -491,19 +489,18 @@ namespace AutoStep.Language.Test.Matching
             {
                 return string.Empty;
             }
-            else if (matchedTokens.Length == 1)
+
+            if (matchedTokens.Length == 1)
             {
                 var matched = matchedTokens[0];
                 return referenceText.Substring(matched.StartIndex, matched.Length);
             }
-            else
-            {
-                var start = matchedTokens[0].StartIndex;
-                var lastToken = matchedTokens[matchedTokens.Length - 1];
-                var length = (lastToken.StartIndex - start) + lastToken.Length;
 
-                return referenceText.Substring(start, length);
-            }
+            var start = matchedTokens[0].StartIndex;
+            var lastToken = matchedTokens[matchedTokens.Length - 1];
+            var length = (lastToken.StartIndex - start) + lastToken.Length;
+
+            return referenceText.Substring(start, length);
         }
 
         private struct PlaceHolderCopyOnWriteDictionary

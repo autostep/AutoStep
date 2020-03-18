@@ -189,7 +189,8 @@ namespace AutoStep.Language.Interaction
 
                     return true;
                 }
-                else if (Context is MethodCallContext)
+
+                if (Context is MethodCallContext)
                 {
                     ChangeError(CompilerMessageCode.InteractionMethodCallUnterminated);
 

@@ -39,11 +39,9 @@ namespace AutoStep.Language.Test.LineTokeniser
             {
                 return VisitParseTree(parseTree, tokenStream, lastState);
             }
-            else
-            {
-                // null means that the parser really had no idea, so yield an empty token set, still in the previous state.
-                return new LineTokeniseResult<LineTokeniserState>(lastState, Enumerable.Empty<LineToken>());
-            }
+
+            // null means that the parser really had no idea, so yield an empty token set, still in the previous state.
+            return new LineTokeniseResult<LineTokeniserState>(lastState, Enumerable.Empty<LineToken>());
         }
 
         private LineTokeniseResult<LineTokeniserState> VisitParseTree(OnlyLineContext ctxt, CommonTokenStream tokenStream, LineTokeniserState lastState)
