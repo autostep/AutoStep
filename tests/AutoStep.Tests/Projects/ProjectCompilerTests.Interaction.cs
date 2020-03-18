@@ -132,7 +132,7 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<ITestCompiler>();
             var mockInteractionCompiler = new Mock<IInteractionCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<InteractionsFileCompilerResult>(
+            mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(() => new ValueTask<InteractionsFileCompilerResult>(
                 new InteractionsFileCompilerResult(true, Enumerable.Empty<LanguageOperationMessage>(), new InteractionFileElement())
             ));
             var mockLinker = new Mock<ILinker>();
@@ -154,7 +154,7 @@ namespace AutoStep.Tests.Projects
             await projectCompiler.CompileAsync();
 
             // Result should have changed.
-            projFile.Should().NotBeSameAs(originalCompilationresult);
+            projFile.LastCompileResult.Should().NotBeSameAs(originalCompilationresult);
         }
 
         [Fact]
