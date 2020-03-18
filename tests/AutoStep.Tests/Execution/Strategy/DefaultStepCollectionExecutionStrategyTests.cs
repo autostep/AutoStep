@@ -110,7 +110,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var beforeFeat = 0;
             var afterFeat = 0;
-            var eventHandler = new MyEventHandler((StepContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 beforeFeat++;
 
@@ -151,7 +151,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             var beforeFeat = 0;
             var afterFeat = 0;
-            var eventHandler = new MyEventHandler((StepContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 beforeFeat++;
             }, c => afterFeat++);

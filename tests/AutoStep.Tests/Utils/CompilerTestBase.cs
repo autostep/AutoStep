@@ -200,7 +200,7 @@ namespace AutoStep.Tests.Utils
                     .IncludingAllRuntimeProperties()
                     .Using<StepReferenceElement>(ctx =>
                     {
-                        ctx.Subject.Should().BeEquivalentTo(ctx.Expectation, opt => opt.Excluding((IMemberInfo x) => x.RuntimeType == typeSpan));
+                        ctx.Subject.Should().BeEquivalentTo(ctx.Expectation, opt => opt.Excluding(x => x.RuntimeType == typeSpan));
                         if (includeStatementParts)
                         {
                             ctx.Subject.TokenSpan.Length.Should().Be(ctx.Expectation.TokenSpan.Length);
