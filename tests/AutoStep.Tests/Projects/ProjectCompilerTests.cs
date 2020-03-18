@@ -43,7 +43,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void CompilesNewFile()
+        public async Task CompilesNewFile()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var result = await projectCompiler.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -210,7 +210,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void AddsIOExceptionCompilerMessageIfIOExceptionThrownInCompiler()
+        public async Task AddsIOExceptionCompilerMessageIfIOExceptionThrownInCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -229,7 +229,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
@@ -238,7 +238,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInCompiler()
+        public async Task AddsUncategorisedExceptionCompilerMessageIfGeneralExceptionThrownInCompiler()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -257,7 +257,7 @@ namespace AutoStep.Tests.Projects
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            var overallResult = await projectCompiler.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
@@ -284,7 +284,7 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void AddsStepDefinitionSourceForFileWithStepDefinitions()
+        public async Task AddsStepDefinitionSourceForFileWithStepDefinitions()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -313,7 +313,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             projFile.StepDefinitionSource.Should().NotBeNull();
             // Linker was called.
@@ -322,7 +322,7 @@ namespace AutoStep.Tests.Projects
 
         [Fact]
         [Issue("https://github.com/autostep/AutoStep/issues/42")]
-        public void InvokesUpdateStepDefinitionSourceAfterEachRecompile()
+        public async Task InvokesUpdateStepDefinitionSourceAfterEachRecompile()
         {
             var project = new Project();
             var mockSource = new Mock<IContentSource>();
@@ -351,7 +351,7 @@ namespace AutoStep.Tests.Projects
 
             var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             projFile.StepDefinitionSource.Should().NotBeNull();
 
@@ -362,7 +362,7 @@ namespace AutoStep.Tests.Projects
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(projFile.LastCompileTime + TimeSpan.FromSeconds(10));
 
             // Compile again.
-            projectCompiler.CompileAsync().GetAwaiter().GetResult();
+            await projectCompiler.CompileAsync();
 
             // We should have updated the source.
             updatedSourceCount.Should().Be(2);
