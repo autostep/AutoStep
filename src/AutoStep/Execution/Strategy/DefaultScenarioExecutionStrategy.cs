@@ -32,6 +32,10 @@ namespace AutoStep.Execution.Strategy
 
             // Halt before the scenario begins.
             var haltInstruction = await executionManager.CheckforHalt(scenarioScope, scenarioContext, TestThreadState.StartingScenario).ConfigureAwait(false);
+            if (haltInstruction != null)
+            {
+                return;
+            }
 
             try
             {
