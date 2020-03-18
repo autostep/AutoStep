@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             var beforeFeat = 0;
             var afterFeat = 0;
-            var eventHandler = new MyEventHandler((ScenarioContext ctxt) =>
+            var eventHandler = new MyEventHandler(ctxt =>
             {
                 ctxt.Scenario.Should().Be(scenario);
                 beforeFeat++;
