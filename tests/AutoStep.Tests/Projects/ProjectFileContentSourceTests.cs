@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Projects;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
@@ -26,13 +27,14 @@ namespace AutoStep.Tests.Projects
         }
 
         [Fact]
-        public void GetContentAsyncGetsContent()
+        public async Task GetContentAsyncGetsContent()
         {
             var fileProvider = new DummyFileProvider("content", DateTime.Now);
 
             var contentSource = new FileProviderContentSource("/path", fileProvider);
 
-            contentSource.GetContentAsync().GetAwaiter().GetResult().Should().Be("content");
+            var result = await contentSource.GetContentAsync();
+            result.Should().Be("content");
         }
     }
 }
