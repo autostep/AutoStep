@@ -74,7 +74,7 @@ namespace AutoStep.Definitions.Interaction
 
                     var argText = argValue.GetFullText(stepScope, context.Step.Text, variables);
 
-                    initialContext.Variables.Set(Definition.Arguments[argIdx].Name, argText);
+                    initialContext.Variables.Set(Definition!.Arguments[argIdx].Name, argText);
                 }
 
                 await stepDef.InvokeChainAsync(stepScope, initialContext, component.MethodTable);
@@ -84,12 +84,6 @@ namespace AutoStep.Definitions.Interaction
                 // Step should not have bound if there is no component for it.
                 throw new LanguageEngineAssertException();
             }
-        }
-
-        /// <inheritdoc/>
-        public override object GetSignature()
-        {
-            return base.GetSignature();
         }
 
         /// <inheritdoc/>

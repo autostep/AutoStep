@@ -16,8 +16,8 @@ namespace AutoStep.Benchmarks
 {
     public class MatchingTreeBenchmark
     {
-        private MatchingTree tree;
-        private StepReferenceElement knownStepRef;
+        private MatchingTree tree = null!;
+        private StepReferenceElement knownStepRef = null!;
         private readonly string[] words = new[]
         {
             "I",
@@ -65,7 +65,7 @@ namespace AutoStep.Benchmarks
             // Pre-load the matching tree with a lot of definitions.
             // Seed the random so we always get the same set.
             var seededRandom = new Random(702561960);
-            
+
             for(int idx = 0; idx < SizeOfTree; idx++)
             {
                 // Determine the number of parts in the statement.
@@ -75,7 +75,7 @@ namespace AutoStep.Benchmarks
                 for(int partIdx = 0; partIdx < parts; partIdx++)
                 {
                     var isArgument = seededRandom.Next(0, 1) == 1;
-                    
+
                     if(isArgument)
                     {
                         stepDef.AddPart(new ArgumentPart());
@@ -120,7 +120,7 @@ namespace AutoStep.Benchmarks
         {
             var matches = tree.Match(knownStepRef, true, out var partsMatched);
 
-            if(!matches.First.Value.IsExact)
+            if(!matches.First!.Value.IsExact)
             {
                 throw new Exception("That's not right.");
             }
@@ -138,7 +138,7 @@ namespace AutoStep.Benchmarks
         private StepReferenceElement CreateSimpleRef(StepType type, string text)
         {
             var refBuilder = new StepReferenceBuilder(text, type, type, 1, 1);
-            
+
             foreach (var item in text.Split(' '))
             {
                 refBuilder.Text(item);
@@ -148,17 +148,17 @@ namespace AutoStep.Benchmarks
 
             return refBuilder.Built;
         }
-        
+
         private class TestDef : StepDefinition
         {
-            private readonly string stepId;
+            private readonly string? stepId;
 
-            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 Definition = definition;
             }
 
-            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration)
+            public TestDef(string stepId, StepDefinitionElement definition) : base(TestStepDefinitionSource.Blank, definition.Type, definition.Declaration!)
             {
                 this.stepId = stepId;
                 Definition = definition;

@@ -7,7 +7,6 @@ namespace AutoStep.Tests.Builders
     {
         private readonly List<NameRefElement> nameParts = new List<NameRefElement>();
 
-
         public InteractionTraitBuilder(string name, int line, int column)
         {
             Built = new TraitDefinitionElement(name, new List<NameRefElement> { new NameRefElement(name) });

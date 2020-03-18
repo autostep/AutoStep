@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             // Check for non-overlap.
             nameMatcher.Contains(new[] { "D", "E", "F" }).Should().BeFalse();
-            
+
             // Consume the remainder.
             nameMatcher.Contains(new[] { "C", "D" }).Should().BeTrue();
         }

@@ -19,9 +19,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task AllTypes()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call('string1', 123, 123.5, TAB, variable, varArr['something'], varArr[avariable])
             ";
 
@@ -48,9 +48,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodCallMissingSeparatorCharacter()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call('string1' 123 TAB)
             ";
 
@@ -68,9 +68,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
         [Fact]
         public async Task MethodCallUnterminatedString()
         {
-            const string Test = @"                
+            const string Test = @"
                 Component: button
-                
+
                     method(): call('string1
 
                     method2(): call()
@@ -79,7 +79,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             await CompileAndAssertErrors(Test, cfg => cfg
                     .Component("button", 2, 17, comp => comp
                         .Method("method", 4, 21, m => m
-                            .Call("call", 4, 31, 4, 43, c => c 
+                            .Call("call", 4, 31, 4, 43, c => c
                                 .String("string1", 4, 36, 43)
                             )
                         )

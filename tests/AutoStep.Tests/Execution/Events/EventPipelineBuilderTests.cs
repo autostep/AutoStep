@@ -13,7 +13,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var builder = new EventPipelineBuilder();
 
-            builder.Invoking(b => b.Add(null)).Should().Throw<ArgumentNullException>();
+            builder.Invoking(b => b.Add(null!)).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -22,16 +22,16 @@ namespace AutoStep.Tests.Execution.Events
             var builder = new EventPipelineBuilder();
 
             var mock = new Mock<IEventHandler>();
-            mock.Setup(x => x.ConfigureServices(null, null)).Verifiable();
+            mock.Setup(x => x.ConfigureServices(null!, null!)).Verifiable();
             var evHandler = mock.Object;
 
             builder.Add(evHandler);
 
             var pipeline = builder.Build();
 
-            pipeline.ConfigureServices(null, null);
+            pipeline.ConfigureServices(null!, null!);
 
-            mock.Verify(x => x.ConfigureServices(null, null), Times.Once());
+            mock.Verify(x => x.ConfigureServices(null!, null!), Times.Once());
         }
     }
 }

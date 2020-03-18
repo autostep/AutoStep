@@ -36,7 +36,7 @@ namespace AutoStep.Definitions.Interaction
                                                                  !typeof(IServiceScope).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
+        public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
         {
             if (scope is null)
             {
@@ -60,7 +60,7 @@ namespace AutoStep.Definitions.Interaction
             var target = GetMethodTarget(scope);
 
             // Invoke.
-            await InvokeInstanceMethod(target, boundArguments);
+            return InvokeInstanceMethod(target, boundArguments);
         }
 
         /// <summary>

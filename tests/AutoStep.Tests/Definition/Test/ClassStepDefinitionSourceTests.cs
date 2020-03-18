@@ -9,7 +9,7 @@ namespace AutoStep.Tests.Definition.Test
 {
     public class ClassStepDefinitionSourceTests : LoggingTestBase
     {
-        public ClassStepDefinitionSourceTests(ITestOutputHelper outputHelper) 
+        public ClassStepDefinitionSourceTests(ITestOutputHelper outputHelper)
             : base(outputHelper)
         {
         }
@@ -58,7 +58,7 @@ namespace AutoStep.Tests.Definition.Test
             public void When()
             {
             }
-            
+
             [Then("this will")]
             public void Then()
             {

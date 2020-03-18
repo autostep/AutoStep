@@ -15,9 +15,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
         public async Task FeatureCanHaveBackground()
         {
             const string TestFile =
-            @"                
-              Feature: My Feature 
-                Description               
+            @"
+              Feature: My Feature
+                Description
 
                 Background:
                     Given I have run this

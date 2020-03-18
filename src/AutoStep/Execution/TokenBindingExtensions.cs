@@ -22,7 +22,7 @@ namespace AutoStep.Execution
         /// <param name="rawText">The raw text of the step.</param>
         /// <param name="variables">The variables currently in scope.</param>
         /// <returns>The resolved text.</returns>
-        public static string GetFullText(this TokenisedArgumentValue binding, IServiceScope scope, string rawText, VariableSet variables)
+        public static string GetFullText(this TokenisedArgumentValue binding, IServiceScope scope, string? rawText, VariableSet variables)
         {
             binding = binding.ThrowIfNull(nameof(binding));
             variables = variables.ThrowIfNull(nameof(variables));
