@@ -94,7 +94,7 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="file">The file to remove.</param>
         /// <returns>True if the file was removed.</returns>
-        public bool TryRemoveFile(ProjectTestFile file)
+        public bool TryRemoveFile(ProjectFile file)
         {
             if (file is null)
             {
