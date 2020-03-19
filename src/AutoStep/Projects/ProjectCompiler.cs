@@ -102,11 +102,13 @@ namespace AutoStep.Projects
         {
             var allMessages = new List<LanguageOperationMessage>();
 
+            var fixedFileSet = new List<ProjectFile>(project.AllFiles.Values);
+
             // Compile the interaction files.
-            await CompileInteractionFilesAsync(loggerFactory, allMessages, cancelToken).ConfigureAwait(false);
+            await CompileInteractionFilesAsync(loggerFactory, fixedFileSet, allMessages, cancelToken).ConfigureAwait(false);
 
             // Compile the test files.
-            await CompileTestFilesAsync(loggerFactory, allMessages, cancelToken).ConfigureAwait(false);
+            await CompileTestFilesAsync(loggerFactory, fixedFileSet, allMessages, cancelToken).ConfigureAwait(false);
 
             // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file
             // messages and report them at once.
@@ -114,14 +116,14 @@ namespace AutoStep.Projects
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
-        private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
+        private async Task CompileTestFilesAsync(ILoggerFactory loggerFactory, IReadOnlyList<ProjectFile> files, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
         {
             // This method will go through all the autostep files in the project that match the filter and:
             //  - Verify that the built files are later than the source file last-modify time.
             //  - Update the project files with the built content.
             //  - Report any errors in that compilation.
             //  - Each file in the project will have its 'last' FileCompilerResult stored against it.
-            foreach (var projectFile in project.AllFiles.Values.OfType<ProjectTestFile>())
+            foreach (var projectFile in files.OfType<ProjectTestFile>())
             {
                 cancelToken.ThrowIfCancellationRequested();
 
@@ -153,7 +155,7 @@ namespace AutoStep.Projects
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
-        private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
+        private async Task CompileInteractionFilesAsync(ILoggerFactory loggerFactory, IReadOnlyList<ProjectFile> files, List<LanguageOperationMessage> allMessages, CancellationToken cancelToken = default)
         {
             if (interactionCompiler is null && project.AllFiles.Values.OfType<ProjectInteractionFile>().Any())
             {
@@ -165,7 +167,7 @@ namespace AutoStep.Projects
             // This method will go through all the interaction files (filters not considered).
             // If any of them need re-compiling, we will do so, and then regenerate the interaction set and update the
             // step definition source.
-            foreach (var projectFile in project.AllFiles.Values.OfType<ProjectInteractionFile>().OrderBy(f => f.Order))
+            foreach (var projectFile in files.OfType<ProjectInteractionFile>().OrderBy(f => f.Order))
             {
                 cancelToken.ThrowIfCancellationRequested();
 
@@ -205,7 +207,7 @@ namespace AutoStep.Projects
                 var interactionSetBuilder = setBuilderFactory();
 
                 // Add our compiled files to it.
-                foreach (var projectFile in project.AllFiles.Values.OfType<ProjectInteractionFile>())
+                foreach (var projectFile in files.OfType<ProjectInteractionFile>())
                 {
                     if (projectFile.LastCompileResult?.Output is object)
                     {
@@ -218,7 +220,7 @@ namespace AutoStep.Projects
                 // Now we need to go through the messages and add them to the appropriate interaction files.
                 var fileMessages = setBuild.Messages.GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
 
-                foreach (var projectFile in project.AllFiles.Values.OfType<ProjectInteractionFile>())
+                foreach (var projectFile in files.OfType<ProjectInteractionFile>())
                 {
                     if (fileMessages.TryGetValue(projectFile.Path, out var messages))
                     {
@@ -296,12 +298,13 @@ namespace AutoStep.Projects
         public ProjectCompilerResult Link(CancellationToken cancelToken = default)
         {
             var allMessages = new List<LanguageOperationMessage>();
+            var fixedFiles = new List<ProjectTestFile>(project.AllFiles.Values.OfType<ProjectTestFile>());
 
             // This method will go through all the autostep files in the project and:
             //  - Link if needed.
             //  - Report any errors in the link.
             //  - Each file in the project will have its 'last' LinkResult stored against it.
-            foreach (var projectFile in project.AllFiles.Values.OfType<ProjectTestFile>())
+            foreach (var projectFile in fixedFiles)
             {
                 cancelToken.ThrowIfCancellationRequested();
 
