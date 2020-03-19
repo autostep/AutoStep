@@ -131,7 +131,7 @@ namespace AutoStep.Tests.Projects
 
             var mockInteractionCompiler = new Mock<IInteractionCompiler>();
             // Compilation will return a compilation result (with an empty file).
-            mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(new ValueTask<InteractionsFileCompilerResult>(
+            mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(() => new ValueTask<InteractionsFileCompilerResult>(
                 new InteractionsFileCompilerResult(true, Enumerable.Empty<LanguageOperationMessage>(), new InteractionFileElement())
             ));
 
