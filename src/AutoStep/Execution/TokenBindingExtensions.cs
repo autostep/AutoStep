@@ -73,7 +73,6 @@ namespace AutoStep.Execution
             }
 
             var lastStopIdx = 0;
-            var currentTextReadIdx = tokens[0].StartIndex;
 
             var foundVariables = new string?[tokens.Count];
 
@@ -97,7 +96,7 @@ namespace AutoStep.Execution
                     foundVariables[tokenIdx] = variableText;
                     textSize += variableText.Length;
                 }
-                else if (currentToken is InterpolateStartToken inter)
+                else if (currentToken is InterpolateStartToken)
                 {
                     // We'll come back to this.
                     textSize += currentToken.Length;
@@ -162,7 +161,6 @@ namespace AutoStep.Execution
             }
 
             var lastStopIdx = 0;
-            var currentTextReadIdx = tokens[0].StartIndex;
 
             var foundVariables = new string?[tokens.Length];
 
@@ -196,7 +194,7 @@ namespace AutoStep.Execution
                         foundVariables[tokenIdx] = variableText;
                         textSize += variableText.Length;
                     }
-                    else if (currentToken is InterpolateStartToken inter)
+                    else if (currentToken is InterpolateStartToken)
                     {
                         // We'll come back to this.
                         // This is where we need the service scope.

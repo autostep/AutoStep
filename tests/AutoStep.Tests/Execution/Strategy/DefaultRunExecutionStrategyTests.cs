@@ -42,7 +42,6 @@ namespace AutoStep.Tests.Execution.Strategy
                 beforeThread++;
             }, c => afterThread++);
 
-            var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var featureStrategy = new MyFeatureStrategy();
 
             var builder = new AutofacServiceBuilder();

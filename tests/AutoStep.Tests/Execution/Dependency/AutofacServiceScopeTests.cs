@@ -104,7 +104,6 @@ namespace AutoStep.Tests.Execution.Dependency
         public void LifetimeScopeDisposed()
         {
             var mockAutofacScope = new Mock<ILifetimeScope>(MockBehavior.Strict);
-            var testInstance = new MyService();
 
             mockAutofacScope.Setup(s => s.Dispose()).Verifiable();
 

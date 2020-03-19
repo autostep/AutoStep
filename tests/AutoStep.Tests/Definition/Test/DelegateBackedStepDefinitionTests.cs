@@ -23,7 +23,6 @@ namespace AutoStep.Tests.Definition
         public void DelegateDefinitionSameForSameCallback()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
 
             Action<IServiceScope> callback = sc => { };
 
@@ -38,7 +37,6 @@ namespace AutoStep.Tests.Definition
         public void DelegateDefinitionDifferentForDifferentCallback()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
 
             Action<IServiceScope> callback = sc => { };
             Action<IServiceScope> callback2 = sc => { };

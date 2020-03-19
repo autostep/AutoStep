@@ -280,7 +280,7 @@ namespace AutoStep.Tests.Projects
             var cancelledToken = new CancellationToken(true);
 
             // Compile once.
-            var overallResult = projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
+            projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
         [Fact]

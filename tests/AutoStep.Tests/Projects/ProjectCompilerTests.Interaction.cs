@@ -129,13 +129,11 @@ namespace AutoStep.Tests.Projects
 
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(() => changeTime);
 
-            var mockCompiler = new Mock<ITestCompiler>();
             var mockInteractionCompiler = new Mock<IInteractionCompiler>();
             // Compilation will return a compilation result (with an empty file).
             mockInteractionCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Returns(() => new ValueTask<InteractionsFileCompilerResult>(
                 new InteractionsFileCompilerResult(true, Enumerable.Empty<LanguageOperationMessage>(), new InteractionFileElement())
             ));
-            var mockLinker = new Mock<ILinker>();
 
             var projFile = new ProjectInteractionFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
@@ -145,7 +143,7 @@ namespace AutoStep.Tests.Projects
             // Compile once.
             await projectCompiler.CompileAsync();
 
-            var originalCompilationresult = projFile.LastCompileResult;
+            var originalCompilationResult = projFile.LastCompileResult;
 
             // Change the file timestamp.
             changeTime = projFile.LastCompileTime.AddMinutes(1);
@@ -154,7 +152,7 @@ namespace AutoStep.Tests.Projects
             await projectCompiler.CompileAsync();
 
             // Result should have changed.
-            projFile.LastCompileResult.Should().NotBeSameAs(originalCompilationresult);
+            projFile.LastCompileResult.Should().NotBeSameAs(originalCompilationResult);
         }
 
         [Fact]
@@ -263,8 +261,6 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<IInteractionCompiler>();
             mockCompiler.Setup(x => x.CompileInteractionsAsync(mockSource.Object, It.IsAny<ILoggerFactory>(), default)).Throws(new ApplicationException("Unknown Error"));
 
-            var mockLinker = new Mock<ILinker>();
-
             var projFile = new ProjectInteractionFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
@@ -292,7 +288,7 @@ namespace AutoStep.Tests.Projects
             var cancelledToken = new CancellationToken(true);
 
             // Compile once.
-            var overallResult = projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
+            projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
         private ProjectCompiler GetProjectCompiler(Project project, IInteractionCompiler interactionCompiler, IInteractionSetBuilder setBuilder)

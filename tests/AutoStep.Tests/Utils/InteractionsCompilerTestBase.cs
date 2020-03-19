@@ -123,8 +123,6 @@ namespace AutoStep.Tests.Utils
 
             try
             {
-                var typeSpan = typeof(ReadOnlySpan<StepToken>);
-
                 actual.Should().BeEquivalentTo(expected, opt => opt
                     .WithStrictOrdering()
                     .AllowingInfiniteRecursion()
