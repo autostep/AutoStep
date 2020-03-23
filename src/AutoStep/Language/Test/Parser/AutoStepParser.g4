@@ -2,19 +2,18 @@ parser grammar AutoStepParser;
 
 options { tokenVocab=AutoStepLexer; }
 
-file: NEWLINE*
-      fileEntity+ // Multiple feature blocks aren't valid, 
+file: fileEntity* // Multiple feature blocks aren't valid, 
                   // but we want to give an error later instead of failing
                   // the parse stage.
-      WS? EOF;
+      EOF;
 
-fileEntity: featureBlock | stepDefinitionBlock;
+fileEntity: NEWLINE* (featureBlock | stepDefinitionBlock) WS?;
 
 stepDefinitionBlock: annotations
                      stepDefinition
                      stepDefinitionBody;
 
-stepDefinition: WS? STEP_DEFINE WS? stepDeclaration (NEWLINE | EOF)
+stepDefinition: WS? STEP_DEFINE WS? stepDeclaration NEWLINE
                     description?;
 
 stepDefinitionBody: stepCollectionBodyLine*;
@@ -89,8 +88,7 @@ stepCollectionBodyLine: statementBlock
 
 statementBlock: WS? statement NEWLINE NEWLINE* tableBlock #statementWithTable
               | WS? statement NEWLINE                     #statementLineTerminated
-              | WS? statement WS? EOF                     #statementEofTerminated
-              ;
+              | WS? statement EOF                         #statementEofTerminated;
 
 statement: GIVEN WS statementBody #given
          | WHEN WS statementBody  #when
@@ -131,11 +129,11 @@ exampleBlock: annotations
 tableBlock: WS? tableHeader
             (WS? tableRow | NEWLINE)*;
 
-tableHeader: tableHeaderCell+ CELL_DELIMITER (NEWLINE | EOF);
+tableHeader: tableHeaderCell+ CELL_DELIMITER NEWLINE;
 
 tableHeaderCell: (TABLE_START | CELL_DELIMITER) WS? cellVariableName? WS?;
 
-tableRow: tableRowCell+ CELL_DELIMITER (NEWLINE | EOF);
+tableRow: tableRowCell+ CELL_DELIMITER NEWLINE;
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) WS? tableRowCellContent? WS?;
 

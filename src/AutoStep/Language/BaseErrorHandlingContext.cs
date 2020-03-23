@@ -56,11 +56,6 @@ namespace AutoStep.Language
         public IToken EndingSymbol { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether any subsequent end of file errors should be ignored.
-        /// </summary>
-        public bool IgnoreFollowingEndOfFileMessages { get; private set; }
-
-        /// <summary>
         /// Gets the relevant token stream for the error.
         /// </summary>
         protected ITokenStream TokenStream { get; }
@@ -232,15 +227,6 @@ namespace AutoStep.Language
         protected bool OffendingSymbolTextIs(string expectedText)
         {
             return OffendingSymbol.Text == expectedText;
-        }
-
-        /// <summary>
-        /// Indicates that once this error has been generated, any end-of-file errors should be ignored,
-        /// because this error represents the overall problem effectively.
-        /// </summary>
-        protected void SwallowEndOfFileErrorsAfterThis()
-        {
-            IgnoreFollowingEndOfFileMessages = true;
         }
 
         /// <summary>
