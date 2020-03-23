@@ -14,7 +14,6 @@ namespace AutoStep.Language
     {
         private readonly string? sourceName;
         private readonly List<LanguageOperationMessage> messages;
-        private bool swallowEndOfFileErrors = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParserErrorListener{TParser}"/> class.
@@ -54,9 +53,9 @@ namespace AutoStep.Language
 
             ctxt.DoErrorMatching();
 
-            if (ctxt.Code == CompilerMessageCode.UnexpectedEndOfFile && swallowEndOfFileErrors)
+            if (ctxt.Code == CompilerMessageCode.UnexpectedEndOfFile)
             {
-                // Do not raise the end of file message if we've been told to ignore it by a preceding error.
+                // We're going for a blanket rule that we won't report eof errors. It's too confusing from a user standpoint.
                 return;
             }
 
@@ -80,11 +79,6 @@ namespace AutoStep.Language
                 {
                     msg = string.Format(CultureInfo.CurrentCulture, msg, ctxt.MessageArguments);
                 }
-            }
-
-            if (ctxt.IgnoreFollowingEndOfFileMessages)
-            {
-                swallowEndOfFileErrors = true;
             }
 
             var compileMsg = new LanguageOperationMessage(

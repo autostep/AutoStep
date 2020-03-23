@@ -45,8 +45,6 @@ namespace AutoStep.Language.Test
                 UseOpeningTokenAsStart(FEATURE);
                 UseStartSymbolAsEndSymbol();
 
-                SwallowEndOfFileErrorsAfterThis();
-
                 return true;
             }
 

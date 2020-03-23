@@ -44,8 +44,6 @@ namespace AutoStep.Language.Interaction
                 UseOpeningTokenAsStart(COMPONENT_DEFINITION, TRAIT_DEFINITION, INHERITS_KEYWORD);
                 UseStartSymbolAsEndSymbol();
 
-                SwallowEndOfFileErrorsAfterThis();
-
                 return true;
             }
 
@@ -61,8 +59,6 @@ namespace AutoStep.Language.Interaction
 
                 UseOpeningTokenAsStart(STEP_DEFINE);
                 UseStartSymbolAsEndSymbol();
-
-                SwallowEndOfFileErrorsAfterThis();
 
                 return true;
             }
@@ -80,8 +76,6 @@ namespace AutoStep.Language.Interaction
                 UseOpeningTokenAsStart(NAME_REF);
 
                 UseStartSymbolAsEndSymbol();
-
-                SwallowEndOfFileErrorsAfterThis();
 
                 return true;
             }
