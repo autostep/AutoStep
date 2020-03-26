@@ -96,16 +96,6 @@ namespace AutoStep.Tests.Language.Test.Parsing
                     startColumn: 17,
                     endLineNo: 5,
                     endColumn: 25
-                ),
-                new LanguageOperationMessage(
-                    null,
-                    CompilerMessageLevel.Warning,
-                    CompilerMessageCode.NoScenarios,
-                    "Your Feature 'My Feature' has no Scenarios, so will not run any tests.",
-                    startLineNo: 2,
-                    startColumn: 15,
-                    endLineNo: 2,
-                    endColumn: 33
                 )
             );
         }

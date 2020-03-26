@@ -16,9 +16,20 @@ namespace AutoStep.Projects
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
         /// </summary>
-        public Project()
+        /// <param name="forEditing">
+        /// If set to true, then the compiler behaviour will be amended to support editing functionality.
+        /// For example, generating intellisense indexing.
+        /// </param>
+        public Project(bool forEditing = false)
         {
-            Compiler = ProjectCompiler.CreateDefault(this);
+            if (forEditing)
+            {
+                Compiler = ProjectCompiler.CreateForEditing(this);
+            }
+            else
+            {
+                Compiler = ProjectCompiler.CreateDefault(this);
+            }
         }
 
         /// <summary>

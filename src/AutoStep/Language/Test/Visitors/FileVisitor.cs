@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using AutoStep.Elements;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
 {
+    using static AutoStepParser;
+
     /// <summary>
     /// The FileVisitor is an implementation of an Antlr Visitor that traverses the Antlr parse tree after the parse process has completed,
     /// and builds a <see cref="FileElement"/> from that tree.
@@ -34,12 +38,14 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="sourceName">The source name; added to compiler messages.</param>
         /// <param name="tokens">The token stream used by the parse tree.</param>
-        public FileVisitor(string? sourceName, ITokenStream tokens)
-            : base(sourceName, tokens)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public FileVisitor(string? sourceName, ITokenStream tokens, TestCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokens, compilerOptions, positionIndex)
         {
-            stepVisitor = new StepReferenceVisitor(sourceName, TokenStream, Rewriter, ValidateVariableInsertionName);
-            tableVisitor = new TableVisitor(sourceName, TokenStream, Rewriter, ValidateVariableInsertionName);
-            stepDefinitionVisitor = new StepDefinitionVisitor(sourceName, TokenStream, Rewriter);
+            stepVisitor = new StepReferenceVisitor(sourceName, TokenStream, Rewriter, compilerOptions, positionIndex, ValidateVariableInsertionName);
+            tableVisitor = new TableVisitor(sourceName, TokenStream, Rewriter, compilerOptions, positionIndex, ValidateVariableInsertionName);
+            stepDefinitionVisitor = new StepDefinitionVisitor(sourceName, TokenStream, Rewriter, compilerOptions, positionIndex);
         }
 
         /// <summary>
@@ -51,7 +57,11 @@ namespace AutoStep.Language.Test.Visitors
         {
             Result = new FileElement();
 
+            PositionIndex?.PushScope(Result, context);
+
             VisitChildren(context);
+
+            PositionIndex?.PopScope(context);
 
             return Result;
         }
@@ -79,7 +89,11 @@ namespace AutoStep.Language.Test.Visitors
 
             currentAnnotatable = Result!.Feature;
 
+            PositionIndex?.PushScope(Result.Feature, context);
+
             VisitChildren(context);
+
+            PositionIndex?.PopScope(context);
 
             if (!string.IsNullOrEmpty(Result!.Feature.Name) && Result!.Feature.Scenarios.Count == 0)
             {
@@ -109,7 +123,11 @@ namespace AutoStep.Language.Test.Visitors
 
             tagBody = tagBody.TrimEnd();
 
-            currentAnnotatable.Annotations.Add(new TagElement(tagBody).AddLineInfo(context));
+            var element = new TagElement(tagBody).AddLineInfo(context);
+
+            currentAnnotatable.Annotations.Add(element);
+
+            PositionIndex?.AddLineToken(context, element, LineTokenCategory.Annotation, LineTokenSubCategory.Tag);
 
             return Result!;
         }
@@ -154,15 +172,17 @@ namespace AutoStep.Language.Test.Visitors
                 if (string.IsNullOrEmpty(setting))
                 {
                     MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.OptionWithNoSetting, name);
-                    return Result!;
                 }
             }
 
-            currentAnnotatable.Annotations.Add(
-                new OptionElement(name)
-                {
-                    Setting = setting,
-                }.AddLineInfo(context));
+            var optElement = new OptionElement(name)
+            {
+                Setting = setting,
+            }.AddLineInfo(context);
+
+            currentAnnotatable.Annotations.Add(optElement);
+
+            PositionIndex?.AddLineToken(context, optElement, LineTokenCategory.Annotation, LineTokenSubCategory.Option);
 
             return Result;
         }
@@ -181,6 +201,8 @@ namespace AutoStep.Language.Test.Visitors
             var featureToken = titleTree.FEATURE();
             var featureKeyWordText = featureToken.GetText();
 
+            PositionIndex?.AddLineToken(featureToken, LineTokenCategory.EntryMarker, LineTokenSubCategory.Feature);
+
             // We want the parser to allow case-insensitive keywords through, so we can assert on them
             // here and give more useful errors.
             if (featureKeyWordText != "Feature:")
@@ -188,7 +210,14 @@ namespace AutoStep.Language.Test.Visitors
                 MessageSet.Add(featureToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidFeatureKeyword, featureKeyWordText);
             }
 
-            var title = titleTree.text()?.GetText() ?? string.Empty;
+            var textEl = titleTree.text();
+
+            if (textEl is object)
+            {
+                PositionIndex?.AddLineToken(textEl, LineTokenCategory.EntityName, LineTokenSubCategory.Feature);
+            }
+
+            var title = textEl?.GetText() ?? string.Empty;
             var description = ExtractDescription(context.description());
 
             // Past this point, annotations aren't valid.
@@ -213,14 +242,24 @@ namespace AutoStep.Language.Test.Visitors
 
             var background = new BackgroundElement();
 
-            background.AddLineInfo(context.BACKGROUND());
+            var backgroundNode = context.BACKGROUND();
+
+            PositionIndex?.PushScope(background, context);
+
+            PositionIndex?.AddLineToken(backgroundNode, LineTokenCategory.EntryMarker, LineTokenSubCategory.Background);
+
+            background.AddLineInfo(backgroundNode);
 
             Result!.Feature!.Background = background;
 
             currentStepSet = background.Steps;
             currentStepSetLastConcrete = null;
 
-            return base.VisitBackgroundBlock(context);
+            VisitChildren(context);
+
+            PositionIndex?.PopScope(context);
+
+            return Result!;
         }
 
         /// <summary>
@@ -244,19 +283,21 @@ namespace AutoStep.Language.Test.Visitors
                 _ => null
             };
 
-            StepDefinitionElement stepDefinition;
+            StepDefinitionElement stepDefinition = new StepDefinitionElement();
             var bodyContext = declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0);
             var isProcessedStep = false;
+
+            PositionIndex?.PushScope(stepDefinition, context);
 
             if (type is null || bodyContext is null)
             {
                 // Create a 'dummy' step definition.
-                stepDefinition = new StepDefinitionElement();
                 stepDefinition.AddLineInfo(declaration);
             }
             else
             {
-                stepDefinition = stepDefinitionVisitor.BuildStepDefinition(type.Value, declaration, declaration.GetRuleContext<AutoStepParser.StepDeclarationBodyContext>(0));
+                // Position scopes will be created inside the step visitor.
+                stepDefinitionVisitor.BuildStepDefinition(stepDefinition, type.Value, declaration, bodyContext);
 
                 isProcessedStep = true;
 
@@ -299,6 +340,8 @@ namespace AutoStep.Language.Test.Visitors
             currentStepSet = null;
             currentStepDefinition = null;
 
+            PositionIndex?.PopScope(context);
+
             return Result;
         }
 
@@ -328,11 +371,20 @@ namespace AutoStep.Language.Test.Visitors
                 if (scenarioKeyWordText != "Scenario:")
                 {
                     MessageSet.Add(scenarioToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioKeyword, scenarioKeyWordText);
-                    return Result!;
                 }
 
+                var titleToken = scenarioTitle.text();
                 scenario = new ScenarioElement();
-                titleText = scenarioTitle.text()?.GetText() ?? string.Empty;
+                titleText = titleToken?.GetText() ?? string.Empty;
+
+                PositionIndex?.PushScope(scenario, context);
+
+                PositionIndex?.AddLineToken(scenarioToken, LineTokenCategory.EntryMarker, LineTokenSubCategory.Scenario);
+
+                if (titleToken is object)
+                {
+                    PositionIndex?.AddLineToken(titleToken, LineTokenCategory.EntityName, LineTokenSubCategory.Scenario);
+                }
             }
             else if (title is AutoStepParser.ScenarioOutlineTitleContext scenarioOutlineTitle)
             {
@@ -344,11 +396,21 @@ namespace AutoStep.Language.Test.Visitors
                 if (scenarioOutlineKeyWordText != "Scenario Outline:")
                 {
                     MessageSet.Add(scenarioOutlineToken, CompilerMessageLevel.Error, CompilerMessageCode.InvalidScenarioOutlineKeyword, scenarioOutlineKeyWordText);
-                    return Result;
                 }
 
+                var titleToken = scenarioOutlineTitle.text();
+
                 scenario = new ScenarioOutlineElement();
-                titleText = scenarioOutlineTitle.text()?.GetText() ?? string.Empty;
+                titleText = titleToken?.GetText() ?? string.Empty;
+
+                PositionIndex?.PushScope(scenario, context);
+
+                PositionIndex?.AddLineToken(scenarioOutlineToken, LineTokenCategory.EntryMarker, LineTokenSubCategory.ScenarioOutline);
+
+                if (titleToken is object)
+                {
+                    PositionIndex?.AddLineToken(titleToken, LineTokenCategory.EntityName, LineTokenSubCategory.ScenarioOutline);
+                }
             }
             else
             {
@@ -397,6 +459,8 @@ namespace AutoStep.Language.Test.Visitors
 
             Result!.Feature!.Scenarios.Add(scenario);
 
+            PositionIndex?.PopScope(context);
+
             return Result!;
         }
 
@@ -409,7 +473,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.Given, context);
+            AddStep(context.GIVEN(), context);
 
             return Result!;
         }
@@ -423,7 +487,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.Then, context);
+            AddStep(context.THEN(), context);
 
             return Result!;
         }
@@ -437,7 +501,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.When, context);
+            AddStep(context.WHEN(), context);
 
             return Result!;
         }
@@ -451,7 +515,7 @@ namespace AutoStep.Language.Test.Visitors
         {
             Debug.Assert(Result is object);
 
-            AddStep(StepType.And, context);
+            AddStep(context.AND(), context);
 
             return Result!;
         }
@@ -492,25 +556,30 @@ namespace AutoStep.Language.Test.Visitors
             Debug.Assert(currentScenario is object);
 
             var outline = currentScenario as ScenarioOutlineElement;
-            var exampleTokenText = context.EXAMPLES().GetText();
+
+            var examplesKeyword = context.EXAMPLES();
+
+            var exampleTokenText = examplesKeyword.GetText();
 
             if (exampleTokenText != "Examples:")
             {
-                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
-                return Result!;
+                MessageSet.Add(examplesKeyword, CompilerMessageLevel.Error, CompilerMessageCode.InvalidExamplesKeyword, exampleTokenText);
             }
 
             if (outline == null)
             {
-                MessageSet.Add(context.EXAMPLES(), CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario!.Name!);
-                return Result!;
+                MessageSet.Add(examplesKeyword, CompilerMessageLevel.Error, CompilerMessageCode.NotExpectingExample, currentScenario!.Name!);
             }
 
             var example = new ExampleElement();
 
+            PositionIndex?.PushScope(example, context);
+
             currentAnnotatable = example;
 
-            example.AddLineInfo(context.EXAMPLES());
+            example.AddLineInfo(examplesKeyword);
+
+            PositionIndex?.AddLineToken(examplesKeyword, LineTokenCategory.EntryMarker, LineTokenSubCategory.Examples);
 
             Visit(context.annotations());
 
@@ -522,7 +591,12 @@ namespace AutoStep.Language.Test.Visitors
 
             MergeVisitorAndReset(tableVisitor);
 
-            outline.AddExample(example);
+            if (outline is object)
+            {
+                outline.AddExample(example);
+            }
+
+            PositionIndex?.PopScope(context);
 
             return Result!;
         }
@@ -554,7 +628,7 @@ namespace AutoStep.Language.Test.Visitors
             return null;
         }
 
-        private void AddStep(StepType type, AutoStepParser.StatementContext context)
+        private void AddStep(ITerminalNode keywordNode, StatementContext context)
         {
             Debug.Assert(Result is object);
 
@@ -564,10 +638,19 @@ namespace AutoStep.Language.Test.Visitors
                 return;
             }
 
+            var type = keywordNode.Symbol.Type switch
+            {
+                GIVEN => StepType.Given,
+                WHEN => StepType.When,
+                THEN => StepType.Then,
+                AND => StepType.And,
+                _ => throw new LanguageEngineAssertException()
+            };
+
             // All step references are currently added as 'unknown', until they are linked.
             StepType? bindingType = null;
 
-            var step = stepVisitor.BuildStep(type, context);
+            var step = stepVisitor.BuildStep(type, keywordNode, context);
 
             MergeVisitorAndReset(stepVisitor);
 

@@ -5,6 +5,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
@@ -31,9 +32,11 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, Func<ParserRuleContext, string, LanguageOperationMessage?>? insertionNameValidator = null)
-            : base(sourceName, tokenStream)
+        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, TestCompilerOptions compilerOptions, PositionIndex? positionIndex, Func<ParserRuleContext, string, LanguageOperationMessage?>? insertionNameValidator = null)
+            : base(sourceName, tokenStream, compilerOptions, positionIndex)
         {
             this.insertionNameValidator = insertionNameValidator;
         }
@@ -44,9 +47,11 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
-            : base(sourceName, tokenStream, rewriter)
+        public StepReferenceVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, TestCompilerOptions compilerOptions, PositionIndex? positionIndex, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
             this.insertionNameValidator = insertionNameValidator;
         }
@@ -55,9 +60,10 @@ namespace AutoStep.Language.Test.Visitors
         /// Builds a step, taking the Step Type, and the statement line Antlr context.
         /// </summary>
         /// <param name="type">The step type.</param>
+        /// <param name="stepKeyword">The terminal node from the step keyword.</param>
         /// <param name="statementContext">The statement context.</param>
         /// <returns>A generated step reference.</returns>
-        public StepReferenceElement BuildStep(StepType type, AutoStepParser.StatementContext statementContext)
+        public StepReferenceElement BuildStep(StepType type, ITerminalNode stepKeyword, AutoStepParser.StatementContext statementContext)
         {
             var step = new StepReferenceElement
             {
@@ -68,10 +74,25 @@ namespace AutoStep.Language.Test.Visitors
 
             step.AddLineInfo(statementContext);
 
+            PositionIndex?.PushScope(step, statementContext);
+
+            var keywordType = type switch
+            {
+                StepType.Given => LineTokenSubCategory.Given,
+                StepType.When => LineTokenSubCategory.When,
+                StepType.Then => LineTokenSubCategory.Then,
+                StepType.And => LineTokenSubCategory.And,
+                _ => throw new InvalidOperationException()
+            };
+
+            PositionIndex?.AddLineToken(stepKeyword, LineTokenCategory.StepTypeKeyword, keywordType);
+
             VisitChildren(statementContext);
 
             // No more parts, convert to array for performance.
             step.FreezeTokens();
+
+            PositionIndex?.PopScope(statementContext);
 
             return Result;
         }
@@ -93,10 +114,14 @@ namespace AutoStep.Language.Test.Visitors
 
             step.AddLineInfo(statementContext);
 
+            PositionIndex?.PushScope(step, statementContext);
+
             Visit(statementContext);
 
             // No more parts, convert to array for performance.
             step.FreezeTokens();
+
+            PositionIndex?.PopScope(statementContext);
 
             return Result;
         }
@@ -266,6 +291,15 @@ namespace AutoStep.Language.Test.Visitors
         private void AddPart(StepToken part)
         {
             Result!.AddToken(part);
+
+            PositionIndex?.AddLineToken(part, LineTokenCategory.StepText);
+        }
+
+        private void AddPart(VariableToken variablePart)
+        {
+            Result!.AddToken(variablePart);
+
+            PositionIndex?.AddLineToken(variablePart, LineTokenCategory.Variable);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)

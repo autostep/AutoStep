@@ -5,6 +5,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
@@ -31,9 +32,11 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
         /// <param name="insertionNameValidator">The insertion name validator callback, used to check for valid insertion names.</param>
-        public TableVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
-            : base(sourceName, tokenStream, rewriter)
+        public TableVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, TestCompilerOptions compilerOptions, PositionIndex? positionIndex, Func<ParserRuleContext, string, LanguageOperationMessage?> insertionNameValidator)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
             this.insertionNameValidator = insertionNameValidator;
         }
@@ -49,7 +52,11 @@ namespace AutoStep.Language.Test.Visitors
 
             Result.AddLineInfo(bodyContext.tableHeader());
 
+            PositionIndex?.PushScope(Result, bodyContext);
+
             Visit(bodyContext);
+
+            PositionIndex?.PopScope(bodyContext);
 
             return Result;
         }
@@ -61,13 +68,15 @@ namespace AutoStep.Language.Test.Visitors
         /// <returns>The file.</returns>
         public override TableElement VisitTableHeader([NotNull] AutoStepParser.TableHeaderContext context)
         {
-            Debug.Assert(Result is object);
-
             Result!.Header.AddLineInfo(context);
+
+            PositionIndex?.PushScope(Result.Header, context);
 
             base.VisitTableHeader(context);
 
-            return Result!;
+            PositionIndex?.PopScope(context);
+
+            return Result;
         }
 
         /// <summary>
@@ -77,8 +86,6 @@ namespace AutoStep.Language.Test.Visitors
         /// <returns>The file.</returns>
         public override TableElement VisitTableHeaderCell([NotNull] AutoStepParser.TableHeaderCellContext context)
         {
-            Debug.Assert(Result is object);
-
             var variableName = context.cellVariableName();
 
             var header = new TableHeaderCellElement
@@ -102,11 +109,13 @@ namespace AutoStep.Language.Test.Visitors
             else
             {
                 header.AddPositionalLineInfo(variableName);
+
+                PositionIndex?.AddLineToken(header, LineTokenCategory.Text, LineTokenSubCategory.Header);
             }
 
             Result!.Header.AddHeader(header);
 
-            return Result!;
+            return Result;
         }
 
         /// <summary>
@@ -120,6 +129,8 @@ namespace AutoStep.Language.Test.Visitors
 
             currentRow = new TableRowElement().AddLineInfo(context);
 
+            PositionIndex?.PushScope(currentRow, context);
+
             base.VisitTableRow(context);
 
             // Check if the number of cells in the row doesn't match the headings.
@@ -129,6 +140,8 @@ namespace AutoStep.Language.Test.Visitors
             }
 
             Result!.AddRow(currentRow);
+
+            PositionIndex?.PopScope(context);
 
             return Result!;
         }
@@ -302,6 +315,17 @@ namespace AutoStep.Language.Test.Visitors
             Debug.Assert(currentCell is object);
 
             currentCell!.AddToken(part);
+
+            PositionIndex?.AddLineToken(part, LineTokenCategory.Text, LineTokenSubCategory.Cell);
+        }
+
+        private void AddPart(VariableToken part)
+        {
+            Debug.Assert(currentCell is object);
+
+            currentCell!.AddToken(part);
+
+            PositionIndex?.AddLineToken(part, LineTokenCategory.Variable, LineTokenSubCategory.Cell);
         }
 
         private TStepPart CreatePart<TStepPart>(ParserRuleContext ctxt, Func<int, int, TStepPart> creator)

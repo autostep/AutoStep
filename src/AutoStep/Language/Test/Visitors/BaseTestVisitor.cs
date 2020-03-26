@@ -1,6 +1,11 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+using AutoStep.Elements;
+using AutoStep.Elements.Test;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
@@ -19,8 +24,10 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
-        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream)
-            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream))
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream, TestCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream), compilerOptions, positionIndex)
         {
         }
 
@@ -30,11 +37,15 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The shared rewriter.</param>
-        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseTestVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, TestCompilerOptions compilerOptions, PositionIndex? positionIndex)
         {
             SourceName = sourceName;
             TokenStream = tokenStream;
             Rewriter = rewriter;
+            CompilerOptions = compilerOptions;
+            PositionIndex = positionIndex;
             messageSet = new CompilerMessageSet(sourceName, tokenStream);
         }
 
@@ -57,6 +68,16 @@ namespace AutoStep.Language.Test.Visitors
         /// Gets the source name (if there is one).
         /// </summary>
         public string? SourceName { get; }
+
+        /// <summary>
+        /// Gets the provided compiler options.
+        /// </summary>
+        public TestCompilerOptions CompilerOptions { get; }
+
+        /// <summary>
+        /// Gets the position index.
+        /// </summary>
+        public PositionIndex? PositionIndex { get; }
 
         /// <summary>
         /// Gets the token stream.

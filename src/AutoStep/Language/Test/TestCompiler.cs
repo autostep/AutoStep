@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 using AutoStep.Language.Test.Visitors;
 using Microsoft.Extensions.Logging;
@@ -82,7 +83,7 @@ namespace AutoStep.Language.Test
             }
 
             // Now we need a visitor.
-            var stepReferenceVisitor = new StepDefinitionVisitor(null, tokenStream);
+            var stepReferenceVisitor = new StepDefinitionVisitor(null, tokenStream, TestCompilerOptions.Default, null);
 
             // Construct a 'reference' step.
             var stepDefinition = stepReferenceVisitor.BuildStepDefinition(stepType, parseContext);
@@ -130,16 +131,32 @@ namespace AutoStep.Language.Test
                 throw new OperationCanceledException();
             }
 
+            PositionIndex? positionIndex = null;
+
+            // Capture position data if it has been requested, and we know anything at all about the file context.
+            if (options.HasFlag(TestCompilerOptions.CreatePositionIndex) && fileContext.Stop is object)
+            {
+                // Using diagnostics.
+                // Use the last line to give the number of lines.
+                positionIndex = new PositionIndex(fileContext.Stop.Line);
+            }
+
             // Once the parser has completed, we'll proceed to walk the parse tree and build the file.
-            var compilerVisitor = new FileVisitor(source.SourceName, tokenStream);
+            var compilerVisitor = new FileVisitor(source.SourceName, tokenStream, options, positionIndex);
 
             var builtFile = compilerVisitor.Visit(fileContext);
+
+            if (positionIndex is object)
+            {
+                // Finish the position index.
+                positionIndex.Seal();
+            }
 
             var success = parserMessages.All(x => x.Level != CompilerMessageLevel.Error) && !compilerVisitor.MessageSet.AnyErrorMessages;
             var allMessages = parserMessages.Concat(compilerVisitor.MessageSet.Messages);
 
             // Compile the file.
-            return new FileCompilerResult(success, allMessages, builtFile);
+            return new FileCompilerResult(success, allMessages, positionIndex, builtFile);
         }
 
         /// <summary>

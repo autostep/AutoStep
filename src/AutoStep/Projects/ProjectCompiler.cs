@@ -81,6 +81,25 @@ namespace AutoStep.Projects
         }
 
         /// <summary>
+        /// Creates a project compiler configured for code editing.
+        /// </summary>
+        /// <param name="project">The project to work against.</param>
+        /// <returns>A project compiler.</returns>
+        public static ProjectCompiler CreateForEditing(Project project)
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.CreatePositionIndex);
+
+            var defaultCallChainValidator = new DefaultCallChainValidator();
+
+            return new ProjectCompiler(
+                project,
+                compiler,
+                new Linker(compiler),
+                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                () => new InteractionSetBuilder(defaultCallChainValidator));
+        }
+
+        /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>

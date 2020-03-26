@@ -381,7 +381,7 @@ namespace AutoStep.Language.Test.LineTokeniser
         {
             if (statementContext is object)
             {
-                var stepVisitor = new StepReferenceVisitor(null, tokenStream);
+                var stepVisitor = new StepReferenceVisitor(null, tokenStream, TestCompilerOptions.Default, null);
 
                 var stepRef = stepVisitor.BuildStep(type, statementContext);
 
