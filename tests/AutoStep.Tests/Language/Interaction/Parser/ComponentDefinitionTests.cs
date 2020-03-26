@@ -121,7 +121,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
             await CompileAndAssertSuccess(Test, cfg => cfg
                 .Component("button", 2, 17, c => c
                     .Inherits("button", 4, 31)
-                    .StepDefinition(StepType.Given, "I have clicked on {name}", 6, 21, s => s
+                    .StepDefinition(StepType.Given, "I have clicked on {name}", 6, 27, s => s
                         .WordPart("I", 33)
                         .WordPart("have", 35)
                         .WordPart("clicked", 40)

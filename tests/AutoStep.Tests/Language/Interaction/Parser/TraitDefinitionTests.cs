@@ -78,7 +78,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                  .Trait("clickable + named", 2, 17, t => t
                      .NamePart("clickable", 24)
                      .NamePart("named", 36)
-                     .StepDefinition(StepType.Given, "I have clicked the {arg} $component$", 4, 21, step => step
+                     .StepDefinition(StepType.Given, "I have clicked the {arg} $component$", 4, 27, step => step
                         .WordPart("I", 33)
                         .WordPart("have", 35)
                         .WordPart("clicked", 40)
@@ -112,7 +112,7 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                  .Trait("clickable + named", 2, 17, t => t
                      .NamePart("clickable", 24)
                      .NamePart("named", 36)
-                     .StepDefinition(StepType.Given, "I have clicked the {arg} $component$", 4, 21, step => step
+                     .StepDefinition(StepType.Given, "I have clicked the {arg} $component$", 4, 27, step => step
                         .WordPart("I", 33)
                         .WordPart("have", 35)
                         .WordPart("clicked", 40)
