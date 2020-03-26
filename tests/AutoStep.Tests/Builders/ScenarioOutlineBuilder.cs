@@ -11,7 +11,9 @@ namespace AutoStep.Tests.Builders
             {
                 SourceLine = line,
                 StartColumn = column,
-                Name = name
+                Name = name,
+                EndLine = line,
+                EndColumn = (column + ("Scenario Outline: ".Length) + name.Length) - 1
             };
         }
 

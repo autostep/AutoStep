@@ -52,7 +52,7 @@ namespace AutoStep.Language.Test.Visitors
 
             Result = blankElement;
 
-            blankElement.AddLineInfo(declarationContext);
+            blankElement.AddPositionalLineInfo(declarationContext);
 
             VisitChildren(bodyContext);
         }
@@ -73,7 +73,7 @@ namespace AutoStep.Language.Test.Visitors
 
             Result = step;
 
-            step.AddLineInfo(bodyContext);
+            step.AddPositionalLineInfo(bodyContext);
 
             VisitChildren(bodyContext);
 

@@ -292,7 +292,7 @@ namespace AutoStep.Language.Test.Visitors
             if (type is null || bodyContext is null)
             {
                 // Create a 'dummy' step definition.
-                stepDefinition.AddLineInfo(declaration);
+                stepDefinition.AddPositionalLineInfo(declaration);
             }
             else
             {
@@ -428,7 +428,7 @@ namespace AutoStep.Language.Test.Visitors
                 Visit(annotations);
             }
 
-            scenario.AddLineInfo(title);
+            scenario.AddPositionalLineInfo(title);
             scenario.Name = titleText;
 
             // Try to add our scenario name to the unique set.

@@ -5,14 +5,16 @@ namespace AutoStep.Tests.Builders
 {
     public class StepDefinitionBuilder : BaseBuilder<StepDefinitionElement>, IStepCollectionBuilder<StepDefinitionElement>
     {
-        public StepDefinitionBuilder(StepType type, string declaration, int line, int column)
+        public StepDefinitionBuilder(StepType type, string declaration, int line, int column, int? endColumn = null)
         {
             Built = new StepDefinitionElement
             {
                 SourceLine = line,
                 StartColumn = column,
                 Type = type,
-                Declaration = declaration
+                Declaration = declaration,
+                EndLine = line,
+                EndColumn = endColumn ?? (column + type.ToString().Length + 1 + declaration.Length) - 1
             };
         }
 
