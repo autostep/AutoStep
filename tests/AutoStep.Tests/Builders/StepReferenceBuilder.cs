@@ -17,6 +17,8 @@ namespace AutoStep.Tests.Builders
                 BindingType = bindingType,
                 SourceLine = line,
                 StartColumn = column,
+                EndLine = line,
+                EndColumn = (column + type.ToString().Length + body.Length),
                 RawText = body
             };
 

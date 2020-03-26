@@ -72,7 +72,7 @@ namespace AutoStep.Language.Test.Visitors
 
             Result = step;
 
-            step.AddLineInfo(statementContext);
+            step.AddPositionalLineInfo(statementContext);
 
             PositionIndex?.PushScope(step, statementContext);
 
@@ -112,7 +112,7 @@ namespace AutoStep.Language.Test.Visitors
 
             Result = step;
 
-            step.AddLineInfo(statementContext);
+            step.AddPositionalLineInfo(statementContext);
 
             PositionIndex?.PushScope(step, statementContext);
 

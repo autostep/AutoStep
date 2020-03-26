@@ -203,7 +203,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
-                                    "No step definitions could be found that match this step.", 1, 1)
+                                    "No step definitions could be found that match this step.", 1, 1, 1, 25)
             });
 
             // The failing definition should not have a bound definition.
@@ -255,7 +255,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
-                                    "There are multiple matching step definitions that match this step.", 3, 1)
+                                    "There are multiple matching step definitions that match this step.", 3, 1, 3, 27)
             });
 
             // The failing definition should not have a bound definition.
