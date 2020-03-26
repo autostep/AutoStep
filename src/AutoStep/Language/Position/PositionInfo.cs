@@ -18,7 +18,7 @@ namespace AutoStep.Language.Position
         /// <param name="lineTokens">The set of tokens that apply at this position.</param>
         /// <param name="cursorTokenIndex">The index of the token, in the set of tokens, that the cursor is at.</param>
         /// <param name="closedPrecedingTokenIndex">The index of the token, in the set of tokens, that immediately precedes the cursor.</param>
-        public PositionInfo(int line, int column, IReadOnlyList<BuiltElement> scopes, IReadOnlyList<PositionLineToken> lineTokens, int? cursorTokenIndex, int? closedPrecedingTokenIndex)
+        public PositionInfo(long line, long column, IReadOnlyList<BuiltElement> scopes, IReadOnlyList<PositionLineToken> lineTokens, int? cursorTokenIndex, int? closedPrecedingTokenIndex)
         {
             Line = line;
             Column = column;
@@ -31,12 +31,12 @@ namespace AutoStep.Language.Position
         /// <summary>
         /// Gets the line number of the position.
         /// </summary>
-        public int Line { get; }
+        public long Line { get; }
 
         /// <summary>
         /// Gets the column number of the position.
         /// </summary>
-        public int Column { get; }
+        public long Column { get; }
 
         /// <summary>
         /// Gets the set of scopes that apply at this position. First element is current scope, subsequent elements are the parent scopes.

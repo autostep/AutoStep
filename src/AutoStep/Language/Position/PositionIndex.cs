@@ -18,7 +18,7 @@ namespace AutoStep.Language.Position
 
         private readonly LineEntry[] lines;
 
-        private int lastKnownLine = 0;
+        private long lastKnownLine = 0;
         private ImmutableElementStack currentStack = Empty;
         private bool isSealed = false;
 
@@ -26,7 +26,7 @@ namespace AutoStep.Language.Position
         /// Initializes a new instance of the <see cref="PositionIndex"/> class.
         /// </summary>
         /// <param name="fileLines">The number of lines in the file.</param>
-        public PositionIndex(int fileLines)
+        public PositionIndex(long fileLines)
         {
             if (fileLines < 0)
             {
@@ -37,7 +37,7 @@ namespace AutoStep.Language.Position
         }
 
         /// <inheritdoc/>
-        public PositionInfo Lookup(int line, int column)
+        public PositionInfo Lookup(long line, long column)
         {
             if (!isSealed)
             {
@@ -109,7 +109,7 @@ namespace AutoStep.Language.Position
         /// </summary>
         /// <param name="associatedElement">The element to use as the scope.</param>
         /// <param name="lineNo">A custom line number to start the scope from.</param>
-        public void PushScope(BuiltElement associatedElement, int lineNo)
+        public void PushScope(BuiltElement associatedElement, long lineNo)
         {
             AssertUnsealed();
             AssertLineNumberRange(lineNo, nameof(lineNo));
@@ -134,7 +134,7 @@ namespace AutoStep.Language.Position
         /// Pops the current scope.
         /// </summary>
         /// <param name="endLineNo">The line number at which the scope ends.</param>
-        public void PopScope(int endLineNo)
+        public void PopScope(long endLineNo)
         {
             AssertUnsealed();
             AssertLineNumberRange(endLineNo, nameof(endLineNo));
@@ -167,7 +167,7 @@ namespace AutoStep.Language.Position
         /// <param name="element">An optional related element for the token.</param>
         /// <param name="tokenCategory">The token category.</param>
         /// <param name="subCategory">The token sub-category.</param>
-        public void AddLineToken(int line, int startColumn, int endColumn, BuiltElement? element, LineTokenCategory tokenCategory, LineTokenSubCategory subCategory = LineTokenSubCategory.None)
+        public void AddLineToken(long line, int startColumn, int endColumn, BuiltElement? element, LineTokenCategory tokenCategory, LineTokenSubCategory subCategory = LineTokenSubCategory.None)
         {
             AssertUnsealed();
             AssertLineNumberRange(line);
@@ -195,7 +195,7 @@ namespace AutoStep.Language.Position
         /// <param name="endColumn">The end column of the token.</param>
         /// <param name="tokenCategory">The token category.</param>
         /// <param name="subCategory">The token sub-category.</param>
-        public void AddLineToken(int line, int startColumn, int endColumn, LineTokenCategory tokenCategory, LineTokenSubCategory subCategory = LineTokenSubCategory.None)
+        public void AddLineToken(long line, int startColumn, int endColumn, LineTokenCategory tokenCategory, LineTokenSubCategory subCategory = LineTokenSubCategory.None)
         {
             AddLineToken(line, startColumn, endColumn, null, tokenCategory, subCategory);
         }
@@ -257,7 +257,7 @@ namespace AutoStep.Language.Position
             isSealed = true;
         }
 
-        private void AssertLineNumberRange(int line, string? paramName = null)
+        private void AssertLineNumberRange(long line, string? paramName = null)
         {
             if (line < 1)
             {
@@ -278,7 +278,7 @@ namespace AutoStep.Language.Position
             }
         }
 
-        private void PopulateBlankLines(int nextKnownLine)
+        private void PopulateBlankLines(long nextKnownLine)
         {
             // From the last known line to the line before the new one, apply the current scope stack.
             for (var pos = lastKnownLine; pos < nextKnownLine; pos++)

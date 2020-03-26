@@ -17,6 +17,6 @@
         /// <param name="line">The line number (starting from 1).</param>
         /// <param name="column">The column (starting from 1).</param>
         /// <returns>A position info block.</returns>
-        PositionInfo Lookup(int line, int column);
+        PositionInfo Lookup(long line, long column);
     }
 }
