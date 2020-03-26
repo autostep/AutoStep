@@ -8,7 +8,7 @@ namespace AutoStep.Elements.Parts
     /// Represents a placeholder part, that can match a dynamic value. This allows a single step definition to match against
     /// multiple steps based on these values, and output the matched value as a result of the binding operation.
     /// </summary>
-    internal class PlaceholderMatchPart : DefinitionPart
+    public class PlaceholderMatchPart : DefinitionPart
     {
         private readonly List<WordDefinitionPart> matchingPlaceholderValues = new List<WordDefinitionPart>();
 
@@ -52,7 +52,7 @@ namespace AutoStep.Elements.Parts
         }
 
         /// <inheritdoc/>
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
+        internal override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
             var bestResult = new StepReferenceMatchResult(0, false, referenceParts, ReadOnlySpan<StepToken>.Empty);
 
