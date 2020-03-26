@@ -101,6 +101,12 @@ namespace AutoStep.Language.Test
             }
         }
 
+        /// <inheritdoc/>
+        public IEnumerable<IMatchResult> GetPossibleMatches(StepReferenceElement reference)
+        {
+            return linkerTree.Match(reference, false, out var _);
+        }
+
         /// <summary>
         /// Links (or re-links) a built autostep file; all step references that can be updated with step definition bindings will be.
         /// </summary>

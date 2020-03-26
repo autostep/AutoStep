@@ -885,6 +885,49 @@ namespace AutoStep.Tests.Language.Test
             file.AllStepReferences.First!.Value.Binding.Should().BeNull();
         }
 
+        [Fact]
+        public void ReturnsAllPossibleMatches()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will have done something");
+            var def2 = new TestDef(StepType.Given, "I will have");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("", StepType.Given, StepType.Given, 1, 1).Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference);
+
+            result.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public void ReturnsAllPossibleMatchesIncludingExact()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will have done something");
+            var def2 = new TestDef(StepType.Given, "I will have");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("I will have", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("I").Text("will").Text("have").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference);
+
+            result.Should().HaveCount(2);
+
+            result.First().IsExact.Should().BeTrue();
+        }
+
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
         {
             var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);

@@ -8,7 +8,7 @@ namespace AutoStep.Language.Test.Matching
     /// <summary>
     /// Defines a match result found while searching the MatchingTree.
     /// </summary>
-    internal class MatchResult
+    internal class MatchResult : IMatchResult
     {
         private List<LanguageOperationMessage>? msgs;
         private Dictionary<string, string>? placeholderValues;

@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
+using AutoStep.Elements.Test;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Test;
 using AutoStep.Language.Test.LineTokeniser;
+using AutoStep.Language.Test.Matching;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -307,6 +309,16 @@ namespace AutoStep.Projects
         public IEnumerable<IStepDefinitionSource> EnumerateStepDefinitionSources()
         {
             return linker.AllStepDefinitionSources;
+        }
+
+        /// <summary>
+        /// Retrieves the set of possible matches for the step definition.
+        /// </summary>
+        /// <param name="element">The step reference.</param>
+        /// <returns>The set of results.</returns>
+        public IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element)
+        {
+            return linker.GetPossibleMatches(element);
         }
 
         /// <summary>

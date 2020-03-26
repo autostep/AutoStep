@@ -327,15 +327,33 @@ namespace AutoStep.Language.Test.Matching
         {
             Debug.Assert(matchingPart is object);
 
-            // Check for match quality between the part assigned to this node and the part we are looking for.
-            var match = matchingPart!.DoStepReferenceMatch(referenceText, remainingTokenSpan);
+            StepReferenceMatchResult match;
 
-            finalSpan = match.RemainingTokens;
-
-            if (match.Length == 0)
+            if (remainingTokenSpan.Length > 0)
             {
-                // No match, nothing at this node or below.
-                return false;
+                // Check for match quality between the part assigned to this node and the part we are looking for.
+                match = matchingPart!.DoStepReferenceMatch(referenceText, remainingTokenSpan);
+
+                finalSpan = match.RemainingTokens;
+
+                if (match.Length == 0)
+                {
+                    // No match, nothing at this node or below.
+                    return false;
+                }
+            }
+            else
+            {
+                finalSpan = remainingTokenSpan;
+
+                if (exactOnly)
+                {
+                    return false;
+                }
+                else
+                {
+                    match = new StepReferenceMatchResult(0, false, remainingTokenSpan, ReadOnlySpan<StepToken>.Empty);
+                }
             }
 
             var addAllRemaining = true;
