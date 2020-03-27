@@ -76,6 +76,11 @@ namespace AutoStep.Elements.Interaction
         }
 
         /// <summary>
+        /// Gets the set of valid components.
+        /// </summary>
+        public IEnumerable<string> ValidComponents => allComponents;
+
+        /// <summary>
         /// Checks whether this element matches the same set of components as the other element.
         /// </summary>
         /// <param name="otherElement">The other element.</param>
