@@ -333,5 +333,51 @@ namespace AutoStep.Tests.Execution
 
             text.Should().Be("value something");
         }
+
+        [Fact]
+        public void GetLiteralTextQuotedMultiTokenArgument()
+        {
+            var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
+            stepDef.Argument("{arg}", "arg", 3);
+
+            var stepRef = new StepReferenceBuilder("I 'argument something'", StepType.Given, StepType.Given, 1, 1);
+            stepRef.Text("I");
+            stepRef.Quote();
+            stepRef.Text("argument");
+            stepRef.Text("something");
+            stepRef.Quote();
+            stepRef.Built.FreezeTokens();
+
+            var argTokens = stepRef.Built.TokenSpan.Slice(1);
+
+            var matchResult = new StepReferenceMatchResult(1, true, default, argTokens, true, true);
+
+            var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
+
+            var text = binding.GetRawText("I 'argument something'");
+
+            text.Should().Be("argument something");
+        }
+
+        [Fact]
+        public void GetLiteralTextVariableAmongstTokens()
+        {
+            var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
+            stepDef.Argument("{arg}", "arg", 3);
+
+            var stepRef = new StepReferenceBuilder("I 'word1 <var> word2'", StepType.Given, StepType.Given, 1, 1);
+            stepRef.Text("I").Quote().Text("word").Int("1").Variable("var").Text("word").Int("2").Quote();
+            stepRef.Built.FreezeTokens();
+
+            var argTokens = stepRef.Built.TokenSpan.Slice(1);
+
+            var matchResult = new StepReferenceMatchResult(9, true, default, argTokens, true, true);
+
+            var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
+
+            var text = binding.GetRawText("I 'word1 <var> word2'");
+
+            text.Should().Be("word1 <var> word2");
+        }
     }
 }
