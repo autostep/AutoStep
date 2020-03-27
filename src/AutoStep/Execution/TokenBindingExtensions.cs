@@ -190,6 +190,41 @@ namespace AutoStep.Execution
             return rawText.Substring(startPos, length);
         }
 
+        /// <summary>
+        /// Get the raw length of an argument value in the raw text.
+        /// </summary>
+        /// <param name="binding">The argument binding.</param>
+        /// <returns>The length of the binding's raw text.</returns>
+        public static int GetRawLength(this TokenisedArgumentValue binding)
+        {
+            if (binding is null)
+            {
+                throw new ArgumentNullException(nameof(binding));
+            }
+
+            var tokens = binding.MatchedTokens;
+
+            if (tokens.Length == 0)
+            {
+                return 0;
+            }
+
+            var lastToken = tokens[tokens.Length - 1];
+            var length = (lastToken.StartIndex - tokens[0].StartIndex) + lastToken.Length;
+
+            if (binding.StartExclusive)
+            {
+                length--;
+            }
+
+            if (binding.EndExclusive)
+            {
+                length--;
+            }
+
+            return length;
+        }
+
         private static string GetFullText(TokenisedArgumentValue binding, IServiceScope scope, string rawText, Func<string, string?> getVariableValue)
         {
             // Ok, so we need to go get the raw text from the matched tokens.

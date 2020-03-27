@@ -335,7 +335,7 @@ namespace AutoStep.Tests.Execution
         }
 
         [Fact]
-        public void GetLiteralTextQuotedMultiTokenArgument()
+        public void GetRawTextQuotedMultiTokenArgument()
         {
             var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
             stepDef.Argument("{arg}", "arg", 3);
@@ -360,7 +360,32 @@ namespace AutoStep.Tests.Execution
         }
 
         [Fact]
-        public void GetLiteralTextVariableAmongstTokens()
+        public void GetRawTextLengthQuotedMultiTokenArgument()
+        {
+            var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
+            stepDef.Argument("{arg}", "arg", 3);
+
+            var stepRef = new StepReferenceBuilder("I 'argument something'", StepType.Given, StepType.Given, 1, 1);
+            stepRef.Text("I");
+            stepRef.Quote();
+            stepRef.Text("argument");
+            stepRef.Text("something");
+            stepRef.Quote();
+            stepRef.Built.FreezeTokens();
+
+            var argTokens = stepRef.Built.TokenSpan.Slice(1);
+
+            var matchResult = new StepReferenceMatchResult(1, true, default, argTokens, true, true);
+
+            var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
+
+            var length = binding.GetRawLength();
+
+            length.Should().Be(18);
+        }
+
+        [Fact]
+        public void GetRawTextVariableAmongstTokens()
         {
             var stepDef = new StepDefinitionBuilder(StepType.Given, "I {arg}", 1, 1);
             stepDef.Argument("{arg}", "arg", 3);
