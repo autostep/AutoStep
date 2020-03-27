@@ -19,6 +19,11 @@ namespace AutoStep.Language.Test
         }
 
         /// <summary>
+        /// Gets the argument name (if we know it). It's possible to have un-named arguments.
+        /// </summary>
+        public string? ArgumentName => Part.Name;
+
+        /// <summary>
         /// Gets the definition part.
         /// </summary>
         internal ArgumentPart Part { get; }
