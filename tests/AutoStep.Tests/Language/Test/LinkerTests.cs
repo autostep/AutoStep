@@ -12,6 +12,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Test;
+using AutoStep.Elements;
 
 namespace AutoStep.Tests.Language.Test
 {
@@ -26,6 +27,12 @@ namespace AutoStep.Tests.Language.Test
         {
             public TestDef(IStepDefinitionSource source, StepType type, string declaration) : base(source, type, declaration)
             {
+            }
+
+            public TestDef(StepDefinitionElement def)
+                : base(TestStepDefinitionSource.Blank, def.Type, def.Declaration!)
+            {
+                Definition = def;
             }
 
             public TestDef(StepType type, string declaration) : base(TestStepDefinitionSource.Blank, type, declaration)
@@ -926,6 +933,61 @@ namespace AutoStep.Tests.Language.Test
             result.Should().HaveCount(2);
 
             result.First().IsExact.Should().BeTrue();
+        }
+
+        [Fact]
+        public void PartialMatchesIncludeBoundArgument()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will {arg} done something");
+            var def2 = new TestDef(StepType.Given, "I will {arg} not");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("I will really", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("I").Text("will").Text("really").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference).ToList();
+
+            result.Should().HaveCount(2);
+            result[0].Arguments.First().GetRawText("I will really").Should().Be("really");
+            result[1].Arguments.First().GetRawText("I will really").Should().Be("really");
+        }
+
+        [Fact]
+        public void PartialMatchesIncludePlaceholderArgument()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var stepDefBuilder = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+            stepDefBuilder.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+            var stepDefBuilder2 = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ will not", 1, 1);
+            stepDefBuilder2.WordPart("The", 1).ComponentMatch(5).WordPart("will", 17).WordPart("not", 22);
+
+            var interactionStep1 = stepDefBuilder.Built;
+            var interactionStep2 = stepDefBuilder2.Built;
+
+            interactionStep1.AddComponentMatch("button");
+            interactionStep2.AddComponentMatch("button");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(new TestDef(interactionStep1), new TestDef(interactionStep2)));
+
+            var reference = new StepReferenceBuilder("The button", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("button").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference).ToList();
+
+            result.Should().HaveCount(2);
+            result[0].PlaceholderValues!["component"].Should().Be("button");
+            result[1].PlaceholderValues!["component"].Should().Be("button");
         }
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)

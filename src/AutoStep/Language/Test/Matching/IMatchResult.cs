@@ -25,5 +25,15 @@ namespace AutoStep.Language.Test.Matching
         /// Gets a value indicating whether this is an exact one for the definition.
         /// </summary>
         public bool IsExact { get; }
+
+        /// <summary>
+        /// Gets the set of argument bindings for this result.
+        /// </summary>
+        public IEnumerable<ArgumentBinding> Arguments { get; }
+
+        /// <summary>
+        /// Gets the set of matched placeholder values for the match result. Will be null if there are no placeholders.
+        /// </summary>
+        public IReadOnlyDictionary<string, string>? PlaceholderValues { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using AutoStep.Definitions;
 using AutoStep.Elements.Parts;
 
@@ -48,6 +49,9 @@ namespace AutoStep.Language.Test.Matching
         /// Gets the set of argument bindings for this result.
         /// </summary>
         public LinkedList<ArgumentBinding>? ArgumentSet { get; private set; }
+
+        /// <inheritdoc/>
+        public IEnumerable<ArgumentBinding> Arguments => ArgumentSet ?? Enumerable.Empty<ArgumentBinding>();
 
         /// <summary>
         /// Gets the set of matched placeholder values for the match result.

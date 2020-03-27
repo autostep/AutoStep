@@ -452,23 +452,26 @@ namespace AutoStep.Language.Test.Matching
                 }
             }
 
-            if (addedSomething && results.First.Value.IsExact)
+            if (addedSomething && (results.First.Value.IsExact || !exactOnly))
             {
                 if (matchingPart is ArgumentPart arg)
                 {
                     var currentResult = results.First;
 
-                    // Only worry about exact matches (and all the exacts come at the start of the list).
-                    while (currentResult is object && currentResult.Value.IsExact)
+                    if (match.IsExact)
                     {
-                        // When at least one exact match has been added, it means that this node's
-                        // argument binding resulted in a final match.
-                        var exactMatch = currentResult.Value;
+                        // If we're in 'exact only' mode, only worry about exact matches (and all the exacts come at the start of the list).
+                        while (currentResult is object && (currentResult.Value.IsExact || !exactOnly))
+                        {
+                            // When at least one exact match has been added, it means that this node's
+                            // argument binding resulted in a final match.
+                            var exactMatch = currentResult.Value;
 
-                        // Add to the list of 'argument token spans'.
-                        exactMatch.PrependArgumentSet(arg, match);
+                            // Add to the list of 'argument token spans'.
+                            exactMatch.PrependArgumentSet(arg, match);
 
-                        currentResult = currentResult.Next;
+                            currentResult = currentResult.Next;
+                        }
                     }
                 }
                 else if (matchingPart is PlaceholderMatchPart placeholder &&
@@ -476,17 +479,20 @@ namespace AutoStep.Language.Test.Matching
                 {
                     var currentResult = results.First;
 
-                    // Only worry about exact matches (and all the exacts come at the start of the list).
-                    while (currentResult is object && currentResult.Value.IsExact)
+                    if (match.IsExact)
                     {
-                        // When at least one exact match has been added, it means that this node's
-                        // placeholder binding resulted in a final match.
-                        var exactMatch = currentResult.Value;
+                        // Only worry about exact matches (and all the exacts come at the start of the list).
+                        while (currentResult is object && (currentResult.Value.IsExact || !exactOnly))
+                        {
+                            // When at least one exact match has been added, it means that this node's
+                            // placeholder binding resulted in a final match.
+                            var exactMatch = currentResult.Value;
 
-                        // Set the placeholder result in the final item.
-                        exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
+                            // Set the placeholder result in the final item.
+                            exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
 
-                        currentResult = currentResult.Next;
+                            currentResult = currentResult.Next;
+                        }
                     }
                 }
             }
