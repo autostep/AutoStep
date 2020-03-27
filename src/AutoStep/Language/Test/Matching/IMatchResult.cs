@@ -32,6 +32,11 @@ namespace AutoStep.Language.Test.Matching
         public IEnumerable<ArgumentBinding> Arguments { get; }
 
         /// <summary>
+        /// Gets the number of definition parts that were matched.
+        /// </summary>
+        int MatchedParts { get; }
+
+        /// <summary>
         /// Gets the set of matched placeholder values for the match result. Will be null if there are no placeholders.
         /// </summary>
         public IReadOnlyDictionary<string, string>? PlaceholderValues { get; }

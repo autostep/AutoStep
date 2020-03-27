@@ -471,6 +471,8 @@ namespace AutoStep.Language.Test.Matching
                             exactMatch.PrependArgumentSet(arg, match);
 
                             currentResult = currentResult.Next;
+
+                            exactMatch.MatchedParts++;
                         }
                     }
                 }
@@ -492,7 +494,23 @@ namespace AutoStep.Language.Test.Matching
                             exactMatch.IncludePlaceholderValue(placeholder.PlaceholderValueName, placeholderValue);
 
                             currentResult = currentResult.Next;
+
+                            exactMatch.MatchedParts++;
                         }
+                    }
+                }
+                else
+                {
+                    var currentResult = results.First;
+
+                    // Only worry about exact matches (and all the exacts come at the start of the list).
+                    while (currentResult is object && (currentResult.Value.IsExact || !exactOnly))
+                    {
+                        var exactMatch = currentResult.Value;
+
+                        exactMatch.MatchedParts++;
+
+                        currentResult = currentResult.Next;
                     }
                 }
             }

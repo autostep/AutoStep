@@ -36,6 +36,11 @@ namespace AutoStep.Language.Test.Matching
         public int Confidence { get; }
 
         /// <summary>
+        /// Gets or sets the number of parts that were matched successfully.
+        /// </summary>
+        public int MatchedParts { get; set; }
+
+        /// <summary>
         /// Gets the matched definition.
         /// </summary>
         public StepDefinition Definition { get; }

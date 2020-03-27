@@ -955,7 +955,9 @@ namespace AutoStep.Tests.Language.Test
 
             result.Should().HaveCount(2);
             result[0].Arguments.First().GetRawText("I will really").Should().Be("really");
+            result[0].MatchedParts.Should().Be(3);
             result[1].Arguments.First().GetRawText("I will really").Should().Be("really");
+            result[1].MatchedParts.Should().Be(3);
         }
 
         [Fact]
@@ -987,7 +989,9 @@ namespace AutoStep.Tests.Language.Test
 
             result.Should().HaveCount(2);
             result[0].PlaceholderValues!["component"].Should().Be("button");
+            result[0].MatchedParts.Should().Be(2);
             result[1].PlaceholderValues!["component"].Should().Be("button");
+            result[1].MatchedParts.Should().Be(2);
         }
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)
