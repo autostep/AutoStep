@@ -499,7 +499,7 @@ namespace AutoStep.Language.Test.Matching
                         }
                     }
                 }
-                else
+                else if (match.IsExact)
                 {
                     var currentResult = results.First;
 
