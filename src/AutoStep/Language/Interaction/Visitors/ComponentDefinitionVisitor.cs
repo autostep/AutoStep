@@ -61,7 +61,12 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <inheritdoc/>
         public override ComponentDefinitionElement VisitComponentName([NotNull] ComponentNameContext context)
         {
-            ProvideName(GetTextFromStringToken(context.STRING()), context);
+            var str = context.STRING();
+
+            if (str is object)
+            {
+                ProvideName(GetTextFromStringToken(context.STRING()), context);
+            }
 
             return Result!;
         }
