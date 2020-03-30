@@ -87,6 +87,14 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
+        public override object GetSignature()
+        {
+            var el = (InteractionStepDefinitionElement)Definition!;
+
+            return el.GetSignature();
+        }
+
+        /// <inheritdoc/>
         public override bool IsSameDefinition(StepDefinition def)
         {
             // A definition is the same if the IDs are the same and it matches all the same components.
@@ -95,7 +103,10 @@ namespace AutoStep.Definitions.Interaction
                 if (Definition is InteractionStepDefinitionElement myElement &&
                     def.Definition is InteractionStepDefinitionElement otherElement)
                 {
-                    return Source.Uid == def.Source.Uid && Type == def.Type && Declaration == def.Declaration && myElement.MatchesSameComponentsAs(otherElement);
+                    return Source.Uid == def.Source.Uid &&
+                           Type == def.Type &&
+                           Declaration == def.Declaration &&
+                           myElement.MatchesSameComponentsAs(otherElement);
                 }
 
                 return false;

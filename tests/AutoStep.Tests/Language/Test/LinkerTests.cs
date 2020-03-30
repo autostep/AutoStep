@@ -13,6 +13,8 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Test;
 using AutoStep.Elements;
+using AutoStep.Definitions.Interaction;
+using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Language.Test
 {
@@ -153,6 +155,46 @@ namespace AutoStep.Tests.Language.Test
 
             linkResult.Success.Should().BeFalse();
             linkResult.Messages.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void UpdatePlaceholderDefinition()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            InteractionStepDefinitionElement DefForComponentName(string name)
+            {
+                var stepDefBuilder = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+                stepDefBuilder.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+                var interactionStep1 = stepDefBuilder.Built;
+
+                interactionStep1.AddComponentMatch(name);
+
+                return interactionStep1;
+            }
+
+            var testDef = new InteractionStepDefinition(TestStepDefinitionSource.Blank, DefForComponentName("button"));
+
+            var source = new UpdatableTestStepDefinitionSource(testDef);
+
+            linker.AddStepDefinitionSource(source);
+
+            var reference = new StepReferenceBuilder("The field value", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("field").Text("value").Built;
+            reference.FreezeTokens();
+
+            linker.BindSingleStep(reference).Should().BeFalse();
+
+            // Now update the source.
+            source.ReplaceStepDefinitions(new InteractionStepDefinition(TestStepDefinitionSource.Blank, DefForComponentName("field")));
+
+            linker.AddOrUpdateStepDefinitionSource(source);
+
+            // Linker should now bind.
+            linker.BindSingleStep(reference).Should().BeTrue();
         }
 
 

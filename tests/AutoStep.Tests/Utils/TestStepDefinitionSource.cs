@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -30,6 +32,12 @@ namespace AutoStep.Tests.Utils
         public string Name => "Test";
 
         public bool ConfigureServicesCalled { get; private set; }
+
+        public virtual void ReplaceStepDefinitions(params StepDefinition[] newDefs)
+        {
+            defs.Clear();
+            defs.AddRange(newDefs);
+        }
 
         public virtual void AddStepDefinition(StepType type, string declaration)
         {

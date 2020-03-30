@@ -81,6 +81,15 @@ namespace AutoStep.Elements.Interaction
         public IEnumerable<string> ValidComponents => allComponents;
 
         /// <summary>
+        /// Gets a step definition signature.
+        /// </summary>
+        /// <returns>The signature.</returns>
+        internal InteractionStepSignature GetSignature()
+        {
+            return new InteractionStepSignature(Type, Declaration!, allComponents);
+        }
+
+        /// <summary>
         /// Checks whether this element matches the same set of components as the other element.
         /// </summary>
         /// <param name="otherElement">The other element.</param>
