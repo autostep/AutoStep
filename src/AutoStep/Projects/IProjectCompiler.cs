@@ -2,9 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
+using AutoStep.Elements.Test;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Test.LineTokeniser;
+using AutoStep.Language.Test.Matching;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -80,5 +82,12 @@ namespace AutoStep.Projects
         /// </param>
         /// <returns>The tokenisation result.</returns>
         LineTokeniseResult<int> TokeniseInteractionLine(string line, int lastTokeniserState = 0);
+
+        /// <summary>
+        /// Retrieves the set of possible matches for the step definition.
+        /// </summary>
+        /// <param name="element">The step reference.</param>
+        /// <returns>The set of results.</returns>
+        IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element);
     }
 }

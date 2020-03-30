@@ -34,8 +34,6 @@ namespace AutoStep.Language.Interaction.Visitors
             Result = new InteractionStepDefinitionElement();
 
             Result.SourceName = SourceName;
-            Result.AddLineInfo(definitionContext);
-
             VisitChildren(definitionContext);
 
             return Result;
@@ -45,6 +43,8 @@ namespace AutoStep.Language.Interaction.Visitors
         public override InteractionStepDefinitionElement VisitDeclareGiven([NotNull] DeclareGivenContext context)
         {
             Result!.Type = StepType.Given;
+
+            Result.AddPositionalLineInfo(context);
 
             VisitChildren(context);
 
@@ -56,6 +56,8 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             Result!.Type = StepType.When;
 
+            Result.AddPositionalLineInfo(context);
+
             VisitChildren(context);
 
             return Result;
@@ -65,6 +67,8 @@ namespace AutoStep.Language.Interaction.Visitors
         public override InteractionStepDefinitionElement VisitDeclareThen([NotNull] DeclareThenContext context)
         {
             Result!.Type = StepType.Then;
+
+            Result.AddPositionalLineInfo(context);
 
             VisitChildren(context);
 

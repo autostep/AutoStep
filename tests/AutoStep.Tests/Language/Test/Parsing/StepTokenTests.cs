@@ -13,6 +13,27 @@ namespace AutoStep.Tests.Language.Test.Parsing
         }
 
         [Fact]
+        public async Task EmptyStringAllowed()
+        {
+            const string TestFile =
+            @"
+              Feature: My Feature
+
+                Scenario: My Scenario
+
+                    Given
+
+            ";
+
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
+                .Feature("My Feature", 2, 15, feat => feat
+                    .Scenario("My Scenario", 4, 17, scen => scen
+                        .Given(null!, 6, 21)
+                    )
+                ));
+        }
+
+        [Fact]
         public async Task StepCanHaveQuotedString()
         {
             const string TestFile =

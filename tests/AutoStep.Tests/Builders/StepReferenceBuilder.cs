@@ -11,12 +11,21 @@ namespace AutoStep.Tests.Builders
 
         public StepReferenceBuilder(string body, StepType type, StepType? bindingType, int line, int column)
         {
+            var endColumn = (column + type.ToString().Length + (body ?? "").Length);
+
+            if(body is null)
+            {
+                endColumn--;
+            }
+
             Built = new StepReferenceElement
             {
                 Type = type,
                 BindingType = bindingType,
                 SourceLine = line,
                 StartColumn = column,
+                EndLine = line,
+                EndColumn = endColumn,
                 RawText = body
             };
 

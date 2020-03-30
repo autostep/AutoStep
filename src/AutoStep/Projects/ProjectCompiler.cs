@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
+using AutoStep.Elements.Test;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 using AutoStep.Language.Test;
 using AutoStep.Language.Test.LineTokeniser;
+using AutoStep.Language.Test.Matching;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects
@@ -69,6 +71,25 @@ namespace AutoStep.Projects
         public static ProjectCompiler CreateDefault(Project project)
         {
             var compiler = new TestCompiler(TestCompilerOptions.Default);
+
+            var defaultCallChainValidator = new DefaultCallChainValidator();
+
+            return new ProjectCompiler(
+                project,
+                compiler,
+                new Linker(compiler),
+                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                () => new InteractionSetBuilder(defaultCallChainValidator));
+        }
+
+        /// <summary>
+        /// Creates a project compiler configured for code editing.
+        /// </summary>
+        /// <param name="project">The project to work against.</param>
+        /// <returns>A project compiler.</returns>
+        public static ProjectCompiler CreateForEditing(Project project)
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.CreatePositionIndex);
 
             var defaultCallChainValidator = new DefaultCallChainValidator();
 
@@ -288,6 +309,16 @@ namespace AutoStep.Projects
         public IEnumerable<IStepDefinitionSource> EnumerateStepDefinitionSources()
         {
             return linker.AllStepDefinitionSources;
+        }
+
+        /// <summary>
+        /// Retrieves the set of possible matches for the step definition.
+        /// </summary>
+        /// <param name="element">The step reference.</param>
+        /// <returns>The set of results.</returns>
+        public IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element)
+        {
+            return linker.GetPossibleMatches(element);
         }
 
         /// <summary>

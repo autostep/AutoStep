@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using AutoStep.Elements.Test;
+using AutoStep.Language;
 using AutoStep.Tests.Language.FullFiles;
 using AutoStep.Tests.Utils;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,6 +40,17 @@ namespace AutoStep.Tests.Language.Test.Parsing
                                 .And("I have entered 'My Code' into 'Code'", StepType.Given, 30, 7)
                                 .And("I have selected 'A Type' in the 'Client Type' dropdown", StepType.Given, 31, 7)
                     )));
+        }
+
+        [Fact]
+        public async Task SingleScenarioCapturePositionData()
+        {
+            var positions = await CompileAndGetPositionIndex(Files.SingleScenarioSimple);
+
+            var pos = positions.Lookup(16, 15);
+            pos.CurrentScope.Should().BeOfType<ScenarioElement>();
+            pos.Token!.Category.Should().Be(LineTokenCategory.EntityName);
+            pos.Token.SubCategory.Should().Be(LineTokenSubCategory.Scenario);
         }
     }
 }

@@ -3,6 +3,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test.Parser;
 
 namespace AutoStep.Language.Test.Visitors
@@ -17,8 +18,10 @@ namespace AutoStep.Language.Test.Visitors
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
-        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream)
-            : base(sourceName, tokenStream)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TestCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, compilerOptions, positionIndex)
         {
         }
 
@@ -28,33 +31,30 @@ namespace AutoStep.Language.Test.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
-        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public StepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, TestCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
         /// <summary>
         /// Builds a step, taking the Step Type, and the Antlr context for the declaration body.
         /// </summary>
+        /// <param name="blankElement">A blank step definition element to populate.</param>
         /// <param name="type">The step type.</param>
         /// <param name="declarationContext">The step declaration context.</param>
         /// <param name="bodyContext">The statement body context.</param>
-        /// <returns>A generated step reference.</returns>
-        public StepDefinitionElement BuildStepDefinition(StepType type, AutoStepParser.StepDeclarationContext declarationContext, AutoStepParser.StepDeclarationBodyContext bodyContext)
+        public void BuildStepDefinition(StepDefinitionElement blankElement, StepType type, AutoStepParser.StepDeclarationContext declarationContext, AutoStepParser.StepDeclarationBodyContext bodyContext)
         {
-            var step = new StepDefinitionElement
-            {
-                Type = type,
-                Declaration = bodyContext.GetText(),
-            };
+            blankElement.Type = type;
+            blankElement.Declaration = bodyContext.GetText();
 
-            Result = step;
+            Result = blankElement;
 
-            step.AddLineInfo(declarationContext);
+            blankElement.AddPositionalLineInfo(declarationContext);
 
             VisitChildren(bodyContext);
-
-            return Result;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace AutoStep.Language.Test.Visitors
 
             Result = step;
 
-            step.AddLineInfo(bodyContext);
+            step.AddPositionalLineInfo(bodyContext);
 
             VisitChildren(bodyContext);
 
@@ -164,6 +164,13 @@ namespace AutoStep.Language.Test.Visitors
         private void AddPart(DefinitionPart part)
         {
             Result!.AddPart(part);
+            PositionIndex?.AddLineToken(part, LineTokenCategory.StepText, LineTokenSubCategory.Declaration);
+        }
+
+        private void AddPart(ArgumentPart part)
+        {
+            Result!.AddPart(part);
+            PositionIndex?.AddLineToken(part, LineTokenCategory.BoundArgument, LineTokenSubCategory.Declaration);
         }
     }
 }

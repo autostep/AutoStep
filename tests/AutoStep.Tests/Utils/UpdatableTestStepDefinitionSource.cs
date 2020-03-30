@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoStep.Definitions;
+using AutoStep.Elements;
 
 namespace AutoStep.Tests.Utils
 {
@@ -23,6 +24,12 @@ namespace AutoStep.Tests.Utils
         public override void AddStepDefinition(StepType type, string declaration)
         {
             base.AddStepDefinition(type, declaration);
+            lastModifyTime = DateTime.UtcNow;
+        }
+
+        public override void ReplaceStepDefinitions(params StepDefinition[] newDefs)
+        {
+            base.ReplaceStepDefinitions(newDefs);
             lastModifyTime = DateTime.UtcNow;
         }
 

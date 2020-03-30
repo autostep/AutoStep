@@ -6,7 +6,7 @@ namespace AutoStep.Elements.Test
     /// <summary>
     /// Defines an element that can contain a list of steps.
     /// </summary>
-    public abstract class StepCollectionElement : BuiltElement, IStepCollectionInfo
+    public abstract class StepCollectionElement : PositionalElement, IStepCollectionInfo
     {
         /// <summary>
         /// Gets the set of steps in the collection.

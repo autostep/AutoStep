@@ -6,7 +6,7 @@ namespace AutoStep.Elements.Parts
     /// <summary>
     /// Represents the base part of a step definition that has text and the ability to compare against step references.
     /// </summary>
-    internal abstract class DefinitionPart : PositionalElement
+    public abstract class DefinitionPart : PositionalElement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefinitionPart"/> class.
@@ -35,6 +35,6 @@ namespace AutoStep.Elements.Parts
         /// <param name="referenceText">The step text.</param>
         /// <param name="remainingTokenSpan">The remaining tokens.</param>
         /// <returns>A match result.</returns>
-        public abstract StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> remainingTokenSpan);
+        internal abstract StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> remainingTokenSpan);
     }
 }

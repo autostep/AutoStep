@@ -27,5 +27,18 @@ namespace AutoStep.Benchmarks
                 throw new ApplicationException("Compilation failed");
             }
         }
+
+        [Benchmark]
+        public void CompileFileWithPositionData()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.CreatePositionIndex);
+
+            var compileResult = compiler.CompileAsync(new StringContentSource(fileContent)).Result;
+
+            if (!compileResult.Success)
+            {
+                throw new ApplicationException("Compilation failed");
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
@@ -148,6 +149,80 @@ namespace AutoStep.Execution
             });
 
             return createdString;
+        }
+
+        /// <summary>
+        /// Gets the raw (un-expanded) text for an argument.
+        /// </summary>
+        /// <param name="binding">The bound argument.</param>
+        /// <param name="rawText">The raw text.</param>
+        /// <returns>The literal bound argument text.</returns>
+        public static string GetRawText(this TokenisedArgumentValue binding, string rawText)
+        {
+            if (binding is null)
+            {
+                throw new ArgumentNullException(nameof(binding));
+            }
+
+            var tokens = binding.MatchedTokens;
+
+            if (tokens.Length == 0 || string.IsNullOrEmpty(rawText))
+            {
+                return string.Empty;
+            }
+
+            var startPos = tokens[0].StartIndex;
+
+            var lastToken = tokens[tokens.Length - 1];
+            var length = (lastToken.StartIndex - startPos) + lastToken.Length;
+
+            if (binding.StartExclusive)
+            {
+                startPos++;
+                length--;
+            }
+
+            if (binding.EndExclusive)
+            {
+                length--;
+            }
+
+            return rawText.Substring(startPos, length);
+        }
+
+        /// <summary>
+        /// Get the raw length of an argument value in the raw text.
+        /// </summary>
+        /// <param name="binding">The argument binding.</param>
+        /// <returns>The length of the binding's raw text.</returns>
+        public static int GetRawLength(this TokenisedArgumentValue binding)
+        {
+            if (binding is null)
+            {
+                throw new ArgumentNullException(nameof(binding));
+            }
+
+            var tokens = binding.MatchedTokens;
+
+            if (tokens.Length == 0)
+            {
+                return 0;
+            }
+
+            var lastToken = tokens[tokens.Length - 1];
+            var length = (lastToken.StartIndex - tokens[0].StartIndex) + lastToken.Length;
+
+            if (binding.StartExclusive)
+            {
+                length--;
+            }
+
+            if (binding.EndExclusive)
+            {
+                length--;
+            }
+
+            return length;
         }
 
         private static string GetFullText(TokenisedArgumentValue binding, IServiceScope scope, string rawText, Func<string, string?> getVariableValue)

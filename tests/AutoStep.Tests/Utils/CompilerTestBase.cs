@@ -15,10 +15,11 @@ using Xunit.Abstractions;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Test;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Tests.Utils
 {
-    public class CompilerTestBase : LoggingTestBase
+    public abstract class CompilerTestBase : LoggingTestBase
     {
         protected string NewLine => Environment.NewLine;
 
@@ -185,6 +186,19 @@ namespace AutoStep.Tests.Utils
             Assert.True(result.Success);
 
             AssertElementComparison(expectedBuilder.Built, result.Output, true);
+        }
+
+        protected async Task<IPositionIndex> CompileAndGetPositionIndex(string content)
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics | TestCompilerOptions.CreatePositionIndex);
+            var source = new StringContentSource(content);
+
+            var result = await compiler.CompileAsync(source, LogFactory);
+
+            // Make sure the messages are the same.
+            Assert.NotNull(result.Positions);
+
+            return result.Positions!;
         }
 
         protected void AssertElementComparison(BuiltElement expected, BuiltElement? actual, bool includeStatementParts)

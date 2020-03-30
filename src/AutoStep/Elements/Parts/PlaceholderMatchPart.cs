@@ -8,9 +8,10 @@ namespace AutoStep.Elements.Parts
     /// Represents a placeholder part, that can match a dynamic value. This allows a single step definition to match against
     /// multiple steps based on these values, and output the matched value as a result of the binding operation.
     /// </summary>
-    internal class PlaceholderMatchPart : DefinitionPart
+    public class PlaceholderMatchPart : DefinitionPart
     {
         private readonly List<WordDefinitionPart> matchingPlaceholderValues = new List<WordDefinitionPart>();
+        private HashSet<string> allPlaceHolderValues = new HashSet<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderMatchPart"/> class.
@@ -33,14 +34,17 @@ namespace AutoStep.Elements.Parts
         /// <param name="placeholderValue">The value to match.</param>
         public void AddMatchingValue(string placeholderValue)
         {
-            // Add a word definition part.
-            matchingPlaceholderValues.Add(new WordDefinitionPart(placeholderValue, true)
+            if (allPlaceHolderValues.Add(placeholderValue))
             {
-                SourceLine = SourceLine,
-                StartColumn = StartColumn,
-                EndLine = EndLine,
-                EndColumn = EndColumn,
-            });
+                // Add a word definition part.
+                matchingPlaceholderValues.Add(new WordDefinitionPart(placeholderValue, true)
+                {
+                    SourceLine = SourceLine,
+                    StartColumn = StartColumn,
+                    EndLine = EndLine,
+                    EndColumn = EndColumn,
+                });
+            }
         }
 
         /// <summary>
@@ -49,10 +53,11 @@ namespace AutoStep.Elements.Parts
         public void ClearAllValues()
         {
             matchingPlaceholderValues.Clear();
+            allPlaceHolderValues.Clear();
         }
 
         /// <inheritdoc/>
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
+        internal override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
             var bestResult = new StepReferenceMatchResult(0, false, referenceParts, ReadOnlySpan<StepToken>.Empty);
 
@@ -83,7 +88,13 @@ namespace AutoStep.Elements.Parts
         public override bool IsDefinitionPartMatch(DefinitionPart part)
         {
             // A placeholder part matches.
-            return part is PlaceholderMatchPart;
+            if (part is PlaceholderMatchPart plHold && plHold.PlaceholderValueName == PlaceholderValueName)
+            {
+                // Same placeholder name. Test the word parts.
+                return plHold.allPlaceHolderValues.SetEquals(allPlaceHolderValues);
+            }
+
+            return false;
         }
     }
 }

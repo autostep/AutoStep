@@ -16,14 +16,14 @@ stepDefinitionBlock: annotations
 stepDefinition: WS? STEP_DEFINE WS? stepDeclaration NEWLINE
                     description?;
 
-stepDefinitionBody: stepCollectionBodyLine*;
+stepDefinitionBody: stepCollectionBodyLine+;
 
 stepDeclaration: DEF_GIVEN WS? stepDeclarationBody #declareGiven
                | DEF_WHEN WS? stepDeclarationBody  #declareWhen
                | DEF_THEN WS? stepDeclarationBody  #declareThen
                ;
 
-stepDeclarationBody: stepDeclarationSection+;
+stepDeclarationBody: stepDeclarationSection*;
 
 stepDeclarationSection: DEF_LCURLY stepDeclarationArgument DEF_RCURLY       # declarationArgument
                       | stepDeclarationSectionContent                       # declarationSection;
@@ -90,10 +90,10 @@ statementBlock: WS? statement NEWLINE NEWLINE* tableBlock #statementWithTable
               | WS? statement NEWLINE                     #statementLineTerminated
               | WS? statement EOF                         #statementEofTerminated;
 
-statement: GIVEN WS statementBody #given
-         | WHEN WS statementBody  #when
-         | THEN WS statementBody  #then
-         | AND WS statementBody   #and
+statement: GIVEN (WS statementBody)? #given
+         | WHEN (WS statementBody)?  #when
+         | THEN (WS statementBody)?  #then
+         | AND (WS statementBody)?   #and
          ;
 
 statementBody: statementSection+;

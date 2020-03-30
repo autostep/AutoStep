@@ -14,7 +14,9 @@ namespace AutoStep.Tests.Builders
                 SourceLine = line,
                 StartColumn = column,
                 Type = type,
-                Declaration = declaration
+                Declaration = declaration,
+                EndLine = line,
+                EndColumn = (column + type.ToString().Length + 1 + declaration.Length) - 1
             };
         }
 

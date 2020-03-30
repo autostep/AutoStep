@@ -10,7 +10,7 @@ namespace AutoStep.Definitions.Test
     /// <summary>
     /// Defines a step definition source backed by a project file that has its own step definitions.
     /// </summary>
-    internal class FileStepDefinitionSource : IUpdatableStepDefinitionSource
+    public class FileStepDefinitionSource : IUpdatableStepDefinitionSource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FileStepDefinitionSource"/> class.

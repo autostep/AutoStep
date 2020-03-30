@@ -12,6 +12,9 @@ using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Test;
+using AutoStep.Elements;
+using AutoStep.Definitions.Interaction;
+using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Tests.Language.Test
 {
@@ -26,6 +29,12 @@ namespace AutoStep.Tests.Language.Test
         {
             public TestDef(IStepDefinitionSource source, StepType type, string declaration) : base(source, type, declaration)
             {
+            }
+
+            public TestDef(StepDefinitionElement def)
+                : base(TestStepDefinitionSource.Blank, def.Type, def.Declaration!)
+            {
+                Definition = def;
             }
 
             public TestDef(StepType type, string declaration) : base(TestStepDefinitionSource.Blank, type, declaration)
@@ -148,6 +157,46 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().HaveCount(1);
         }
 
+        [Fact]
+        public void UpdatePlaceholderDefinition()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            InteractionStepDefinitionElement DefForComponentName(string name)
+            {
+                var stepDefBuilder = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+                stepDefBuilder.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+                var interactionStep1 = stepDefBuilder.Built;
+
+                interactionStep1.AddComponentMatch(name);
+
+                return interactionStep1;
+            }
+
+            var testDef = new InteractionStepDefinition(TestStepDefinitionSource.Blank, DefForComponentName("button"));
+
+            var source = new UpdatableTestStepDefinitionSource(testDef);
+
+            linker.AddStepDefinitionSource(source);
+
+            var reference = new StepReferenceBuilder("The field value", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("field").Text("value").Built;
+            reference.FreezeTokens();
+
+            linker.BindSingleStep(reference).Should().BeFalse();
+
+            // Now update the source.
+            source.ReplaceStepDefinitions(new InteractionStepDefinition(TestStepDefinitionSource.Blank, DefForComponentName("field")));
+
+            linker.AddOrUpdateStepDefinitionSource(source);
+
+            // Linker should now bind.
+            linker.BindSingleStep(reference).Should().BeTrue();
+        }
+
 
         [Fact]
         public void CannotRemoveUnregisteredStepDefinition()
@@ -203,7 +252,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
-                                    "No step definitions could be found that match this step.", 1, 1)
+                                    "No step definitions could be found that match this step.", 1, 1, 1, 25)
             });
 
             // The failing definition should not have a bound definition.
@@ -255,7 +304,7 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Messages.Should().BeEquivalentTo(new[]
             {
                 new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerMultipleMatchingDefinitions,
-                                    "There are multiple matching step definitions that match this step.", 3, 1)
+                                    "There are multiple matching step definitions that match this step.", 3, 1, 3, 27)
             });
 
             // The failing definition should not have a bound definition.
@@ -883,6 +932,108 @@ namespace AutoStep.Tests.Language.Test
             linkResult.Success.Should().BeFalse();
 
             file.AllStepReferences.First!.Value.Binding.Should().BeNull();
+        }
+
+        [Fact]
+        public void ReturnsAllPossibleMatches()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will have done something");
+            var def2 = new TestDef(StepType.Given, "I will have");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("", StepType.Given, StepType.Given, 1, 1).Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference);
+
+            result.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public void ReturnsAllPossibleMatchesIncludingExact()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will have done something");
+            var def2 = new TestDef(StepType.Given, "I will have");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("I will have", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("I").Text("will").Text("have").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference);
+
+            result.Should().HaveCount(2);
+
+            result.First().IsExact.Should().BeTrue();
+        }
+
+        [Fact]
+        public void PartialMatchesIncludeBoundArgument()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I will {arg} done something");
+            var def2 = new TestDef(StepType.Given, "I will {arg} not");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def, def2));
+
+            var reference = new StepReferenceBuilder("I will really", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("I").Text("will").Text("really").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference).ToList();
+
+            result.Should().HaveCount(2);
+            result[0].Arguments.First().GetRawText("I will really").Should().Be("really");
+            result[0].MatchedParts.Should().Be(3);
+            result[1].Arguments.First().GetRawText("I will really").Should().Be("really");
+            result[1].MatchedParts.Should().Be(3);
+        }
+
+        [Fact]
+        public void PartialMatchesIncludePlaceholderArgument()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var stepDefBuilder = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+            stepDefBuilder.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+            var stepDefBuilder2 = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ will not", 1, 1);
+            stepDefBuilder2.WordPart("The", 1).ComponentMatch(5).WordPart("will", 17).WordPart("not", 22);
+
+            var interactionStep1 = stepDefBuilder.Built;
+            var interactionStep2 = stepDefBuilder2.Built;
+
+            interactionStep1.AddComponentMatch("button");
+            interactionStep2.AddComponentMatch("button");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(new TestDef(interactionStep1), new TestDef(interactionStep2)));
+
+            var reference = new StepReferenceBuilder("The button", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("button").Built;
+            reference.FreezeTokens();
+
+            var result = linker.GetPossibleMatches(reference).ToList();
+
+            result.Should().HaveCount(2);
+            result[0].PlaceholderValues!["component"].Should().Be("button");
+            result[0].MatchedParts.Should().Be(2);
+            result[1].PlaceholderValues!["component"].Should().Be("button");
+            result[1].MatchedParts.Should().Be(2);
         }
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)

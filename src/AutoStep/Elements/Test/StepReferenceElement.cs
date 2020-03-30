@@ -13,7 +13,7 @@ namespace AutoStep.Elements.Test
     /// The base <see cref="StepReferenceElement"/> class
     /// does not understand binding or what can run, it just defines the information about the written line in the test.
     /// </remarks>
-    public class StepReferenceElement : BuiltElement, IStepReferenceInfo
+    public class StepReferenceElement : PositionalElement, IStepReferenceInfo
     {
         private List<StepToken> workingTokens = new List<StepToken>();
         private StepToken[]? frozenTokens = null;

@@ -43,12 +43,12 @@ namespace AutoStep.Elements
         /// <summary>
         /// Gets the set of arguments presented by the Step Definition as being available.
         /// </summary>
-        internal IReadOnlyList<ArgumentPart> Arguments => arguments;
+        public IReadOnlyList<ArgumentPart> Arguments => arguments;
 
         /// <summary>
         /// Gets the set of matching parts used by the step definition element.
         /// </summary>
-        internal IReadOnlyList<DefinitionPart> Parts => parts;
+        public IReadOnlyList<DefinitionPart> Parts => parts;
 
         /// <summary>
         /// Check if this step definition contains an argument with the specified name.

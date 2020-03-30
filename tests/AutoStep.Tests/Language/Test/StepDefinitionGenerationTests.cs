@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Language.Test
 
             matched.Output.Should().NotBeNull();
 
-            var stepDefBuilder = new StepDefinitionBuilder(StepType.Given, "I have done something", 1, 1);
+            var stepDefBuilder = new StepDefinitionBuilder(StepType.Given, "I have done something", 1, 1, 21);
             stepDefBuilder.WordPart("I", 1);
             stepDefBuilder.WordPart("have", 3);
             stepDefBuilder.WordPart("done", 8);
@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Language.Test
 
             matched.Output.Should().NotBeNull();
 
-            var stepDefinitionBuilder = new StepDefinitionBuilder(StepType.Given, TestStep, 1, 1)
+            var stepDefinitionBuilder = new StepDefinitionBuilder(StepType.Given, TestStep, 1, 1, 18)
                                             .WordPart("I", 1)
                                             .WordPart("have", 3)
                                             .Argument("{argument1}", "argument1", 8);

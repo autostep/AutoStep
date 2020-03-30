@@ -6,7 +6,7 @@ namespace AutoStep.Elements.Parts
     /// <summary>
     /// Represents a defined step argument.
     /// </summary>
-    internal class ArgumentPart : DefinitionPart
+    public class ArgumentPart : DefinitionPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentPart"/> class.
@@ -46,7 +46,7 @@ namespace AutoStep.Elements.Parts
         public ArgumentType? TypeHint { get; }
 
         /// <inheritdoc/>
-        public override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
+        internal override StepReferenceMatchResult DoStepReferenceMatch(string referenceText, ReadOnlySpan<StepToken> referenceParts)
         {
             var firstPart = referenceParts[0];
             var currentPart = firstPart;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Definitions;
 using AutoStep.Elements.Test;
+using AutoStep.Language.Test.Matching;
 
 namespace AutoStep.Language.Test
 {
@@ -13,6 +14,13 @@ namespace AutoStep.Language.Test
         /// Gets the set of all sources of step definitions registered with the linker.
         /// </summary>
         IEnumerable<IStepDefinitionSource> AllStepDefinitionSources { get; }
+
+        /// <summary>
+        /// Searches the step definition tree for all possible matches.
+        /// </summary>
+        /// <param name="reference">The reference.</param>
+        /// <returns>The set of available matches.</returns>
+        IEnumerable<IMatchResult> GetPossibleMatches(StepReferenceElement reference);
 
         /// <summary>
         /// Links (or re-links) a built autostep file; all step references that can be updated with step definition bindings will be.

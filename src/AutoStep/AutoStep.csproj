@@ -11,13 +11,15 @@
     <Copyright>Copyright 2020</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/autostep/autostep</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/autostep/autostep</RepositoryUrl>
     <PackageTags>testing, gherkin</PackageTags>
     <PackageIcon>nuget-icon.png</PackageIcon>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <Compile Remove="Language\Test\Parser\.antlr\**" />
     <EmbeddedResource Remove="Language\Test\Parser\.antlr\**" />
@@ -54,6 +56,11 @@
       <DependentUpon>CompilerLogMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Language\Position\PositionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PositionMessages.resx</DependentUpon>
     </Compile>
     <Compile Update="Language\Test\LinkerMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -115,6 +122,10 @@
     <EmbeddedResource Update="Language\Interaction\CompilerLogMessages.resx">
       <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Language\Position\PositionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PositionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Language\Test\LinkerMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
