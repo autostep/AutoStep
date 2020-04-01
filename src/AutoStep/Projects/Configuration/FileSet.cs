@@ -55,7 +55,7 @@ namespace AutoStep.Projects.Configuration
 
             foreach (var file in matchResults.Files)
             {
-                files.Add(new FileSetEntry { Absolute = file.Path, Relative = file.Stem });
+                files.Add(new FileSetEntry { Absolute = Path.GetFullPath(file.Stem, RootFolder), Relative = file.Stem });
             }
         }
     }
