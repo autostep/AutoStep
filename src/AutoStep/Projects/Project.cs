@@ -47,11 +47,6 @@ namespace AutoStep.Projects
         public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
 
         /// <summary>
-        /// Gets the active project configuration.
-        /// </summary>
-        public ProjectConfiguration? Configuration { get; }
-
-        /// <summary>
         /// Gets the project compiler.
         /// </summary>
         public IProjectCompiler Compiler { get; }

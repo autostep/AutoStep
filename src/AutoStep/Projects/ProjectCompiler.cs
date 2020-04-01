@@ -78,7 +78,7 @@ namespace AutoStep.Projects
                 project,
                 compiler,
                 new Linker(compiler),
-                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                new InteractionCompiler(InteractionsCompilerOptions.Default),
                 () => new InteractionSetBuilder(defaultCallChainValidator));
         }
 
@@ -97,7 +97,7 @@ namespace AutoStep.Projects
                 project,
                 compiler,
                 new Linker(compiler),
-                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                new InteractionCompiler(InteractionsCompilerOptions.Default),
                 () => new InteractionSetBuilder(defaultCallChainValidator));
         }
 

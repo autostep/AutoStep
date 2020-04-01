@@ -16,7 +16,7 @@ jobs:
         dotnet-version: 3.1.100
                  
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release /p:TreatWarningsAsErrors=true
     
     - name: Run tests
       run: dotnet test
