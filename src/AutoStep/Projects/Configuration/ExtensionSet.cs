@@ -7,7 +7,7 @@ using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Projects.Configuration
 {
-    public class ExtensionSet
+    public class ExtensionSet : IDisposable
     {
         private readonly List<ExtensionEntry> extensions = new List<ExtensionEntry>();
 
@@ -57,6 +57,14 @@ namespace AutoStep.Projects.Configuration
         private void Add(ExtensionEntry entry)
         {
             extensions.Add(entry);
+        }
+
+        public virtual void Dispose()
+        {
+            foreach (var ext in extensions)
+            {
+                ext.Extension.Dispose();
+            }
         }
 
         private struct ExtensionEntry
