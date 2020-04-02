@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Projects.Configuration
 {

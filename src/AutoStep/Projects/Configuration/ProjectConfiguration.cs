@@ -34,6 +34,7 @@ namespace AutoStep.Projects.Configuration
                     new JsonSerializerOptions
                     {
                         ReadCommentHandling = JsonCommentHandling.Skip,
+                        PropertyNameCaseInsensitive = true,
                         AllowTrailingCommas = true,
                     },
                     cancelToken);
@@ -47,6 +48,11 @@ namespace AutoStep.Projects.Configuration
                 if (doc.Interactions is null || doc.Interactions.Length == 0)
                 {
                     doc.Interactions = new[] { DefaultInteractionGlob };
+                }
+
+                if (doc.Extensions is null)
+                {
+                    doc.Extensions = new Dictionary<string, ProjectExtensionConfiguration>();
                 }
 
                 // Make sure every extension has a name.
@@ -72,7 +78,7 @@ namespace AutoStep.Projects.Configuration
             }
         }
 
-        public Dictionary<string, ProjectExtensionConfiguration> Extensions { get; } = new Dictionary<string, ProjectExtensionConfiguration>();
+        public Dictionary<string, ProjectExtensionConfiguration> Extensions { get; set; }
 
         /// <summary>
         /// Contains the set of test globs.

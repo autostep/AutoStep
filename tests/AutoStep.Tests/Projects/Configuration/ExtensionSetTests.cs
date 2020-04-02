@@ -18,9 +18,14 @@ namespace AutoStep.Tests.Projects.Configuration
         {
             var order = new List<int>();
 
-            var projConfig = new ProjectConfiguration();
-            projConfig.Extensions.Add("ext1", new ProjectExtensionConfiguration() { Name = "ext1" });
-            projConfig.Extensions.Add("ext2", new ProjectExtensionConfiguration() { Name = "ext2" });
+            var projConfig = new ProjectConfiguration
+            {
+                Extensions = new Dictionary<string, ProjectExtensionConfiguration>
+                {
+                    { "ext1", new ProjectExtensionConfiguration() { Name = "ext1" } },
+                    { "ext2", new ProjectExtensionConfiguration() { Name = "ext2" } }
+                }
+            };
 
             var mockExt1 = new Mock<IProjectExtension>();
             var mockExt2 = new Mock<IProjectExtension>();

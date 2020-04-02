@@ -12,11 +12,6 @@ namespace AutoStep.Execution.Events
     public class BaseEventHandler : IEventHandler
     {
         /// <inheritdoc/>
-        public virtual void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
-        {
-        }
-
-        /// <inheritdoc/>
         public virtual ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
