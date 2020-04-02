@@ -9,8 +9,6 @@ namespace AutoStep.Definitions.Interaction
     /// </summary>
     public class ClassBackedInteractionMethod : DefinedInteractionMethod
     {
-        private readonly Type implType;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ClassBackedInteractionMethod"/> class.
         /// </summary>
@@ -20,8 +18,13 @@ namespace AutoStep.Definitions.Interaction
         public ClassBackedInteractionMethod(string name, Type classType, MethodInfo method)
             : base(name, method)
         {
-            implType = classType;
+            ServiceType = classType;
         }
+
+        /// <summary>
+        /// Defines the service type that backs the method.
+        /// </summary>
+        public Type ServiceType { get; }
 
         /// <inheritdoc/>
         protected override object? GetMethodTarget(IServiceScope scope)
@@ -32,7 +35,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve an instance of the type from the scope.
-            return scope.Resolve(implType);
+            return scope.Resolve(ServiceType);
         }
     }
 }

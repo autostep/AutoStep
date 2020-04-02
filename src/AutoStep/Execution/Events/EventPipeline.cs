@@ -21,19 +21,6 @@ namespace AutoStep.Execution.Events
             this.handlers = handlers;
         }
 
-        /// <summary>
-        /// Allows each handler to configure its own services.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="configuration">The run configuration.</param>
-        public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
-        {
-            foreach (var handler in handlers)
-            {
-                handler.ConfigureServices(builder, configuration);
-            }
-        }
-
         /// <inheritdoc/>
         public ValueTask InvokeEvent<TContext>(
             IServiceScope scope,

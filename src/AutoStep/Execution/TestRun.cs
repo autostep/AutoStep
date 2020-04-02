@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -166,21 +167,30 @@ namespace AutoStep.Execution
             // Add our built event pipeline to DI.
             exposedServiceRegistration.RegisterSingleInstance<IEventPipeline>(events);
 
-            events.ConfigureServices(exposedServiceRegistration, configuration);
-
             // Register the entire set in the container.
             exposedServiceRegistration.RegisterSingleInstance(featureSet);
 
+            ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler);
+
+            serviceRegistration?.Invoke(exposedServiceRegistration);
+
+            return exposedServiceRegistration.BuildRootScope();
+        }
+
+        private void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler)
+        {
             // Ask the project's compiler for the list of step definition sources.
-            foreach (var source in Project.Compiler.EnumerateStepDefinitionSources())
+            foreach (var source in compiler.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
                 source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
-            serviceRegistration?.Invoke(exposedServiceRegistration);
-
-            return exposedServiceRegistration.BuildRootScope();
+            // Iterate over the methods in the root method table.
+            foreach (var service in compiler.Interactions.RootMethodTable.GetAllMethodProvidingServices())
+            {
+                exposedServiceRegistration.RegisterPerResolveService(service);
+            }
         }
     }
 }

@@ -64,7 +64,7 @@ namespace AutoStep.Language.Interaction
         /// Insert a method definition (pre-defined) into the method table.
         /// </summary>
         /// <param name="predefinedMethod">The method definition.</param>
-        public void Set(InteractionMethod predefinedMethod)
+        public virtual void Set(InteractionMethod predefinedMethod)
         {
             if (predefinedMethod is null)
             {

@@ -424,7 +424,7 @@ namespace AutoStep.Tests.Language.Interaction
 
         private class InteractionsConfig : IInteractionsConfiguration
         {
-            public MethodTable RootMethodTable { get; } = new MethodTable();
+            public RootMethodTable RootMethodTable { get; } = new RootMethodTable();
 
             public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }

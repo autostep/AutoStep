@@ -15,24 +15,6 @@ namespace AutoStep.Tests.Execution.Events
     public class EventPipelineTests
     {
         [Fact]
-        public void ConfigureServicesCallsEachHandler()
-        {
-            var order = new List<int>();
-
-            var mockEventHandler1 = new Mock<IEventHandler>();
-            var mockEventHandler2 = new Mock<IEventHandler>();
-            mockEventHandler1.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(1));
-            mockEventHandler2.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(2));
-
-            var pipeline = new EventPipeline(new List<IEventHandler> { mockEventHandler1.Object, mockEventHandler2.Object });
-
-            pipeline.ConfigureServices(null!, null!);
-
-            order[0].Should().Be(1);
-            order[1].Should().Be(2);
-        }
-
-        [Fact]
         public void InvokeEventInvokesProvidedCallbackWithNoHandlers()
         {
             var pipeline = new EventPipeline(new List<IEventHandler>());

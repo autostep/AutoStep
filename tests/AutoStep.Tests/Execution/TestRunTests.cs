@@ -12,6 +12,7 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Execution.Dependency;
 using Xunit.Abstractions;
 using AutoStep.Execution.Contexts;
+using AutoStep.Language.Interaction;
 
 namespace AutoStep.Tests.Execution
 {
@@ -48,7 +49,11 @@ namespace AutoStep.Tests.Execution
 
             var file = new ProjectTestFile("/path", new StringContentSource("test"));
 
+            var mockInteractions = new Mock<IInteractionsConfiguration>();
+            mockInteractions.Setup(c => c.RootMethodTable).Returns(new RootMethodTable());
+
             var mockProjectCompiler = new Mock<IProjectCompiler>();
+            mockProjectCompiler.Setup(c => c.Interactions).Returns(mockInteractions.Object);
 
             file.SetFileReadyForRunTest(builtFile);
 
@@ -80,6 +85,6 @@ namespace AutoStep.Tests.Execution
 
             runResult.Should().NotBeNull();
             runStrategyInvoked.Should().BeTrue();
-        }
+        }        
     }
 }

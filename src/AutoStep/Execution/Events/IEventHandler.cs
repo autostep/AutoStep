@@ -11,13 +11,6 @@ namespace AutoStep.Execution.Events
     public interface IEventHandler
     {
         /// <summary>
-        /// Called prior to execution, to allow the event handler to register any services it wants to be available during execution.
-        /// </summary>
-        /// <param name="builder">The services builder.</param>
-        /// <param name="configuration">The test run configuration.</param>
-        void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration);
-
-        /// <summary>
         /// Invoked at the Execution Stage. This occurs just after the set of testable scenarios have been determined,
         /// but before any threads are created. It is a good place to do global set-up.
         /// </summary>

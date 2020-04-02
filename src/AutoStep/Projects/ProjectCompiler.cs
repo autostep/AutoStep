@@ -400,7 +400,7 @@ namespace AutoStep.Projects
 
         private class InteractionsConfiguration : IInteractionsConfiguration
         {
-            public MethodTable RootMethodTable { get; } = new MethodTable();
+            public RootMethodTable RootMethodTable { get; } = new RootMethodTable();
 
             public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }

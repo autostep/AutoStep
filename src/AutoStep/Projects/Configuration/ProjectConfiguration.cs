@@ -49,6 +49,20 @@ namespace AutoStep.Projects.Configuration
                     doc.Interactions = new[] { DefaultInteractionGlob };
                 }
 
+                // Make sure every extension has a name.
+                foreach (var ext in doc.Extensions)
+                {
+                    if (ext.Value.Name is null)
+                    {
+                        ext.Value.Name = ext.Key;
+                    }
+
+                    if (string.IsNullOrEmpty(ext.Value.Name))
+                    {
+                        throw new ProjectConfigurationException("Empty extension name found. All extension keys must have a value.");
+                    }
+                }
+
                 return doc;
             }
             catch (JsonException ex)

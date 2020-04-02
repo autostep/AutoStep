@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets the root method table that contains all top-level methods available to the interaction system.
         /// </summary>
-        MethodTable RootMethodTable { get; }
+        RootMethodTable RootMethodTable { get; }
 
         /// <summary>
         /// Gets the set of available constants that can be used in the interaction system.
