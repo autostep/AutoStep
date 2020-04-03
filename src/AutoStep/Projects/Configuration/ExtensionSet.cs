@@ -46,14 +46,6 @@ namespace AutoStep.Projects.Configuration
             }
         }
 
-        public void DetachFromProject(Project project)
-        {
-            foreach (var ext in extensions)
-            {
-                ext.Extension.DetachFromProject(ext.Configuration, project);
-            }
-        }
-
         public void ExtendExecution(RunConfiguration runConfig, TestRun testRun)
         {
             foreach (var ext in extensions)
