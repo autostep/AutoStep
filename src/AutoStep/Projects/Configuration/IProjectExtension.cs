@@ -7,7 +7,9 @@ namespace AutoStep.Projects.Configuration
 {
     public interface IProjectExtension : IDisposable
     {
-        void ExtendProject(ProjectExtensionConfiguration config, Project project);
+        void AttachToProject(ProjectExtensionConfiguration config, Project project);
+
+        void DetachFromProject(ProjectExtensionConfiguration config, Project project);
 
         void ExtendExecution(ProjectExtensionConfiguration extConfig, RunConfiguration runConfig, TestRun testRun);
 

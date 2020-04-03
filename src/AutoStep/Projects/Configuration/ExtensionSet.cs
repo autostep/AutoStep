@@ -38,11 +38,19 @@ namespace AutoStep.Projects.Configuration
             }
         }
 
-        public void ExtendProject(Project project)
+        public void AttachToProject(Project project)
         {
             foreach (var ext in extensions)
             {
-                ext.Extension.ExtendProject(ext.Configuration, project);
+                ext.Extension.AttachToProject(ext.Configuration, project);
+            }
+        }
+
+        public void DetachFromProject(Project project)
+        {
+            foreach (var ext in extensions)
+            {
+                ext.Extension.DetachFromProject(ext.Configuration, project);
             }
         }
 
