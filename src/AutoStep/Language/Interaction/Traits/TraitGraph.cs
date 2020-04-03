@@ -217,7 +217,7 @@ namespace AutoStep.Language.Interaction.Traits
                         foreach (var traitMethod in currentSearchTrait.Value.Trait.Methods)
                         {
                             // Merge each method in.
-                            methodTable.Set(traitMethod.Name, traitMethod);
+                            methodTable.Set(traitMethod.Key, traitMethod.Value);
                         }
                     }
 
@@ -227,7 +227,7 @@ namespace AutoStep.Language.Interaction.Traits
                 foreach (var traitMethod in currentSearchTrait.Value.Trait.Methods)
                 {
                     // Merge any methods in the current trait.
-                    methodTable.Set(traitMethod.Name, traitMethod);
+                    methodTable.Set(traitMethod.Key, traitMethod.Value);
                 }
 
                 // We now have the complete method table. Invoke the callback that can do any validation it needs to.

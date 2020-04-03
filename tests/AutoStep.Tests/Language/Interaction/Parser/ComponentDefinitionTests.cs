@@ -230,5 +230,21 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.SyntaxError, 6, 21, 6, 21,
                                              "extraneous input '<' expecting {<EOF>, 'App:', 'Trait:', 'Component:'}"));
         }
+
+        [Fact]
+        public async Task DuplicateMethodDefinitionRaisesError()
+        {
+            const string Test = @"
+                Component: button
+
+                    method(name1, name2): call('label')
+
+                    method(): needs-defining
+            ";
+
+            await CompileAndAssertErrors(Test,
+                LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionDuplicateMethodDefinition, 6, 21, 6, 44, "method"));
+        }
+
     }
 }

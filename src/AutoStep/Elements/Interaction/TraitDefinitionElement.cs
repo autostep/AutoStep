@@ -83,10 +83,10 @@ namespace AutoStep.Elements.Interaction
         /// <param name="newTrait">The new trait to merge in.</param>
         internal void ExtendWith(TraitDefinitionElement newTrait)
         {
-            foreach (var item in Methods)
+            foreach (var item in newTrait.Methods)
             {
                 // Override the method (or add it if it doesn't exist).
-                Methods.Add(item);
+                Methods[item.Key] = item.Value;
             }
 
             Steps.AddRange(newTrait.Steps);

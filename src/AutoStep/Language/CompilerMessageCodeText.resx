@@ -153,6 +153,9 @@
   <data name="InteractionConstantNotDefined" xml:space="preserve">
     <value>The {0} constant is not defined.</value>
   </data>
+  <data name="InteractionDuplicateMethodDefinition" xml:space="preserve">
+    <value>Duplicate method definitions for '{0}' are not permitted. Method has already been defined in this block.</value>
+  </data>
   <data name="InteractionDuplicateTrait" xml:space="preserve">
     <value>Duplicate trait specified.</value>
   </data>

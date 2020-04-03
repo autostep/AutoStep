@@ -51,7 +51,7 @@ namespace AutoStep.Tests.Builders
                 methodDef.EndColumn = column + name.Length + 1;
             }
 
-            entityBuilder.Built.Methods.Add(methodDef);
+            entityBuilder.Built.Methods.Add(methodDef.Name, methodDef);
 
             return entityBuilder;
         }
@@ -70,7 +70,7 @@ namespace AutoStep.Tests.Builders
             // Do the call builder.
             callBuilder(methodDefBuilder);
 
-            entityBuilder.Built.Methods.Add(methodDef);
+            entityBuilder.Built.Methods.Add(methodDef.Name, methodDef);
 
             return entityBuilder;
         }

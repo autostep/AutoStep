@@ -320,6 +320,11 @@
         /// </summary>
         InteractionComponentInheritedComponentNotFound = 30027,
 
+        /// <summary>
+        /// Duplicate interaction method definition.
+        /// </summary>
+        InteractionDuplicateMethodDefinition = 30028,
+
         //// Errors from Exceptions ////
 
         /// <summary>

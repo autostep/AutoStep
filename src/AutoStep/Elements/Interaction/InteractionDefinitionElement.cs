@@ -34,7 +34,7 @@ namespace AutoStep.Elements.Interaction
         /// <summary>
         /// Gets the set of methods declared on the definition.
         /// </summary>
-        public List<MethodDefinitionElement> Methods { get; } = new List<MethodDefinitionElement>();
+        public Dictionary<string, MethodDefinitionElement> Methods { get; } = new Dictionary<string, MethodDefinitionElement>();
 
         /// <summary>
         /// Gets the set of declared steps.

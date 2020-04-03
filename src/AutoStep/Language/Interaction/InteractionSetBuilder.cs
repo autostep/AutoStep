@@ -104,7 +104,7 @@ namespace AutoStep.Language.Interaction
                         foreach (var traitMethod in trait.Methods)
                         {
                             // Merge each method in.
-                            ctxt.MethodTable.Set(traitMethod.Name, traitMethod);
+                            ctxt.MethodTable.Set(traitMethod.Key, traitMethod.Value);
                         }
 
                         foreach (var traitStep in trait.Steps)
@@ -261,7 +261,7 @@ namespace AutoStep.Language.Interaction
             foreach (var methodDef in trait.Methods)
             {
                 // Go through the call chain.
-                callChainValidator.ValidateCallChain(methodDef, methodTable, constants, false, messages);
+                callChainValidator.ValidateCallChain(methodDef.Value, methodTable, constants, false, messages);
             }
 
             foreach (var step in trait.Steps)

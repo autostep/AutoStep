@@ -200,6 +200,36 @@ namespace AutoStep.Tests.Language.Interaction
                                   traitABC, traitABCE);
         }
 
+        [Fact]
+        public void MergeTwoExistingTraitsWithMethods()
+        {
+            var traitGraph1 = new TraitGraph();
+
+            var traitA = CreateTrait("A");
+
+            var originalMethodDef = new MethodDefinitionElement("method");
+            traitA.Methods.Add("method", originalMethodDef);
+
+            traitGraph1.AddOrExtendTrait(traitA);
+
+            var traitGraph2 = new TraitGraph();
+
+            var trait2A = CreateTrait("A");
+
+            var newMethodDef = new MethodDefinitionElement("method");
+            trait2A.Methods.Add("method", newMethodDef);
+
+            traitGraph2.AddOrExtendTrait(trait2A);
+
+            var mainGraph = new TraitGraph();
+            mainGraph.Merge(traitGraph1);
+            mainGraph.Merge(traitGraph2);
+
+            var mergedTrait = mainGraph.AllTraits.First(x => x.Name == "A");
+
+            mergedTrait.Methods["method"].Should().BeSameAs(newMethodDef);
+        }
+
         private TraitDefinitionElement CreateTrait(params string[] nameParts)
         {
             var newElement = new TraitDefinitionElement(string.Join(" + ", nameParts), GetNameParts(nameParts));
