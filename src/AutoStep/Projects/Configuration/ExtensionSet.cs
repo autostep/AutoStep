@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 
@@ -10,20 +8,6 @@ namespace AutoStep.Projects.Configuration
     public class ExtensionSet : IDisposable
     {
         private readonly List<ExtensionEntry> extensions = new List<ExtensionEntry>();
-
-        public static async Task<ExtensionSet> Create(ProjectConfiguration config, Func<ProjectExtensionConfiguration, CancellationToken, Task<IProjectExtension>> loader, CancellationToken cancelToken)
-        {
-            var extSet = new ExtensionSet();
-
-            foreach (var extConfig in config.Extensions.Values)
-            {
-                var loaded = await loader(extConfig, cancelToken).ConfigureAwait(false);
-
-                extSet.Add(new ExtensionEntry { Configuration = extConfig, Extension = loaded });
-            }
-
-            return extSet;
-        }
 
         /// <summary>
         /// Called prior to execution.
@@ -54,9 +38,9 @@ namespace AutoStep.Projects.Configuration
             }
         }
 
-        private void Add(ExtensionEntry entry)
+        public void Add(ProjectExtensionConfiguration configuration, IProjectExtension extensionEntryPoint)
         {
-            extensions.Add(entry);
+            extensions.Add(new ExtensionEntry { Configuration = configuration, Extension = extensionEntryPoint });
         }
 
         public virtual void Dispose()
