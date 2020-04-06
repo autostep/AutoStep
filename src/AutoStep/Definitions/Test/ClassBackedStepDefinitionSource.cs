@@ -115,7 +115,7 @@ namespace AutoStep.Definitions.Test
 
                 if (definition is object)
                 {
-                    logger.LogInformation(DefinitionsMessages.ClassBackedStepDefinitionSource_FoundStepMethod, definition.Type, definition.Declaration, method.Name);
+                    logger.LogDebug(DefinitionsMessages.ClassBackedStepDefinitionSource_FoundStepMethod, definition.Type, definition.Declaration, method.Name);
 
                     definitions.Add(new ClassStepDefinition(this, owningType, method, definition));
                     hasStep = true;

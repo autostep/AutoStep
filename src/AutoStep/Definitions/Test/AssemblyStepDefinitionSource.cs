@@ -63,7 +63,7 @@ namespace AutoStep.Definitions.Test
             {
                 if (type.IsClass && !type.IsAbstract && type.GetCustomAttribute<StepsAttribute>(true) is object)
                 {
-                    logger.LogInformation(DefinitionsMessages.AssemblyStepDefinitionSource_LookingInTypeForSteps, type.FullName);
+                    logger.LogDebug(DefinitionsMessages.AssemblyStepDefinitionSource_LookingInTypeForSteps, type.FullName);
 
                     TryAddType(type);
                 }
