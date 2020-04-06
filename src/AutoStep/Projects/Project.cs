@@ -33,12 +33,27 @@ namespace AutoStep.Projects
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// Initializes a new instance of the <see cref="Project"/> class, using a custom
+        /// project compiler factory.
         /// </summary>
-        /// <param name="compiler">A custom project compiler.</param>
-        public Project(IProjectCompiler compiler)
+        /// <param name="compilerFactory">
+        /// Factory to create a compiler instance.
+        /// </param>
+        public Project(Func<Project, IProjectCompiler> compilerFactory)
         {
-            Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+            if (compilerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(compilerFactory));
+            }
+
+            var builtCompiler = compilerFactory(this);
+
+            if (builtCompiler is null)
+            {
+                throw new InvalidOperationException(ProjectMessages.ProjectCompilerCannotReturnNull);
+            }
+
+            Compiler = builtCompiler;
         }
 
         /// <summary>

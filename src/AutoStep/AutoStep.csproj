@@ -109,10 +109,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Projects\ProjectCompilerMessages.Designer.cs">
+    <Compile Update="Projects\ProjectCompilerMessages - Copy.Designer.cs">
+      <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Projects\ProjectMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProjectMessages.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -165,9 +170,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Projects\ProjectMessages.resx">
+      <LastGenOutput>ProjectMessages.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Projects\ProjectCompilerMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ProjectCompilerMessages.Designer.cs</LastGenOutput>
+      <LastGenOutput>ProjectMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

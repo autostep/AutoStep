@@ -57,7 +57,7 @@ namespace AutoStep.Tests.Execution
 
             file.SetFileReadyForRunTest(builtFile);
 
-            var project = new Project(mockProjectCompiler.Object);
+            var project = new Project(p => mockProjectCompiler.Object);
             project.TryAddFile(file);
 
             var testRun = new TestRun(project, new RunConfiguration());

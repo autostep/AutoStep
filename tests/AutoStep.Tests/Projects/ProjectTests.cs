@@ -9,11 +9,19 @@ namespace AutoStep.Tests.Projects
     public class ProjectTests
     {
         [Fact]
-        public void NullCompilerNullArgumentException()
+        public void NullCompilerFactoryNullArgumentException()
         {
             Action act = () => new Project(null!);
 
             act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void CompilerFactoryReturnsNullInvalidOperationException()
+        {
+            Action act = () => new Project(p => null!);
+
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

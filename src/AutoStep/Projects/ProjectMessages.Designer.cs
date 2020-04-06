@@ -22,14 +22,14 @@ namespace AutoStep.Projects {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ProjectCompilerMessages {
+    internal class ProjectMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ProjectCompilerMessages() {
+        internal ProjectMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace AutoStep.Projects {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Projects.ProjectCompilerMessages", typeof(ProjectCompilerMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AutoStep.Projects.ProjectMessages", typeof(ProjectMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,11 @@ namespace AutoStep.Projects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot compile interaction files if no compiler has been specified..
+        ///   Looks up a localized string similar to Project compiler factory cannot return null..
         /// </summary>
-        internal static string MissingInteractionCompiler {
+        internal static string ProjectCompilerCannotReturnNull {
             get {
-                return ResourceManager.GetString("MissingInteractionCompiler", resourceCulture);
+                return ResourceManager.GetString("ProjectCompilerCannotReturnNull", resourceCulture);
             }
         }
     }
