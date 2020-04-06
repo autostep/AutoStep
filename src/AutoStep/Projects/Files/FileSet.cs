@@ -27,14 +27,14 @@ namespace AutoStep.Projects.Files
             RootFolder = directory.FullName;
         }
 
-        internal static FileSet Create(DirectoryInfoBase directory, string[] globs)
+        internal static FileSet Create(DirectoryInfoBase directory, string[] includeGlobs, string[]? excludeGlobs = null)
         {
             var set = new FileSet(directory);
-            set.ScanFiles(globs);
+            set.ScanFiles(includeGlobs, excludeGlobs);
             return set;
         }
 
-        public static FileSet Create(string rootFolder, string[] globs)
+        public static FileSet Create(string rootFolder, string[] includeGlobs, string[]? excludeGlobs = null)
         {
             if (!Path.IsPathRooted(rootFolder))
             {
@@ -42,14 +42,19 @@ namespace AutoStep.Projects.Files
             }
 
             var set = new FileSet(rootFolder);
-            set.ScanFiles(globs);
+            set.ScanFiles(includeGlobs, excludeGlobs);
             return set;
         }
 
-        private void ScanFiles(string[] globs)
+        private void ScanFiles(string[] includeGlobs, string[]? excludeGlobs)
         {
             var matcher = new Matcher();
-            matcher.AddIncludePatterns(globs);
+            matcher.AddIncludePatterns(includeGlobs);
+
+            if (excludeGlobs is object)
+            {
+                matcher.AddExcludePatterns(excludeGlobs);
+            }
 
             var matchResults = matcher.Execute(baseDir);
 
