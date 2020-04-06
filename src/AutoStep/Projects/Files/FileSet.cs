@@ -60,7 +60,7 @@ namespace AutoStep.Projects.Files
 
             foreach (var file in matchResults.Files)
             {
-                files.Add(new FileSetEntry { Absolute = Path.GetFullPath(file.Stem, RootFolder), Relative = file.Stem });
+                files.Add(new FileSetEntry { Absolute = Path.GetFullPath(file.Path, RootFolder), Relative = file.Path });
             }
         }
     }
