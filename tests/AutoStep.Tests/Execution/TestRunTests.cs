@@ -79,10 +79,7 @@ namespace AutoStep.Tests.Execution
 
             testRun.SetRunExecutionStrategy(mockRunStrategy.Object);
 
-            var runResult = await testRun.ExecuteAsync(logCfg =>
-            {
-
-            });
+            var runResult = await testRun.ExecuteAsync();
 
             runResult.Should().NotBeNull();
             runStrategyInvoked.Should().BeTrue();

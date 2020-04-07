@@ -93,7 +93,7 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             using var nullLogger = new LoggerFactory();
 
@@ -106,7 +106,7 @@ namespace AutoStep.Execution
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
@@ -157,7 +157,7 @@ namespace AutoStep.Execution
             return runContext;
         }
 
-        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
             var exposedServiceRegistration = new AutofacServiceBuilder();
@@ -189,7 +189,7 @@ namespace AutoStep.Execution
 
             ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
 
-            serviceRegistration?.Invoke(exposedServiceRegistration);
+            serviceRegistration?.Invoke(builtConfiguration, exposedServiceRegistration);
 
             return exposedServiceRegistration.BuildRootScope();
         }
