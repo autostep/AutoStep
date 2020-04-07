@@ -44,8 +44,13 @@ namespace AutoStep.Execution
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
 
-            // Use an empty configuration if none has been provided.
-            this.Configuration = projectConfiguration ?? new ConfigurationBuilder().Build();
+            ConfigurationBuilder = new ConfigurationBuilder();
+
+            // Add the provided project configuration.
+            if (projectConfiguration is object)
+            {
+                ConfigurationBuilder.AddConfiguration(projectConfiguration);
+            }
 
             this.eventPipelineBuilder = new EventPipelineBuilder();
             this.filter = filter ?? new RunAllFilter();
@@ -72,7 +77,7 @@ namespace AutoStep.Execution
         /// <summary>
         /// Gets the configuration being used for the test run.
         /// </summary>
-        public IConfiguration Configuration { get; }
+        public IConfigurationBuilder ConfigurationBuilder { get; }
 
         /// <summary>
         /// Change the Run Execution strategy for the test run.
@@ -108,8 +113,10 @@ namespace AutoStep.Execution
 
             var logger = logFactory.CreateLogger<TestRun>();
 
+            var builtConfiguration = ConfigurationBuilder.Build();
+
             // Create a top-level run context
-            var runContext = new RunContext(Configuration);
+            var runContext = new RunContext(builtConfiguration);
 
             if (executionSet.Features.Count == 0)
             {
@@ -122,7 +129,7 @@ namespace AutoStep.Execution
             var events = eventPipelineBuilder.Build();
 
             // Build the container and prepare a root scope.
-            using var rootScope = PrepareContainer(events, logFactory, serviceRegistration, executionSet);
+            using var rootScope = PrepareContainer(events, logFactory, builtConfiguration, serviceRegistration, executionSet);
 
             // Run scope (disposes at the end of the method).
             using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
@@ -150,7 +157,7 @@ namespace AutoStep.Execution
             return runContext;
         }
 
-        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
             var exposedServiceRegistration = new AutofacServiceBuilder();
@@ -178,22 +185,22 @@ namespace AutoStep.Execution
             exposedServiceRegistration.RegisterSingleInstance(featureSet);
 
             // Register configuration concepts in the container.
-            exposedServiceRegistration.RegisterSingleInstance(Configuration);
+            exposedServiceRegistration.RegisterSingleInstance(builtConfiguration);
 
-            ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler);
+            ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
 
             serviceRegistration?.Invoke(exposedServiceRegistration);
 
             return exposedServiceRegistration.BuildRootScope();
         }
 
-        private void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler)
+        private void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler, IConfiguration configuration)
         {
             // Ask the project's compiler for the list of step definition sources.
             foreach (var source in compiler.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
-                source.ConfigureServices(exposedServiceRegistration, Configuration);
+                source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
             // Iterate over the methods in the root method table.
