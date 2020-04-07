@@ -13,11 +13,14 @@ using AutoStep.Execution.Dependency;
 using Xunit.Abstractions;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Interaction;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Tests.Execution
 {
     public class TestRunTests : CompilerTestBase
     {
+        private IConfiguration BlankConfiguration { get; } = new ConfigurationBuilder().Build();
+
         public TestRunTests(ITestOutputHelper output) : base(output)
         {
         }
@@ -25,19 +28,17 @@ namespace AutoStep.Tests.Execution
         [Fact]
         public void NullProjectArgumentException()
         {
-            Action act = () => new TestRun(null!, new RunConfiguration());
+            Action act = () => new TestRun(null!, BlankConfiguration);
 
             act.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void NullConfigArgumentException()
+        public void NullConfigArgumentAllowed()
         {
             var project = new Project();
 
-            Action act = () => new TestRun(project, null!);
-
-            act.Should().Throw<ArgumentNullException>();
+            new TestRun(project, null!);
         }
 
         [Fact]
@@ -60,7 +61,7 @@ namespace AutoStep.Tests.Execution
             var project = new Project(p => mockProjectCompiler.Object);
             project.TryAddFile(file);
 
-            var testRun = new TestRun(project, new RunConfiguration());
+            var testRun = new TestRun(project, BlankConfiguration);
             var runStrategyInvoked = false;
 
             var mockRunStrategy = new Mock<IRunExecutionStrategy>();

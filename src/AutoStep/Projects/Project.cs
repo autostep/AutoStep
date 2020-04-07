@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Execution;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Projects
 {
@@ -137,28 +138,29 @@ namespace AutoStep.Projects
         /// <returns>The test run.</returns>
         public TestRun CreateTestRun()
         {
-            return new TestRun(this, new RunConfiguration());
+            // No configuration to speak of.
+            return new TestRun(this, new ConfigurationBuilder().Build());
         }
 
         /// <summary>
         /// Create a test run with the specified configuration.
         /// </summary>
-        /// <param name="configuration">The run configuration.</param>
+        /// <param name="projectConfiguration">The project configuration.</param>
         /// <returns>The test run.</returns>
-        public TestRun CreateTestRun(RunConfiguration configuration)
+        public TestRun CreateTestRun(IConfiguration projectConfiguration)
         {
-            return new TestRun(this, configuration);
+            return new TestRun(this, projectConfiguration);
         }
 
         /// <summary>
         /// Create a test run with the specified configuration and feature filter.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
+        /// <param name="projectConfiguration">The configuration.</param>
         /// <param name="filter">The feature filter.</param>
         /// <returns>The test run.</returns>
-        public TestRun CreateTestRun(RunConfiguration configuration, IRunFilter filter)
+        public TestRun CreateTestRun(IConfiguration projectConfiguration, IRunFilter filter)
         {
-            return new TestRun(this, configuration, filter);
+            return new TestRun(this, projectConfiguration, filter);
         }
     }
 }

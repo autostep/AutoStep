@@ -11,6 +11,7 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -253,7 +254,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 throw new NotImplementedException();
             }
 
-            public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
+            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
             {
                 throw new NotImplementedException();
             }

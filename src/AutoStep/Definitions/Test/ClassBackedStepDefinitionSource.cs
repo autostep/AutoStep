@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Definitions.Test
@@ -45,7 +46,7 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         /// <param name="servicesBuilder">The services builder.</param>
         /// <param name="configuration">The run configuration.</param>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
         {
             servicesBuilder = servicesBuilder.ThrowIfNull(nameof(servicesBuilder));
 

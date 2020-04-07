@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoStep.Language;
 using AutoStep.Projects.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Projects.Files
 {

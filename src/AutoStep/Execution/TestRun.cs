@@ -9,6 +9,7 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution
@@ -18,7 +19,6 @@ namespace AutoStep.Execution
     /// </summary>
     public class TestRun
     {
-        private readonly RunConfiguration configuration;
         private readonly IRunFilter filter;
         private readonly IExecutionStateManager executionManager;
         private readonly EventPipelineBuilder eventPipelineBuilder;
@@ -33,17 +33,19 @@ namespace AutoStep.Execution
         /// Initializes a new instance of the <see cref="TestRun"/> class.
         /// </summary>
         /// <param name="project">The project to test.</param>
-        /// <param name="configuration">The run configuration.</param>
+        /// <param name="projectConfiguration">The project configuration.</param>
         /// <param name="filter">A run filter, if there is one.</param>
         /// <param name="executionStateManager">An execution manager, if there is one.</param>
         public TestRun(
             Project project,
-            RunConfiguration configuration,
+            IConfiguration? projectConfiguration = null,
             IRunFilter? filter = null,
             IExecutionStateManager? executionStateManager = null)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
+            // Use an empty configuration if none has been provided.
+            this.Configuration = projectConfiguration ?? new ConfigurationBuilder().Build();
 
             this.eventPipelineBuilder = new EventPipelineBuilder();
             this.filter = filter ?? new RunAllFilter();
@@ -66,6 +68,11 @@ namespace AutoStep.Execution
         /// Gets the event pipeline builder for the run.
         /// </summary>
         public IEventPipelineBuilder Events => eventPipelineBuilder;
+
+        /// <summary>
+        /// Gets the configuration being used for the test run.
+        /// </summary>
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Change the Run Execution strategy for the test run.
@@ -102,7 +109,7 @@ namespace AutoStep.Execution
             var logger = logFactory.CreateLogger<TestRun>();
 
             // Create a top-level run context
-            var runContext = new RunContext(configuration);
+            var runContext = new RunContext(Configuration);
 
             if (executionSet.Features.Count == 0)
             {
@@ -170,6 +177,9 @@ namespace AutoStep.Execution
             // Register the entire set in the container.
             exposedServiceRegistration.RegisterSingleInstance(featureSet);
 
+            // Register configuration concepts in the container.
+            exposedServiceRegistration.RegisterSingleInstance(Configuration);
+
             ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler);
 
             serviceRegistration?.Invoke(exposedServiceRegistration);
@@ -183,7 +193,7 @@ namespace AutoStep.Execution
             foreach (var source in compiler.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
-                source.ConfigureServices(exposedServiceRegistration, configuration);
+                source.ConfigureServices(exposedServiceRegistration, Configuration);
             }
 
             // Iterate over the methods in the root method table.

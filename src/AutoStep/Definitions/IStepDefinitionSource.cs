@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Definitions
 {
@@ -30,6 +31,6 @@ namespace AutoStep.Definitions
         /// </summary>
         /// <param name="servicesBuilder">The services builder.</param>
         /// <param name="configuration">The run-time configuration.</param>
-        void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration);
+        void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Execution.Contexts
 {
@@ -10,16 +11,16 @@ namespace AutoStep.Execution.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="RunContext"/> class.
         /// </summary>
-        /// <param name="config">The configuration.</param>
-        public RunContext(RunConfiguration config)
+        /// <param name="projectConfiguration">The configuration.</param>
+        public RunContext(IConfiguration projectConfiguration)
         {
-            Configuration = config ?? throw new System.ArgumentNullException(nameof(config));
+            Configuration = projectConfiguration ?? throw new System.ArgumentNullException(nameof(projectConfiguration));
         }
 
         /// <summary>
         /// Gets the run configuration.
         /// </summary>
-        public RunConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets or sets the duration of the run.

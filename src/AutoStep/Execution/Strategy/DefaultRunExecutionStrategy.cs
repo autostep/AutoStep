@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using AutoStep.Configuration;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Strategy
@@ -15,6 +17,11 @@ namespace AutoStep.Execution.Strategy
     /// </summary>
     public class DefaultRunExecutionStrategy : IRunExecutionStrategy
     {
+        /// <summary>
+        /// Defines the ID of the key used for the configured parallel count.
+        /// </summary>
+        public const string ParallelExecutionConfigurationKey = "parallelCount";
+
         /// <summary>
         /// Execute the strategy.
         /// </summary>
@@ -33,8 +40,12 @@ namespace AutoStep.Execution.Strategy
             // Create a queue of all features.
             var featureQueue = new ConcurrentQueue<IFeatureInfo>(executionSet.Features);
 
-            // Will need to come from config.
-            var parallelConfig = runContext.Configuration.ParallelCount;
+            var parallelConfig = runContext.Configuration.GetRunConfigurationOption("parallelCount", 1);
+
+            if (parallelConfig < 1)
+            {
+                throw new ProjectConfigurationException("The configured parallelCount must be greater than zero.");
+            }
 
             var parallelValue = Math.Min(featureQueue.Count, parallelConfig);
 
