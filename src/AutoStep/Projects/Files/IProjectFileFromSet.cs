@@ -1,6 +1,6 @@
 ﻿namespace AutoStep.Projects.Files
 {
-    internal interface IProjectFileFromSet
+    public interface IProjectFileFromSet
     {
         FileSetEntry FileEntry { get; }
 
