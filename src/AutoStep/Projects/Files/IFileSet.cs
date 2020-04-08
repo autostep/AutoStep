@@ -6,6 +6,10 @@ namespace AutoStep.Projects.Files
     {
         IReadOnlyList<FileSetEntry> Files { get; }
 
+        bool TryAddFile(string relativePath);
+
+        bool TryRemoveFile(string relativePath);
+
         string RootFolder { get; }
     }
 }
