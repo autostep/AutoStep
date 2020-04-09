@@ -22,7 +22,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 2, 1, 2, 6, cfg => cfg.Constant("NOTACONSTANT2", 7));
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 1));
+            methodTable.SetMethod(new DummyMethod("method", 1));
             
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.Variable("var", 7));
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 1));
+            methodTable.SetMethod(new DummyMethod("method", 1));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -69,7 +69,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.VariableArray("var", 7, 10, c => c.String("index", 1, 1)));
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 1));
+            methodTable.SetMethod(new DummyMethod("method", 1));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -95,7 +95,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.VariableArray("var", 7, 10, c => c.String("index", 1, 1)));
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 1));
+            methodTable.SetMethod(new DummyMethod("method", 1));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -118,7 +118,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("method", 1, 1, 1, 6, cfg => cfg.String("var", 7));
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 2));
+            methodTable.SetMethod(new DummyMethod("method", 2));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -144,7 +144,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("methodDoesNotExist", 2, 1, 2, 6);
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 0));
+            methodTable.SetMethod(new DummyMethod("method", 0));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -168,7 +168,7 @@ namespace AutoStep.Tests.Language.Interaction
             methodBuilder.Call("methodDoesNotExist", 2, 1, 2, 6);
 
             var methodTable = new MethodTable();
-            methodTable.Set(new DummyMethod("method", 0));
+            methodTable.SetMethod(new DummyMethod("method", 0));
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -198,7 +198,7 @@ namespace AutoStep.Tests.Language.Interaction
             };
 
             var methodTable = new MethodTable();
-            methodTable.Set("method", methodDef);
+            methodTable.SetMethod("method", methodDef);
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();
@@ -218,7 +218,7 @@ namespace AutoStep.Tests.Language.Interaction
             fileMethod.Call("mydef", 1, 1, 1, 10);
 
             var methodTable = new MethodTable();
-            methodTable.Set("mydef", fileMethod.Built);
+            methodTable.SetMethod("mydef", fileMethod.Built);
 
             var constants = new InteractionConstantSet();
             var messages = new List<LanguageOperationMessage>();

@@ -169,6 +169,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate method definitions for &apos;{0}&apos; are not permitted. Method has already been defined in this block..
+        /// </summary>
+        internal static string InteractionDuplicateMethodDefinition {
+            get {
+                return ResourceManager.GetString("InteractionDuplicateMethodDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate trait specified..
         /// </summary>
         internal static string InteractionDuplicateTrait {

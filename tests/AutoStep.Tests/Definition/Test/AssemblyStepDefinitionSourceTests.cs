@@ -7,11 +7,14 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Definitions.Test;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Tests.Definition
 {
     public class AssemblyStepDefinitionSourceTests : CompilerTestBase
     {
+        private IConfiguration BlankConfiguration { get; } = new ConfigurationBuilder().Build();
+
         public AssemblyStepDefinitionSourceTests(ITestOutputHelper output) : base(output)
         {
         }
@@ -35,7 +38,7 @@ namespace AutoStep.Tests.Definition
 
             var servicesBuilder = new AutofacServiceBuilder();
 
-            assemblySource.ConfigureServices(servicesBuilder, new AutoStep.Execution.RunConfiguration());
+            assemblySource.ConfigureServices(servicesBuilder, BlankConfiguration);
 
             var resolve = servicesBuilder.BuildRootScope().Resolve<BasicSteps>();
 
@@ -47,7 +50,7 @@ namespace AutoStep.Tests.Definition
         {
             var assemblySource = new AssemblyStepDefinitionSource(typeof(BasicSteps).Assembly, LogFactory);
 
-            assemblySource.Invoking(a => a.ConfigureServices(null!, new AutoStep.Execution.RunConfiguration())).Should().Throw<ArgumentNullException>();
+            assemblySource.Invoking(a => a.ConfigureServices(null!, BlankConfiguration)).Should().Throw<ArgumentNullException>();
         }
     }
 }

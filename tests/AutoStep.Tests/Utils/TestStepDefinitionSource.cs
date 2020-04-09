@@ -7,6 +7,7 @@ using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Tests.Utils
 {
@@ -54,7 +55,7 @@ namespace AutoStep.Tests.Utils
             return defs;
         }
 
-        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration config)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration config)
         {
             ConfigureServicesCalled = true;
         }

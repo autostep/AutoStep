@@ -19,11 +19,15 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
     public class DefaultRunExecutionStrategyTests : LoggingTestBase
     {
+        private IConfiguration BlankConfiguration { get; } = new ConfigurationBuilder().Build();
+
         public DefaultRunExecutionStrategyTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
         }
@@ -32,7 +36,7 @@ namespace AutoStep.Tests.Execution.Strategy
         public async ValueTask SingleThreadedTest()
         {
             var features = Get2FeatureSet();
-            var runContext = new RunContext(new RunConfiguration());
+            var runContext = new RunContext(BlankConfiguration);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             var beforeThread = 0;
             var afterThread = 0;
@@ -66,7 +70,7 @@ namespace AutoStep.Tests.Execution.Strategy
         public async ValueTask MultiThreadedTest()
         {
             var features = Get2FeatureSet();
-            var runContext = new RunContext(new RunConfiguration { ParallelCount = 2 });
+            var runContext = new RunContext(GetTestConfig(("parallelCount", "2")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
@@ -114,7 +118,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             var features = Get2FeatureSet();
             // Say to use 3 threads, but we should still only use 2.
-            var runContext = new RunContext(new RunConfiguration { ParallelCount = 3 });
+            var runContext = new RunContext(GetTestConfig(("parallelCount", "3")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
             mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
@@ -173,6 +177,11 @@ namespace AutoStep.Tests.Execution.Strategy
             file2.SetFileReadyForRunTest(builtFile2);
 
             return FeatureExecutionSet.Create(project, new RunAllFilter(), LogFactory);
+        }
+
+        private IConfiguration GetTestConfig(params (string Key, string Value)[] values)
+        {
+            return new ConfigurationBuilder().AddInMemoryCollection(values.Select(item => new KeyValuePair<string, string>(item.Key, item.Value))).Build();
         }
 
         private class MyFeatureStrategy : IFeatureExecutionStrategy
@@ -237,7 +246,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 throw new NotImplementedException();
             }
 
-            public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
+            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
             {
                 throw new NotImplementedException();
             }

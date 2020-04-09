@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -8,6 +9,7 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution
@@ -17,7 +19,6 @@ namespace AutoStep.Execution
     /// </summary>
     public class TestRun
     {
-        private readonly RunConfiguration configuration;
         private readonly IRunFilter filter;
         private readonly IExecutionStateManager executionManager;
         private readonly EventPipelineBuilder eventPipelineBuilder;
@@ -32,17 +33,24 @@ namespace AutoStep.Execution
         /// Initializes a new instance of the <see cref="TestRun"/> class.
         /// </summary>
         /// <param name="project">The project to test.</param>
-        /// <param name="configuration">The run configuration.</param>
+        /// <param name="projectConfiguration">The project configuration.</param>
         /// <param name="filter">A run filter, if there is one.</param>
         /// <param name="executionStateManager">An execution manager, if there is one.</param>
         public TestRun(
             Project project,
-            RunConfiguration configuration,
+            IConfiguration? projectConfiguration = null,
             IRunFilter? filter = null,
             IExecutionStateManager? executionStateManager = null)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
+            ConfigurationBuilder = new ConfigurationBuilder();
+
+            // Add the provided project configuration.
+            if (projectConfiguration is object)
+            {
+                ConfigurationBuilder.AddConfiguration(projectConfiguration);
+            }
 
             this.eventPipelineBuilder = new EventPipelineBuilder();
             this.filter = filter ?? new RunAllFilter();
@@ -67,6 +75,11 @@ namespace AutoStep.Execution
         public IEventPipelineBuilder Events => eventPipelineBuilder;
 
         /// <summary>
+        /// Gets the configuration being used for the test run.
+        /// </summary>
+        public IConfigurationBuilder ConfigurationBuilder { get; }
+
+        /// <summary>
         /// Change the Run Execution strategy for the test run.
         /// </summary>
         /// <param name="runStrategy">The new run strategy.</param>
@@ -80,7 +93,7 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             using var nullLogger = new LoggerFactory();
 
@@ -93,15 +106,17 @@ namespace AutoStep.Execution
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
 
             var logger = logFactory.CreateLogger<TestRun>();
 
+            var builtConfiguration = ConfigurationBuilder.Build();
+
             // Create a top-level run context
-            var runContext = new RunContext(configuration);
+            var runContext = new RunContext(builtConfiguration);
 
             if (executionSet.Features.Count == 0)
             {
@@ -114,7 +129,7 @@ namespace AutoStep.Execution
             var events = eventPipelineBuilder.Build();
 
             // Build the container and prepare a root scope.
-            using var rootScope = PrepareContainer(events, logFactory, serviceRegistration, executionSet);
+            using var rootScope = PrepareContainer(events, logFactory, builtConfiguration, serviceRegistration, executionSet);
 
             // Run scope (disposes at the end of the method).
             using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
@@ -142,7 +157,7 @@ namespace AutoStep.Execution
             return runContext;
         }
 
-        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, Action<IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
             var exposedServiceRegistration = new AutofacServiceBuilder();
@@ -166,21 +181,33 @@ namespace AutoStep.Execution
             // Add our built event pipeline to DI.
             exposedServiceRegistration.RegisterSingleInstance<IEventPipeline>(events);
 
-            events.ConfigureServices(exposedServiceRegistration, configuration);
-
             // Register the entire set in the container.
             exposedServiceRegistration.RegisterSingleInstance(featureSet);
 
+            // Register configuration concepts in the container.
+            exposedServiceRegistration.RegisterSingleInstance(builtConfiguration);
+
+            ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
+
+            serviceRegistration?.Invoke(builtConfiguration, exposedServiceRegistration);
+
+            return exposedServiceRegistration.BuildRootScope();
+        }
+
+        private static void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler, IConfiguration configuration)
+        {
             // Ask the project's compiler for the list of step definition sources.
-            foreach (var source in Project.Compiler.EnumerateStepDefinitionSources())
+            foreach (var source in compiler.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
                 source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
-            serviceRegistration?.Invoke(exposedServiceRegistration);
-
-            return exposedServiceRegistration.BuildRootScope();
+            // Iterate over the methods in the root method table.
+            foreach (var service in compiler.Interactions.RootMethodTable.GetAllMethodProvidingServices())
+            {
+                exposedServiceRegistration.RegisterPerResolveService(service);
+            }
         }
     }
 }

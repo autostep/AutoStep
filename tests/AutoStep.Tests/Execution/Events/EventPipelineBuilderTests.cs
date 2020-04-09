@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoStep.Execution.Contexts;
+using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using FluentAssertions;
 using Moq;
@@ -22,16 +26,16 @@ namespace AutoStep.Tests.Execution.Events
             var builder = new EventPipelineBuilder();
 
             var mock = new Mock<IEventHandler>();
-            mock.Setup(x => x.ConfigureServices(null!, null!)).Verifiable();
+            mock.Setup(x => x.OnExecute(null!, null!, null!)).Verifiable();
             var evHandler = mock.Object;
 
             builder.Add(evHandler);
 
             var pipeline = builder.Build();
 
-            pipeline.ConfigureServices(null!, null!);
+            pipeline.InvokeEvent<RunContext>(null!, null!, (h, s, c, n) => h.OnExecute(s, c, n));
 
-            mock.Verify(x => x.ConfigureServices(null!, null!), Times.Once());
+            mock.Verify(x => x.OnExecute(null!, null!, It.IsAny<Func<IServiceScope, RunContext, ValueTask>>()), Times.Once());
         }
     }
 }

@@ -61,7 +61,11 @@ namespace AutoStep.Language.Interaction.Visitors
 
             MergeVisitorAndReset(methodVisitor);
 
-            Result!.Methods.Add(methodDef);
+            if (!Result!.Methods.TryAdd(methodDef.Name, methodDef))
+            {
+                // Duplicate method definition.
+                MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.InteractionDuplicateMethodDefinition, methodDef.Name);
+            }
 
             return Result;
         }

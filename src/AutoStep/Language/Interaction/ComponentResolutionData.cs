@@ -67,7 +67,7 @@ namespace AutoStep.Language.Interaction
         /// <param name="definition">The component definition.</param>
         public void Replace(ComponentDefinitionElement definition)
         {
-            Methods = definition.Methods.ToDictionary(x => x.Name);
+            Methods = definition.Methods;
             Steps = definition.Steps;
             Traits = definition.Traits;
             Name = definition.Name;
@@ -116,7 +116,7 @@ namespace AutoStep.Language.Interaction
             {
                 if (definition.Methods.Any())
                 {
-                    Methods = definition.Methods.ToDictionary(x => x.Name);
+                    Methods = definition.Methods;
                 }
             }
             else if (definition.Methods.Any())
@@ -124,7 +124,7 @@ namespace AutoStep.Language.Interaction
                 // Merge in the existing methods (will overwrite any existing definitions).
                 foreach (var def in definition.Methods)
                 {
-                    Methods[def.Name] = def;
+                    Methods[def.Key] = def.Value;
                 }
             }
 

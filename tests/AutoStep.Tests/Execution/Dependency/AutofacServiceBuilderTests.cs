@@ -2,6 +2,7 @@
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace AutoStep.Tests.Execution.Dependency
@@ -72,7 +73,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             sharedCount.Should().Be(1);
 
-            using var nested = built.BeginNewScope(new RunContext(new RunConfiguration()));
+            using var nested = built.BeginNewScope(new RunContext(new ConfigurationBuilder().Build()));
 
             nested.Resolve<TestService>();
 

@@ -70,16 +70,7 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateDefault(Project project)
         {
-            var compiler = new TestCompiler(TestCompilerOptions.Default);
-
-            var defaultCallChainValidator = new DefaultCallChainValidator();
-
-            return new ProjectCompiler(
-                project,
-                compiler,
-                new Linker(compiler),
-                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
-                () => new InteractionSetBuilder(defaultCallChainValidator));
+            return CreateWithOptions(project, TestCompilerOptions.Default, InteractionsCompilerOptions.Default);
         }
 
         /// <summary>
@@ -89,7 +80,19 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateForEditing(Project project)
         {
-            var compiler = new TestCompiler(TestCompilerOptions.CreatePositionIndex);
+            return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.Default);
+        }
+
+        /// <summary>
+        /// Creates a project compiler with the provided compiler options.
+        /// </summary>
+        /// <param name="project">The project to work against.</param>
+        /// <param name="testOptions">Options for the test compiler.</param>
+        /// <param name="interactionOptions">Options for the interaction compiler.</param>
+        /// <returns>A project compiler.</returns>
+        public static ProjectCompiler CreateWithOptions(Project project, TestCompilerOptions testOptions, InteractionsCompilerOptions interactionOptions)
+        {
+            var compiler = new TestCompiler(testOptions);
 
             var defaultCallChainValidator = new DefaultCallChainValidator();
 
@@ -97,7 +100,7 @@ namespace AutoStep.Projects
                 project,
                 compiler,
                 new Linker(compiler),
-                new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics),
+                new InteractionCompiler(interactionOptions),
                 () => new InteractionSetBuilder(defaultCallChainValidator));
         }
 
@@ -400,7 +403,7 @@ namespace AutoStep.Projects
 
         private class InteractionsConfiguration : IInteractionsConfiguration
         {
-            public MethodTable RootMethodTable { get; } = new MethodTable();
+            public RootMethodTable RootMethodTable { get; } = new RootMethodTable();
 
             public InteractionConstantSet Constants { get; } = new InteractionConstantSet();
         }

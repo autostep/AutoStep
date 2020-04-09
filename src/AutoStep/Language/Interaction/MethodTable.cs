@@ -47,14 +47,14 @@ namespace AutoStep.Language.Interaction
         /// </summary>
         /// <param name="name">The name of the method.</param>
         /// <param name="methodDef">The parsed method definition.</param>
-        public void Set(string name, MethodDefinitionElement methodDef)
+        public void SetMethod(string name, MethodDefinitionElement methodDef)
         {
             if (methodDef is null)
             {
                 throw new ArgumentNullException(nameof(methodDef));
             }
 
-            Set(new FileDefinedInteractionMethod(name, methodDef)
+            SetMethod(new FileDefinedInteractionMethod(name, methodDef)
             {
                 NeedsDefining = methodDef.NeedsDefining,
             });
@@ -64,7 +64,7 @@ namespace AutoStep.Language.Interaction
         /// Insert a method definition (pre-defined) into the method table.
         /// </summary>
         /// <param name="predefinedMethod">The method definition.</param>
-        public void Set(InteractionMethod predefinedMethod)
+        public virtual void SetMethod(InteractionMethod predefinedMethod)
         {
             if (predefinedMethod is null)
             {

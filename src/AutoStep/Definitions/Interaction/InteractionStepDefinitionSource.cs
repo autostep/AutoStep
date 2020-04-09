@@ -4,6 +4,7 @@ using System.Linq;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Definitions.Interaction
 {
@@ -35,7 +36,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
         {
             if (interactions is object)
             {

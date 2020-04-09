@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Execution;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Projects
 {
@@ -33,23 +34,33 @@ namespace AutoStep.Projects
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Project"/> class.
+        /// Initializes a new instance of the <see cref="Project"/> class, using a custom
+        /// project compiler factory.
         /// </summary>
-        /// <param name="compiler">A custom project compiler.</param>
-        public Project(IProjectCompiler compiler)
+        /// <param name="compilerFactory">
+        /// Factory to create a compiler instance.
+        /// </param>
+        public Project(Func<Project, IProjectCompiler> compilerFactory)
         {
-            Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+            if (compilerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(compilerFactory));
+            }
+
+            var builtCompiler = compilerFactory(this);
+
+            if (builtCompiler is null)
+            {
+                throw new InvalidOperationException(ProjectMessages.ProjectCompilerCannotReturnNull);
+            }
+
+            Compiler = builtCompiler;
         }
 
         /// <summary>
         /// Gets the set of all files in the project.
         /// </summary>
         public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
-
-        /// <summary>
-        /// Gets the active project configuration.
-        /// </summary>
-        public ProjectConfiguration? Configuration { get; }
 
         /// <summary>
         /// Gets the project compiler.
@@ -127,28 +138,29 @@ namespace AutoStep.Projects
         /// <returns>The test run.</returns>
         public TestRun CreateTestRun()
         {
-            return new TestRun(this, new RunConfiguration());
+            // No configuration to speak of.
+            return new TestRun(this, new ConfigurationBuilder().Build());
         }
 
         /// <summary>
         /// Create a test run with the specified configuration.
         /// </summary>
-        /// <param name="configuration">The run configuration.</param>
+        /// <param name="projectConfiguration">The project configuration.</param>
         /// <returns>The test run.</returns>
-        public TestRun CreateTestRun(RunConfiguration configuration)
+        public TestRun CreateTestRun(IConfiguration projectConfiguration)
         {
-            return new TestRun(this, configuration);
+            return new TestRun(this, projectConfiguration);
         }
 
         /// <summary>
         /// Create a test run with the specified configuration and feature filter.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
+        /// <param name="projectConfiguration">The configuration.</param>
         /// <param name="filter">The feature filter.</param>
         /// <returns>The test run.</returns>
-        public TestRun CreateTestRun(RunConfiguration configuration, IRunFilter filter)
+        public TestRun CreateTestRun(IConfiguration projectConfiguration, IRunFilter filter)
         {
-            return new TestRun(this, configuration, filter);
+            return new TestRun(this, projectConfiguration, filter);
         }
     }
 }

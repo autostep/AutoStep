@@ -4,6 +4,7 @@ using System.Linq;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Definitions.Test
 {
@@ -62,7 +63,7 @@ namespace AutoStep.Definitions.Test
         }
 
         /// <inheritdoc/>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, RunConfiguration configuration)
+        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
         {
             // No additional services needed for these.
         }

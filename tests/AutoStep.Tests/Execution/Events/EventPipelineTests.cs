@@ -7,6 +7,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
@@ -14,23 +15,7 @@ namespace AutoStep.Tests.Execution.Events
 {
     public class EventPipelineTests
     {
-        [Fact]
-        public void ConfigureServicesCallsEachHandler()
-        {
-            var order = new List<int>();
-
-            var mockEventHandler1 = new Mock<IEventHandler>();
-            var mockEventHandler2 = new Mock<IEventHandler>();
-            mockEventHandler1.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(1));
-            mockEventHandler2.Setup(x => x.ConfigureServices(null!, null!)).Callback(() => order.Add(2));
-
-            var pipeline = new EventPipeline(new List<IEventHandler> { mockEventHandler1.Object, mockEventHandler2.Object });
-
-            pipeline.ConfigureServices(null!, null!);
-
-            order[0].Should().Be(1);
-            order[1].Should().Be(2);
-        }
+        private IConfiguration BlankConfiguration { get; } = new ConfigurationBuilder().Build();
 
         [Fact]
         public void InvokeEventInvokesProvidedCallbackWithNoHandlers()
@@ -38,7 +23,7 @@ namespace AutoStep.Tests.Execution.Events
             var pipeline = new EventPipeline(new List<IEventHandler>());
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
             var callbackInvoked = false;
             var endOfPipelineInvoked = false;
 
@@ -68,7 +53,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
 
             var myHandler = new MyEventHandler(() => beforeCalled = true, () => afterCalled = true);
 
@@ -87,7 +72,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
 
             var myHandler = new MyEventHandler(() => order.Add(1), () => order.Add(4));
 
@@ -109,7 +94,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
 
             var myHandler = new MyEventHandler(() => order.Add(1), () => order.Add(8));
             var myHandler2 = new AsyncEventHandler(() => order.Add(2), () => order.Add(7));
@@ -131,7 +116,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
             var mockStepReference = new StepReferenceElement();
             Exception? foundException = null;
 
@@ -153,7 +138,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
@@ -173,7 +158,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var scopeMock = new Mock<IServiceScope>();
             var scope = scopeMock.Object;
-            var context = new RunContext(new RunConfiguration());
+            var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
@@ -228,7 +213,7 @@ namespace AutoStep.Tests.Execution.Events
                 callAfter();
             }
 
-            public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
+            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
             {
                 throw new NotImplementedException();
             }
@@ -277,7 +262,7 @@ namespace AutoStep.Tests.Execution.Events
                 callAfter();
             }
 
-            public void ConfigureServices(IServicesBuilder builder, RunConfiguration configuration)
+            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
             {
                 throw new NotImplementedException();
             }
