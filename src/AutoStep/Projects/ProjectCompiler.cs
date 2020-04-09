@@ -183,7 +183,7 @@ namespace AutoStep.Projects
         {
             if (interactionCompiler is null && project.AllFiles.Values.OfType<ProjectInteractionFile>().Any())
             {
-                throw new InvalidOperationException(ProjectCompilerMessages.ProjectCompilerCannotReturnNull);
+                throw new InvalidOperationException(ProjectCompilerMessages.MissingInteractionCompiler);
             }
 
             var fileWasCompiled = false;
