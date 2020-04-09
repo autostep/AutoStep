@@ -44,7 +44,7 @@ namespace AutoStep.Execution.Strategy
 
             if (parallelConfig < 1)
             {
-                throw new ProjectConfigurationException("The configured parallelCount must be greater than zero.");
+                throw new ProjectConfigurationException(StrategyMessages.ParallelCountMustBeGreaterThanZero);
             }
 
             var parallelValue = Math.Min(featureQueue.Count, parallelConfig);

@@ -7,28 +7,36 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace AutoStep.Projects.Files
 {
+    /// <summary>
+    /// Represents a globbed set of files found in a specific root directory.
+    /// </summary>
+    /// <remarks>
+    /// Backed by the Microsoft.Extensions.FileSystemGlobbing library.
+    /// </remarks>
     public class FileSet : IFileSet
     {
         private readonly List<FileSetEntry> files = new List<FileSetEntry>();
         private readonly DirectoryInfoBase baseDir;
         private readonly Matcher matcher;
 
+        /// <inheritdoc/>
         public string RootFolder { get; }
 
+        /// <inheritdoc/>
         public IReadOnlyList<FileSetEntry> Files => files;
 
-        internal static FileSet Create(DirectoryInfoBase directory, string[] includeGlobs, string[]? excludeGlobs = null)
-        {
-            var set = new FileSet(directory, includeGlobs, excludeGlobs);
-            set.ScanFiles();
-            return set;
-        }
-
+        /// <summary>
+        /// Create a new file set.
+        /// </summary>
+        /// <param name="rootFolder">The root folder.</param>
+        /// <param name="includeGlobs">The set of globs to include in the set.</param>
+        /// <param name="excludeGlobs">The (optional) set of globs to exclude from the set.</param>
+        /// <returns>The new file set.</returns>
         public static FileSet Create(string rootFolder, string[] includeGlobs, string[]? excludeGlobs = null)
         {
             if (!Path.IsPathRooted(rootFolder))
             {
-                throw new ArgumentException("File set root folders must be absolute paths.", nameof(rootFolder));
+                throw new ArgumentException(FileSetMessages.RootFoldersMustBeAbsolute, nameof(rootFolder));
             }
 
             var set = new FileSet(rootFolder, includeGlobs, excludeGlobs);
@@ -38,6 +46,7 @@ namespace AutoStep.Projects.Files
             return set;
         }
 
+        /// <inheritdoc/>
         public bool TryAddFile(string relativePath)
         {
             var match = matcher.Match(relativePath);
@@ -48,7 +57,7 @@ namespace AutoStep.Projects.Files
 
                 if (files.All(f => f.Relative != relativePath))
                 {
-                    files.Add(new FileSetEntry { Absolute = Path.GetFullPath(file.Path, RootFolder), Relative = file.Path });
+                    files.Add(new FileSetEntry(Path.GetFullPath(file.Path, RootFolder), file.Path));
 
                     return true;
                 }
@@ -57,6 +66,7 @@ namespace AutoStep.Projects.Files
             return false;
         }
 
+        /// <inheritdoc/>
         public bool TryRemoveFile(string relativePath)
         {
             var indexOf = files.FindIndex(f => f.Relative == relativePath);
@@ -74,13 +84,6 @@ namespace AutoStep.Projects.Files
             baseDir = new DirectoryInfoWrapper(new DirectoryInfo(rootFolder));
             matcher = GetMatcher(includeGlobs, excludeGlobs);
             RootFolder = rootFolder;
-        }
-
-        private FileSet(DirectoryInfoBase directory, string[] includeGlobs, string[]? excludeGlobs = null)
-        {
-            baseDir = directory;
-            matcher = GetMatcher(includeGlobs, excludeGlobs);
-            RootFolder = directory.FullName;
         }
 
         private Matcher GetMatcher(string[] includeGlobs, string[]? excludeGlobs)
@@ -102,7 +105,7 @@ namespace AutoStep.Projects.Files
 
             foreach (var file in matchResults.Files)
             {
-                files.Add(new FileSetEntry { Absolute = Path.GetFullPath(file.Path, RootFolder), Relative = file.Path });
+                files.Add(new FileSetEntry(Path.GetFullPath(file.Path, RootFolder), file.Path));
             }
         }
     }

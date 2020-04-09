@@ -48,10 +48,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Configuration\ConfigurationExtensionsMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ConfigurationExtensionsMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Elements\Interaction\ElementExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Execution\Strategy\StrategyMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StrategyMessages.resx</DependentUpon>
     </Compile>
     <Compile Update="Language\Interaction\CompilerLogMessages.Designer.cs">
       <DependentUpon>CompilerLogMessages.resx</DependentUpon>
@@ -108,6 +118,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Projects\Files\FileSetMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileSetMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Projects\ProjectCompilerMessages - Copy.Designer.cs">
       <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -121,9 +136,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Configuration\ConfigurationExtensionsMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ConfigurationExtensionsMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Elements\Interaction\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Execution\Strategy\StrategyMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StrategyMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Language\Interaction\CompilerLogMessages.resx">
       <LastGenOutput>CompilerLogMessages.Designer.cs</LastGenOutput>
@@ -168,6 +191,10 @@
     <EmbeddedResource Update="Elements\Test\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Projects\Files\FileSetMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileSetMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Projects\ProjectMessages.resx">
       <LastGenOutput>ProjectMessages.Designer.cs</LastGenOutput>

@@ -22,7 +22,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <summary>
-        /// Defines the service type that backs the method.
+        /// Gets the service type that backs the method.
         /// </summary>
         public Type ServiceType { get; }
 

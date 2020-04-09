@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using AutoStep.Definitions.Interaction;
-using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Language.Interaction
 {
+    /// <summary>
+    /// Root method table, representing the table in which externally defined methods will be added.
+    /// </summary>
     public class RootMethodTable : MethodTable
     {
         private HashSet<Type> serviceProvidingTypes = new HashSet<Type>();
 
-        public override void Set(InteractionMethod predefinedMethod)
+        /// <inheritdoc/>
+        public override void SetMethod(InteractionMethod predefinedMethod)
         {
             if (predefinedMethod is ClassBackedInteractionMethod classBacked)
             {
@@ -19,9 +20,14 @@ namespace AutoStep.Language.Interaction
                 serviceProvidingTypes.Add(classBacked.ServiceType);
             }
 
-            base.Set(predefinedMethod);
+            base.SetMethod(predefinedMethod);
         }
 
+        /// <summary>
+        /// Retrieve all services that provide methods, and should be registered in the execution
+        /// container to support DI in those classes.
+        /// </summary>
+        /// <returns>A set of types.</returns>
         public IEnumerable<Type> GetAllMethodProvidingServices()
         {
             return serviceProvidingTypes;

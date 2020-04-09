@@ -26,7 +26,7 @@ namespace AutoStep
                 throw new System.ArgumentNullException(nameof(method));
             }
 
-            config.RootMethodTable.Set(method);
+            config.RootMethodTable.SetMethod(method);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace AutoStep
 
                 if (attr is object)
                 {
-                    config.RootMethodTable.Set(new ClassBackedInteractionMethod(attr.Name, typeof(TMethodsClass), method));
+                    config.RootMethodTable.SetMethod(new ClassBackedInteractionMethod(attr.Name, typeof(TMethodsClass), method));
                 }
             }
         }

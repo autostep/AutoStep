@@ -194,7 +194,7 @@ namespace AutoStep.Execution
             return exposedServiceRegistration.BuildRootScope();
         }
 
-        private void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler, IConfiguration configuration)
+        private static void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler, IConfiguration configuration)
         {
             // Ask the project's compiler for the list of step definition sources.
             foreach (var source in compiler.EnumerateStepDefinitionSources())
