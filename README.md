@@ -10,6 +10,9 @@ express your application's UI behaviour and components without writing code.
 
 This repository contains the core .NET library that provides compilation and execution behaviour.
 
+> [Contribution Guide](https://github.com/autostep/.github/blob/master/CONTRIBUTING.md) and 
+> [Code of Conduct](https://github.com/autostep/.github/blob/master/CODE_OF_CONDUCT.md).
+
 ---
 
 **Status**
