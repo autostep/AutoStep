@@ -46,7 +46,7 @@ namespace AutoStep.Tests.Language.Test
                 return ReferenceEquals(def, this);
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }

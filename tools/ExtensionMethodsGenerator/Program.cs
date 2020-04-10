@@ -22,7 +22,6 @@ namespace ExtensionMethodsGenerator
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Interaction"));
-                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Dependency"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Interaction"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Language.Interaction"));
 
@@ -35,7 +34,6 @@ namespace ExtensionMethodsGenerator
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Test"));
-                myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Dependency"));
 
                 var defType = GenerateDefinitionExtensions();
 
@@ -179,7 +177,7 @@ namespace ExtensionMethodsGenerator
             {
                 AddDocComments(method.Comments,
                     "Type parameters for the callback are the type of values to bind step arguments to.",
-                    "A type argument of <see cref=\"IServiceScope\" /> will cause the current scope to be injected into the method.");
+                    "A type argument of <see cref=\"IServiceProvider\" /> will cause the current scope to be injected into the method.");
             }
 
             AddDocComments(method.Comments, "</summary>");
@@ -269,7 +267,7 @@ namespace ExtensionMethodsGenerator
             {
                 AddDocComments(method.Comments,
                     "Type parameters for the callback are the type of values to bind interaction arguments to.",
-                    "A type argument of <see cref=\"IServiceScope\" /> will cause the current scope to be injected into the method;" +
+                    "A type argument of <see cref=\"IServiceProvider\" /> will cause the current scope to be injected into the method;" +
                     " a type argument of <see cref=\"MethodContext\" /> will receive " +
                     "the current interaction method context.");
             }

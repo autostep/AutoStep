@@ -50,9 +50,9 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IFeatureExecutionStrategy>(featureStrategy);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
 
             var scope = builder.BuildRootScope();
 
@@ -63,7 +63,7 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeThread.Should().Be(1);
             afterThread.Should().Be(1);
             featureStrategy.AddedFeatures.Should().ContainInOrder(new[] { features.Features[0], features.Features[1] });
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var features = Get2FeatureSet();
             var runContext = new RunContext(GetTestConfig(("parallelCount", "2")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
+            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
             var beforeThread = 0;
             var afterThread = 0;
@@ -88,10 +88,10 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IFeatureExecutionStrategy>(featureStrategy);
-            builder.RegisterSingleInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
+            builder.RegisterInstance<IEventPipeline>(eventPipeline);
 
             var scope = builder.BuildRootScope();
 
@@ -104,7 +104,7 @@ namespace AutoStep.Tests.Execution.Strategy
             threadBag.Should().Contain(new[] { 1, 2 });
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
 
             LoggedMessages.ShouldContain(LogLevel.Debug, "executing", "Feature 1");
             LoggedMessages.ShouldContain(LogLevel.Debug, "executing", "Feature 2");
@@ -120,7 +120,7 @@ namespace AutoStep.Tests.Execution.Strategy
             // Say to use 3 threads, but we should still only use 2.
             var runContext = new RunContext(GetTestConfig(("parallelCount", "3")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
+            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
             var beforeThread = 0;
             var afterThread = 0;
@@ -136,10 +136,10 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IFeatureExecutionStrategy>(featureStrategy);
-            builder.RegisterSingleInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
+            builder.RegisterInstance<IEventPipeline>(eventPipeline);
 
             var scope = builder.BuildRootScope();
 
@@ -153,7 +153,7 @@ namespace AutoStep.Tests.Execution.Strategy
             threadBag.Should().Contain(new[] { 1, 2 });
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
         }
 
         private FeatureExecutionSet Get2FeatureSet()
@@ -188,7 +188,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             public ConcurrentQueue<IFeatureInfo> AddedFeatures { get; } = new ConcurrentQueue<IFeatureInfo>();
 
-            public ValueTask Execute(IServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
+            public ValueTask Execute(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
             {
                 threadScope.Tag.Should().Be(ScopeTags.ThreadTag);
 
@@ -198,7 +198,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-        private class MyEventHandler : IEventHandler
+        private class MyEventHandler : BaseEventHandler
         {
             private readonly Action<ThreadContext> callBefore;
             private readonly Action<ThreadContext> callAfter;
@@ -218,7 +218,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public async ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
+            public override async ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -239,31 +239,6 @@ namespace AutoStep.Tests.Execution.Strategy
                 }
 
                 callAfter(ctxt);
-            }
-
-            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
             }
         }
     }

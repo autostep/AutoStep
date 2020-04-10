@@ -485,7 +485,7 @@ namespace AutoStep.Tests.Language.Test.Matching
                 Definition = definition;
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
             {
                 throw new NotImplementedException();
             }

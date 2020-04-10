@@ -4,6 +4,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -20,13 +21,13 @@ namespace AutoStep.Execution.Strategy
         /// <param name="scenario">The scenario metadata.</param>
         /// <param name="variableSet">The set of variables currently in-scope.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
-        public async ValueTask Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
+        public async ValueTask Execute(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
 
-            var collectionExecutor = featureScope.Resolve<IStepCollectionExecutionStrategy>();
-            var executionManager = featureScope.Resolve<IExecutionStateManager>();
-            var events = featureScope.Resolve<IEventPipeline>();
+            var collectionExecutor = featureScope.GetRequiredService<IStepCollectionExecutionStrategy>();
+            var executionManager = featureScope.GetRequiredService<IExecutionStateManager>();
+            var events = featureScope.GetRequiredService<IEventPipeline>();
 
             using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, scenarioContext);
 
@@ -35,7 +36,7 @@ namespace AutoStep.Execution.Strategy
 
             try
             {
-                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.OnScenario(sc, ctxt, next), async (scope, ctxt) =>
+                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.OnScenario(sc, ctxt, next), async (_, ctxt) =>
                 {
                     scenarioContext.ScenarioRan = true;
 
@@ -43,7 +44,7 @@ namespace AutoStep.Execution.Strategy
                     {
                         // There is a background to execute.
                         await collectionExecutor.Execute(
-                                scope,
+                                scenarioScope,
                                 ctxt,
                                 featureContext.Feature.Background,
                                 variableSet).ConfigureAwait(false);

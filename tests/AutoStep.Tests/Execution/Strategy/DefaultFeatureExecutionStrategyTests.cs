@@ -146,9 +146,9 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IScenarioExecutionStrategy>(scenarioStrategy);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
 
             var scope = builder.BuildRootScope();
 
@@ -158,7 +158,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<FeatureContext>(), TestThreadState.StartingFeature), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceProvider>(), It.IsAny<FeatureContext>(), TestThreadState.StartingFeature), Times.Once());
 
             scenarioStrategy.AddedScenarios.Should().BeEquivalentTo(scenarios);
         }
@@ -167,7 +167,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             public List<(IScenarioInfo scenario, VariableSet variables)> AddedScenarios { get; } = new List<(IScenarioInfo, VariableSet)>();
 
-            public ValueTask Execute(IServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables)
+            public ValueTask Execute(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables)
             {
                 AddedScenarios.Add((scenario, variables));
 
@@ -175,7 +175,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-        private class MyEventHandler : IEventHandler
+        private class MyEventHandler : BaseEventHandler
         {
             private readonly Action<FeatureContext> callBefore;
             private readonly Action<FeatureContext> callAfter;
@@ -195,7 +195,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public async ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
+            public override async ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -216,30 +216,6 @@ namespace AutoStep.Tests.Execution.Strategy
                 }
 
                 callAfter(ctxt);
-            }
-
-            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
             }
         }
     }

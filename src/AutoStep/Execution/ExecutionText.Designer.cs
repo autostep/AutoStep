@@ -70,15 +70,6 @@ namespace AutoStep.Execution {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot resolve service of type &apos;{0}&apos;; it is not assignable to &apos;{1}&apos;..
-        /// </summary>
-        internal static string AutofacServiceScope_NotAssignable {
-            get {
-                return ResourceManager.GetString("AutofacServiceScope_NotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A circular method reference has been detected..
         /// </summary>
         internal static string CircularInteractionMethodException_Message {

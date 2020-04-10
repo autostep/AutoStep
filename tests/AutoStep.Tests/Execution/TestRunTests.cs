@@ -65,8 +65,8 @@ namespace AutoStep.Tests.Execution
             var runStrategyInvoked = false;
 
             var mockRunStrategy = new Mock<IRunExecutionStrategy>();
-            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>()))
-                           .Callback((IServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet) =>
+            mockRunStrategy.Setup(x => x.Execute(It.IsAny<IAutoStepServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>()))
+                           .Callback((IAutoStepServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet) =>
                            {
                                runStrategyInvoked = true;
 

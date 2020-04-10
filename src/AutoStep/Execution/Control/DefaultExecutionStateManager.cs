@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
@@ -10,7 +11,7 @@ namespace AutoStep.Execution.Control
     public class DefaultExecutionStateManager : IExecutionStateManager
     {
         /// <inheritdoc/>
-        public ValueTask<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, TestExecutionContext context, TestThreadState starting)
+        public ValueTask<HaltResponseInstruction?> CheckforHalt(IServiceProvider scope, TestExecutionContext context, TestThreadState starting)
         {
             return default;
         }

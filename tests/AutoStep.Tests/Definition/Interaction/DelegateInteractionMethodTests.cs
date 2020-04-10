@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, null!, Array.Empty<object>()))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, null!, Array.Empty<object>()))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IServiceScope>().Object, new MethodContext(), null!))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, new MethodContext(), null!))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -55,7 +55,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            var scope = new Mock<IServiceScope>();
+            var scope = new Mock<IAutoStepServiceScope>();
 
             await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
 
@@ -71,7 +71,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            var scope = new Mock<IServiceScope>();
+            var scope = new Mock<IAutoStepServiceScope>();
 
             await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
 
@@ -195,9 +195,9 @@ namespace AutoStep.Tests.Definition.Interaction
         {
             string? value = null;
             MethodContext? passedCtxt = null;
-            IServiceScope? passedScope = null;
+            IServiceProvider? passedScope = null;
 
-            Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) =>
+            Action<MethodContext, string, IServiceProvider> action = (ctxt, val, scope) =>
             {
                 passedCtxt = ctxt;
                 value = val;
@@ -220,9 +220,9 @@ namespace AutoStep.Tests.Definition.Interaction
         {
             string? value = null;
             MethodContext? passedCtxt = null;
-            IServiceScope? passedScope = null;
+            IAutoStepServiceScope? passedScope = null;
 
-            Action<MethodContext, string, IServiceScope> action = (ctxt, val, scope) =>
+            Action<MethodContext, string, IAutoStepServiceScope> action = (ctxt, val, scope) =>
             {
                 passedCtxt = ctxt;
                 value = val;
@@ -238,21 +238,21 @@ namespace AutoStep.Tests.Definition.Interaction
 
         private class DerivedClass : BaseClass { }
 
-        private IServiceScope GetScopeWithRegistry()
+        private IServiceProvider GetScopeWithRegistry()
         {
-            var scope = new Mock<IServiceScope>();
-            scope.Setup(x => x.Resolve<ArgumentBinderRegistry>()).Returns(new ArgumentBinderRegistry());
+            var scope = new Mock<IServiceProvider>();
+            scope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
 
             return scope.Object;
         }
 
-        private IServiceScope GetScopeWithFailingArgumentBinder<TBind>()
+        private IAutoStepServiceScope GetScopeWithFailingArgumentBinder<TBind>()
         {
-            var scope = new Mock<IServiceScope>();
+            var scope = new Mock<IAutoStepServiceScope>();
             var binder = new ArgumentBinderRegistry();
             binder.RegisterArgumentBinder<FailingBinder>(typeof(TBind));
-            scope.Setup(x => x.Resolve(typeof(FailingBinder))).Returns(new FailingBinder());
-            scope.Setup(x => x.Resolve<ArgumentBinderRegistry>()).Returns(binder);
+            scope.Setup(x => x.GetService(typeof(FailingBinder))).Returns(new FailingBinder());
+            scope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(binder);
 
             return scope.Object;
         }

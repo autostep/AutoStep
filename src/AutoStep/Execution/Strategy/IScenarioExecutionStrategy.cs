@@ -19,7 +19,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="variables">The set of variables currently in-scope.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
         ValueTask Execute(
-            IServiceScope featureScope,
+            IAutoStepServiceScope featureScope,
             FeatureContext featureContext,
             IScenarioInfo scenario,
             VariableSet variables);

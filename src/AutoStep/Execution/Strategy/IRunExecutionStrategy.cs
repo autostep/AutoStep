@@ -17,6 +17,6 @@ namespace AutoStep.Execution.Strategy
         /// <param name="runContext">The run context.</param>
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        Task Execute(IServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet);
+        Task Execute(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet);
     }
 }

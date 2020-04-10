@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, "I argument1", VariableSet.Blank);
 
@@ -53,7 +53,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, "I argument", VariableSet.Blank);
 
@@ -79,7 +79,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, "I 'argument'", VariableSet.Blank);
 
@@ -106,7 +106,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, "I 'argument something'", VariableSet.Blank);
 
@@ -132,7 +132,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, "I 'argument something", VariableSet.Blank);
 
@@ -156,7 +156,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var variableSet = new VariableSet();
             variableSet.Set("var", "value"); ;
@@ -182,7 +182,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var variableSet = new VariableSet();
             variableSet.Set("var", "value"); ;
@@ -208,7 +208,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var variableSet = new VariableSet();
             variableSet.Set("var", "value"); ;
@@ -234,7 +234,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var variableSet = new VariableSet();
             variableSet.Set("var", "value"); ;
@@ -260,7 +260,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var variableSet = new VariableSet();
             variableSet.Set("var", "value"); ;
@@ -286,7 +286,7 @@ namespace AutoStep.Tests.Execution
 
             var binding = new ArgumentBinding(stepDef.Built.Arguments[0], matchResult);
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = binding.GetFullText(fakeScope, stepRef.Built.RawText, VariableSet.Blank);
 
@@ -299,7 +299,7 @@ namespace AutoStep.Tests.Execution
             var stepDef = new CellBuilder("value1", 1, 1, 7);
             stepDef.Text("value").Int("1");
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = stepDef.Built.GetFullText(fakeScope, VariableSet.Blank);
 
@@ -312,7 +312,7 @@ namespace AutoStep.Tests.Execution
             var stepDef = new CellBuilder("value 1", 1, 1, 7);
             stepDef.Text("value").Int("1");
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
 
             var text = stepDef.Built.GetFullText(fakeScope, VariableSet.Blank);
 
@@ -325,7 +325,7 @@ namespace AutoStep.Tests.Execution
             var stepDef = new CellBuilder("value <var>", 1, 1, 7);
             stepDef.Text("value").Variable("var");
 
-            var fakeScope = new Mock<IServiceScope>().Object;
+            var fakeScope = new Mock<IAutoStepServiceScope>().Object;
             var variables = new VariableSet();
             variables.Set("var", "something");
 

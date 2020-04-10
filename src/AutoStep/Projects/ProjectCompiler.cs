@@ -242,7 +242,7 @@ namespace AutoStep.Projects
                 var setBuild = interactionSetBuilder.Build(Interactions);
 
                 // Now we need to go through the messages and add them to the appropriate interaction files.
-                var fileMessages = setBuild.Messages.GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
+                var fileMessages = setBuild.Messages.Where(x => x.SourceName != null).GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
 
                 foreach (var projectFile in files.OfType<ProjectInteractionFile>())
                 {
@@ -291,7 +291,7 @@ namespace AutoStep.Projects
         /// Add a static step definition source (i.e. one that cannot change after it is registered).
         /// </summary>
         /// <param name="source">The step definition source.</param>
-        public void AddStaticStepDefinitionSource(IStepDefinitionSource source)
+        public void AddStepDefinitionSource(IStepDefinitionSource source)
         {
             linker.AddStepDefinitionSource(source.ThrowIfNull(nameof(source)));
         }

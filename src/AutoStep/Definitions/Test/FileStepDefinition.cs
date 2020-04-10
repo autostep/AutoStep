@@ -5,6 +5,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Strategy;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Test
 {
@@ -50,7 +51,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="context">The current step context.</param>
         /// <param name="variables">The set of all variables.</param>
         /// <returns>Task completion.</returns>
-        public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
         {
             // Extract the arguments, and invoke the collection executor.
             var nestedVariables = new VariableSet();
@@ -58,6 +59,14 @@ namespace AutoStep.Definitions.Test
             if (context.Step.Binding is null)
             {
                 throw new LanguageEngineAssertException();
+            }
+
+            var autoStepScope = stepScope as IAutoStepServiceScope;
+
+            if (autoStepScope is null)
+            {
+                // This should be impossible if it's our code calling this method.
+                throw new InvalidOperationException();
             }
 
             if (Definition is null || Definition.Arguments.Count != context.Step.Binding.Arguments.Length)
@@ -75,12 +84,12 @@ namespace AutoStep.Definitions.Test
                 nestedVariables.Set(Definition.Arguments[argIdx].Name, argText);
             }
 
-            var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
+            var collectionStrategy = stepScope.GetRequiredService<IStepCollectionExecutionStrategy>();
 
             var fileStepContext = new FileDefinedStepContext(Definition);
 
             await collectionStrategy.Execute(
-                stepScope,
+                autoStepScope,
                 fileStepContext,
                 Definition,
                 nestedVariables).ConfigureAwait(false);

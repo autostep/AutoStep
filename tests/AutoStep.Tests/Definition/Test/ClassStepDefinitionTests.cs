@@ -10,6 +10,7 @@ using Xunit;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
 using AutoStep.Definitions.Test;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Tests.Definition
 {
@@ -42,7 +43,7 @@ namespace AutoStep.Tests.Definition
 
             await stepDef.ExecuteStepAsync(scope, stepContext, VariableSet.Blank);
 
-            var stepClassInstance = scope.Resolve<MyStepDef>();
+            var stepClassInstance = scope.GetRequiredService<MyStepDef>();
             stepClassInstance.ClickCount.Should().Be(1);
         }
 

@@ -50,7 +50,7 @@ namespace AutoStep.Definitions.Interaction
         /// <param name="context">The current method context (containing the current variables and chain value, among other things).</param>
         /// <param name="arguments">The determined set of arguments to the method.</param>
         /// <returns>A completion task for when the method has completed.</returns>
-        public virtual ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
+        public virtual ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments)
         {
             throw new NotImplementedException("Registered Interaction Method '{0}' has not been implemented".FormatWith(Name));
         }
@@ -64,7 +64,7 @@ namespace AutoStep.Definitions.Interaction
         /// <param name="methods">The method table currently in scope.</param>
         /// <param name="callStack">The current call stack.</param>
         /// <returns>A completion task for when the method has completed.</returns>
-        public virtual ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+        public virtual ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
         {
             return InvokeAsync(scope, context, arguments);
         }

@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            steps.When("I do this", (IServiceScope scope) =>
+            steps.When("I do this", (IAutoStepServiceScope scope) =>
             {
                 scope.Should().NotBeNull();
                 whenCalled = true;
@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Execution
                 await Task.Delay(1);
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -127,7 +127,7 @@ namespace AutoStep.Tests.Execution
                 argumentValues.Add(arg1);
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -185,7 +185,7 @@ namespace AutoStep.Tests.Execution
                 thisHappened = true;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -238,7 +238,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -291,7 +291,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -316,7 +316,7 @@ namespace AutoStep.Tests.Execution
         {
             public Exception? FoundException { get; set; }
 
-            public override async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
+            public override async ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler)
             {
                 await nextHandler(scope, ctxt);
 
@@ -369,7 +369,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 

@@ -1,7 +1,7 @@
 ﻿namespace AutoStep.Execution.Dependency
 {
     /// <summary>
-    /// Defines standard tags for the various <see cref="IServiceScope"/> scopes created during execution.
+    /// Defines standard tags for the various <see cref="IAutoStepServiceScope"/> scopes created during execution.
     /// </summary>
     public static class ScopeTags
     {

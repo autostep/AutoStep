@@ -12,7 +12,7 @@ namespace AutoStep.Execution.Events
     public class BaseEventHandler : IEventHandler
     {
         /// <inheritdoc/>
-        public virtual ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> nextHandler)
+        public virtual ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
@@ -20,7 +20,7 @@ namespace AutoStep.Execution.Events
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> nextHandler)
+        public virtual ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
@@ -28,7 +28,7 @@ namespace AutoStep.Execution.Events
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> nextHandler)
+        public virtual ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
@@ -36,7 +36,7 @@ namespace AutoStep.Execution.Events
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
+        public virtual ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
@@ -44,7 +44,7 @@ namespace AutoStep.Execution.Events
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> nextHandler)
+        public virtual ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> nextHandler)
         {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 

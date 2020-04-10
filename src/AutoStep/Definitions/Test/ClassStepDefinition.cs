@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Test
 {
@@ -29,12 +30,12 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
         /// <returns>An instance of the class.</returns>
-        protected override object GetMethodTarget(IServiceScope scope)
+        protected override object GetMethodTarget(IServiceProvider scope)
         {
             scope = scope.ThrowIfNull(nameof(scope));
 
             // Resolve an instance of the service. It will let it access any services.
-            return scope.Resolve<object>(owner);
+            return scope.GetRequiredService(owner);
         }
 
         /// <summary>

@@ -23,10 +23,10 @@ namespace AutoStep.Execution.Events
 
         /// <inheritdoc/>
         public ValueTask InvokeEvent<TContext>(
-            IServiceScope scope,
+            IServiceProvider serviceProvider,
             TContext context,
-            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback,
-            Func<IServiceScope, TContext, ValueTask>? final = null)
+            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, ValueTask>, ValueTask> callback,
+            Func<IServiceProvider, TContext, ValueTask>? final = null)
         {
             if (final is null)
             {
@@ -40,13 +40,13 @@ namespace AutoStep.Execution.Events
                 final = ChainHandler(final, handlers[idx], callback);
             }
 
-            return final(scope, context);
+            return final(serviceProvider, context);
         }
 
-        private Func<IServiceScope, TContext, ValueTask> ChainHandler<TContext>(
-            Func<IServiceScope, TContext, ValueTask> next,
+        private Func<IServiceProvider, TContext, ValueTask> ChainHandler<TContext>(
+            Func<IServiceProvider, TContext, ValueTask> next,
             IEventHandler innerHandler,
-            Func<IEventHandler, IServiceScope, TContext, Func<IServiceScope, TContext, ValueTask>, ValueTask> callback)
+            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, ValueTask>, ValueTask> callback)
         {
             return async (resolver, ctxt) =>
             {

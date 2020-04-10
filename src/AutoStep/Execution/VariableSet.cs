@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution
 {
@@ -37,7 +39,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="currentVariables">The variables currently in scope.</param>
         /// <returns>A new variable set, with named values for each column.</returns>
-        public static VariableSet Create(ITableInfo table, ITableRowInfo row, IServiceScope scope, VariableSet currentVariables)
+        public static VariableSet Create(ITableInfo table, ITableRowInfo row, IServiceProvider scope, VariableSet currentVariables)
         {
             table = table.ThrowIfNull(nameof(table));
             row = row.ThrowIfNull(nameof(row));
@@ -62,7 +64,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="currentVariables">The variables currently in scope.</param>
         /// <returns>A new variable set, with named values for each column.</returns>
-        public static IEnumerable<VariableSet> CreateSetsForRows(ITableInfo table, IServiceScope scope, VariableSet currentVariables)
+        public static IEnumerable<VariableSet> CreateSetsForRows(ITableInfo table, IServiceProvider scope, VariableSet currentVariables)
         {
             table = table.ThrowIfNull(nameof(table));
 

@@ -148,7 +148,7 @@ namespace AutoStep.Tests.Execution.Strategy
             int executionManagerInvokes,
             StepCollectionContext owningContext,
             VariableSet variables,
-            Action<IServiceScope, StepContext, VariableSet> stepCallback)
+            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
         {
             var beforeFeat = 0;
             var afterFeat = 0;
@@ -166,7 +166,7 @@ namespace AutoStep.Tests.Execution.Strategy
             StepCollectionContext owningContext,
             VariableSet variables,
             IEventHandler eventHandler,
-            Action<IServiceScope, StepContext, VariableSet> stepCallback)
+            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
         {
             var threadContext = new ThreadContext(1);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
@@ -176,11 +176,11 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(threadContext);
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IEventPipeline>(eventPipeline);
-            builder.RegisterSingleInstance<IStepExecutionStrategy>(stepExecuteStrategy);
+            builder.RegisterInstance(threadContext);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance<IStepExecutionStrategy>(stepExecuteStrategy);
 
             var scope = builder.BuildRootScope();
 
@@ -190,7 +190,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
 
             if(owningContext.FailException != null)
@@ -201,14 +201,14 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class MyStepExecutionStrategy : IStepExecutionStrategy
         {
-            private readonly Action<IServiceScope, StepContext, VariableSet> stepCallback;
+            private readonly Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback;
 
-            public MyStepExecutionStrategy(Action<IServiceScope, StepContext, VariableSet> stepCallback)
+            public MyStepExecutionStrategy(Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
             {
                 this.stepCallback = stepCallback;
             }
 
-            public ValueTask ExecuteStep(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public ValueTask ExecuteStep(IAutoStepServiceScope stepScope, StepContext context, VariableSet variables)
             {
                 stepScope.Should().NotBeNull();
                 stepScope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
@@ -219,7 +219,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-        private class MyEventHandler : IEventHandler
+        private class MyEventHandler : BaseEventHandler
         {
             private readonly Action<StepContext> callBefore;
             private readonly Action<StepContext> callAfter;
@@ -239,32 +239,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-
-            public  ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
+            public override async ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> next)
             {
                 callBefore(ctxt);
 

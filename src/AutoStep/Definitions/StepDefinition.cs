@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
@@ -68,6 +69,6 @@ namespace AutoStep.Definitions
         /// <param name="context">The step context (including all binding information).</param>
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public abstract ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables);
+        public abstract ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables);
     }
 }

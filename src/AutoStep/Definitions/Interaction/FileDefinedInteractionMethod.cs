@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
@@ -38,7 +39,7 @@ namespace AutoStep.Definitions.Interaction
         public override int ArgumentCount => MethodDefinition.Arguments.Count;
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));

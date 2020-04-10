@@ -30,7 +30,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
 
-            var mockScope = new Mock<IServiceScope>().Object;
+            var mockScope = new Mock<IAutoStepServiceScope>().Object;
 
             var ranStep = false;
 
@@ -62,7 +62,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
 
-            var mockScope = new Mock<IServiceScope>().Object;
+            var mockScope = new Mock<IAutoStepServiceScope>().Object;
 
             var ranStep = false;
 
@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var threadContext = new ThreadContext(1);
 
             var builder = new AutofacServiceBuilder();
-            builder.RegisterSingleInstance(threadContext);
+            builder.RegisterInstance(threadContext);
             var scope = builder.BuildRootScope();
 
             var ranStepCount = 0;
@@ -104,7 +104,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep(scope, ctxt, vars);
+                await strategy.ExecuteStep((IAutoStepServiceScope)scope, ctxt, vars);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
@@ -134,7 +134,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var threadContext = new ThreadContext(1);
 
             var builder = new AutofacServiceBuilder();
-            builder.RegisterSingleInstance(threadContext);
+            builder.RegisterInstance(threadContext);
             var scope = builder.BuildRootScope();
 
             var ranStepCount = 0;
@@ -146,13 +146,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep(scope, loopbackStepContext, vars);
+                await strategy.ExecuteStep((IAutoStepServiceScope)scope, loopbackStepContext, vars);
             });
 
             var loopBackStepDef = new TestStepDef("loopbackStep", async (scope, ctxt, vars) =>
             {
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep(scope, stepContext, vars);
+                await strategy.ExecuteStep((IAutoStepServiceScope)scope, stepContext, vars);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
@@ -170,21 +170,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class TestStepDef : StepDefinition
         {
-            private readonly Func<IServiceScope, StepContext, VariableSet, ValueTask> callback;
+            private readonly Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback;
 
-            public TestStepDef(Func<IServiceScope, StepContext, VariableSet, ValueTask> callback)
+            public TestStepDef(Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback)
                 : base(TestStepDefinitionSource.Blank, StepType.Given, "something")
             {
                 this.callback = callback;
             }
 
-            public TestStepDef(string name, Func<IServiceScope, StepContext, VariableSet, ValueTask> callback)
+            public TestStepDef(string name, Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback)
                 : base(TestStepDefinitionSource.Blank, StepType.Given, name)
             {
                 this.callback = callback;
             }
 
-            public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+            public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
             {
                 await callback(stepScope, context, variables);
             }

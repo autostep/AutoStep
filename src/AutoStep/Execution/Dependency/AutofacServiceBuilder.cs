@@ -37,16 +37,31 @@ namespace AutoStep.Execution.Dependency
         }
 
         /// <inheritdoc/>
-        public void RegisterSingleInstance<TService>(TService instance)
+        public void RegisterInstance<TService>(TService instance)
             where TService : class
         {
             builder.RegisterInstance(instance).ExternallyOwned();
         }
 
         /// <inheritdoc/>
+        public void RegisterSingleton<TService>()
+            where TService : class
+        {
+            builder.RegisterType<TService>().AsSelf().SingleInstance();
+        }
+
+        /// <inheritdoc/>
+        public void RegisterSingleton<TService, TComponent>()
+            where TService : class
+            where TComponent : TService
+        {
+            builder.RegisterType<TComponent>().As<TService>().SingleInstance();
+        }
+
+        /// <inheritdoc/>
         public void RegisterPerFeatureService<TService, TComponent>()
             where TService : class
-            where TComponent : class
+            where TComponent : TService
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.FeatureTag);
         }
@@ -61,7 +76,7 @@ namespace AutoStep.Execution.Dependency
         /// <inheritdoc/>
         public void RegisterPerScenarioService<TService, TComponent>()
             where TService : class
-            where TComponent : class
+            where TComponent : TService
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ScenarioTag);
         }
@@ -83,7 +98,7 @@ namespace AutoStep.Execution.Dependency
         /// <inheritdoc/>
         public void RegisterPerScopeService<TService, TComponent>()
             where TService : class
-            where TComponent : class
+            where TComponent : TService
         {
             builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
         }
@@ -98,22 +113,15 @@ namespace AutoStep.Execution.Dependency
         /// <inheritdoc/>
         public void RegisterPerThreadService<TService, TComponent>()
             where TService : class
-            where TComponent : class
+            where TComponent : TService
         {
             builder.RegisterType<TComponent>().As<TService>().InstancePerMatchingLifetimeScope(ScopeTags.ThreadTag);
         }
 
         /// <inheritdoc/>
-        public void RegisterEventHandler(IEventHandler eventHandler)
+        public IAutoStepServiceScope BuildRootScope()
         {
-            // Only a single instance of event handlers.
-            builder.RegisterInstance(eventHandler);
-        }
-
-        /// <inheritdoc/>
-        public IServiceScope BuildRootScope()
-        {
-            return new AutofacServiceScope(ScopeTags.Root, builder.Build());
+            return new AutofacServiceScope(ScopeTags.Root, newScope => builder.Build());
         }
     }
 }

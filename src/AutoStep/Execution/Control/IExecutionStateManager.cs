@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
@@ -18,7 +19,7 @@ namespace AutoStep.Execution.Control
         /// <param name="context">The current context.</param>
         /// <param name="starting">An enum indicating which stage of execution is happening.</param>
         /// <returns>An instruction to the calling thread.</returns>
-        ValueTask<HaltResponseInstruction?> CheckforHalt(IServiceScope scope, TestExecutionContext context, TestThreadState starting);
+        ValueTask<HaltResponseInstruction?> CheckforHalt(IServiceProvider scope, TestExecutionContext context, TestThreadState starting);
 
         /// <summary>
         /// Asks the execution state manager what to do when an error occurs in a step (gives an opportunity to break).

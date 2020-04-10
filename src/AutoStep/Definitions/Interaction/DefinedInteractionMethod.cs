@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Interaction
 {
@@ -33,10 +34,10 @@ namespace AutoStep.Definitions.Interaction
         /// <remarks>All parameters accept the 'special' ones.</remarks>
         public override int ArgumentCount => method.GetParameters()
                                                    .Count(arg => !typeof(MethodContext).IsAssignableFrom(arg.ParameterType) &&
-                                                                 !typeof(IServiceScope).IsAssignableFrom(arg.ParameterType));
+                                                                 !typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
+        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments)
         {
             if (scope is null)
             {
@@ -68,7 +69,7 @@ namespace AutoStep.Definitions.Interaction
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
         /// <returns>An instance of the method target.</returns>
-        protected abstract object? GetMethodTarget(IServiceScope scope);
+        protected abstract object? GetMethodTarget(IServiceProvider scope);
 
         /// <summary>
         /// Invoke an instance method, generating a task wrapper if needed.
@@ -96,7 +97,7 @@ namespace AutoStep.Definitions.Interaction
             return default;
         }
 
-        private object?[] BindArguments(IServiceScope scope, object?[] providedArgs, MethodContext methodContext)
+        private object?[] BindArguments(IServiceProvider scope, object?[] providedArgs, MethodContext methodContext)
         {
             var methodArgs = method.GetParameters();
 
@@ -106,7 +107,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Get the argument bind registry.
-            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
+            var binderRegistry = scope.GetRequiredService<ArgumentBinderRegistry>();
             var bindResult = new object?[methodArgs.Length];
             var sourceArgPosition = 0;
 
@@ -114,7 +115,7 @@ namespace AutoStep.Definitions.Interaction
             {
                 var arg = methodArgs[argIdx];
 
-                if (arg.ParameterType.IsAssignableFrom(typeof(IServiceScope)))
+                if (arg.ParameterType.IsAssignableFrom(typeof(IServiceProvider)))
                 {
                     bindResult[argIdx] = scope;
                 }
@@ -135,7 +136,7 @@ namespace AutoStep.Definitions.Interaction
             return bindResult;
         }
 
-        private object? BindArgument(object? argumentValue, Type parameterType, IServiceScope scope, ArgumentBinderRegistry registry)
+        private object? BindArgument(object? argumentValue, Type parameterType, IServiceProvider scope, ArgumentBinderRegistry registry)
         {
             object? result;
 

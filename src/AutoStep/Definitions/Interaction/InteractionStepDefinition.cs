@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -6,6 +7,7 @@ using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Interaction
 {
@@ -29,7 +31,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override async ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
         {
             stepScope = stepScope.ThrowIfNull(nameof(stepScope));
             context = context.ThrowIfNull(nameof(context));
@@ -61,7 +63,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.Resolve<IInteractionSet>();
+            var interactionSet = stepScope.GetRequiredService<IInteractionSet>();
 
             if (interactionSet.Components.TryGetValue(componentName, out var component))
             {
