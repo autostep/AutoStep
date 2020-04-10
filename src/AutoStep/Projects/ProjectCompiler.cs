@@ -291,7 +291,7 @@ namespace AutoStep.Projects
         /// Add a static step definition source (i.e. one that cannot change after it is registered).
         /// </summary>
         /// <param name="source">The step definition source.</param>
-        public void AddStaticStepDefinitionSource(IStepDefinitionSource source)
+        public void AddStepDefinitionSource(IStepDefinitionSource source)
         {
             linker.AddStepDefinitionSource(source.ThrowIfNull(nameof(source)));
         }

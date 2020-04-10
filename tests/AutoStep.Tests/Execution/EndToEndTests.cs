@@ -72,7 +72,7 @@ namespace AutoStep.Tests.Execution
                 await Task.Delay(1);
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -127,7 +127,7 @@ namespace AutoStep.Tests.Execution
                 argumentValues.Add(arg1);
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -185,7 +185,7 @@ namespace AutoStep.Tests.Execution
                 thisHappened = true;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -238,7 +238,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -291,7 +291,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 
@@ -369,7 +369,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStaticStepDefinitionSource(steps);
+            project.Compiler.AddStepDefinitionSource(steps);
 
             var compileResult = await project.Compiler.CompileAsync(LogFactory);
 

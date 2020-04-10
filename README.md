@@ -60,63 +60,61 @@ In order to run this test, I can use the following C# code:
 
 ```csharp
 
-    // Create a project
-    var project = new Project();
+  // Create a project
+  var project = new Project();
 
-    // Define some steps based on callbacks.
-    // You can actually define anything as a source of steps if you
-    // want to!
-    var steps = new CallbackDefinitionSource();
+  // Define some steps based on callbacks.
+  // You can actually define anything as a source of steps if you
+  // want to!
+  var steps = new CallbackDefinitionSource();
 
-    // You can put arguments in curly braces:
-    steps.Given("I have entered {value} into {field}", (string val, string field) =>
-    {
-        // Run the selenium/manipulation code as needed
-    });
+  // You can put arguments in curly braces:
+  steps.Given("I have entered {value} into {field}", (string val, string field) =>
+  {
+      // Run the selenium/manipulation code as needed
+  });
 
-    // You can inject a DI scope and resolve services:
-    steps.When("I click {button}", (IServiceScope scope, string buttonName) =>
-    {
-        // Click the button
-    });
+  // You can inject a DI scope and resolve services:
+  steps.When("I click {button}", (IServiceProvider scope, string buttonName) =>
+  {
+      // Click the button
+  });
 
-    // Step methods can be async:
-    steps.Then("the {title} page should be displayed", async (string title) =>
-    {
-        // Check for the title page
-    });
+  // Step methods can be async:
+  steps.Then("the {title} page should be displayed", async (string title) =>
+  {
+      // Check for the title page
+  });
 
-    // You can do type hinting.
-    // Test compilation will give an error if someone tries to pass a string as count.
-    steps.Then("I should have {count:int} orders", (IServiceScope scope, int count) =>
-    {
-    });
+  // You can do type hinting.
+  // Test compilation will give an error if someone tries to pass a string as count.
+  steps.Then("I should have {count:int} orders", (IServiceProvider scope, int count) =>
+  {
+  });
 
-    // Add your source to the project compiler.
-    project.Compiler.AddStaticStepDefinitionSource(steps);
+  // Add your source to the project compiler.
+  project.Compiler.AddStepDefinitionSource(steps);
 
-    // Read a file that you want to run
-    var content = File.ReadAllText("testfile.as");
+  // Add a file (specifying the name, and where to get it).
+  var file = new ProjectTestFile("/testfile.as", new PhysicalFileSource("/testfile.as", "C:\\testfile.as"));
 
-    var file = new ProjectTestFile("/test", new StringContentSource(content));
+  // Add your file to the project (you can have as many files as you like)
+  // Steps defined in one project file can be used in any other.
+  project.TryAddFile(file);
 
-    // Add your file to the project (you can have as many files as you like)
-    // Steps defined in one project file can be used in any other.
-    project.TryAddFile(file);
+  // Compile the project (will return any errors).
+  // After compilation, file.LastCompilationResult will be set.
+  await project.Compiler.CompileAsync();
 
-    // Compile the project (will return any errors).
-    // After compilation, file.LastCompilationResult will be set.
-    await project.Compiler.CompileAsync();
+  // Link the project.
+  // After linking, file.LastLinkResult will be set.
+  project.Compiler.Link();
 
-    // Link the project.
-    // After linking, file.LastLinkResult will be set.
-    project.Compiler.Link();
+  // Create a test run.
+  var testRun = project.CreateTestRun();
 
-    // Create a test run.
-    var testRun = project.CreateTestRun();
-
-    // The test will run:
-    await testRun.ExecuteAsync();
+  // The test will run:
+  await testRun.ExecuteAsync();
 
 ```
 
