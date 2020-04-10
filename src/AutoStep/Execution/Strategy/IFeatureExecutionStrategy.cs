@@ -17,6 +17,6 @@ namespace AutoStep.Execution.Strategy
         /// <param name="threadContext">The test thread context.</param>
         /// <param name="feature">The feature metadata.</param>
         /// <returns>A task that should complete when the feature has finished executing.</returns>
-        ValueTask Execute(IServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature);
+        ValueTask Execute(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature);
     }
 }

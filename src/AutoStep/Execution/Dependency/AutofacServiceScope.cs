@@ -7,10 +7,10 @@ using AutoStep.Execution.Contexts;
 namespace AutoStep.Execution.Dependency
 {
     /// <summary>
-    /// Implements the <see cref="IServiceScope"/> for Autofac.
+    /// Implements the <see cref="IAutoStepServiceScope"/> for Autofac.
     /// </summary>
     /// <remarks>Inherit from the Autofac Disposable so we get the same semantics.</remarks>
-    internal class AutofacServiceScope : Disposable, IServiceScope
+    internal class AutofacServiceScope : Disposable, IAutoStepServiceScope
     {
         private readonly ILifetimeScope scope;
 
@@ -18,75 +18,62 @@ namespace AutoStep.Execution.Dependency
         /// Initializes a new instance of the <see cref="AutofacServiceScope"/> class.
         /// </summary>
         /// <param name="tag">The scope tag.</param>
-        /// <param name="scope">The backing Autofac lifetime scope.</param>
-        public AutofacServiceScope(string tag, ILifetimeScope scope)
+        /// <param name="scopeFactory">Factory method for the lifetime scope.</param>
+        public AutofacServiceScope(string tag, Func<IAutoStepServiceScope, ILifetimeScope> scopeFactory)
         {
-            this.scope = scope;
+            scope = scopeFactory(this);
             Tag = tag;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutofacServiceScope"/> class.
+        /// </summary>
+        /// <param name="tag">The scope tag.</param>
+        /// <param name="container">The container.</param>
+        public AutofacServiceScope(string tag, IContainer container)
+            : this(tag, _ => container)
+        {
         }
 
         /// <inheritdoc/>
         public string Tag { get; }
 
         /// <inheritdoc/>
-        public TService Resolve<TService>()
-            where TService : class
+        object? IServiceProvider.GetService(Type serviceType)
         {
             try
             {
-                return scope.Resolve<TService>();
+                return scope.ResolveOptional(serviceType);
             }
-            catch (DependencyResolutionException autofacEx)
+            catch (DependencyResolutionException ex)
             {
-                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError.FormatWith(typeof(TService).Name), autofacEx);
+                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError, ex);
             }
         }
 
         /// <inheritdoc/>
-        public TServiceType Resolve<TServiceType>(Type serviceType)
-        {
-            var obj = Resolve(serviceType);
-
-            if (obj is TServiceType srv)
-            {
-                return srv;
-            }
-
-            throw new DependencyException(ExecutionText.AutofacServiceScope_NotAssignable.FormatWith(serviceType.Name, typeof(TServiceType).Name));
-        }
-
-        /// <inheritdoc/>
-        public object Resolve(Type serviceType)
-        {
-            try
-            {
-                return scope.Resolve(serviceType);
-            }
-            catch (DependencyResolutionException autofacEx)
-            {
-                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError.FormatWith(serviceType.Name), autofacEx);
-            }
-        }
-
-        /// <inheritdoc/>
-        public IServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
+        public IAutoStepServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
             where TContext : TestExecutionContext
         {
-            return new AutofacServiceScope(scopeTag, scope.BeginLifetimeScope(scopeTag, cfg =>
+            return new AutofacServiceScope(scopeTag, newScope => scope.BeginLifetimeScope(scopeTag, cfg =>
             {
                 // Register the relevant context object.
                 cfg.RegisterInstance(contextInstance);
+
+                cfg.RegisterInstance(newScope).As<IServiceProvider>();
             }));
         }
 
         /// <inheritdoc/>
-        public IServiceScope BeginNewScope<TContext>(TContext contextInstance)
+        public IAutoStepServiceScope BeginNewScope<TContext>(TContext contextInstance)
             where TContext : TestExecutionContext
         {
-            return new AutofacServiceScope(ScopeTags.GeneralScopeTag, scope.BeginLifetimeScope(cfg =>
+            return new AutofacServiceScope(ScopeTags.GeneralScopeTag, newScope => scope.BeginLifetimeScope(cfg =>
             {
                 // Register the relevant context object.
                 cfg.RegisterInstance(contextInstance);
+
+                cfg.RegisterInstance(newScope).As<IServiceProvider>();
             }));
         }
 

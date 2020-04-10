@@ -1,8 +1,10 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Autofac.Core;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -22,19 +24,18 @@ namespace AutoStep.Tests.Execution.Dependency
 
             var scope = new AutofacServiceScope("mytag", container);
 
-            scope.Resolve<MyService>().Should().Be(testInstance);
+            scope.GetRequiredService<MyService>().Should().Be(testInstance);
         }
 
         [Fact]
-        public void ResolveErrorWrapsAutofacError()
+        public void MissingServiceRaisesInvalidOperationException()
         {
             var autofacBuilder = new ContainerBuilder();
             var container = autofacBuilder.Build();
 
             var scope = new AutofacServiceScope("mytag", container);
 
-            scope.Invoking(s => s.Resolve<MyService>()).Should().Throw<DependencyException>()
-                                                                .WithInnerException<DependencyResolutionException>();
+            scope.Invoking(s => s.GetRequiredService<MyService>()).Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -49,24 +50,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             var scope = new AutofacServiceScope("mytag", container);
 
-            scope.Resolve<IInterface1>(typeof(MyService)).Should().Be(testInstance);
-        }
-
-        [Fact]
-        public void DependencyExceptionOnBadCast()
-        {
-            var autofacBuilder = new ContainerBuilder();
-            var testInstance = new MyService();
-
-            autofacBuilder.RegisterInstance(testInstance);
-
-            var container = autofacBuilder.Build();
-
-            var scope = new AutofacServiceScope("mytag", container);
-
-            scope.Invoking(s => s.Resolve<INotUsed>(typeof(MyService))).Should()
-                .Throw<DependencyException>()
-                .WithMessage("Cannot resolve service of type 'MyService'; it is not assignable to 'INotUsed'.");
+            scope.GetRequiredService(typeof(MyService)).Should().Be(testInstance);
         }
 
         [Fact]
@@ -82,7 +66,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             derived.Tag.Should().Be(ScopeTags.RunTag);
 
-            derived.Resolve<MyContext>().Should().Be(contextObject);
+            derived.GetRequiredService<MyContext>().Should().Be(contextObject);
         }
 
         [Fact]
@@ -97,7 +81,7 @@ namespace AutoStep.Tests.Execution.Dependency
             var derived = rootScope.BeginNewScope(contextObject);
 
             derived.Tag.Should().Be(ScopeTags.GeneralScopeTag);
-            derived.Resolve<MyContext>().Should().Be(contextObject);
+            derived.GetRequiredService<MyContext>().Should().Be(contextObject);
         }
 
         [Fact]
@@ -107,7 +91,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             mockAutofacScope.Setup(s => s.Dispose()).Verifiable();
 
-            var scope = new AutofacServiceScope("mytag", mockAutofacScope.Object);
+            var scope = new AutofacServiceScope("mytag", _ => mockAutofacScope.Object);
 
             scope.Dispose();
 

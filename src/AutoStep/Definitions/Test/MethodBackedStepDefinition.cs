@@ -5,6 +5,7 @@ using AutoStep.Execution;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Test
 {
@@ -38,7 +39,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="context">The step context (including all binding information).</param>
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public override ValueTask ExecuteStepAsync(IServiceScope stepScope, StepContext context, VariableSet variables)
+        public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
         {
             // Need to convert the found arguments into actual type arguments.
             var arguments = BindArguments(stepScope, context, variables);
@@ -66,7 +67,7 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
         /// <returns>A task that completes when the method exits.</returns>
-        protected abstract object GetMethodTarget(IServiceScope scope);
+        protected abstract object GetMethodTarget(IServiceProvider scope);
 
         /// <summary>
         /// Invoke an instance method, generating a task wrapper if needed.
@@ -101,7 +102,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="context">The step context.</param>
         /// <param name="variables">The currently available set of variables.</param>
         /// <returns>A bound set of arguments to pass to the method.</returns>
-        protected object[] BindArguments(IServiceScope scope, StepContext context, VariableSet variables)
+        protected object[] BindArguments(IServiceProvider scope, StepContext context, VariableSet variables)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));
@@ -123,7 +124,7 @@ namespace AutoStep.Definitions.Test
             }
 
             // Get the argument bind registry.
-            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
+            var binderRegistry = scope.GetRequiredService<ArgumentBinderRegistry>();
             var bindResult = new object[methodArgs.Length];
             var sourceArgPosition = 0;
 
@@ -132,7 +133,7 @@ namespace AutoStep.Definitions.Test
             {
                 var arg = methodArgs[argIdx];
 
-                if (typeof(IServiceScope).IsAssignableFrom(arg.ParameterType))
+                if (typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType))
                 {
                     bindResult[argIdx] = scope;
                 }

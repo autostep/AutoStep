@@ -8,6 +8,7 @@ using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Strategy
@@ -29,7 +30,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="runContext">The run context.</param>
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        public Task Execute(IServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet)
+        public Task Execute(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet)
         {
             runScope = runScope.ThrowIfNull(nameof(runScope));
             runContext = runContext.ThrowIfNull(nameof(runContext));
@@ -75,24 +76,24 @@ namespace AutoStep.Execution.Strategy
             return Task.WhenAll(parallelTasks);
         }
 
-        private async Task TestThreadFeatureParallel(IServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature)
+        private async Task TestThreadFeatureParallel(IAutoStepServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature)
         {
             var threadContext = new ThreadContext(testThreadId);
 
             using var threadScope = runScope.BeginNewScope(ScopeTags.ThreadTag, threadContext);
 
-            var executionManager = threadScope.Resolve<IExecutionStateManager>();
-            var featureStrategy = threadScope.Resolve<IFeatureExecutionStrategy>();
-            var logger = threadScope.Resolve<ILogger<DefaultRunExecutionStrategy>>();
-            var events = threadScope.Resolve<IEventPipeline>();
+            var executionManager = threadScope.GetRequiredService<IExecutionStateManager>();
+            var featureStrategy = threadScope.GetRequiredService<IFeatureExecutionStrategy>();
+            var logger = threadScope.GetRequiredService<ILogger<DefaultRunExecutionStrategy>>();
+            var events = threadScope.GetRequiredService<IEventPipeline>();
 
             await events.InvokeEvent(
                 threadScope,
                 threadContext,
                 (handler, sc, ctxt, next) => handler.OnThread(sc, ctxt, next),
-                async (scope, ctxt) =>
+                async (_, ctxt) =>
                 {
-                    var haltInstruction = await executionManager.CheckforHalt(scope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
+                    var haltInstruction = await executionManager.CheckforHalt(threadScope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
 
                     // TODO: Do something with halt instruction (terminate, for example?).
                     while (true)
@@ -104,7 +105,7 @@ namespace AutoStep.Execution.Strategy
                             logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
 
                             // We have a feature.
-                            await featureStrategy.Execute(scope, threadContext, feature).ConfigureAwait(false);
+                            await featureStrategy.Execute(threadScope, threadContext, feature).ConfigureAwait(false);
                         }
                         else
                         {

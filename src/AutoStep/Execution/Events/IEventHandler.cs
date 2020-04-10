@@ -21,7 +21,7 @@ namespace AutoStep.Execution.Events
         /// Once the <paramref name="nextHandler"/> has returned, the entire test run has finished.
         /// </param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> nextHandler);
+        ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> nextHandler);
 
         /// <summary>
         /// Invoked at the Thread Stage. This occurs per-thread, just after the thread has been started, but before any features start executing.
@@ -34,7 +34,7 @@ namespace AutoStep.Execution.Events
         /// Once the <paramref name="nextHandler"/> has returned, the thread has finished execution (so clean-up can be performed).
         /// </param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> nextHandler);
+        ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> nextHandler);
 
         /// <summary>
         /// Invoked at the Feature Stage. This occurs per-thread and per-feature, just before the feature is started, but before any scenarios start executing.
@@ -47,7 +47,7 @@ namespace AutoStep.Execution.Events
         /// Once the <paramref name="nextHandler"/> has returned, the feature has finished execution (so clean-up can be performed).
         /// </param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> nextHandler);
+        ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> nextHandler);
 
         /// <summary>
         /// Invoked at the Scenario Stage. This occurs per-scenario, just before the scenario (and any background) is started.
@@ -60,7 +60,7 @@ namespace AutoStep.Execution.Events
         /// Once the <paramref name="nextHandler"/> has returned, the scenario has finished execution (so clean-up can be performed).
         /// </param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> nextHandler);
+        ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> nextHandler);
 
         /// <summary>
         /// Invoked at the Step Stage. This occurs per-step, just before the step executes.
@@ -72,6 +72,6 @@ namespace AutoStep.Execution.Events
         /// Once the <paramref name="nextHandler"/> has returned, the feature has finished execution (so clean-up can be performed).
         /// </param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler);
+        ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler);
     }
 }

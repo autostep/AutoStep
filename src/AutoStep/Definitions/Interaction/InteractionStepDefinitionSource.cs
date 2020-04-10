@@ -41,7 +41,7 @@ namespace AutoStep.Definitions.Interaction
             if (interactions is object)
             {
                 // Register the interactions set, so we can retrieve it in individual steps.
-                servicesBuilder.ThrowIfNull(nameof(servicesBuilder)).RegisterSingleInstance(interactions);
+                servicesBuilder.ThrowIfNull(nameof(servicesBuilder)).RegisterInstance(interactions);
             }
         }
 

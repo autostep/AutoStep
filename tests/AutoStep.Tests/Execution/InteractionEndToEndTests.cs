@@ -13,6 +13,7 @@ using AutoStep.Language.Interaction;
 using System.Linq;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Assertion;
+using System;
 
 namespace AutoStep.Tests.Execution
 {
@@ -63,14 +64,14 @@ namespace AutoStep.Tests.Execution
             var selectCalled = false;
             var clickCalled = false;
 
-            project.Compiler.Interactions.AddOrReplaceMethod("select", (IServiceScope scope, MethodContext ctxt, string selector) =>
+            project.Compiler.Interactions.AddOrReplaceMethod("select", (IServiceProvider scope, MethodContext ctxt, string selector) =>
             {
                 ctxt.ChainValue.Should().BeNull();
                 ctxt.ChainValue = "element";
                 selectCalled = true;
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("click", (IServiceScope scope, MethodContext ctxt) =>
+            project.Compiler.Interactions.AddOrReplaceMethod("click", (IServiceProvider scope, MethodContext ctxt) =>
             {
                 ctxt.ChainValue.Should().Be("element");
                 clickCalled = true;
@@ -348,7 +349,7 @@ namespace AutoStep.Tests.Execution
 
             public override int ArgumentCount => 2;
 
-            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments)
+            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments)
             {
                 // Get the chain value, and update the variables with a name variable.
                 var propName = arguments[0]!.ToString();

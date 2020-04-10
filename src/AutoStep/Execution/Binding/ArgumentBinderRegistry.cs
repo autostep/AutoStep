@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Binding
 {
@@ -35,14 +36,14 @@ namespace AutoStep.Execution.Binding
         /// <param name="scope">The current scope.</param>
         /// <param name="parameterType">The argument type to convert.</param>
         /// <returns>The binder.</returns>
-        public IArgumentBinder GetBinderForType(IServiceScope scope, Type parameterType)
+        public IArgumentBinder GetBinderForType(IServiceProvider scope, Type parameterType)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             parameterType = parameterType.ThrowIfNull(nameof(parameterType));
 
             if (binders.TryGetValue(parameterType, out var binder))
             {
-                return scope.Resolve<IArgumentBinder>(binder);
+                return (IArgumentBinder)scope.GetRequiredService(binder);
             }
 
             return defaultBinder;

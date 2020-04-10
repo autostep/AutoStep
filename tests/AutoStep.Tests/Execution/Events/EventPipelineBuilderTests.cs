@@ -35,7 +35,7 @@ namespace AutoStep.Tests.Execution.Events
 
             pipeline.InvokeEvent<RunContext>(null!, null!, (h, s, c, n) => h.OnExecute(s, c, n));
 
-            mock.Verify(x => x.OnExecute(null!, null!, It.IsAny<Func<IServiceScope, RunContext, ValueTask>>()), Times.Once());
+            mock.Verify(x => x.OnExecute(null!, null!, It.IsAny<Func<IServiceProvider, RunContext, ValueTask>>()), Times.Once());
         }
     }
 }

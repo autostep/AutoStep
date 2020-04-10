@@ -6,6 +6,7 @@ using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Interaction
 {
@@ -24,7 +25,7 @@ namespace AutoStep.Execution.Interaction
         /// <param name="methods">The known method table for the invoking component.</param>
         /// <param name="callStack">The method call stack.</param>
         /// <returns>A task that completes when the chain has completed.</returns>
-        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceScope stepScope, MethodContext context, MethodTable methods, Stack<MethodContext>? callStack = null)
+        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceProvider stepScope, MethodContext context, MethodTable methods, Stack<MethodContext>? callStack = null)
         {
             if (callStack is null)
             {
@@ -32,10 +33,10 @@ namespace AutoStep.Execution.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.Resolve<IInteractionSet>();
+            var interactionSet = stepScope.GetRequiredService<IInteractionSet>();
 
             // Get the execution manager.
-            var executionManager = stepScope.Resolve<IExecutionStateManager>();
+            var executionManager = stepScope.GetRequiredService<IExecutionStateManager>();
 
             // Define a new set of variables for this call.
 
@@ -83,7 +84,7 @@ namespace AutoStep.Execution.Interaction
             }
         }
 
-        private static object?[] BindArguments(IServiceScope scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
+        private static object?[] BindArguments(IServiceProvider scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
         {
             var providedArgs = call.Arguments;
 

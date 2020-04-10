@@ -31,7 +31,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             public override int ArgumentCount => argCount;
 
-            public override ValueTask InvokeAsync(IServiceScope scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
             {
                 throw new NotImplementedException();
             }

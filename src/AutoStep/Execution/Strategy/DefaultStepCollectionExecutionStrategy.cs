@@ -6,6 +6,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -23,11 +24,11 @@ namespace AutoStep.Execution.Strategy
         /// <param name="variables">The set of variables currently in-scope.</param>
         /// <returns>A task that should complete when the step collection has finished executing.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
-        public async ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+        public async ValueTask Execute(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
         {
-            var stepExecutionStrategy = owningScope.Resolve<IStepExecutionStrategy>();
-            var executionManager = owningScope.Resolve<IExecutionStateManager>();
-            var events = owningScope.Resolve<IEventPipeline>();
+            var stepExecutionStrategy = owningScope.GetRequiredService<IStepExecutionStrategy>();
+            var executionManager = owningScope.GetRequiredService<IExecutionStateManager>();
+            var events = owningScope.GetRequiredService<IEventPipeline>();
 
             var collectionTimer = new Stopwatch();
             collectionTimer.Start();
@@ -59,7 +60,7 @@ namespace AutoStep.Execution.Strategy
                             stepScope,
                             stepContext,
                             (handler, sc, ctxt, next) => handler.OnStep(sc, ctxt, next),
-                            async (scope, ctxt) =>
+                            async (_, ctxt) =>
                             {
                                 try
                                 {
@@ -67,7 +68,7 @@ namespace AutoStep.Execution.Strategy
 
                                     // Execute the step.
                                     await stepExecutionStrategy.ExecuteStep(
-                                            scope,
+                                            stepScope,
                                             ctxt,
                                             variables).ConfigureAwait(false);
                                 }

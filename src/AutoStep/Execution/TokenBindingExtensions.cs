@@ -23,7 +23,7 @@ namespace AutoStep.Execution
         /// <param name="rawText">The raw text of the step.</param>
         /// <param name="variables">The variables currently in scope.</param>
         /// <returns>The resolved text.</returns>
-        public static string GetFullText(this TokenisedArgumentValue binding, IServiceScope scope, string? rawText, VariableSet variables)
+        public static string GetFullText(this TokenisedArgumentValue binding, IServiceProvider scope, string? rawText, VariableSet variables)
         {
             binding = binding.ThrowIfNull(nameof(binding));
             variables = variables.ThrowIfNull(nameof(variables));
@@ -44,7 +44,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="context">The method context (includes any variables).</param>
         /// <returns>The resolved text.</returns>
-        public static string GetFullText(this StringMethodArgumentElement arg, IServiceScope scope, MethodContext context)
+        public static string GetFullText(this StringMethodArgumentElement arg, IServiceProvider scope, MethodContext context)
         {
             arg = arg.ThrowIfNull(nameof(arg));
             scope.ThrowIfNull(nameof(scope));
@@ -59,7 +59,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="variables">The variables currently in scope.</param>
         /// <returns>The resolved text.</returns>
-        public static string GetFullText(this ITableCellInfo cell, IServiceScope scope, VariableSet variables)
+        public static string GetFullText(this ITableCellInfo cell, IServiceProvider scope, VariableSet variables)
         {
             cell = cell.ThrowIfNull(nameof(cell));
             variables = variables.ThrowIfNull(nameof(variables));
@@ -225,7 +225,7 @@ namespace AutoStep.Execution
             return length;
         }
 
-        private static string GetFullText(TokenisedArgumentValue binding, IServiceScope scope, string rawText, Func<string, string?> getVariableValue)
+        private static string GetFullText(TokenisedArgumentValue binding, IServiceProvider scope, string rawText, Func<string, string?> getVariableValue)
         {
             // Ok, so we need to go get the raw text from the matched tokens.
             var tokens = binding.MatchedTokens;

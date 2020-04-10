@@ -60,7 +60,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            steps.When("I do this", (IServiceScope scope) =>
+            steps.When("I do this", (IAutoStepServiceScope scope) =>
             {
                 scope.Should().NotBeNull();
                 whenCalled = true;
@@ -316,7 +316,7 @@ namespace AutoStep.Tests.Execution
         {
             public Exception? FoundException { get; set; }
 
-            public override async ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> nextHandler)
+            public override async ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler)
             {
                 await nextHandler(scope, ctxt);
 

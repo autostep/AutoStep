@@ -21,7 +21,7 @@ namespace AutoStep.Tests.Execution.Events
         public void InvokeEventInvokesProvidedCallbackWithNoHandlers()
         {
             var pipeline = new EventPipeline(new List<IEventHandler>());
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             var callbackInvoked = false;
@@ -51,7 +51,7 @@ namespace AutoStep.Tests.Execution.Events
             bool beforeCalled = false;
             bool afterCalled = false;
 
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -70,7 +70,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var order = new List<int>();
 
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -92,7 +92,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var order = new List<int>();
 
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -114,7 +114,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async ValueTask StepFailuresThrownAsIs()
         {
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             var mockStepReference = new StepReferenceElement();
@@ -136,7 +136,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async ValueTask FailuresFromOtherEventHandlerThrownAsIs()
         {
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
@@ -156,7 +156,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async ValueTask RemainingExceptionsWrappedAsEventHandlingException()
         {
-            var scopeMock = new Mock<IServiceScope>();
+            var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
@@ -173,7 +173,7 @@ namespace AutoStep.Tests.Execution.Events
             foundException!.InnerException.Should().BeOfType<NullReferenceException>();
         }
 
-        private class MyEventHandler : IEventHandler
+        private class MyEventHandler : BaseEventHandler
         {
             private readonly Action callBefore;
             private readonly Action callAfter;
@@ -193,7 +193,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.exception = exception;
             }
 
-            public async ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public override async ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -212,34 +212,9 @@ namespace AutoStep.Tests.Execution.Events
 
                 callAfter();
             }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
         }
 
-        private class AsyncEventHandler : IEventHandler
+        private class AsyncEventHandler : BaseEventHandler
         {
             private readonly Action callBefore;
             private readonly Action callAfter;
@@ -250,7 +225,7 @@ namespace AutoStep.Tests.Execution.Events
                 this.callAfter = callAfter;
             }
 
-            public async ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
+            public override async ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> next)
             {
                 callBefore();
 
@@ -260,31 +235,6 @@ namespace AutoStep.Tests.Execution.Events
                 await next(scope, ctxt);
 
                 callAfter();
-            }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
             }
         }
     }

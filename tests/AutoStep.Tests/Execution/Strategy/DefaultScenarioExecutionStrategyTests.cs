@@ -104,10 +104,10 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterSingleInstance(LogFactory);
-            builder.RegisterSingleInstance(mockExecutionStateManager.Object);
-            builder.RegisterSingleInstance<IEventPipeline>(eventPipeline);
-            builder.RegisterSingleInstance<IStepCollectionExecutionStrategy>(stepCollectionStrategy);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance<IStepCollectionExecutionStrategy>(stepCollectionStrategy);
 
             var scope = builder.BuildRootScope();
 
@@ -119,7 +119,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
 
             stepCollectionStrategy.AddedCollections.Should().BeEquivalentTo(collections);
         }
@@ -135,7 +135,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
 
-            public ValueTask Execute(IServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+            public ValueTask Execute(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
             {
                 owningScope.Should().NotBeNull();
                 owningContext.Should().BeOfType<ScenarioContext>();
@@ -151,7 +151,7 @@ namespace AutoStep.Tests.Execution.Strategy
             }
         }
 
-        private class MyEventHandler : IEventHandler
+        private class MyEventHandler : BaseEventHandler
         {
             private readonly Action<ScenarioContext> callBefore;
             private readonly Action<ScenarioContext> callAfter;
@@ -171,26 +171,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public ValueTask OnFeature(IServiceScope scope, FeatureContext ctxt, Func<IServiceScope, FeatureContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnThread(IServiceScope scope, ThreadContext ctxt, Func<IServiceScope, ThreadContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask OnExecute(IServiceScope scope, RunContext ctxt, Func<IServiceScope, RunContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ConfigureServices(IServicesBuilder builder, IConfiguration configuration)
-            {
-                throw new NotImplementedException();
-            }
-            public async ValueTask OnScenario(IServiceScope scope, ScenarioContext ctxt, Func<IServiceScope, ScenarioContext, ValueTask> next)
+            public override async ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> next)
             {
                 callBefore(ctxt);
 
@@ -211,11 +192,6 @@ namespace AutoStep.Tests.Execution.Strategy
                 }
 
                 callAfter(ctxt);
-            }
-
-            public ValueTask OnStep(IServiceScope scope, StepContext ctxt, Func<IServiceScope, StepContext, ValueTask> next)
-            {
-                throw new NotImplementedException();
             }
         }
     }

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -20,7 +22,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="threadContext">The test thread context.</param>
         /// <param name="feature">The feature metadata.</param>
         /// <returns>A task that should complete when the feature has finished executing.</returns>
-        public async ValueTask Execute(IServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
+        public async ValueTask Execute(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
         {
             threadScope = threadScope.ThrowIfNull(nameof(threadScope));
 
@@ -28,11 +30,11 @@ namespace AutoStep.Execution.Strategy
 
             using var featureScope = threadScope.BeginNewScope(ScopeTags.FeatureTag, featureContext);
 
-            var executionManager = featureScope.Resolve<IExecutionStateManager>();
-            var scenarioStrategy = featureScope.Resolve<IScenarioExecutionStrategy>();
-            var events = featureScope.Resolve<IEventPipeline>();
+            var executionManager = featureScope.GetRequiredService<IExecutionStateManager>();
+            var scenarioStrategy = featureScope.GetRequiredService<IScenarioExecutionStrategy>();
+            var events = featureScope.GetRequiredService<IEventPipeline>();
 
-            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.OnFeature(sc, ctxt, next), async (featureScope, featureContext) =>
+            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.OnFeature(sc, ctxt, next), async (_, featureContext) =>
             {
                 var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
@@ -53,7 +55,7 @@ namespace AutoStep.Execution.Strategy
             }).ConfigureAwait(false);
         }
 
-        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, IServiceScope scope)
+        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, IServiceProvider scope)
         {
             if (scenario is IScenarioOutlineInfo outline)
             {

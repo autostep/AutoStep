@@ -143,9 +143,9 @@ namespace AutoStep.Execution
                     runScope,
                     runContext,
                     (handler, sc, ctxt, next) => handler.OnExecute(sc, ctxt, next),
-                    (scope, ctxt) =>
+                    (_, ctxt) =>
                     {
-                        return new ValueTask(runExecutionStrategy.Execute(scope, ctxt, executionSet));
+                        return new ValueTask(runExecutionStrategy.Execute(runScope, ctxt, executionSet));
                     }).ConfigureAwait(false);
             }
             finally
@@ -157,35 +157,35 @@ namespace AutoStep.Execution
             return runContext;
         }
 
-        private IServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private IAutoStepServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
             var exposedServiceRegistration = new AutofacServiceBuilder();
 
-            exposedServiceRegistration.RegisterSingleInstance(logFactory);
+            exposedServiceRegistration.RegisterInstance(logFactory);
 
             // Register our strategies.
-            exposedServiceRegistration.RegisterSingleInstance(runExecutionStrategy);
-            exposedServiceRegistration.RegisterSingleInstance(featureExecutionStrategy);
-            exposedServiceRegistration.RegisterSingleInstance(stepCollectionExecutionStrategy);
-            exposedServiceRegistration.RegisterSingleInstance(stepExecutionStrategy);
-            exposedServiceRegistration.RegisterSingleInstance(scenarioStrategy);
+            exposedServiceRegistration.RegisterInstance(runExecutionStrategy);
+            exposedServiceRegistration.RegisterInstance(featureExecutionStrategy);
+            exposedServiceRegistration.RegisterInstance(stepCollectionExecutionStrategy);
+            exposedServiceRegistration.RegisterInstance(stepExecutionStrategy);
+            exposedServiceRegistration.RegisterInstance(scenarioStrategy);
 
             // Register our argument binder registry.
             var argumentBinderRegistry = new ArgumentBinderRegistry();
-            exposedServiceRegistration.RegisterSingleInstance(argumentBinderRegistry);
+            exposedServiceRegistration.RegisterInstance(argumentBinderRegistry);
 
             // Register the execution manager.
-            exposedServiceRegistration.RegisterSingleInstance(executionManager);
+            exposedServiceRegistration.RegisterInstance(executionManager);
 
             // Add our built event pipeline to DI.
-            exposedServiceRegistration.RegisterSingleInstance<IEventPipeline>(events);
+            exposedServiceRegistration.RegisterInstance<IEventPipeline>(events);
 
             // Register the entire set in the container.
-            exposedServiceRegistration.RegisterSingleInstance(featureSet);
+            exposedServiceRegistration.RegisterInstance(featureSet);
 
             // Register configuration concepts in the container.
-            exposedServiceRegistration.RegisterSingleInstance(builtConfiguration);
+            exposedServiceRegistration.RegisterInstance(builtConfiguration);
 
             ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
 

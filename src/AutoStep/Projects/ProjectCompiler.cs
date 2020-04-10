@@ -242,7 +242,7 @@ namespace AutoStep.Projects
                 var setBuild = interactionSetBuilder.Build(Interactions);
 
                 // Now we need to go through the messages and add them to the appropriate interaction files.
-                var fileMessages = setBuild.Messages.GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
+                var fileMessages = setBuild.Messages.Where(x => x.SourceName != null).GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
 
                 foreach (var projectFile in files.OfType<ProjectInteractionFile>())
                 {

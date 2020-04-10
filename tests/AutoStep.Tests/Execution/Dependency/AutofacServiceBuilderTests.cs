@@ -3,6 +3,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AutoStep.Tests.Execution.Dependency
@@ -25,11 +26,11 @@ namespace AutoStep.Tests.Execution.Dependency
 
             var built = serviceBuilder.BuildRootScope();
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(1);
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(2);
         }
@@ -43,11 +44,11 @@ namespace AutoStep.Tests.Execution.Dependency
 
             var built = serviceBuilder.BuildRootScope();
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(1);
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(2);
         }
@@ -61,21 +62,21 @@ namespace AutoStep.Tests.Execution.Dependency
 
             sharedCount.Should().Be(1);
 
-            serviceBuilder.RegisterSingleInstance(instance);
+            serviceBuilder.RegisterInstance(instance);
 
             using var built = serviceBuilder.BuildRootScope();
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(1);
 
-            built.Resolve<TestService>();
+            built.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(1);
 
             using var nested = built.BeginNewScope(new RunContext(new ConfigurationBuilder().Build()));
 
-            nested.Resolve<TestService>();
+            nested.GetRequiredService<TestService>();
 
             sharedCount.Should().Be(1);
         }
@@ -89,29 +90,29 @@ namespace AutoStep.Tests.Execution.Dependency
 
             using var built = serviceBuilder.BuildRootScope();
 
-            built.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyException>();
+            built.Invoking(sc => sc.GetRequiredService<TestService>()).Should().Throw<DependencyException>();
 
             using (var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext()))
             {
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
 
                 using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext());
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
             }
 
             using (var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext()))
             {
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
 
                 using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext());
-                featureScope.Resolve<TestService>().Should().NotBeNull();
+                featureScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
             }
         }
@@ -126,21 +127,21 @@ namespace AutoStep.Tests.Execution.Dependency
             using var built = serviceBuilder.BuildRootScope();
 
             using var featureScope = built.BeginNewScope(ScopeTags.FeatureTag, new MyContext());
-            featureScope.Invoking(sc => sc.Resolve<TestService>()).Should().Throw<DependencyException>();
+            featureScope.Invoking(sc => sc.GetRequiredService<TestService>()).Should().Throw<DependencyException>();
 
             using (var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
             {
-                scenarioScope.Resolve<TestService>().Should().NotBeNull();
+                scenarioScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
-                scenarioScope.Resolve<TestService>().Should().NotBeNull();
+                scenarioScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
             }
 
             using (var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, new MyContext()))
             {
-                scenarioScope.Resolve<TestService>().Should().NotBeNull();
+                scenarioScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
-                scenarioScope.Resolve<TestService>().Should().NotBeNull();
+                scenarioScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
             }
         }
@@ -156,17 +157,17 @@ namespace AutoStep.Tests.Execution.Dependency
 
             using (var stepScope = built.BeginNewScope(new MyContext()))
             {
-                stepScope.Resolve<TestService>().Should().NotBeNull();
+                stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
-                stepScope.Resolve<TestService>().Should().NotBeNull();
+                stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
             }
 
             using (var stepScope = built.BeginNewScope(ScopeTags.GeneralScopeTag, new MyContext()))
             {
-                stepScope.Resolve<TestService>().Should().NotBeNull();
+                stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
-                stepScope.Resolve<TestService>().Should().NotBeNull();
+                stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
             }
         }

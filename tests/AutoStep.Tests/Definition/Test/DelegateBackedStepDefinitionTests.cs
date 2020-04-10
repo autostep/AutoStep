@@ -24,7 +24,7 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
 
-            Action<IServiceScope> callback = sc => { };
+            Action<IServiceProvider> callback = sc => { };
 
             var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
@@ -38,8 +38,8 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
 
-            Action<IServiceScope> callback = sc => { };
-            Action<IServiceScope> callback2 = sc => { };
+            Action<IServiceProvider> callback = sc => { };
+            Action<IServiceProvider> callback2 = sc => { };
 
             var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
@@ -52,11 +52,13 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
+            var mockScope = new Mock<IServiceProvider>();
+
+            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
 
             var callbackInvoked = false;
 
-            Action<IServiceScope> callback = sc =>
+            Action<IServiceProvider> callback = sc =>
             {
                 callbackInvoked = true;
             };
@@ -76,11 +78,13 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeAsyncTaskBackedDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
+            var mockScope = new Mock<IServiceProvider>();
 
             var callbackInvoked = false;
 
-            Func<IServiceScope, Task> callback = async sc =>
+            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+
+            Func<IServiceProvider, Task> callback = async sc =>
             {
                 await Task.Delay(10);
                 callbackInvoked = true;
@@ -101,11 +105,13 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeAsyncValueTaskDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
+            var mockScope = new Mock<IServiceProvider>();
+
+            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
 
             var callbackInvoked = false;
 
-            Func<IServiceScope, ValueTask> callback = sc =>
+            Func<IServiceProvider, ValueTask> callback = sc =>
             {
                 callbackInvoked = true;
                 return default;
@@ -127,7 +133,7 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
             var scopeBuilder = new AutofacServiceBuilder();
-            scopeBuilder.RegisterSingleInstance(new ArgumentBinderRegistry());
+            scopeBuilder.RegisterInstance(new ArgumentBinderRegistry());
 
             string? argValue = null;
 
@@ -158,7 +164,7 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
             var scopeBuilder = new AutofacServiceBuilder();
-            scopeBuilder.RegisterSingleInstance(new ArgumentBinderRegistry());
+            scopeBuilder.RegisterInstance(new ArgumentBinderRegistry());
 
             Action<int> callback = arg1 =>
             {
@@ -187,7 +193,7 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinitionNoArguments()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
+            var mockScope = new Mock<IServiceProvider>();
 
             var callbackInvoked = false;
 
@@ -211,9 +217,9 @@ namespace AutoStep.Tests.Definition
         public void DelegateExceptionIsUnwrapped()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceScope>();
+            var mockScope = new Mock<IServiceProvider>();
 
-            Action<IServiceScope> callback = sc =>
+            Action<IServiceProvider> callback = sc =>
             {
                 throw new InvalidOperationException();
             };

@@ -1,4 +1,5 @@
 ﻿using AutoStep.Execution.Contexts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Dependency
 {
@@ -12,11 +13,11 @@ namespace AutoStep.Execution.Dependency
         /// </summary>
         /// <param name="scope">The current scope.</param>
         /// <returns>The thread context.</returns>
-        public static ThreadContext ThreadContext(this IServiceScope scope)
+        public static ThreadContext ThreadContext(this IAutoStepServiceScope scope)
         {
             scope = scope.ThrowIfNull(nameof(scope));
 
-            return scope.Resolve<ThreadContext>();
+            return scope.GetRequiredService<ThreadContext>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using AutoStep.Execution.Dependency;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Interaction
 {
@@ -27,7 +28,7 @@ namespace AutoStep.Definitions.Interaction
         public Type ServiceType { get; }
 
         /// <inheritdoc/>
-        protected override object? GetMethodTarget(IServiceScope scope)
+        protected override object? GetMethodTarget(IServiceProvider scope)
         {
             if (scope is null)
             {
@@ -35,7 +36,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve an instance of the type from the scope.
-            return scope.Resolve(ServiceType);
+            return scope.GetRequiredService(ServiceType);
         }
     }
 }

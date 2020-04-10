@@ -28,7 +28,7 @@ namespace AutoStep.Execution.Dependency
         /// <typeparam name="TComponent">The implementing type.</typeparam>
         void RegisterPerFeatureService<TService, TComponent>()
             where TService : class
-            where TComponent : class;
+            where TComponent : TService;
 
         /// <summary>
         /// Register a service that has one instance for each feature.
@@ -44,7 +44,7 @@ namespace AutoStep.Execution.Dependency
         /// <typeparam name="TComponent">The implementing type.</typeparam>
         void RegisterPerScenarioService<TService, TComponent>()
             where TService : class
-            where TComponent : class;
+            where TComponent : TService;
 
         /// <summary>
         /// Register a service that has one instance for each scenario.
@@ -60,7 +60,7 @@ namespace AutoStep.Execution.Dependency
         /// <typeparam name="TComponent">The implementing type.</typeparam>
         void RegisterPerScopeService<TService, TComponent>()
             where TService : class
-            where TComponent : class;
+            where TComponent : TService;
 
         /// <summary>
         /// Register a service that has one instance for each scope (typically this is per-step).
@@ -83,10 +83,10 @@ namespace AutoStep.Execution.Dependency
         /// <typeparam name="TComponent">The implementing type.</typeparam>
         void RegisterPerThreadService<TService, TComponent>()
             where TService : class
-            where TComponent : class;
+            where TComponent : TService;
 
         /// <summary>
-        /// Register a singleton instance (the same object will always be returned, whenever it is resolved.
+        /// Register a singleton instance (the same object will always be returned, whenever it is resolved).
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <param name="instance">The instance to register.</param>
@@ -94,19 +94,37 @@ namespace AutoStep.Execution.Dependency
         /// Take care with thread-safety on all services registered as a singleton; all test threads
         /// will use the same object.
         /// </remarks>
-        void RegisterSingleInstance<TService>(TService instance)
+        void RegisterInstance<TService>(TService instance)
             where TService : class;
 
         /// <summary>
-        /// Register an event handler.
+        /// Register a singleton instance (the same object will always be returned, whenever it is resolved).
         /// </summary>
-        /// <param name="eventHandler">The event handler to register.</param>
-        void RegisterEventHandler(IEventHandler eventHandler);
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <remarks>
+        /// Take care with thread-safety on all services registered as a singleton; all test threads
+        /// will use the same object.
+        /// </remarks>
+        void RegisterSingleton<TService>()
+            where TService : class;
+
+        /// <summary>
+        /// Register a singleton instance (the same object will always be returned, whenever it is resolved).
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TComponent">The component type.</typeparam>
+        /// <remarks>
+        /// Take care with thread-safety on all services registered as a singleton; all test threads
+        /// will use the same object.
+        /// </remarks>
+        void RegisterSingleton<TService, TComponent>()
+            where TService : class
+            where TComponent : TService;
 
         /// <summary>
         /// Create a root scope from this builder.
         /// </summary>
         /// <returns>The root of the scope hierarchy.</returns>
-        IServiceScope BuildRootScope();
+        IAutoStepServiceScope BuildRootScope();
     }
 }

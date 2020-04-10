@@ -22,7 +22,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        protected override object? GetMethodTarget(IServiceScope scope)
+        protected override object? GetMethodTarget(IServiceProvider scope)
         {
             return target;
         }

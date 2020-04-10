@@ -8,6 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Definitions.Test;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Tests.Definition
 {
@@ -40,7 +41,7 @@ namespace AutoStep.Tests.Definition
 
             assemblySource.ConfigureServices(servicesBuilder, BlankConfiguration);
 
-            var resolve = servicesBuilder.BuildRootScope().Resolve<BasicSteps>();
+            var resolve = servicesBuilder.BuildRootScope().GetRequiredService<BasicSteps>();
 
             resolve.Should().NotBeNull();
         }
