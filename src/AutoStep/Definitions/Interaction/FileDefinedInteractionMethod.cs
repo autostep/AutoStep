@@ -35,6 +35,11 @@ namespace AutoStep.Definitions.Interaction
         /// </summary>
         public MethodDefinitionElement MethodDefinition { get; }
 
+        /// <summary>
+        /// Gets or sets the overriden method that this method definition replaces.
+        /// </summary>
+        public InteractionMethod? OverriddenMethod { get; set; }
+
         /// <inheritdoc/>
         public override int ArgumentCount => MethodDefinition.Arguments.Count;
 

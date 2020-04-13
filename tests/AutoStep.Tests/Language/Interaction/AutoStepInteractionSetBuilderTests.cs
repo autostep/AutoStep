@@ -422,6 +422,46 @@ namespace AutoStep.Tests.Language.Interaction
             result.Success.Should().BeTrue();
         }
 
+
+        [Fact]
+        public void MethodOverridesKeepsReferenceToOriginal()
+        {
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
+
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Trait("clickable", 1, 1, c => c
+                .Method("locateNamed", 2, 1, m => m.NeedsDefining()));
+
+            file.Component("button", 3, 1, c => c
+                .Trait("clickable", 4, 1)
+                .Method("locateNamed", 5, 1, m => m.Call("click", 6, 1, 6, 1))
+            );
+
+            setBuilder.AddInteractionFile(file.Built);
+
+            var result = setBuilder.Build(interactions);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output!;
+
+            builtSet.Components.Should().HaveCount(1);
+            var button = builtSet.Components["button"];
+
+            button.MethodTable.TryGetMethod("locateNamed", out var foundLocateNamed).Should().BeTrue();
+            foundLocateNamed.Should().BeOfType<FileDefinedInteractionMethod>()
+                                     .Subject.NeedsDefining.Should().BeFalse();
+
+            var overridden = ((FileDefinedInteractionMethod)foundLocateNamed!).OverriddenMethod;
+            overridden.Should().BeOfType<FileDefinedInteractionMethod>()
+                               .Subject.NeedsDefining.Should().BeTrue();
+        }
+
         private class InteractionsConfig : IInteractionsConfiguration
         {
             public RootMethodTable RootMethodTable { get; } = new RootMethodTable();
