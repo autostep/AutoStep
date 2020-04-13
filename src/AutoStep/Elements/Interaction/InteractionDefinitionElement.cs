@@ -5,7 +5,7 @@ namespace AutoStep.Elements.Interaction
     /// <summary>
     /// Represents an item in an interaction definition file that can have methods and steps (i.e. components and traits).
     /// </summary>
-    public abstract class InteractionDefinitionElement : BuiltElement
+    public abstract class InteractionDefinitionElement : PositionalElement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionDefinitionElement"/> class.

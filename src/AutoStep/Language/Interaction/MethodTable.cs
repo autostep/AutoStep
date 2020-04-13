@@ -54,8 +54,6 @@ namespace AutoStep.Language.Interaction
                 throw new ArgumentNullException(nameof(methodDef));
             }
 
-            InteractionMethod? baseMethod = null;
-
             if (methods is null)
             {
                 methods = new Dictionary<string, InteractionMethod>(copyFrom);

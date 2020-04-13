@@ -4,6 +4,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -22,8 +23,10 @@ namespace AutoStep.Language.Interaction.Visitors
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
-        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream)
-            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream))
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream), compilerOptions, positionIndex)
         {
         }
 
@@ -33,12 +36,16 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The shared rewriter.</param>
-        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
         {
             SourceName = sourceName;
             TokenStream = tokenStream;
             Rewriter = rewriter;
             MessageSet = new CompilerMessageSet(sourceName, tokenStream);
+            CompilerOptions = compilerOptions;
+            PositionIndex = positionIndex;
         }
 
         /// <summary>
@@ -60,6 +67,16 @@ namespace AutoStep.Language.Interaction.Visitors
         /// Gets the source name (if there is one).
         /// </summary>
         public string? SourceName { get; }
+
+        /// <summary>
+        /// Gets the provided compiler options.
+        /// </summary>
+        public InteractionsCompilerOptions CompilerOptions { get; }
+
+        /// <summary>
+        /// Gets the position index.
+        /// </summary>
+        public PositionIndex? PositionIndex { get; }
 
         /// <summary>
         /// Gets the token stream.

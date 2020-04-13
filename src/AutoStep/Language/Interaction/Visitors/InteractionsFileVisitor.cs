@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -17,11 +18,13 @@ namespace AutoStep.Language.Interaction.Visitors
         /// </summary>
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The full token stream.</param>
-        public InteractionsFileVisitor(string? sourceName, ITokenStream tokenStream)
-            : base(sourceName, tokenStream)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public InteractionsFileVisitor(string? sourceName, ITokenStream tokenStream, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, compilerOptions, positionIndex)
         {
-            traitVisitor = new TraitDefinitionVisitor(sourceName, tokenStream, Rewriter);
-            componentVisitor = new ComponentDefinitionVisitor(sourceName, tokenStream, Rewriter);
+            traitVisitor = new TraitDefinitionVisitor(sourceName, tokenStream, Rewriter, compilerOptions, positionIndex);
+            componentVisitor = new ComponentDefinitionVisitor(sourceName, tokenStream, Rewriter, compilerOptions, positionIndex);
         }
 
         /// <inheritdoc/>
@@ -32,7 +35,11 @@ namespace AutoStep.Language.Interaction.Visitors
                 SourceName = SourceName,
             };
 
+            PositionIndex?.PushScope(Result, context);
+
             VisitChildren(context);
+
+            PositionIndex?.PopScope(context);
 
             return Result;
         }

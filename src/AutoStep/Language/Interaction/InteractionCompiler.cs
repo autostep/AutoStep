@@ -8,6 +8,7 @@ using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using AutoStep.Language.Interaction.Parser;
 using AutoStep.Language.Interaction.Visitors;
+using AutoStep.Language.Position;
 using AutoStep.Language.Test;
 using Microsoft.Extensions.Logging;
 
@@ -45,14 +46,30 @@ namespace AutoStep.Language.Interaction
                 throw new OperationCanceledException();
             }
 
-            var fileVisitor = new InteractionsFileVisitor(source.SourceName, tokenStream);
+            PositionIndex? positionIndex = null;
+
+            // Capture position data if it has been requested, and we know anything at all about the file context.
+            if (options.HasFlag(InteractionsCompilerOptions.CreatePositionIndex) && fileContext.Stop is object)
+            {
+                // Using diagnostics.
+                // Use the last line to give the number of lines.
+                positionIndex = new PositionIndex(fileContext.Stop.Line);
+            }
+
+            var fileVisitor = new InteractionsFileVisitor(source.SourceName, tokenStream, options, positionIndex);
 
             var result = fileVisitor.Visit(fileContext);
+
+            if (positionIndex is object)
+            {
+                // Finish the position index.
+                positionIndex.Seal();
+            }
 
             var success = parserMessages.All(x => x.Level != CompilerMessageLevel.Error) && !fileVisitor.MessageSet.AnyErrorMessages;
             var allMessages = parserMessages.Concat(fileVisitor.MessageSet.Messages);
 
-            return new InteractionsFileCompilerResult(success, allMessages, result);
+            return new InteractionsFileCompilerResult(success, allMessages, result, positionIndex);
         }
 
         /// <summary>

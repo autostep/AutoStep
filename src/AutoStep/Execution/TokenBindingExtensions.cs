@@ -49,6 +49,11 @@ namespace AutoStep.Execution
             arg = arg.ThrowIfNull(nameof(arg));
             scope.ThrowIfNull(nameof(scope));
 
+            if (arg.Tokenised is null)
+            {
+                return string.Empty;
+            }
+
             return GetFullText(arg.Tokenised, scope, arg.Text, n => context.Variables.Get(n)?.ToString());
         }
 

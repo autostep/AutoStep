@@ -3,6 +3,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -11,7 +12,7 @@ namespace AutoStep.Language.Interaction.Visitors
     /// <summary>
     /// Handles generating interaction step definitions from the Antlr parse context.
     /// </summary>
-    internal class InteractionStepDefinitionVisitor : InteractionMethodDeclarationVisitor<InteractionStepDefinitionElement>
+    internal class InteractionStepDefinitionVisitor : InteractionCallChainDeclarationVisitor<InteractionStepDefinitionElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionStepDefinitionVisitor"/> class.
@@ -19,8 +20,10 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">A shared escape rewriter.</param>
-        public InteractionStepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public InteractionStepDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
@@ -34,9 +37,13 @@ namespace AutoStep.Language.Interaction.Visitors
             Result = new InteractionStepDefinitionElement();
 
             Result.Description = GetDocumentationBlockForElement(definitionContext);
-
             Result.SourceName = SourceName;
+
+            PositionIndex?.PushScope(Result, definitionContext);
+
             VisitChildren(definitionContext);
+
+            PositionIndex?.PopScope(definitionContext);
 
             return Result;
         }
@@ -175,6 +182,13 @@ namespace AutoStep.Language.Interaction.Visitors
         private void AddPart(DefinitionPart part)
         {
             Result!.AddPart(part);
+            PositionIndex?.AddLineToken(part, LineTokenCategory.StepText, LineTokenSubCategory.Declaration);
+        }
+
+        private void AddPart(ArgumentPart part)
+        {
+            Result!.AddPart(part);
+            PositionIndex?.AddLineToken(part, LineTokenCategory.BoundArgument, LineTokenSubCategory.Declaration);
         }
     }
 }

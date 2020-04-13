@@ -232,7 +232,8 @@ namespace AutoStep.Tests.Language.Interaction
 
         private TraitDefinitionElement CreateTrait(params string[] nameParts)
         {
-            var newElement = new TraitDefinitionElement(string.Join(" + ", nameParts), GetNameParts(nameParts));
+            var newElement = new TraitDefinitionElement(string.Join(" + ", nameParts));
+            newElement.ProvideNameParts(GetNameParts(nameParts));
             return newElement;
         }
 
