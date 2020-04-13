@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
@@ -55,7 +56,7 @@ namespace AutoStep.Definitions.Test
                 // Unwrap this exception.
                 if (invokeEx.InnerException is object)
                 {
-                    throw invokeEx.InnerException;
+                    ExceptionDispatchInfo.Capture(invokeEx.InnerException).Throw();
                 }
 
                 throw;

@@ -234,6 +234,20 @@ namespace AutoStep.Tests.Definition.Interaction
             methodInstance.ArgumentCount.Should().Be(1);
         }
 
+        [Fact]
+        public async Task ExceptionInInteractionMethodIsUnwrapped()
+        {
+            Func<Task> action = async () => { await Task.Delay(1); throw new InvalidOperationException(); };
+
+            var methodInstance = new DelegateInteractionMethod("method", action);
+
+            var scope = new Mock<IAutoStepServiceScope>();
+
+            Func<Task> act = async () => await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
+
+            await act.Should().ThrowAsync<InvalidOperationException>();
+        }
+
         private class BaseClass { }
 
         private class DerivedClass : BaseClass { }
