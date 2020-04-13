@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
@@ -60,8 +61,21 @@ namespace AutoStep.Definitions.Interaction
             // Get the target.
             var target = GetMethodTarget(scope);
 
-            // Invoke.
-            return InvokeInstanceMethod(target, boundArguments);
+            try
+            {
+                // Invoke.
+                return InvokeInstanceMethod(target, boundArguments);
+            }
+            catch (TargetInvocationException invokeEx)
+            {
+                // Unwrap this exception.
+                if (invokeEx.InnerException is object)
+                {
+                    ExceptionDispatchInfo.Capture(invokeEx.InnerException).Throw();
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
