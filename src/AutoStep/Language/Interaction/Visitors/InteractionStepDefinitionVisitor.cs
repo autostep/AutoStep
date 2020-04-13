@@ -33,6 +33,8 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             Result = new InteractionStepDefinitionElement();
 
+            Result.Description = GetDocumentationBlockForElement(definitionContext);
+
             Result.SourceName = SourceName;
             VisitChildren(definitionContext);
 

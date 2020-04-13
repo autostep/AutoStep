@@ -74,5 +74,13 @@ namespace AutoStep.Tests.Builders
 
             return entityBuilder;
         }
+
+        public static TEntityBuilder Documentation<TEntityBuilder>(this TEntityBuilder entityBuilder, string documentation)
+            where TEntityBuilder : IInteractionEntityBuilder<InteractionDefinitionElement>
+        {
+            entityBuilder.Built.Documentation = documentation;
+
+            return entityBuilder;
+        }
     }
 }

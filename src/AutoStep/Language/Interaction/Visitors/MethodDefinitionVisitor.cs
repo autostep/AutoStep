@@ -38,6 +38,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
             VisitChildren(context);
 
+            Result.Documentation = GetDocumentationBlockForElement(context);
+
             if (context.NEEDS_DEFINING() is object)
             {
                 // Method is marked as needs defining

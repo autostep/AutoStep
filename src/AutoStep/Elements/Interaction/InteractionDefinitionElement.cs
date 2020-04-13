@@ -32,6 +32,11 @@ namespace AutoStep.Elements.Interaction
         public string? SourceName { get; set; }
 
         /// <summary>
+        /// Gets or sets the documentation attached to the element.
+        /// </summary>
+        public string? Documentation { get; set; }
+
+        /// <summary>
         /// Gets the set of methods declared on the definition.
         /// </summary>
         public Dictionary<string, MethodDefinitionElement> Methods { get; } = new Dictionary<string, MethodDefinitionElement>();

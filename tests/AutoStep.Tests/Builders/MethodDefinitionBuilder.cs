@@ -26,5 +26,12 @@ namespace AutoStep.Tests.Builders
 
             return this;
         }
+
+        public MethodDefinitionBuilder Documentation(string docs)
+        {
+            Built.Documentation = docs;
+
+            return this;
+        }
     }
 }

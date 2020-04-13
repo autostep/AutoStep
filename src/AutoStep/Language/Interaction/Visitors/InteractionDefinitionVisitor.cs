@@ -49,6 +49,7 @@ namespace AutoStep.Language.Interaction.Visitors
             if (Result is object)
             {
                 Result.SourceName = SourceName;
+                Result.Documentation = GetDocumentationBlockForElement(owningContext);
             }
 
             return Result;

@@ -34,6 +34,12 @@ namespace AutoStep.Elements.Interaction
         public string? SourceName { get; set; }
 
         /// <summary>
+        /// Gets or sets the documentation element associated with
+        /// this method definition.
+        /// </summary>
+        public string? Documentation { get; set; }
+
+        /// <summary>
         /// Gets the set of calls in the method definition.
         /// </summary>
         public List<MethodCallElement> Calls { get; } = new List<MethodCallElement>();

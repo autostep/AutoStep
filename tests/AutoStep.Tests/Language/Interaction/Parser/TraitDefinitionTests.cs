@@ -187,5 +187,21 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                  )
              );
         }
+
+        [Fact]
+        public async Task TraitCanHaveDocumentation()
+        {
+            const string Test = @"
+                ## A clickable element
+                Trait: clickable
+            ";
+
+            await CompileAndAssertSuccess(Test, file => file
+                 .Trait("clickable", 3, 17, t => t
+                     .Documentation("A clickable element")
+                     .NamePart("clickable", 24)
+                 )
+             );
+        }
     }
 }

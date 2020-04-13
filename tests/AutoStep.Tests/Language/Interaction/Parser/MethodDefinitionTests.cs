@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoStep.Language;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
@@ -79,6 +80,74 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                     )
                 ),
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionMethodDeclMissingParameter, 4, 33, 4, 35));
+        }
+
+        [Fact]
+        public async Task MethodCanHaveDocumentation()
+        {
+            const string Test = @"
+                Component: button
+
+                    ## Method Documentation Line 1
+                    ##  Indented
+                    ##  Another line
+                    method(name1, name2): call('label')
+            ";
+
+            string Docs = string.Join(Environment.NewLine, new[]
+            {
+                "Method Documentation Line 1",
+                " Indented",
+                " Another line"
+            });
+
+            await CompileAndAssertSuccess(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 7, 21, m => m
+                        .Argument("name1", 7, 28)
+                        .Argument("name2", 7, 35)
+                        .Documentation(Docs)
+                        .Call("call", 7, 43, 7, 55, c => c
+                            .String("label", 48)
+                        )
+                    )
+                ));
+        }
+
+        [Fact]
+        public async Task MethodCanHaveDocumentationPadding()
+        {
+            const string Test = @"
+                Component: button
+
+                    ## 
+                    ## Method Documentation Line 1
+                    ##  Indented
+                    ##  Another line
+                    ##
+                    method(name1, name2): call('label')
+            ";
+
+            string Docs = string.Join(Environment.NewLine, new[]
+            {
+                "",
+                "Method Documentation Line 1",
+                " Indented",
+                " Another line",
+                ""
+            });
+
+            await CompileAndAssertSuccess(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 9, 21, m => m
+                        .Argument("name1", 9, 28)
+                        .Argument("name2", 9, 35)
+                        .Documentation(Docs)
+                        .Call("call", 9, 43, 9, 55, c => c
+                            .String("label", 48)
+                        )
+                    )
+                ));
         }
 
         [Fact]

@@ -1,4 +1,6 @@
-﻿using Antlr4.Runtime;
+﻿using System;
+using System.Text;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Language.Interaction.Parser;
@@ -12,6 +14,9 @@ namespace AutoStep.Language.Interaction.Visitors
     internal abstract class BaseAutoStepInteractionVisitor<TVisitResult> : AutoStepInteractionsParserBaseVisitor<TVisitResult>
         where TVisitResult : class
     {
+        private const string DocCommentsMarker = "##";
+        private StringBuilder pooledDocBlockBuilder = new StringBuilder();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAutoStepInteractionVisitor{TVisitResult}"/> class.
         /// </summary>
@@ -106,6 +111,97 @@ namespace AutoStep.Language.Interaction.Visitors
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieve the documentation block for an element (or null if there isn't one).
+        /// </summary>
+        /// <param name="owningContext">The parser block.</param>
+        /// <returns>The documentation content.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Globalization",
+            "CA1303:Do not pass literals as localized parameters",
+            Justification = "Comment marker is fixed in the language specification.")]
+        protected string? GetDocumentationBlockForElement(ParserRuleContext owningContext)
+        {
+            string? documentation = null;
+            ReadOnlySpan<char> markerSequence = DocCommentsMarker.AsSpan();
+
+            // Get preceding doc contents.
+            if (TokenStream is CommonTokenStream commonStream)
+            {
+                // Get doc-comment blocks before the element.
+                var hiddenTokens = commonStream.GetHiddenTokensToLeft(owningContext.Start.TokenIndex);
+
+                // First whitespace.
+                int knownSpacing = 0;
+                bool firstLineWritten = false;
+                bool determinedKnownSpacing = false;
+
+                foreach (var token in hiddenTokens)
+                {
+                    if (token.Type == AutoStepInteractionsLexer.TEXT_DOC_COMMENT)
+                    {
+                        if (firstLineWritten)
+                        {
+                            pooledDocBlockBuilder.AppendLine();
+                        }
+                        else
+                        {
+                            firstLineWritten = true;
+                        }
+
+                        var text = token.Text.AsSpan();
+
+                        // Find the position of the marker characters.
+                        var markerPos = text.IndexOf(markerSequence, StringComparison.InvariantCulture);
+
+                        // Move beyond the marker characters.
+                        text = text.Slice(markerPos + 2);
+
+                        // If the spacing is not known, then work it out.
+                        if (text.Length > 0)
+                        {
+                            var currentPos = 0;
+
+                            var endPoint = determinedKnownSpacing ? knownSpacing : text.Length;
+
+                            // Get the whitespace characters.
+                            while (currentPos < endPoint)
+                            {
+                                if (!char.IsWhiteSpace(text[currentPos]))
+                                {
+                                    if (!determinedKnownSpacing)
+                                    {
+                                        knownSpacing = currentPos;
+                                        determinedKnownSpacing = true;
+                                    }
+
+                                    break;
+                                }
+
+                                currentPos++;
+                            }
+
+                            text = text.Slice(currentPos);
+                        }
+
+                        // Take off the whitespace.
+                        pooledDocBlockBuilder.Append(text);
+                    }
+                }
+
+                documentation = pooledDocBlockBuilder.ToString();
+
+                if (string.IsNullOrWhiteSpace(documentation))
+                {
+                    documentation = null;
+                }
+
+                pooledDocBlockBuilder.Clear();
+            }
+
+            return documentation;
         }
     }
 }
