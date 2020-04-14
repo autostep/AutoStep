@@ -33,6 +33,7 @@ namespace AutoStep.Projects
         private readonly InteractionLineTokeniser interactionLineTokeniser;
         private readonly bool buildExtendedMethodTableReferences;
         private InteractionStepDefinitionSource? interactionSteps;
+        private IInteractionSet? currentInteractionSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
@@ -271,7 +272,9 @@ namespace AutoStep.Projects
                         interactionSteps = new InteractionStepDefinitionSource();
                     }
 
-                    interactionSteps.UpdateInteractionSet(setBuild.Output);
+                    currentInteractionSet = setBuild.Output;
+
+                    interactionSteps.UpdateInteractionSet(currentInteractionSet);
 
                     linker.AddOrUpdateStepDefinitionSource(interactionSteps);
                 }
@@ -328,6 +331,15 @@ namespace AutoStep.Projects
         public IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element)
         {
             return linker.GetPossibleMatches(element);
+        }
+
+        /// <summary>
+        /// Retrieves the last built interaction set (or null if there is no active interaction set).
+        /// </summary>
+        /// <returns>The active interaction set.</returns>
+        public IInteractionSet? GetCurrentInteractionSet()
+        {
+            return currentInteractionSet;
         }
 
         /// <summary>
