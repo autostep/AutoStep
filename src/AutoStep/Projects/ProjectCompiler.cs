@@ -80,7 +80,7 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateForEditing(Project project)
         {
-            return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.Default);
+            return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.CreatePositionIndex);
         }
 
         /// <summary>
