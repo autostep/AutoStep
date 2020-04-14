@@ -86,6 +86,8 @@ namespace AutoStep.Language.Interaction.Visitors
             var text = context.GetText();
             var stringArg = new StringMethodArgumentElement(text);
 
+            PositionIndex?.PushScope(stringArg, context);
+
             foreach (var p in parts)
             {
                 StepToken token = p switch
@@ -98,7 +100,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
                 if (token is VariableToken)
                 {
-                    PositionIndex?.AddLineToken(token, LineTokenCategory.Variable, LineTokenSubCategory.InteractionVariable);
+                    PositionIndex?.AddLineToken(token, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
                 }
                 else
                 {
@@ -107,6 +109,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
                 tokenSet.Add(token);
             }
+
+            PositionIndex?.PopScope(context);
 
             stringArg.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
 

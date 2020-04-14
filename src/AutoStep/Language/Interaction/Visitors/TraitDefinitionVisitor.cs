@@ -40,7 +40,7 @@ namespace AutoStep.Language.Interaction.Visitors
 
             // Use TokenStream.GetText to ensure we capture any whitespace.
             Result = new TraitDefinitionElement(TokenStream.GetText(refList));
-            Result.AddPositionalLineInfo(declaration);
+            Result.AddLineInfo(declaration);
 
             PositionIndex?.PushScope(Result, context);
             PositionIndex?.AddLineToken(declaration.TRAIT_DEFINITION(), LineTokenCategory.EntryMarker, LineTokenSubCategory.InteractionTrait);
@@ -49,10 +49,10 @@ namespace AutoStep.Language.Interaction.Visitors
             {
                 var traitText = traitRef.GetText();
 
-                PositionIndex?.AddLineToken(traitRef, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
-
                 if (actualRefs.Contains(traitText))
                 {
+                    PositionIndex?.AddLineToken(traitRef, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
+
                     // Warning, duplicate not allowed.
                     MessageSet.Add(traitRef, CompilerMessageLevel.Warning, CompilerMessageCode.InteractionDuplicateTrait);
                 }
@@ -60,6 +60,8 @@ namespace AutoStep.Language.Interaction.Visitors
                 {
                     var traitNamePart = new NameRefElement(traitText);
                     traitNamePart.AddPositionalLineInfo(traitRef);
+
+                    PositionIndex?.AddLineToken(traitNamePart, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
 
                     actualRefs.Add(traitNamePart.Name);
                     traits.Add(traitNamePart);

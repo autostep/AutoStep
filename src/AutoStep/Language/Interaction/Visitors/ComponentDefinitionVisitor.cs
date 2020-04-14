@@ -36,7 +36,7 @@ namespace AutoStep.Language.Interaction.Visitors
             var componentName = declaration.NAME_REF();
 
             Result = new ComponentDefinitionElement(componentName.GetText());
-            Result.AddPositionalLineInfo(declaration);
+            Result.AddLineInfo(declaration);
 
             PositionIndex?.PushScope(Result, context);
 
@@ -99,8 +99,6 @@ namespace AutoStep.Language.Interaction.Visitors
                 PositionIndex?.AddLineToken(inheritsElement, LineTokenCategory.InteractionString, LineTokenSubCategory.InteractionName);
 
                 Result!.Inherits = inheritsElement;
-
-                PositionIndex?.PopScope(context);
             }
 
             return Result!;
@@ -126,7 +124,7 @@ namespace AutoStep.Language.Interaction.Visitors
                     var traitNamePart = new NameRefElement(traitText);
                     traitNamePart.AddPositionalLineInfo(traitRef);
 
-                    PositionIndex?.AddLineToken(traitNamePart, LineTokenCategory.InteractionPropertyName, LineTokenSubCategory.InteractionTrait);
+                    PositionIndex?.AddLineToken(traitNamePart, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
 
                     actualRefs.Add(traitNamePart.Name);
                     Result!.Traits.Add(traitNamePart);

@@ -41,6 +41,13 @@ namespace AutoStep.Language.Interaction.Visitors
 
             PositionIndex?.PushScope(Result, definitionContext);
 
+            var declaration = definitionContext.stepDefinition()?.STEP_DEFINE();
+
+            if (declaration is object)
+            {
+                PositionIndex?.AddLineToken(declaration, LineTokenCategory.EntryMarker, LineTokenSubCategory.StepDefine);
+            }
+
             VisitChildren(definitionContext);
 
             PositionIndex?.PopScope(definitionContext);
@@ -55,6 +62,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
             Result.AddPositionalLineInfo(context);
 
+            PositionIndex?.AddLineToken(context.DEF_GIVEN(), LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.Given);
+
             VisitChildren(context);
 
             return Result;
@@ -67,6 +76,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
             Result.AddPositionalLineInfo(context);
 
+            PositionIndex?.AddLineToken(context.DEF_WHEN(), LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.When);
+
             VisitChildren(context);
 
             return Result;
@@ -78,6 +89,8 @@ namespace AutoStep.Language.Interaction.Visitors
             Result!.Type = StepType.Then;
 
             Result.AddPositionalLineInfo(context);
+
+            PositionIndex?.AddLineToken(context.DEF_THEN(), LineTokenCategory.StepTypeKeyword, LineTokenSubCategory.Then);
 
             VisitChildren(context);
 
@@ -183,6 +196,12 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             Result!.AddPart(part);
             PositionIndex?.AddLineToken(part, LineTokenCategory.StepText, LineTokenSubCategory.Declaration);
+        }
+
+        private void AddPart(PlaceholderMatchPart part)
+        {
+            Result!.AddPart(part);
+            PositionIndex?.AddLineToken(part, LineTokenCategory.Placeholder, LineTokenSubCategory.InteractionComponentPlaceholder);
         }
 
         private void AddPart(ArgumentPart part)
