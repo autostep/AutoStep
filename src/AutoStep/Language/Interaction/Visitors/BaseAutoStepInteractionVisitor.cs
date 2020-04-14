@@ -16,7 +16,7 @@ namespace AutoStep.Language.Interaction.Visitors
         where TVisitResult : class
     {
         private const string DocCommentsMarker = "##";
-        private StringBuilder pooledDocBlockBuilder = new StringBuilder();
+        private readonly StringBuilder pooledDocBlockBuilder = new StringBuilder();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAutoStepInteractionVisitor{TVisitResult}"/> class.

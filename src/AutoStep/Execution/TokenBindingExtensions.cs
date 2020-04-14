@@ -214,7 +214,7 @@ namespace AutoStep.Execution
                 return 0;
             }
 
-            var lastToken = tokens[tokens.Length - 1];
+            var lastToken = tokens[^1];
             var length = (lastToken.StartIndex - tokens[0].StartIndex) + lastToken.Length;
 
             if (binding.StartExclusive)

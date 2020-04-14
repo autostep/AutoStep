@@ -34,10 +34,11 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <returns>A generated step reference.</returns>
         public InteractionStepDefinitionElement BuildStepDefinition(StepDefinitionBodyContext definitionContext)
         {
-            Result = new InteractionStepDefinitionElement();
-
-            Result.Description = GetDocumentationBlockForElement(definitionContext);
-            Result.SourceName = SourceName;
+            Result = new InteractionStepDefinitionElement
+            {
+                Description = GetDocumentationBlockForElement(definitionContext),
+                SourceName = SourceName,
+            };
 
             PositionIndex?.PushScope(Result, definitionContext);
 

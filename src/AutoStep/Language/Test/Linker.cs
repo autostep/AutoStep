@@ -248,7 +248,7 @@ namespace AutoStep.Language.Test
                 if (binding.EndExclusive)
                 {
                     // If the last token is not immediately after the penultimate one.
-                    if (!rangeTestTokens[rangeTestTokens.Length - 2].IsImmediatelyFollowedBy(rangeTestTokens[rangeTestTokens.Length - 1]))
+                    if (!rangeTestTokens[^2].IsImmediatelyFollowedBy(rangeTestTokens[^1]))
                     {
                         // We have whitespace.
                         containsWhiteSpacePadding = true;

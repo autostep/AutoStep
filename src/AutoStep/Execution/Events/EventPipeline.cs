@@ -10,7 +10,7 @@ namespace AutoStep.Execution.Events
     /// </summary>
     internal class EventPipeline : IEventPipeline
     {
-        private IReadOnlyList<IEventHandler> handlers;
+        private readonly IReadOnlyList<IEventHandler> handlers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventPipeline"/> class.

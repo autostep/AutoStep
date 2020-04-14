@@ -10,8 +10,8 @@ namespace AutoStep.Language.Interaction.Visitors
     /// </summary>
     internal class InteractionsFileVisitor : BaseAutoStepInteractionVisitor<InteractionFileElement>
     {
-        private TraitDefinitionVisitor traitVisitor;
-        private ComponentDefinitionVisitor componentVisitor;
+        private readonly TraitDefinitionVisitor traitVisitor;
+        private readonly ComponentDefinitionVisitor componentVisitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteractionsFileVisitor"/> class.
