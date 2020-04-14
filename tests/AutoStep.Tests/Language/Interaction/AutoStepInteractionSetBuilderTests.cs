@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
-        public void CanBuiltInteractionSetFromTraitAndComponent()
+        public void CanBuildInteractionSetFromTraitAndComponent()
         {
             var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
@@ -83,7 +83,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
 
@@ -143,7 +143,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
 
@@ -192,7 +192,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
 
@@ -241,7 +241,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
 
@@ -291,7 +291,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeFalse();
             result.Messages.Should().BeEquivalentTo(
@@ -322,7 +322,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeFalse();
             result.Messages.Should().BeEquivalentTo(
@@ -373,14 +373,13 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeFalse();
 
             result.Messages.Should().HaveCount(1);
             result.Messages.First().Code.Should().Be(CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined);
         }
-
 
         [Fact]
         public void ComponentWithNoTraitsDoesNotRequireTheirMethods()
@@ -417,7 +416,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
         }
@@ -444,7 +443,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             setBuilder.AddInteractionFile(file.Built);
 
-            var result = setBuilder.Build(interactions);
+            var result = setBuilder.Build(interactions, true);
 
             result.Success.Should().BeTrue();
 
@@ -460,6 +459,93 @@ namespace AutoStep.Tests.Language.Interaction
             var overridden = ((FileDefinedInteractionMethod)foundLocateNamed!).OverriddenMethod;
             overridden.Should().BeOfType<FileDefinedInteractionMethod>()
                                .Subject.NeedsDefining.Should().BeTrue();
+        }
+
+        [Fact]
+        public void MethodTableReferencesPopulated()
+        {
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
+
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("field", 10, 1, c => c
+                .Method("locateNamed", 12, 1, m => m
+                    .Argument("name", 12, 1)
+                    .Call("select", 13, 1, 13, 1, cfg => cfg.Variable("name", 1))
+                    .Call("click", 14, 1, 14, 1)
+                )
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("field", 16, 1)
+                .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
+            );
+
+            setBuilder.AddInteractionFile(file.Built);
+
+            var result = setBuilder.Build(interactions, true);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output!;
+
+            builtSet.ExtendedMethodReferences.Should().NotBeNull();
+
+            var fieldMethodTable = builtSet.ExtendedMethodReferences!.GetMethodTableForElement(file.Built.Components[0]);
+
+            fieldMethodTable!.TryGetMethod("locateNamed", out var _).Should().BeTrue();
+
+            var buttonMethodTable = builtSet.ExtendedMethodReferences!.GetMethodTableForElement(file.Built.Components[1]);
+
+            buttonMethodTable!.TryGetMethod("anotherMethod", out var _).Should().BeTrue();
+        }
+
+        [Fact]
+        public void AccurateMethodTableReferencesForReplacedComponent()
+        {
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
+
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder();
+            file.Component("button", 10, 1, c => c
+                .Method("locateNamed", 12, 1, m => m
+                    .Argument("name", 12, 1)
+                    .Call("select", 13, 1, 13, 1, cfg => cfg.Variable("name", 1))
+                    .Call("click", 14, 1, 14, 1)
+                )
+            );
+            file.Component("button", 15, 1, c => c
+                .Inherits("button", 16, 1)
+                .Method("anotherMethod", 17, 1, m => m.Call("click", 18, 1, 18, 1))
+            );
+
+            setBuilder.AddInteractionFile(file.Built);
+
+            var originalComponent = file.Built.Components[0];
+            var newComponent = file.Built.Components[1];
+
+            var result = setBuilder.Build(interactions, true);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output!;
+
+            builtSet.ExtendedMethodReferences.Should().NotBeNull();
+
+            var fieldMethodTable = builtSet.ExtendedMethodReferences!.GetMethodTableForElement(originalComponent);
+
+            fieldMethodTable!.TryGetMethod("locateNamed", out var _).Should().BeTrue();
+
+            var buttonMethodTable = builtSet.ExtendedMethodReferences!.GetMethodTableForElement(newComponent);
+
+            buttonMethodTable!.TryGetMethod("anotherMethod", out var _).Should().BeTrue();
         }
 
         private class InteractionsConfig : IInteractionsConfiguration

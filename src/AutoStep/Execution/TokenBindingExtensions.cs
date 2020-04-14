@@ -178,7 +178,7 @@ namespace AutoStep.Execution
 
             var startPos = tokens[0].StartIndex;
 
-            var lastToken = tokens[tokens.Length - 1];
+            var lastToken = tokens[^1];
             var length = (lastToken.StartIndex - startPos) + lastToken.Length;
 
             if (binding.StartExclusive)

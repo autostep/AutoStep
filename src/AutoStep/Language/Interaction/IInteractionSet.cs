@@ -20,6 +20,12 @@ namespace AutoStep.Language.Interaction
         InteractionConstantSet Constants { get; }
 
         /// <summary>
+        /// Gets the set of extended method reference data. Only set if the <see cref="IInteractionSetBuilder.Build"/> method
+        /// had collectExtendedMethodTableReferences set to true.
+        /// </summary>
+        IExtendedMethodTableReferences? ExtendedMethodReferences { get; }
+
+        /// <summary>
         /// Gets the set of all step definitions.
         /// </summary>
         /// <param name="stepSource">The step source to attach them to.</param>

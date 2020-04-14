@@ -8,7 +8,7 @@ namespace AutoStep.Language.Interaction
     public interface IInteractionSetBuilder
     {
         /// <summary>
-        /// Add an interaction file to consider during <see cref="Build(IInteractionsConfiguration)"/>.
+        /// Add an interaction file to consider during <see cref="Build"/>.
         /// </summary>
         /// <param name="interactionFile">The file.</param>
         void AddInteractionFile(InteractionFileElement interactionFile);
@@ -19,11 +19,15 @@ namespace AutoStep.Language.Interaction
         /// <param name="interactionsConfig">
         /// The interactions config, that provides the root method table,
         /// containing all of the system-provided methods, plus the set of available constants.</param>
+        /// <param name="collectExtendedMethodTableReferences">
+        /// If true, then the set builder result will
+        /// contain the extended set of method table references.
+        /// </param>
         /// <returns>The set build result.</returns>
         /// <remarks>
         /// This method goes through all the full trait graph and component list and determines the actual method table and step set for each
         /// component.
         /// </remarks>
-        InteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig);
+        InteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig, bool collectExtendedMethodTableReferences);
     }
 }

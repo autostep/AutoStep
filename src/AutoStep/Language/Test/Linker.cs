@@ -255,7 +255,7 @@ namespace AutoStep.Language.Test
                     }
 
                     // Ignore the last character.
-                    resultTokens = resultTokens.Slice(0, resultTokens.Length - 1);
+                    resultTokens = resultTokens[0..^1];
                 }
             }
 

@@ -47,6 +47,11 @@ namespace AutoStep.Language.Interaction
         public ComponentDefinitionElement? FinalComponent { get; private set; }
 
         /// <summary>
+        /// Gets or sets the final determined method table, that represents the bottom of the inheritance tree.
+        /// </summary>
+        public MethodTable? FinalMethodTable { get; internal set; }
+
+        /// <summary>
         /// Gets the set of all methods available from the fully resolved component.
         /// </summary>
         public Dictionary<string, MethodDefinitionElement>? Methods { get; private set; }

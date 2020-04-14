@@ -228,7 +228,7 @@ namespace AutoStep.Tests.Projects
                 new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.InteractionInvalidContent, "")
             }, null);
 
-            interactionSetBuilder.Setup(x => x.Build(It.IsAny<IInteractionsConfiguration>())).Returns(() => resultSet);
+            interactionSetBuilder.Setup(x => x.Build(It.IsAny<IInteractionsConfiguration>(), true)).Returns(() => resultSet);
 
             var projectCompiler = GetProjectCompiler(project, mockCompiler.Object, interactionSetBuilder.Object);
 
@@ -293,17 +293,17 @@ namespace AutoStep.Tests.Projects
 
         private ProjectCompiler GetProjectCompiler(Project project, IInteractionCompiler interactionCompiler, IInteractionSetBuilder setBuilder)
         {
-            return new ProjectCompiler(project, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object, interactionCompiler, () => setBuilder);
+            return new ProjectCompiler(project, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object, interactionCompiler, () => setBuilder, true);
         }
 
         private ProjectCompiler GetProjectCompiler(Project project, IInteractionCompiler interactionCompiler)
         {
             var dummySetBuilder = new Mock<IInteractionSetBuilder>();
 
-            dummySetBuilder.Setup(x => x.Build(It.IsAny<IInteractionsConfiguration>()))
+            dummySetBuilder.Setup(x => x.Build(It.IsAny<IInteractionsConfiguration>(), true))
                            .Returns(new InteractionSetBuilderResult(true, Enumerable.Empty<LanguageOperationMessage>(), new EmptyInteractionSet()));
 
-            return new ProjectCompiler(project, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object, interactionCompiler, () => dummySetBuilder.Object);
+            return new ProjectCompiler(project, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object, interactionCompiler, () => dummySetBuilder.Object, true);
         }
 
         private class EmptyInteractionSet : IInteractionSet
@@ -311,6 +311,8 @@ namespace AutoStep.Tests.Projects
             public IReadOnlyDictionary<string, BuiltComponent> Components => new Dictionary<string, BuiltComponent>();
 
             public InteractionConstantSet Constants => new InteractionConstantSet();
+
+            public IExtendedMethodTableReferences? ExtendedMethodReferences => null;
 
             public IEnumerable<StepDefinition> GetStepDefinitions(IStepDefinitionSource stepSource)
             {

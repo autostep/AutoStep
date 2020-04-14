@@ -285,7 +285,8 @@ namespace AutoStep.Tests.Projects
         {
             return new ProjectCompiler(project, compiler, linker,
                                        new Mock<IInteractionCompiler>().Object,
-                                       () => new Mock<IInteractionSetBuilder>().Object);
+                                       () => new Mock<IInteractionSetBuilder>().Object,
+                                       true);
         }
     }
 }
