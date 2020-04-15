@@ -154,20 +154,13 @@ namespace AutoStep.Language.Interaction.Visitors
                 int knownSpacing = 0;
                 bool firstLineWritten = false;
                 bool determinedKnownSpacing = false;
+                int preservedBlankLines = 0;
 
-                foreach (var token in hiddenTokens)
+                for (var idx = 0; idx < hiddenTokens.Count; idx++)
                 {
+                    var token = hiddenTokens[idx];
                     if (token.Type == AutoStepInteractionsLexer.TEXT_DOC_COMMENT)
                     {
-                        if (firstLineWritten)
-                        {
-                            pooledDocBlockBuilder.AppendLine();
-                        }
-                        else
-                        {
-                            firstLineWritten = true;
-                        }
-
                         var text = token.Text.AsSpan();
 
                         // Find the position of the marker characters.
@@ -176,32 +169,53 @@ namespace AutoStep.Language.Interaction.Visitors
                         // Move beyond the marker characters.
                         text = text.Slice(markerPos + 2);
 
-                        // If the spacing is not known, then work it out.
-                        if (text.Length > 0)
+                        if (text.IsWhiteSpace() || text.Length == 0)
                         {
-                            var currentPos = 0;
+                            preservedBlankLines++;
+                            continue;
+                        }
 
-                            var endPoint = determinedKnownSpacing ? knownSpacing : text.Length;
+                        if (firstLineWritten)
+                        {
+                            pooledDocBlockBuilder.AppendLine();
 
-                            // Get the whitespace characters.
-                            while (currentPos < endPoint)
+                            while (preservedBlankLines > 0)
                             {
-                                if (!char.IsWhiteSpace(text[currentPos]))
-                                {
-                                    if (!determinedKnownSpacing)
-                                    {
-                                        knownSpacing = currentPos;
-                                        determinedKnownSpacing = true;
-                                    }
+                                pooledDocBlockBuilder.AppendLine();
 
-                                    break;
+                                preservedBlankLines--;
+                            }
+                        }
+                        else
+                        {
+                            preservedBlankLines = 0;
+                        }
+
+                        // If the spacing is not known, then work it out.
+                        var currentPos = 0;
+
+                        var endPoint = determinedKnownSpacing ? knownSpacing : text.Length;
+
+                        // Get the whitespace characters.
+                        while (currentPos < endPoint)
+                        {
+                            if (!char.IsWhiteSpace(text[currentPos]))
+                            {
+                                if (!determinedKnownSpacing)
+                                {
+                                    knownSpacing = currentPos;
+                                    determinedKnownSpacing = true;
                                 }
 
-                                currentPos++;
+                                break;
                             }
 
-                            text = text.Slice(currentPos);
+                            currentPos++;
                         }
+
+                        text = text.Slice(currentPos);
+
+                        firstLineWritten = true;
 
                         // Take off the whitespace.
                         pooledDocBlockBuilder.Append(text);

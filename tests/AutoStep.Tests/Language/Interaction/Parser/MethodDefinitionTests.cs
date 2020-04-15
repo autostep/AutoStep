@@ -130,11 +130,9 @@ namespace AutoStep.Tests.Language.Interaction.Parser
 
             string Docs = string.Join(Environment.NewLine, new[]
             {
-                "",
                 "Method Documentation Line 1",
                 " Indented",
                 " Another line",
-                ""
             });
 
             await CompileAndAssertSuccess(Test, cfg => cfg
@@ -144,6 +142,42 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                         .Argument("name2", 9, 35)
                         .Documentation(Docs)
                         .Call("call", 9, 43, 9, 55, c => c
+                            .String("label", 48)
+                        )
+                    )
+                ));
+        }
+
+        [Fact]
+        public async Task MethodCanHaveDocumentationBlankLines()
+        {
+            const string Test = @"
+                Component: button
+
+                    ## 
+                    ## Method Documentation Line 1
+                    ##  Indented
+                    ##
+                    ##  Another line
+                    ##
+                    method(name1, name2): call('label')
+            ";
+
+            string Docs = string.Join(Environment.NewLine, new[]
+            {
+                "Method Documentation Line 1",
+                " Indented",
+                "",
+                " Another line",
+            });
+
+            await CompileAndAssertSuccess(Test, cfg => cfg
+                .Component("button", 2, 17, comp => comp
+                    .Method("method", 10, 21, m => m
+                        .Argument("name1", 10, 28)
+                        .Argument("name2", 10, 35)
+                        .Documentation(Docs)
+                        .Call("call", 10, 43, 10, 55, c => c
                             .String("label", 48)
                         )
                     )
