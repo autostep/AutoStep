@@ -278,6 +278,31 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
+        public async Task NextMethodCallInStepSeparatorOnNextLine()
+        {
+            const string TestFile =
+            @"
+              Component: button
+
+                  Step: Given I have {name}
+                    method1(name) 
+                    -> 
+
+            ";
+
+            var positions = await CompileAndGetPositionIndex(TestFile);
+
+            // Trait name header.
+            var pos = positions.Lookup(6, 24);
+            pos.CurrentScope.Should().BeOfType<InteractionStepDefinitionElement>();
+            pos.Token.Should().BeNull();
+            pos.ClosestPrecedingTokenIndex.Should().Be(0);
+            var precedingToken = pos.LineTokens[pos.ClosestPrecedingTokenIndex!.Value];
+            precedingToken.Category.Should().Be(LineTokenCategory.InteractionSeparator);
+            precedingToken.SubCategory.Should().Be(LineTokenSubCategory.InteractionCallSeparator);
+        }
+
+        [Fact]
         public async Task StepDefinition()
         {
             const string TestFile =
