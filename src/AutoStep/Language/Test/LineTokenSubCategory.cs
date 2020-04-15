@@ -164,5 +164,10 @@
         /// Method open or close ( or ).
         /// </summary>
         InteractionParentheses,
+
+        /// <summary>
+        /// Method name.
+        /// </summary>
+        InteractionMethod,
     }
 }

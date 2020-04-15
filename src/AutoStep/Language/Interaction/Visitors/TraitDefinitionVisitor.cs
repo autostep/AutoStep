@@ -4,6 +4,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -20,18 +21,29 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The token rewriter.</param>
-        public TraitDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public TraitDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
         /// <inheritdoc/>
         public override TraitDefinitionElement VisitTraitDefinition([NotNull] TraitDefinitionContext context)
         {
-            var refList = context.traitRefList();
+            var declaration = context.traitDefinitionDeclaration();
+
+            var refList = declaration.traitRefList();
 
             var actualRefs = new HashSet<string>();
             var traits = new List<NameRefElement>();
+
+            // Use TokenStream.GetText to ensure we capture any whitespace.
+            Result = new TraitDefinitionElement(TokenStream.GetText(refList));
+            Result.AddLineInfo(declaration);
+
+            PositionIndex?.PushScope(Result, context);
+            PositionIndex?.AddLineToken(declaration.TRAIT_DEFINITION(), LineTokenCategory.EntryMarker, LineTokenSubCategory.InteractionTrait);
 
             foreach (var traitRef in refList.NAME_REF())
             {
@@ -39,6 +51,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
                 if (actualRefs.Contains(traitText))
                 {
+                    PositionIndex?.AddLineToken(traitRef, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
+
                     // Warning, duplicate not allowed.
                     MessageSet.Add(traitRef, CompilerMessageLevel.Warning, CompilerMessageCode.InteractionDuplicateTrait);
                 }
@@ -47,24 +61,18 @@ namespace AutoStep.Language.Interaction.Visitors
                     var traitNamePart = new NameRefElement(traitText);
                     traitNamePart.AddPositionalLineInfo(traitRef);
 
+                    PositionIndex?.AddLineToken(traitNamePart, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
+
                     actualRefs.Add(traitNamePart.Name);
                     traits.Add(traitNamePart);
                 }
             }
 
-            // Use TokenStream.GetText to ensure we capture any whitespace.
-            Result = new TraitDefinitionElement(TokenStream.GetText(refList), traits);
-            Result.AddLineInfo(context);
+            Result.ProvideNameParts(traits);
 
             VisitChildren(context);
 
-            return Result!;
-        }
-
-        /// <inheritdoc/>
-        public override TraitDefinitionElement VisitTraitName(TraitNameContext context)
-        {
-            ProvideName(GetTextFromStringToken(context.STRING()), context);
+            PositionIndex?.PopScope(context);
 
             return Result!;
         }

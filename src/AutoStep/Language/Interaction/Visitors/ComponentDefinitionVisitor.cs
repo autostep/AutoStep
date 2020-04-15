@@ -4,6 +4,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -20,20 +21,31 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The name of the source.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The token rewriter.</param>
-        public ComponentDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public ComponentDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
         /// <inheritdoc/>
         public override ComponentDefinitionElement VisitComponentDefinition([NotNull] ComponentDefinitionContext context)
         {
-            var componentName = context.NAME_REF();
+            var declaration = context.componentDefinitionDeclaration();
+
+            var componentName = declaration.NAME_REF();
 
             Result = new ComponentDefinitionElement(componentName.GetText());
-            Result.AddLineInfo(context);
+            Result.AddLineInfo(declaration);
+
+            PositionIndex?.PushScope(Result, context);
+
+            PositionIndex?.AddLineToken(declaration.COMPONENT_DEFINITION(), LineTokenCategory.EntryMarker, LineTokenSubCategory.InteractionComponent);
+            PositionIndex?.AddLineToken(componentName, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionComponent);
 
             VisitChildren(context);
+
+            PositionIndex?.PopScope(context);
 
             // Apply the known name to each step.
             foreach (var step in Result.Steps)
@@ -63,9 +75,12 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             var str = context.STRING();
 
+            PositionIndex?.AddLineToken(context.NAME_KEYWORD(), LineTokenCategory.InteractionPropertyName, LineTokenSubCategory.InteractionName);
+            PositionIndex?.AddLineToken(context.STRING(), LineTokenCategory.InteractionString, LineTokenSubCategory.InteractionName);
+
             if (str is object)
             {
-                ProvideName(GetTextFromStringToken(context.STRING()), context);
+                ProvideName(GetTextFromStringToken(str), context);
             }
 
             return Result!;
@@ -80,6 +95,9 @@ namespace AutoStep.Language.Interaction.Visitors
             {
                 var inheritsElement = new NameRefElement(inherits.GetText()).AddPositionalLineInfo(inherits);
 
+                PositionIndex?.AddLineToken(context.INHERITS_KEYWORD(), LineTokenCategory.InteractionPropertyName, LineTokenSubCategory.InteractionInherits);
+                PositionIndex?.AddLineToken(inheritsElement, LineTokenCategory.InteractionString, LineTokenSubCategory.InteractionName);
+
                 Result!.Inherits = inheritsElement;
             }
 
@@ -90,6 +108,8 @@ namespace AutoStep.Language.Interaction.Visitors
         public override ComponentDefinitionElement VisitComponentTraits(ComponentTraitsContext context)
         {
             var actualRefs = new HashSet<string>();
+
+            PositionIndex?.AddLineToken(context.TRAITS_KEYWORD(), LineTokenCategory.InteractionPropertyName, LineTokenSubCategory.InteractionTrait);
 
             foreach (var traitRef in context.NAME_REF())
             {
@@ -102,8 +122,9 @@ namespace AutoStep.Language.Interaction.Visitors
                 else
                 {
                     var traitNamePart = new NameRefElement(traitText);
-
                     traitNamePart.AddPositionalLineInfo(traitRef);
+
+                    PositionIndex?.AddLineToken(traitNamePart, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionTrait);
 
                     actualRefs.Add(traitNamePart.Name);
                     Result!.Traits.Add(traitNamePart);

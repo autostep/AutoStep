@@ -11,7 +11,7 @@ namespace AutoStep.Elements.Parts
     public class PlaceholderMatchPart : DefinitionPart
     {
         private readonly List<WordDefinitionPart> matchingPlaceholderValues = new List<WordDefinitionPart>();
-        private HashSet<string> allPlaceHolderValues = new HashSet<string>();
+        private readonly HashSet<string> allPlaceHolderValues = new HashSet<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaceholderMatchPart"/> class.

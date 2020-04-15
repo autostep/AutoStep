@@ -54,10 +54,24 @@ namespace AutoStep.Language.Interaction
                 throw new ArgumentNullException(nameof(methodDef));
             }
 
-            SetMethod(new FileDefinedInteractionMethod(name, methodDef)
+            if (methods is null)
+            {
+                methods = new Dictionary<string, InteractionMethod>(copyFrom);
+                copyFrom = null;
+            }
+
+            var newMethod = new FileDefinedInteractionMethod(name, methodDef)
             {
                 NeedsDefining = methodDef.NeedsDefining,
-            });
+            };
+
+            // Store the method we overrode.
+            if (methods.TryGetValue(name, out var existingMethod))
+            {
+                newMethod.OverriddenMethod = existingMethod;
+            }
+
+            methods[name] = newMethod;
         }
 
         /// <summary>

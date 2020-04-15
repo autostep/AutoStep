@@ -9,7 +9,7 @@ namespace AutoStep.Execution.Contexts
     /// </summary>
     public abstract class TestExecutionContext
     {
-        private ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
 
         /// <summary>
         /// Get a value from the context.

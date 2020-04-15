@@ -10,9 +10,8 @@ namespace AutoStep.Execution.Binding
     /// </summary>
     public class ArgumentBinderRegistry
     {
-        private Dictionary<Type, Type> binders = new Dictionary<Type, Type>();
-
-        private IArgumentBinder defaultBinder = new DefaultArgumentBinder();
+        private readonly Dictionary<Type, Type> binders = new Dictionary<Type, Type>();
+        private readonly IArgumentBinder defaultBinder = new DefaultArgumentBinder();
 
         /// <summary>
         /// Register an argument binder type that provides binding for the specified argument type.

@@ -49,6 +49,11 @@ namespace AutoStep.Execution
             arg = arg.ThrowIfNull(nameof(arg));
             scope.ThrowIfNull(nameof(scope));
 
+            if (arg.Tokenised is null)
+            {
+                return string.Empty;
+            }
+
             return GetFullText(arg.Tokenised, scope, arg.Text, n => context.Variables.Get(n)?.ToString());
         }
 
@@ -173,7 +178,7 @@ namespace AutoStep.Execution
 
             var startPos = tokens[0].StartIndex;
 
-            var lastToken = tokens[tokens.Length - 1];
+            var lastToken = tokens[^1];
             var length = (lastToken.StartIndex - startPos) + lastToken.Length;
 
             if (binding.StartExclusive)
@@ -209,7 +214,7 @@ namespace AutoStep.Execution
                 return 0;
             }
 
-            var lastToken = tokens[tokens.Length - 1];
+            var lastToken = tokens[^1];
             var length = (lastToken.StartIndex - tokens[0].StartIndex) + lastToken.Length;
 
             if (binding.StartExclusive)

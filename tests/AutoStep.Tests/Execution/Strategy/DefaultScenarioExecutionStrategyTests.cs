@@ -126,7 +126,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class MyStepCollectionStrategy : IStepCollectionExecutionStrategy
         {
-            private bool raiseException;
+            private readonly bool raiseException;
 
             public MyStepCollectionStrategy(bool raiseException)
             {

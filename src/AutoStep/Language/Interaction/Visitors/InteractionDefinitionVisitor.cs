@@ -4,6 +4,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -25,11 +26,13 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The stream rewriter.</param>
-        public InteractionDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public InteractionDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
-            stepVisitor = new InteractionStepDefinitionVisitor(sourceName, tokenStream, rewriter);
-            methodVisitor = new MethodDefinitionVisitor(sourceName, tokenStream, rewriter);
+            stepVisitor = new InteractionStepDefinitionVisitor(sourceName, tokenStream, rewriter, compilerOptions, positionIndex);
+            methodVisitor = new MethodDefinitionVisitor(sourceName, tokenStream, rewriter, compilerOptions, positionIndex);
         }
 
         /// <summary>
@@ -49,6 +52,7 @@ namespace AutoStep.Language.Interaction.Visitors
             if (Result is object)
             {
                 Result.SourceName = SourceName;
+                Result.Documentation = GetDocumentationBlockForElement(owningContext);
             }
 
             return Result;

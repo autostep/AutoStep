@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -9,7 +10,7 @@ namespace AutoStep.Language.Interaction.Visitors
     /// <summary>
     /// Defines the visitor for generating in-file method definitions.
     /// </summary>
-    internal class MethodDefinitionVisitor : InteractionMethodDeclarationVisitor<MethodDefinitionElement>
+    internal class MethodDefinitionVisitor : InteractionCallChainDeclarationVisitor<MethodDefinitionElement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodDefinitionVisitor"/> class.
@@ -17,8 +18,10 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The stream rewriter.</param>
-        public MethodDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public MethodDefinitionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
@@ -31,18 +34,29 @@ namespace AutoStep.Language.Interaction.Visitors
         {
             var decl = context.methodDeclaration();
 
-            Result = new MethodDefinitionElement(decl.NAME_REF().GetText());
+            var nameRef = decl.NAME_REF();
+
+            Result = new MethodDefinitionElement(nameRef.GetText());
 
             Result.AddPositionalLineInfoExcludingErrorStopToken(decl, TokenStream, METHOD_STRING_ERRNL);
             Result.SourceName = SourceName;
 
+            PositionIndex?.PushScope(Result, context);
+            PositionIndex?.AddLineToken(nameRef, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionMethod);
+
             VisitChildren(context);
+
+            Result.Documentation = GetDocumentationBlockForElement(context);
 
             if (context.NEEDS_DEFINING() is object)
             {
+                PositionIndex?.AddLineToken(context.NEEDS_DEFINING(), LineTokenCategory.InteractionNeedsDefining);
+
                 // Method is marked as needs defining
                 Result.NeedsDefining = true;
             }
+
+            PositionIndex?.PopScope(context);
 
             return Result;
         }
@@ -59,6 +73,8 @@ namespace AutoStep.Language.Interaction.Visitors
                 }
 
                 var defArg = new MethodDefinitionArgumentElement(argName.GetText()).AddPositionalLineInfo(argName);
+
+                PositionIndex?.AddLineToken(defArg, LineTokenCategory.InteractionArguments, LineTokenSubCategory.Declaration);
 
                 Result!.Arguments.Add(defArg);
             }

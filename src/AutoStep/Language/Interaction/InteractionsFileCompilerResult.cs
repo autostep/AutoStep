@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoStep.Elements.Interaction;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction
 {
@@ -14,9 +15,16 @@ namespace AutoStep.Language.Interaction
         /// <param name="success">Success/failure.</param>
         /// <param name="messages">The set of messages generated during compilation.</param>
         /// <param name="output">The built output.</param>
-        public InteractionsFileCompilerResult(bool success, IEnumerable<LanguageOperationMessage> messages, InteractionFileElement? output = null)
+        /// <param name="positionIndex">The position lookup.</param>
+        public InteractionsFileCompilerResult(bool success, IEnumerable<LanguageOperationMessage> messages, InteractionFileElement? output = null, IPositionIndex? positionIndex = null)
             : base(success, messages, output)
         {
+            Positions = positionIndex;
         }
+
+        /// <summary>
+        /// Gets the position reference, only generated if <see cref="InteractionsCompilerOptions.CreatePositionIndex"/> is set.
+        /// </summary>
+        public IPositionIndex? Positions { get; }
     }
 }

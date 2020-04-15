@@ -5,6 +5,7 @@ using Antlr4.Runtime.Misc;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -14,19 +15,21 @@ namespace AutoStep.Language.Interaction.Visitors
     /// Base class for any section of the parse tree that visits a method call chain (in-file method definitions and steps).
     /// </summary>
     /// <typeparam name="TElement">The method type that is being generated (assignable to <see cref="ICallChainSource"/>).</typeparam>
-    internal abstract class InteractionMethodDeclarationVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
+    internal abstract class InteractionCallChainDeclarationVisitor<TElement> : BaseAutoStepInteractionVisitor<TElement>
         where TElement : class, ICallChainSource
     {
         private MethodCallElement? currentMethodCall;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InteractionMethodDeclarationVisitor{TElement}"/> class.
+        /// Initializes a new instance of the <see cref="InteractionCallChainDeclarationVisitor{TElement}"/> class.
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The stream rewriter.</param>
-        public InteractionMethodDeclarationVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
-            : base(sourceName, tokenStream, rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        public InteractionCallChainDeclarationVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : base(sourceName, tokenStream, rewriter, compilerOptions, positionIndex)
         {
         }
 
@@ -37,15 +40,38 @@ namespace AutoStep.Language.Interaction.Visitors
         }
 
         /// <inheritdoc/>
+        public override TElement VisitMethodCallChain([NotNull] MethodCallChainContext context)
+        {
+            // Manually visit each method call.
+            Visit(context.methodCall());
+
+            foreach (var methodSet in context.methodCallWithSep())
+            {
+                // Add a line token for the separator, then visit the call.
+                PositionIndex?.AddLineToken(methodSet.FUNC_PASS_MARKER(), LineTokenCategory.InteractionSeparator, LineTokenSubCategory.InteractionCallSeparator);
+
+                Visit(methodSet.methodCall());
+            }
+
+            return Result!;
+        }
+
+        /// <inheritdoc/>
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
-            if (context.NAME_REF() is object)
-            {
-                currentMethodCall = new MethodCallElement(context.NAME_REF().GetText());
+            var nameRef = context.NAME_REF();
 
+            if (nameRef is object)
+            {
+                currentMethodCall = new MethodCallElement(nameRef.GetText());
                 currentMethodCall.AddPositionalLineInfoExcludingErrorStopToken(context, TokenStream, METHOD_STRING_ERRNL);
 
+                PositionIndex?.PushScope(currentMethodCall, context);
+                PositionIndex?.AddLineToken(nameRef, LineTokenCategory.InteractionName, LineTokenSubCategory.InteractionMethod);
+
                 VisitChildren(context);
+
+                PositionIndex?.PopScope(context);
 
                 Result!.Calls.Add(currentMethodCall);
 
@@ -74,6 +100,10 @@ namespace AutoStep.Language.Interaction.Visitors
             var parts = context.methodStrPart();
             var initialOffset = context.Start.Column;
             var tokenSet = new List<StepToken>();
+            var text = context.GetText();
+            var stringArg = new StringMethodArgumentElement(text);
+
+            PositionIndex?.PushScope(stringArg, context);
 
             foreach (var p in parts)
             {
@@ -85,13 +115,23 @@ namespace AutoStep.Language.Interaction.Visitors
                     _ => throw new LanguageEngineAssertException()
                 };
 
+                if (token is VariableToken)
+                {
+                    PositionIndex?.AddLineToken(token, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
+                }
+                else
+                {
+                    PositionIndex?.AddLineToken(token, LineTokenCategory.InteractionString);
+                }
+
                 tokenSet.Add(token);
             }
 
-            var text = context.GetText();
-            var tokens = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
+            PositionIndex?.PopScope(context);
 
-            return new StringMethodArgumentElement(text, tokens);
+            stringArg.Tokenised = new TokenisedArgumentValue(tokenSet.ToArray(), false, false);
+
+            return stringArg;
         }
 
         private static TToken CreateToken<TToken>(ParserRuleContext ctxt, int offset, Func<int, int, TToken> creator)
@@ -113,6 +153,8 @@ namespace AutoStep.Language.Interaction.Visitors
             var variableRefElement = new VariableRefMethodArgumentElement(context.PARAM_NAME().GetText());
             variableRefElement.AddPositionalLineInfo(context);
 
+            PositionIndex?.AddLineToken(variableRefElement, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
+
             currentMethodCall!.Arguments.Add(variableRefElement);
 
             return Result!;
@@ -124,7 +166,9 @@ namespace AutoStep.Language.Interaction.Visitors
             var varArrElement = new VariableArrayRefMethodArgument();
             varArrElement.AddPositionalLineInfo(context);
 
-            varArrElement.VariableName = context.PARAM_NAME(0).GetText();
+            var variableName = context.PARAM_NAME(0);
+
+            varArrElement.VariableName = variableName.GetText();
 
             var varNameNode = context.PARAM_NAME(1);
 
@@ -132,6 +176,13 @@ namespace AutoStep.Language.Interaction.Visitors
             varRefElement.AddPositionalLineInfo(varNameNode);
 
             varArrElement.Indexer = varRefElement;
+
+            PositionIndex?.PushScope(varArrElement, context);
+
+            PositionIndex?.AddLineToken(variableName, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
+            PositionIndex?.AddLineToken(varRefElement, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
+
+            PositionIndex?.PopScope(context);
 
             currentMethodCall!.Arguments.Add(varArrElement);
 
@@ -144,16 +195,24 @@ namespace AutoStep.Language.Interaction.Visitors
             var varArrElement = new VariableArrayRefMethodArgument();
             varArrElement.AddPositionalLineInfo(context);
 
+            var variableName = context.PARAM_NAME();
+
             varArrElement.VariableName = context.PARAM_NAME().GetText();
 
             var methodStrOuterContext = context.methodCallArrayRefString();
 
             var methodStr = methodStrOuterContext.methodStr();
 
+            PositionIndex?.PushScope(varArrElement, context);
+
+            PositionIndex?.AddLineToken(variableName, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionVariable);
+
             var stringMethodArgument = CreateStringArgElement(methodStr);
             stringMethodArgument.AddPositionalLineInfo(methodStrOuterContext);
 
             varArrElement.Indexer = stringMethodArgument;
+
+            PositionIndex?.PopScope(context);
 
             currentMethodCall!.Arguments.Add(varArrElement);
 
@@ -167,6 +226,8 @@ namespace AutoStep.Language.Interaction.Visitors
             constantRefElement.AddPositionalLineInfo(context);
 
             currentMethodCall!.Arguments.Add(constantRefElement);
+
+            PositionIndex?.AddLineToken(constantRefElement, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionConstant);
 
             return Result!;
         }
@@ -184,6 +245,8 @@ namespace AutoStep.Language.Interaction.Visitors
 
             intArgElement.AddPositionalLineInfo(context);
 
+            PositionIndex?.AddLineToken(intArgElement, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionLiteral);
+
             currentMethodCall!.Arguments.Add(intArgElement);
 
             return Result!;
@@ -200,6 +263,8 @@ namespace AutoStep.Language.Interaction.Visitors
             var floatArgElement = new FloatMethodArgumentElement(doubleValue);
 
             floatArgElement.AddPositionalLineInfo(context);
+
+            PositionIndex?.AddLineToken(floatArgElement, LineTokenCategory.InteractionArguments, LineTokenSubCategory.InteractionLiteral);
 
             currentMethodCall!.Arguments.Add(floatArgElement);
 

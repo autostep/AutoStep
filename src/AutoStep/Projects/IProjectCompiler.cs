@@ -89,5 +89,11 @@ namespace AutoStep.Projects
         /// <param name="element">The step reference.</param>
         /// <returns>The set of results.</returns>
         IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element);
+
+        /// <summary>
+        /// Retrieves the last built interaction set (or null if there is no active interaction set).
+        /// </summary>
+        /// <returns>The active interaction set.</returns>
+        public IInteractionSet? GetCurrentInteractionSet();
     }
 }

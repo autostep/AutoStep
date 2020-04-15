@@ -1,7 +1,10 @@
-﻿using Antlr4.Runtime;
+﻿using System;
+using System.Text;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using AutoStep.Language.Interaction.Parser;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Language.Interaction.Visitors
 {
@@ -12,13 +15,18 @@ namespace AutoStep.Language.Interaction.Visitors
     internal abstract class BaseAutoStepInteractionVisitor<TVisitResult> : AutoStepInteractionsParserBaseVisitor<TVisitResult>
         where TVisitResult : class
     {
+        private const string DocCommentsMarker = "##";
+        private readonly StringBuilder pooledDocBlockBuilder = new StringBuilder();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAutoStepInteractionVisitor{TVisitResult}"/> class.
         /// </summary>
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
-        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream)
-            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream))
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
+            : this(sourceName, tokenStream, new TokenStreamRewriter(tokenStream), compilerOptions, positionIndex)
         {
         }
 
@@ -28,12 +36,16 @@ namespace AutoStep.Language.Interaction.Visitors
         /// <param name="sourceName">The source name.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <param name="rewriter">The shared rewriter.</param>
-        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter)
+        /// <param name="compilerOptions">The compiler options.</param>
+        /// <param name="positionIndex">The position index (or null if not in use).</param>
+        protected BaseAutoStepInteractionVisitor(string? sourceName, ITokenStream tokenStream, TokenStreamRewriter rewriter, InteractionsCompilerOptions compilerOptions, PositionIndex? positionIndex)
         {
             SourceName = sourceName;
             TokenStream = tokenStream;
             Rewriter = rewriter;
             MessageSet = new CompilerMessageSet(sourceName, tokenStream);
+            CompilerOptions = compilerOptions;
+            PositionIndex = positionIndex;
         }
 
         /// <summary>
@@ -55,6 +67,16 @@ namespace AutoStep.Language.Interaction.Visitors
         /// Gets the source name (if there is one).
         /// </summary>
         public string? SourceName { get; }
+
+        /// <summary>
+        /// Gets the provided compiler options.
+        /// </summary>
+        public InteractionsCompilerOptions CompilerOptions { get; }
+
+        /// <summary>
+        /// Gets the position index.
+        /// </summary>
+        public PositionIndex? PositionIndex { get; }
 
         /// <summary>
         /// Gets the token stream.
@@ -106,6 +128,111 @@ namespace AutoStep.Language.Interaction.Visitors
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieve the documentation block for an element (or null if there isn't one).
+        /// </summary>
+        /// <param name="owningContext">The parser block.</param>
+        /// <returns>The documentation content.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Globalization",
+            "CA1303:Do not pass literals as localized parameters",
+            Justification = "Comment marker is fixed in the language specification.")]
+        protected string? GetDocumentationBlockForElement(ParserRuleContext owningContext)
+        {
+            string? documentation = null;
+            ReadOnlySpan<char> markerSequence = DocCommentsMarker.AsSpan();
+
+            // Get preceding doc contents.
+            if (TokenStream is CommonTokenStream commonStream)
+            {
+                // Get doc-comment blocks before the element.
+                var hiddenTokens = commonStream.GetHiddenTokensToLeft(owningContext.Start.TokenIndex);
+
+                // First whitespace.
+                int knownSpacing = 0;
+                bool firstLineWritten = false;
+                bool determinedKnownSpacing = false;
+                int preservedBlankLines = 0;
+
+                for (var idx = 0; idx < hiddenTokens.Count; idx++)
+                {
+                    var token = hiddenTokens[idx];
+                    if (token.Type == AutoStepInteractionsLexer.TEXT_DOC_COMMENT)
+                    {
+                        var text = token.Text.AsSpan();
+
+                        // Find the position of the marker characters.
+                        var markerPos = text.IndexOf(markerSequence, StringComparison.InvariantCulture);
+
+                        // Move beyond the marker characters.
+                        text = text.Slice(markerPos + 2);
+
+                        if (text.IsWhiteSpace() || text.Length == 0)
+                        {
+                            preservedBlankLines++;
+                            continue;
+                        }
+
+                        if (firstLineWritten)
+                        {
+                            pooledDocBlockBuilder.AppendLine();
+
+                            while (preservedBlankLines > 0)
+                            {
+                                pooledDocBlockBuilder.AppendLine();
+
+                                preservedBlankLines--;
+                            }
+                        }
+                        else
+                        {
+                            preservedBlankLines = 0;
+                        }
+
+                        // If the spacing is not known, then work it out.
+                        var currentPos = 0;
+
+                        var endPoint = determinedKnownSpacing ? knownSpacing : text.Length;
+
+                        // Get the whitespace characters.
+                        while (currentPos < endPoint)
+                        {
+                            if (!char.IsWhiteSpace(text[currentPos]))
+                            {
+                                if (!determinedKnownSpacing)
+                                {
+                                    knownSpacing = currentPos;
+                                    determinedKnownSpacing = true;
+                                }
+
+                                break;
+                            }
+
+                            currentPos++;
+                        }
+
+                        text = text.Slice(currentPos);
+
+                        firstLineWritten = true;
+
+                        // Take off the whitespace.
+                        pooledDocBlockBuilder.Append(text);
+                    }
+                }
+
+                documentation = pooledDocBlockBuilder.ToString();
+
+                if (string.IsNullOrWhiteSpace(documentation))
+                {
+                    documentation = null;
+                }
+
+                pooledDocBlockBuilder.Clear();
+            }
+
+            return documentation;
         }
     }
 }

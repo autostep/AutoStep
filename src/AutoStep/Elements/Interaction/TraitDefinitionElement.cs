@@ -16,9 +16,16 @@ namespace AutoStep.Elements.Interaction
         /// Initializes a new instance of the <see cref="TraitDefinitionElement"/> class.
         /// </summary>
         /// <param name="id">The full text ID of the trait.</param>
-        /// <param name="nameParts">The list of names.</param>
-        public TraitDefinitionElement(string id, IReadOnlyList<NameRefElement> nameParts)
+        public TraitDefinitionElement(string id)
             : base(id)
+        {
+        }
+
+        /// <summary>
+        /// Provide the set of name parts for the trait.
+        /// </summary>
+        /// <param name="nameParts">The set of parsed names.</param>
+        public void ProvideNameParts(IReadOnlyList<NameRefElement> nameParts)
         {
             if (nameParts is null)
             {
@@ -39,34 +46,12 @@ namespace AutoStep.Elements.Interaction
         /// <summary>
         /// Gets the number of referenced traits.
         /// </summary>
-        public int NumberOfReferencedTraits => NameElements.Count > 1 ? NameElements.Count : 0;
+        public int NumberOfReferencedTraits => NameElements?.Count > 1 ? NameElements.Count : 0;
 
         /// <summary>
         /// Gets the name elements.
         /// </summary>
-        public IReadOnlyList<NameRefElement> NameElements { get; private set; }
-
-        /// <summary>
-        /// Provide the name parts for this trait definition.
-        /// </summary>
-        /// <param name="nameParts">The names.</param>
-        public void ReplaceNameParts(IReadOnlyList<NameRefElement> nameParts)
-        {
-            if (nameParts is null)
-            {
-                throw new ArgumentNullException(nameof(nameParts));
-            }
-
-            if (nameParts.Count == 0)
-            {
-                throw new ArgumentException(ElementExceptionMessages.TraitsMustHaveAtLeastOneNamePart, nameof(nameParts));
-            }
-
-            // Sort the components so each identical trait (i.e. same combination of parent traits) has exactly the same
-            // value.
-            textNames = nameParts.Select(x => x.Name).OrderBy(x => x).ToList();
-            NameElements = nameParts;
-        }
+        public IReadOnlyList<NameRefElement>? NameElements { get; private set; }
 
         /// <summary>
         /// Get a trait reference for this trait (effectively the signature for a trait).

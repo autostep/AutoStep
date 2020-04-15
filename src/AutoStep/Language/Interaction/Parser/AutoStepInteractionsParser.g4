@@ -16,13 +16,14 @@ appItem: NAME_KEYWORD STRING #appName
        | methodDefinition    #appMethod
        | stepDefinitionBody  #appStep;
 
-traitDefinition:  TRAIT_DEFINITION traitRefList
-                  traitItem*;
+traitDefinition: traitDefinitionDeclaration
+                 traitItem*;
+
+traitDefinitionDeclaration: TRAIT_DEFINITION traitRefList;
 
 traitRefList: NAME_REF (PLUS NAME_REF)*;
 
-traitItem: NAME_KEYWORD STRING #traitName
-         | methodDefinition    #traitMethod
+traitItem: methodDefinition    #traitMethod
          | stepDefinitionBody  #traitStep
          ;
 
@@ -35,7 +36,9 @@ methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 
 methodDefArgs: PARAM_NAME (PARAM_SEPARATOR PARAM_NAME)*;
 
-methodCallChain: methodCall (FUNC_PASS_MARKER methodCall)*;
+methodCallChain: methodCall methodCallWithSep*;
+
+methodCallWithSep: FUNC_PASS_MARKER methodCall;
 
 methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 
@@ -58,8 +61,10 @@ methodStrPart: STR_CONTENT                                 #methodStrContent
              | STR_ANGLE_LEFT STR_NAME_REF STR_ANGLE_RIGHT #methodStrVariable
              ;
 
-componentDefinition: COMPONENT_DEFINITION NAME_REF
+componentDefinition: componentDefinitionDeclaration
                      componentItem*;
+
+componentDefinitionDeclaration:  COMPONENT_DEFINITION NAME_REF;
 
 componentItem: NAME_KEYWORD STRING #componentName
              | INHERITS_KEYWORD NAME_REF #componentInherits
@@ -68,7 +73,7 @@ componentItem: NAME_KEYWORD STRING #componentName
              | stepDefinitionBody  #componentStep;
 
 stepDefinitionBody: stepDefinition
-                    methodCall (FUNC_PASS_MARKER methodCall)*;
+                    methodCallChain;
 
 stepDefinition: STEP_DEFINE DEF_WS? stepDeclaration DEF_NEWLINE;
 

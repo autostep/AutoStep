@@ -35,8 +35,19 @@ namespace AutoStep.Definitions.Interaction
         /// </summary>
         public MethodDefinitionElement MethodDefinition { get; }
 
+        /// <summary>
+        /// Gets or sets the overriden method that this method definition replaces.
+        /// </summary>
+        public InteractionMethod? OverriddenMethod { get; set; }
+
         /// <inheritdoc/>
         public override int ArgumentCount => MethodDefinition.Arguments.Count;
+
+        /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            return MethodDefinition.Documentation;
+        }
 
         /// <inheritdoc/>
         public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)

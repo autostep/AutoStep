@@ -246,5 +246,20 @@ namespace AutoStep.Tests.Language.Interaction.Parser
                 LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.InteractionDuplicateMethodDefinition, 6, 21, 6, 44, "method"));
         }
 
+        [Fact]
+        public async Task ComponentCanHaveDocumentation()
+        {
+            const string Test = @"
+                ## Button Component
+                Component: button
+            ";
+
+            await CompileAndAssertSuccess(Test, cfg => cfg
+                .Component("button", 3, 17, c => c
+                    .Documentation("Button Component")
+                )
+            );
+        }
+
     }
 }

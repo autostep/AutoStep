@@ -31,7 +31,9 @@ namespace AutoStep.Projects
         private readonly IInteractionCompiler interactionCompiler;
         private readonly Func<IInteractionSetBuilder> setBuilderFactory;
         private readonly InteractionLineTokeniser interactionLineTokeniser;
+        private readonly bool buildExtendedMethodTableReferences;
         private InteractionStepDefinitionSource? interactionSteps;
+        private IInteractionSet? currentInteractionSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
@@ -41,18 +43,21 @@ namespace AutoStep.Projects
         /// <param name="linker">The linker implementation to use.</param>
         /// <param name="interactionCompiler">The interaction compiler.</param>
         /// <param name="setBuilderFactory">A factory for creating instances of <see cref="IInteractionSetBuilder" />.</param>
+        /// <param name="buildExtendedMethodTableReferences">If true, then when building the interaction set, the extended reference data will be included.</param>
         public ProjectCompiler(
             Project project,
             ITestCompiler compiler,
             ILinker linker,
             IInteractionCompiler interactionCompiler,
-            Func<IInteractionSetBuilder> setBuilderFactory)
+            Func<IInteractionSetBuilder> setBuilderFactory,
+            bool buildExtendedMethodTableReferences)
         {
             this.project = project ?? throw new ArgumentNullException(nameof(project));
             this.compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
             this.linker = linker ?? throw new ArgumentNullException(nameof(linker));
             this.interactionCompiler = interactionCompiler ?? throw new ArgumentNullException(nameof(interactionCompiler));
             this.setBuilderFactory = setBuilderFactory;
+            this.buildExtendedMethodTableReferences = buildExtendedMethodTableReferences;
 
             this.testLineTokeniser = new TestLineTokeniser(linker);
             this.interactionLineTokeniser = new InteractionLineTokeniser();
@@ -70,7 +75,7 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateDefault(Project project)
         {
-            return CreateWithOptions(project, TestCompilerOptions.Default, InteractionsCompilerOptions.Default);
+            return CreateWithOptions(project, TestCompilerOptions.Default, InteractionsCompilerOptions.Default, false);
         }
 
         /// <summary>
@@ -80,7 +85,7 @@ namespace AutoStep.Projects
         /// <returns>A project compiler.</returns>
         public static ProjectCompiler CreateForEditing(Project project)
         {
-            return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.Default);
+            return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.CreatePositionIndex, true);
         }
 
         /// <summary>
@@ -89,8 +94,9 @@ namespace AutoStep.Projects
         /// <param name="project">The project to work against.</param>
         /// <param name="testOptions">Options for the test compiler.</param>
         /// <param name="interactionOptions">Options for the interaction compiler.</param>
+        /// <param name="buildExtendedMethodTableReferences">Generate extended method table reference set.</param>
         /// <returns>A project compiler.</returns>
-        public static ProjectCompiler CreateWithOptions(Project project, TestCompilerOptions testOptions, InteractionsCompilerOptions interactionOptions)
+        public static ProjectCompiler CreateWithOptions(Project project, TestCompilerOptions testOptions, InteractionsCompilerOptions interactionOptions, bool buildExtendedMethodTableReferences)
         {
             var compiler = new TestCompiler(testOptions);
 
@@ -101,7 +107,8 @@ namespace AutoStep.Projects
                 compiler,
                 new Linker(compiler),
                 new InteractionCompiler(interactionOptions),
-                () => new InteractionSetBuilder(defaultCallChainValidator));
+                () => new InteractionSetBuilder(defaultCallChainValidator),
+                buildExtendedMethodTableReferences);
         }
 
         /// <summary>
@@ -239,7 +246,7 @@ namespace AutoStep.Projects
                     }
                 }
 
-                var setBuild = interactionSetBuilder.Build(Interactions);
+                var setBuild = interactionSetBuilder.Build(Interactions, buildExtendedMethodTableReferences);
 
                 // Now we need to go through the messages and add them to the appropriate interaction files.
                 var fileMessages = setBuild.Messages.Where(x => x.SourceName != null).GroupBy(x => x.SourceName).ToDictionary(x => x.Key, y => y.AsEnumerable());
@@ -265,7 +272,9 @@ namespace AutoStep.Projects
                         interactionSteps = new InteractionStepDefinitionSource();
                     }
 
-                    interactionSteps.UpdateInteractionSet(setBuild.Output);
+                    currentInteractionSet = setBuild.Output;
+
+                    interactionSteps.UpdateInteractionSet(currentInteractionSet);
 
                     linker.AddOrUpdateStepDefinitionSource(interactionSteps);
                 }
@@ -322,6 +331,15 @@ namespace AutoStep.Projects
         public IEnumerable<IMatchResult> GetPossibleStepDefinitions(StepReferenceElement element)
         {
             return linker.GetPossibleMatches(element);
+        }
+
+        /// <summary>
+        /// Retrieves the last built interaction set (or null if there is no active interaction set).
+        /// </summary>
+        /// <returns>The active interaction set.</returns>
+        public IInteractionSet? GetCurrentInteractionSet()
+        {
+            return currentInteractionSet;
         }
 
         /// <summary>

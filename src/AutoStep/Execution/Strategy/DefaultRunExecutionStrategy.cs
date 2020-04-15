@@ -53,7 +53,7 @@ namespace AutoStep.Execution.Strategy
             // Create x tasks based on level of parallelism.
             var parallelTasks = new Task[parallelValue];
 
-            IFeatureInfo? FeatureDeQueue(ConcurrentQueue<IFeatureInfo> queue)
+            static IFeatureInfo? FeatureDeQueue(ConcurrentQueue<IFeatureInfo> queue)
             {
                 if (queue.TryDequeue(out var result))
                 {

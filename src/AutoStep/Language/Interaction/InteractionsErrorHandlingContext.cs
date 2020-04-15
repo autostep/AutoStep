@@ -37,7 +37,7 @@ namespace AutoStep.Language.Interaction
         private bool NameMissingHandler()
         {
             if (ExpectingTokens(NAME_REF)
-                && (Context is ComponentDefinitionContext || Context is TraitDefinitionContext || Context is ComponentInheritsContext))
+                && (Context is ComponentDefinitionDeclarationContext || Context is TraitDefinitionDeclarationContext || Context is ComponentInheritsContext))
             {
                 ChangeError(CompilerMessageCode.InteractionMissingExpectedName);
 

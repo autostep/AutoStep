@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
@@ -45,7 +46,7 @@ namespace AutoStep.Language.Interaction
         }
 
         /// <inheritdoc/>
-        public InteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig)
+        public InteractionSetBuilderResult Build(IInteractionsConfiguration interactionsConfig, bool collectExtendedMethodTableReferences)
         {
             // Building the autostep interaction group involves:
             // 1. Going through the complete list of traits, resolving the method table for each one, and validating
@@ -57,6 +58,12 @@ namespace AutoStep.Language.Interaction
             var messages = new List<LanguageOperationMessage>();
             var allBoundSteps = new HashSet<InteractionStepDefinitionElement>();
             var builtComponents = new Dictionary<string, BuiltComponent>();
+            ExtendedMethodTableReferences? extendedRef = null;
+
+            if (collectExtendedMethodTableReferences)
+            {
+                extendedRef = new ExtendedMethodTableReferences();
+            }
 
             traits.MethodTableWalk(interactionsConfig.RootMethodTable, (trait, methodTable) =>
             {
@@ -69,6 +76,11 @@ namespace AutoStep.Language.Interaction
                 {
                     step.ClearAllComponentMatchData();
                 }
+
+                if (extendedRef is object)
+                {
+                    extendedRef.AddMethodTableReference(trait, methodTable);
+                }
             });
 
             // 2. Go through all components, binding them to the traits, determining the full set of steps and the final method table.
@@ -77,110 +89,56 @@ namespace AutoStep.Language.Interaction
             foreach (var componentEntry in allComponents.Values)
             {
                 // Resolve the component. This will determine the final inherited state of the component.
-                ResolveComponent(componentEntry, allComponents, messages);
+                var finalComponent = ResolveComponent(componentEntry, allComponents, messages, allBoundSteps, interactionsConfig, extendedRef);
 
-                if (componentEntry.FinalComponent is null)
+                if (finalComponent is null)
                 {
                     // Could not determine the final component state; continue.
                     continue;
                 }
 
-                if (componentEntry.Name is null)
+                builtComponents[finalComponent.Name] = finalComponent;
+            }
+
+            return new InteractionSetBuilderResult(
+                messages.All(x => x.Level != CompilerMessageLevel.Error),
+                messages,
+                new InteractionSet(interactionsConfig.Constants, builtComponents, allBoundSteps, extendedRef));
+        }
+
+        private BuiltComponent? ResolveComponent(
+            ComponentResolutionData componentData,
+            Dictionary<string, ComponentResolutionData> allComponents,
+            List<LanguageOperationMessage> messages,
+            HashSet<InteractionStepDefinitionElement> interactionStepDefs,
+            IInteractionsConfiguration interactionsConfig,
+            ExtendedMethodTableReferences? extendedRef)
+        {
+            ResolveComponent(componentData, allComponents, messages, interactionsConfig, interactionStepDefs, extendedRef, new Stack<ComponentResolutionData>());
+
+            if (componentData.FinalComponent is object)
+            {
+                if (componentData.Name is null)
                 {
                     // The name cannot be null here if a final component has been selected,
                     // and the parser did its job.
                     throw new LanguageEngineAssertException();
                 }
 
-                // Create the built component.
-                var finalComponent = new BuiltComponent(componentEntry.Name, new MethodTable(interactionsConfig.RootMethodTable));
-
-                if (componentEntry.Traits is object && componentEntry.Traits.Any())
-                {
-                    // Search the trait graph for all traits that match this component (simplest first).
-                    // We merge in the state of each trait into the final component.
-                    traits.SearchTraits(componentEntry.Traits.Select(x => x.Name), finalComponent, (ctxt, trait) =>
-                    {
-                        foreach (var traitMethod in trait.Methods)
-                        {
-                            // Merge each method in.
-                            ctxt.MethodTable.SetMethod(traitMethod.Key, traitMethod.Value);
-                        }
-
-                        foreach (var traitStep in trait.Steps)
-                        {
-                            // Add to the set of all bound steps.
-                            allBoundSteps.Add(traitStep);
-
-                            // Tell the trait step to include the component name for the $component$ placeholder.
-                            traitStep.AddComponentMatch(ctxt.Name);
-                        }
-                    });
-                }
-
-                if (componentEntry.Methods is object)
-                {
-                    // First pass through the set of methods to to update the method table with the methods defined in the component.
-                    foreach (var method in componentEntry.Methods.Values)
-                    {
-                        finalComponent.MethodTable.SetMethod(method.Name, method);
-                    }
-
-                    // ...and again to validate the call chain.
-                    foreach (var method in componentEntry.Methods.Values)
-                    {
-                        callChainValidator.ValidateCallChain(method, finalComponent.MethodTable, interactionsConfig.Constants, true, messages);
-                    }
-
-                    // Finally, validate the method table to make sure there are no needs-defining methods left.
-                    foreach (var method in finalComponent.MethodTable.Methods)
-                    {
-                        if (method.Value is FileDefinedInteractionMethod fileMethod)
-                        {
-                            if (fileMethod.NeedsDefining)
-                            {
-                                // A method required by one or more traits has not been defined. Indicate appropriately.
-                                // Add a message to the component itself that it needs to implement it.
-                                messages.Add(LanguageMessageFactory.Create(
-                                    componentEntry.FinalComponent.SourceName,
-                                    componentEntry.FinalComponent,
-                                    CompilerMessageLevel.Error,
-                                    CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined,
-                                    fileMethod.Name,
-                                    fileMethod.MethodDefinition.SourceName ?? string.Empty,
-                                    fileMethod.MethodDefinition.SourceLine));
-                            }
-                        }
-                    }
-                }
-
-                if (componentEntry.Steps is object)
-                {
-                    // Add any steps defined on the component.
-                    foreach (var step in componentEntry.Steps)
-                    {
-                        // Validate the step's call chain.
-                        callChainValidator.ValidateCallChain(step, finalComponent.MethodTable, interactionsConfig.Constants, true, messages);
-
-                        allBoundSteps.Add(step);
-                    }
-                }
-
-                builtComponents[componentEntry.Name] = finalComponent;
+                return new BuiltComponent(componentData.Name, componentData.FinalMethodTable ?? interactionsConfig.RootMethodTable);
             }
 
-            return new InteractionSetBuilderResult(
-                messages.All(x => x.Level != CompilerMessageLevel.Error),
-                messages,
-                new InteractionSet(interactionsConfig.Constants, builtComponents, allBoundSteps));
+            return null;
         }
 
-        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<LanguageOperationMessage> messages)
-        {
-            ResolveComponent(componentData, allComponents, messages, new Stack<ComponentResolutionData>());
-        }
-
-        private void ResolveComponent(ComponentResolutionData componentData, Dictionary<string, ComponentResolutionData> allComponents, List<LanguageOperationMessage> messages, Stack<ComponentResolutionData> visited)
+        private void ResolveComponent(
+            ComponentResolutionData componentData,
+            Dictionary<string, ComponentResolutionData> allComponents,
+            List<LanguageOperationMessage> messages,
+            IInteractionsConfiguration interactionsConfig,
+            HashSet<InteractionStepDefinitionElement> allSteps,
+            ExtendedMethodTableReferences? extendedRef,
+            Stack<ComponentResolutionData> visited)
         {
             // We've already visited this component; it's in as good a state as it's going to be.
             if (componentData.Visited)
@@ -227,7 +185,7 @@ namespace AutoStep.Language.Interaction
                         }
                         else
                         {
-                            ResolveComponent(inheritedData, allComponents, messages, visited);
+                            ResolveComponent(inheritedData, allComponents, messages, interactionsConfig, allSteps, extendedRef, visited);
 
                             // There is at least something to inherit from.
                             if (inheritedData.FinalComponent is object)
@@ -249,9 +207,113 @@ namespace AutoStep.Language.Interaction
                             inheritId));
                     }
                 }
+
+                if (componentData.FinalComponent is object)
+                {
+                    var isLastComponentToProcess = compIdx == componentData.AllComponents.Count - 1;
+
+                    ProcessComponentData(interactionsConfig, componentData, messages, allSteps, isLastComponentToProcess);
+
+                    if (extendedRef is object && componentData.FinalMethodTable is object)
+                    {
+                        extendedRef.AddMethodTableReference(componentData.FinalComponent, componentData.FinalMethodTable);
+                    }
+                }
             }
 
             componentData.Visited = true;
+        }
+
+        private void ProcessComponentData(
+            IInteractionsConfiguration interactionsConfig,
+            ComponentResolutionData currentData,
+            List<LanguageOperationMessage> messages,
+            HashSet<InteractionStepDefinitionElement> allSteps,
+            bool isConcreteComponent)
+        {
+            var finalMethodTable = new MethodTable(interactionsConfig.RootMethodTable);
+
+            if (currentData.Traits is object && currentData.Traits.Any())
+            {
+                // Search the trait graph for all traits that match this component (simplest first).
+                // We merge in the state of each trait into the final component.
+                traits.SearchTraits(currentData.Traits.Select(x => x.Name), finalMethodTable, (ctxt, trait) =>
+                {
+                    foreach (var traitMethod in trait.Methods)
+                    {
+                        // Merge each method in.
+                        ctxt.SetMethod(traitMethod.Key, traitMethod.Value);
+                    }
+
+                    if (isConcreteComponent)
+                    {
+                        foreach (var traitStep in trait.Steps)
+                        {
+                            // Add to the set of all bound steps.
+                            allSteps.Add(traitStep);
+
+                            // Tell the trait step to include the component name for the $component$ placeholder.
+                            traitStep.AddComponentMatch(currentData.Name!);
+                        }
+                    }
+                });
+            }
+
+            if (currentData.Methods is object)
+            {
+                // First pass through the set of methods to to update the method table with the methods defined in the component.
+                foreach (var method in currentData.Methods.Values)
+                {
+                    finalMethodTable.SetMethod(method.Name, method);
+                }
+
+                // ...and again to validate the call chain.
+                foreach (var method in currentData.Methods.Values)
+                {
+                    callChainValidator.ValidateCallChain(method, finalMethodTable, interactionsConfig.Constants, isConcreteComponent, messages);
+                }
+
+                if (isConcreteComponent && currentData.FinalComponent is object)
+                {
+                    // Finally, validate the method table to make sure there are no needs-defining methods left.
+                    foreach (var method in finalMethodTable.Methods)
+                    {
+                        if (method.Value is FileDefinedInteractionMethod fileMethod)
+                        {
+                            if (fileMethod.NeedsDefining)
+                            {
+                                // A method required by one or more traits has not been defined. Indicate appropriately.
+                                // Add a message to the component itself that it needs to implement it.
+                                messages.Add(LanguageMessageFactory.Create(
+                                    currentData.FinalComponent.SourceName,
+                                    currentData.FinalComponent,
+                                    CompilerMessageLevel.Error,
+                                    CompilerMessageCode.InteractionMethodFromTraitRequiredButNotDefined,
+                                    fileMethod.Name,
+                                    fileMethod.MethodDefinition.SourceName ?? string.Empty,
+                                    fileMethod.MethodDefinition.SourceLine));
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (currentData.Steps is object)
+            {
+                // Add any steps defined on the component.
+                foreach (var step in currentData.Steps)
+                {
+                    // Validate the step's call chain.
+                    callChainValidator.ValidateCallChain(step, finalMethodTable, interactionsConfig.Constants, isConcreteComponent, messages);
+
+                    if (isConcreteComponent)
+                    {
+                        allSteps.Add(step);
+                    }
+                }
+            }
+
+            currentData.FinalMethodTable = finalMethodTable;
         }
 
         private void ValidateTrait(TraitDefinitionElement trait, MethodTable methodTable, InteractionConstantSet constants, List<LanguageOperationMessage> messages)

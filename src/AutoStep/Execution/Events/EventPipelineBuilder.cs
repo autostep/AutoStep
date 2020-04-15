@@ -8,7 +8,7 @@ namespace AutoStep.Execution.Events
     /// </summary>
     internal class EventPipelineBuilder : IEventPipelineBuilder
     {
-        private List<IEventHandler> handlers = new List<IEventHandler>();
+        private readonly List<IEventHandler> handlers = new List<IEventHandler>();
 
         /// <inheritdoc/>
         public IEventPipelineBuilder Add(IEventHandler handler)

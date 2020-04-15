@@ -51,7 +51,7 @@ namespace AutoStep
 
                 if (attr is object)
                 {
-                    config.RootMethodTable.SetMethod(new ClassBackedInteractionMethod(attr.Name, typeof(TMethodsClass), method));
+                    config.RootMethodTable.SetMethod(new ClassBackedInteractionMethod(attr.Name, typeof(TMethodsClass), method, attr));
                 }
             }
         }

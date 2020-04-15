@@ -120,6 +120,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitTraitDefinition([NotNull] AutoStepInteractionsParser.TraitDefinitionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.traitDefinitionDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTraitDefinitionDeclaration([NotNull] AutoStepInteractionsParser.TraitDefinitionDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.traitDefinitionDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTraitDefinitionDeclaration([NotNull] AutoStepInteractionsParser.TraitDefinitionDeclarationContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -129,18 +139,6 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>traitName</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterTraitName([NotNull] AutoStepInteractionsParser.TraitNameContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>traitName</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitTraitName([NotNull] AutoStepInteractionsParser.TraitNameContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>traitMethod</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
@@ -205,6 +203,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// </summary>
@@ -375,6 +383,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitComponentDefinition([NotNull] AutoStepInteractionsParser.ComponentDefinitionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinitionDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterComponentDefinitionDeclaration([NotNull] AutoStepInteractionsParser.ComponentDefinitionDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinitionDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitComponentDefinitionDeclaration([NotNull] AutoStepInteractionsParser.ComponentDefinitionDeclarationContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.

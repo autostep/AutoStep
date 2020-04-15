@@ -85,7 +85,8 @@ namespace AutoStep.Benchmarks
 
             foreach (var item in alphabet)
             {
-                var newEl = new TraitDefinitionElement(item, new[] { new NameRefElement(item) });
+                var newEl = new TraitDefinitionElement(item);
+                newEl.ProvideNameParts(new[] { new NameRefElement(item) });
 
                 traitGraph.AddOrExtendTrait(newEl);
             }
@@ -103,7 +104,8 @@ namespace AutoStep.Benchmarks
                     comboItems.Add(comboItem.ToString());
                 }
 
-                var traitDefEl = new TraitDefinitionElement(string.Join(" + ", comboItems), comboItems.Select(c => new NameRefElement(c)).ToArray());
+                var traitDefEl = new TraitDefinitionElement(string.Join(" + ", comboItems));
+                traitDefEl.ProvideNameParts(comboItems.Select(c => new NameRefElement(c)).ToArray());
                 traitGraph.AddOrExtendTrait(traitDefEl);
             }
 

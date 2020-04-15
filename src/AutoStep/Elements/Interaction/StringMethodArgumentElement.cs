@@ -11,11 +11,9 @@ namespace AutoStep.Elements.Interaction
         /// Initializes a new instance of the <see cref="StringMethodArgumentElement"/> class.
         /// </summary>
         /// <param name="text">The string text.</param>
-        /// <param name="tokens">The tokenised content of the text (to handle variable insertion).</param>
-        public StringMethodArgumentElement(string text, TokenisedArgumentValue tokens)
+        public StringMethodArgumentElement(string text)
         {
             Text = text;
-            Tokenised = tokens;
         }
 
         /// <summary>
@@ -24,8 +22,8 @@ namespace AutoStep.Elements.Interaction
         public string Text { get; }
 
         /// <summary>
-        /// Gets the tokenised data for the text to allow variable replacement.
+        /// Gets or sets the tokenised data for the text to allow variable replacement.
         /// </summary>
-        public TokenisedArgumentValue Tokenised { get; }
+        public TokenisedArgumentValue? Tokenised { get; set; }
     }
 }

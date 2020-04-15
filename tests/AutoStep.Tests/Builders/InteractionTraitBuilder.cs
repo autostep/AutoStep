@@ -9,7 +9,8 @@ namespace AutoStep.Tests.Builders
 
         public InteractionTraitBuilder(string name, int line, int column)
         {
-            Built = new TraitDefinitionElement(name, new List<NameRefElement> { new NameRefElement(name) });
+            Built = new TraitDefinitionElement(name);
+            Built.ProvideNameParts(new List<NameRefElement> { new NameRefElement(name) });
             Built.SourceLine = line;
             Built.StartColumn = column;
         }
@@ -24,7 +25,7 @@ namespace AutoStep.Tests.Builders
                 EndLine = Built.SourceLine,
             });
 
-            Built.ReplaceNameParts(nameParts);
+            Built.ProvideNameParts(nameParts);
 
             return this;
         }

@@ -16,6 +16,7 @@ using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Interaction;
 using AutoStep.Elements.Test;
 using AutoStep.Language.Interaction.Traits;
+using AutoStep.Language.Position;
 
 namespace AutoStep.Tests.Utils
 {
@@ -115,6 +116,19 @@ namespace AutoStep.Tests.Utils
 
                 AssertElementComparison(expectedBuilder.Built, result.Output, false);
             }
+        }
+
+        protected async Task<IPositionIndex> CompileAndGetPositionIndex(string content)
+        {
+            var compiler = new InteractionCompiler(InteractionsCompilerOptions.EnableDiagnostics | InteractionsCompilerOptions.CreatePositionIndex);
+            var source = new StringContentSource(content);
+
+            var result = await compiler.CompileInteractionsAsync(source, LogFactory);
+
+            // Make sure the messages are the same.
+            Assert.NotNull(result.Positions);
+
+            return result.Positions!;
         }
 
         protected void AssertElementComparison(BuiltElement expected, BuiltElement? actual, bool includeStatementParts)

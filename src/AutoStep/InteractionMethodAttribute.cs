@@ -21,5 +21,10 @@ namespace AutoStep
         /// Gets the name of the method.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets or sets a documentation block for the method. Markdown supported.
+        /// </summary>
+        public string? Documentation { get; set; }
     }
 }

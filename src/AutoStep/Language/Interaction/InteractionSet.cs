@@ -20,11 +20,13 @@ namespace AutoStep.Language.Interaction
         /// <param name="constants">The set of available constants.</param>
         /// <param name="components">The set of all components, indexed by name.</param>
         /// <param name="steps">The set of all step definitions.</param>
-        public InteractionSet(InteractionConstantSet constants, IReadOnlyDictionary<string, BuiltComponent> components, IEnumerable<InteractionStepDefinitionElement> steps)
+        /// <param name="tableReference">The set of extended method table data.</param>
+        public InteractionSet(InteractionConstantSet constants, IReadOnlyDictionary<string, BuiltComponent> components, IEnumerable<InteractionStepDefinitionElement> steps, IExtendedMethodTableReferences? tableReference)
         {
             this.Components = components;
             this.Constants = constants;
             this.steps = steps;
+            this.ExtendedMethodReferences = tableReference;
         }
 
         /// <summary>
@@ -36,6 +38,11 @@ namespace AutoStep.Language.Interaction
         /// Gets the set of available constants.
         /// </summary>
         public InteractionConstantSet Constants { get; }
+
+        /// <summary>
+        /// Gets the set of extended method table look-up info.
+        /// </summary>
+        public IExtendedMethodTableReferences? ExtendedMethodReferences { get; }
 
         /// <summary>
         /// Gets the set of all step definitions.

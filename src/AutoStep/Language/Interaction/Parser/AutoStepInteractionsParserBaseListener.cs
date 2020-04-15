@@ -140,6 +140,18 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitTraitDefinition([NotNull] AutoStepInteractionsParser.TraitDefinitionContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.traitDefinitionDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTraitDefinitionDeclaration([NotNull] AutoStepInteractionsParser.TraitDefinitionDeclarationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.traitDefinitionDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTraitDefinitionDeclaration([NotNull] AutoStepInteractionsParser.TraitDefinitionDeclarationContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.traitRefList"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -151,20 +163,6 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitTraitRefList([NotNull] AutoStepInteractionsParser.TraitRefListContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>traitName</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTraitName([NotNull] AutoStepInteractionsParser.TraitNameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>traitName</c>
-	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTraitName([NotNull] AutoStepInteractionsParser.TraitNameContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>traitMethod</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.traitItem"/>.
@@ -241,6 +239,18 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -441,6 +451,18 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitComponentDefinition([NotNull] AutoStepInteractionsParser.ComponentDefinitionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinitionDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterComponentDefinitionDeclaration([NotNull] AutoStepInteractionsParser.ComponentDefinitionDeclarationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.componentDefinitionDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitComponentDefinitionDeclaration([NotNull] AutoStepInteractionsParser.ComponentDefinitionDeclarationContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>componentName</c>
 	/// labeled alternative in <see cref="AutoStepInteractionsParser.componentItem"/>.
