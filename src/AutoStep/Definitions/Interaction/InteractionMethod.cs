@@ -28,6 +28,12 @@ namespace AutoStep.Definitions.Interaction
         public string Name { get; }
 
         /// <summary>
+        /// Get a documentation block for the method.
+        /// </summary>
+        /// <returns>A documentation block.</returns>
+        public abstract string? GetDocumentation();
+
+        /// <summary>
         /// Gets the number of arguments.
         /// </summary>
         public abstract int ArgumentCount { get; }

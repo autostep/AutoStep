@@ -44,6 +44,12 @@ namespace AutoStep.Definitions.Interaction
         public override int ArgumentCount => MethodDefinition.Arguments.Count;
 
         /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            return MethodDefinition.Documentation;
+        }
+
+        /// <inheritdoc/>
         public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
         {
             scope = scope.ThrowIfNull(nameof(scope));

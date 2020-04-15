@@ -22,6 +22,14 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            // TODO: For now, delegate interaction methods have no way to provide documentation,
+            //       because they don't have attributes.
+            return null;
+        }
+
+        /// <inheritdoc/>
         protected override object? GetMethodTarget(IServiceProvider scope)
         {
             return target;

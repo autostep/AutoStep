@@ -365,6 +365,11 @@ namespace AutoStep.Tests.Execution
 
                 return default;
             }
+
+            public override string? GetDocumentation()
+            {
+                return null;
+            }
         }
     }
 }

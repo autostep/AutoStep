@@ -239,6 +239,11 @@ namespace AutoStep.Tests.Language.Interaction
             }
 
             public override int ArgumentCount { get; }
+
+            public override string? GetDocumentation()
+            {
+                return null;
+            }
         }
 
         private class CustomCallSource : ICallChainSource
