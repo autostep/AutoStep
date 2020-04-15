@@ -40,6 +40,23 @@ namespace AutoStep.Language.Interaction.Visitors
         }
 
         /// <inheritdoc/>
+        public override TElement VisitMethodCallChain([NotNull] MethodCallChainContext context)
+        {
+            // Manually visit each method call.
+            Visit(context.methodCall());
+
+            foreach (var methodSet in context.methodCallWithSep())
+            {
+                // Add a line token for the separator, then visit the call.
+                PositionIndex?.AddLineToken(methodSet.FUNC_PASS_MARKER(), LineTokenCategory.InteractionSeparator, LineTokenSubCategory.InteractionCallSeparator);
+
+                Visit(methodSet.methodCall());
+            }
+
+            return Result!;
+        }
+
+        /// <inheritdoc/>
         public override TElement VisitMethodCall([NotNull] MethodCallContext context)
         {
             var nameRef = context.NAME_REF();

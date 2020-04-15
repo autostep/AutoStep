@@ -240,6 +240,18 @@ internal partial class AutoStepInteractionsParserBaseListener : IAutoStepInterac
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

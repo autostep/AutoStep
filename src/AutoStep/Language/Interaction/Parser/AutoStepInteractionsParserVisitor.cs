@@ -135,6 +135,12 @@ internal interface IAutoStepInteractionsParserVisitor<Result> : IParseTreeVisito
 	/// <return>The visitor result.</return>
 	Result VisitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

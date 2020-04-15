@@ -36,7 +36,9 @@ methodDeclaration: NAME_REF METHOD_OPEN methodDefArgs? METHOD_CLOSE;
 
 methodDefArgs: PARAM_NAME (PARAM_SEPARATOR PARAM_NAME)*;
 
-methodCallChain: methodCall (FUNC_PASS_MARKER methodCall)*;
+methodCallChain: methodCall methodCallWithSep*;
+
+methodCallWithSep: FUNC_PASS_MARKER methodCall;
 
 methodCall: NAME_REF METHOD_OPEN methodCallArgs? METHOD_CLOSE;
 

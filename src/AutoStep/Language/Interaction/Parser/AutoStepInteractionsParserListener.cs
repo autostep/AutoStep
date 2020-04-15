@@ -204,6 +204,16 @@ internal interface IAutoStepInteractionsParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitMethodCallChain([NotNull] AutoStepInteractionsParser.MethodCallChainContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="AutoStepInteractionsParser.methodCallWithSep"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMethodCallWithSep([NotNull] AutoStepInteractionsParser.MethodCallWithSepContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="AutoStepInteractionsParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

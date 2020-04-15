@@ -230,6 +230,30 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
+        public async Task NextMethodCall()
+        {
+            const string TestFile =
+            @"
+              Component: button
+
+                method(arg1): call1(arg1) 
+                              -> 
+
+            ";
+
+            var positions = await CompileAndGetPositionIndex(TestFile);
+
+            // Trait name header.
+            var pos = positions.Lookup(5, 34);
+            pos.CurrentScope.Should().BeOfType<MethodDefinitionElement>();
+            pos.Token.Should().BeNull();
+            pos.ClosestPrecedingTokenIndex.Should().Be(0);
+            var precedingToken = pos.LineTokens[pos.ClosestPrecedingTokenIndex!.Value];
+            precedingToken.Category.Should().Be(LineTokenCategory.InteractionSeparator);
+            precedingToken.SubCategory.Should().Be(LineTokenSubCategory.InteractionCallSeparator);
+        }
+
+        [Fact]
         public async Task StepDefinition()
         {
             const string TestFile =
