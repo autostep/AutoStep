@@ -68,6 +68,11 @@ namespace AutoStep.Definitions.Interaction
             {
                 if (determinedSpacing)
                 {
+                    if (currentPos > text.Length)
+                    {
+                        return text;
+                    }
+
                     var contentToAppend = text.Slice(0, currentPos);
 
                     if (contentToAppend.Length == 0 || contentToAppend.IsWhiteSpace())
@@ -90,10 +95,10 @@ namespace AutoStep.Definitions.Interaction
 
                         // Got the content of the line. Append it up until now.
                         builder.Append(text.Slice(0, currentPos));
-
-                        text = text.Slice(currentPos);
-                        hitText = false;
                     }
+
+                    text = text.Slice(currentPos);
+                    hitText = false;
                 }
 
                 return text;
@@ -133,8 +138,10 @@ namespace AutoStep.Definitions.Interaction
                     text = text.Slice(currentPos);
                     currentPos = 0;
                 }
-
-                currentPos++;
+                else
+                {
+                    currentPos++;
+                }
             }
 
             TerminateLine(text);

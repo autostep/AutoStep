@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
-using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
-using AutoStep.Execution.Binding;
-using AutoStep.Execution.Dependency;
-using AutoStep.Execution.Interaction;
 using AutoStep.Language.Interaction;
 using FluentAssertions;
-using Moq;
 using Xunit;
 
 namespace AutoStep.Tests.Definition.Interaction
@@ -90,6 +84,27 @@ namespace AutoStep.Tests.Definition.Interaction
                 "Call method1",
                 "",
                 "   After blank");
+        }
+
+        private class LinuxLineEndings
+        {
+            [InteractionMethod("method1", Documentation = "Call method1\n   \n   After Blank\n")]
+            public void Method()
+            {
+            }
+        }
+
+        [Fact]
+        public void DocumentationBlockLinuxLineEndingsParsedCorrectly()
+        {
+            var loadedMethod = GetInteractionMethod<LinuxLineEndings>("method1");
+
+            var docs = loadedMethod.GetDocumentation();
+            docs.Should().NotBeNullOrEmpty();
+            docs!.Split(Environment.NewLine).Should().BeEquivalentTo(
+                "Call method1",
+                "",
+                "   After Blank");
         }
 
         private ClassBackedInteractionMethod GetInteractionMethod<TClass>(string name)
