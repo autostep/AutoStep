@@ -73,7 +73,7 @@ componentItem: NAME_KEYWORD STRING #componentName
              | stepDefinitionBody  #componentStep;
 
 stepDefinitionBody: stepDefinition
-                    methodCall (FUNC_PASS_MARKER methodCall)*;
+                    methodCallChain;
 
 stepDefinition: STEP_DEFINE DEF_WS? stepDeclaration DEF_NEWLINE;
 
