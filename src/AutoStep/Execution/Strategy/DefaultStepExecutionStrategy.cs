@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
@@ -20,11 +21,13 @@ namespace AutoStep.Execution.Strategy
         /// <param name="stepScope">The step scope.</param>
         /// <param name="context">The step context.</param>
         /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the step.</param>
         /// <returns>A task that should complete when the step has finished executing.</returns>
-        public async ValueTask ExecuteStep(
+        public async ValueTask ExecuteStepAsync(
             IAutoStepServiceScope stepScope,
             StepContext context,
-            VariableSet variables)
+            VariableSet variables,
+            CancellationToken cancelToken)
         {
             var reference = context.Step;
             var binding = reference.Binding;
@@ -51,7 +54,7 @@ namespace AutoStep.Execution.Strategy
             {
                 stepStack.Push(reference);
 
-                await binding.Definition.ExecuteStepAsync(stepScope, context, variables);
+                await binding.Definition.ExecuteStepAsync(stepScope, context, variables, cancelToken);
             }
             finally
             {

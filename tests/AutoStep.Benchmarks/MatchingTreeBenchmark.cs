@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Elements;
@@ -164,7 +165,7 @@ namespace AutoStep.Benchmarks
                 Definition = definition;
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
@@ -20,7 +21,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(null!, new MethodContext(), Array.Empty<object>()))
+            method.Invoking(async m => await m.InvokeAsync(null!, new MethodContext(), Array.Empty<object>(), CancellationToken.None))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -31,7 +32,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, null!, Array.Empty<object>()))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, null!, Array.Empty<object>(), CancellationToken.None))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -42,7 +43,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, new MethodContext(), null!))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, new MethodContext(), null!, CancellationToken.None))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -57,7 +58,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var scope = new Mock<IAutoStepServiceScope>();
 
-            await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
+            await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>(), CancellationToken.None);
 
             invoked.Should().Be(1);
         }
@@ -73,7 +74,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var scope = new Mock<IAutoStepServiceScope>();
 
-            await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
+            await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>(), CancellationToken.None);
 
             invoked.Should().Be(1);
         }
@@ -87,7 +88,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null }, CancellationToken.None);
 
             invokedValue.Should().Be(0);
         }
@@ -101,7 +102,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object?[] { null }, CancellationToken.None);
 
             invokedValue.Should().BeNull();
         }
@@ -115,7 +116,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { "123" });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { "123" }, CancellationToken.None);
 
             value.Should().Be(123);
         }
@@ -129,7 +130,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithFailingArgumentBinder<int>(), new MethodContext(), new object[] { "abc" }))
+            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithFailingArgumentBinder<int>(), new MethodContext(), new object[] { "abc" }, CancellationToken.None))
                           .Should().Throw<ArgumentBindingException>();
         }
 
@@ -144,7 +145,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var derivedClass = new DerivedClass();
 
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { derivedClass });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { derivedClass }, CancellationToken.None);
 
             value.Should().Be(derivedClass);
         }
@@ -159,7 +160,7 @@ namespace AutoStep.Tests.Definition.Interaction
             var methodInstance = new DelegateInteractionMethod("method", action);
 
             // Pass in a decimal.
-            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { 128.5M });
+            await methodInstance.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { 128.5M }, CancellationToken.None);
 
             value.Should().Be(128.5);
         }
@@ -173,7 +174,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { -24 }))
+            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { -24 }, CancellationToken.None))
                           .Should().Throw<InvalidCastException>();
         }
 
@@ -186,7 +187,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { new DerivedClass() }))
+            methodInstance.Invoking(async m => await m.InvokeAsync(GetScopeWithRegistry(), new MethodContext(), new object[] { new DerivedClass() }, CancellationToken.None))
                           .Should().Throw<InvalidCastException>();
         }
 
@@ -208,7 +209,7 @@ namespace AutoStep.Tests.Definition.Interaction
             var scope = GetScopeWithRegistry();
             var ctxt = new MethodContext();
 
-            await methodInstance.InvokeAsync(scope, ctxt, new object[] { "test" });
+            await methodInstance.InvokeAsync(scope, ctxt, new object[] { "test" }, CancellationToken.None);
 
             value.Should().Be("test");
             passedCtxt.Should().Be(ctxt);
@@ -243,7 +244,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var scope = new Mock<IAutoStepServiceScope>();
 
-            Func<Task> act = async () => await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>());
+            Func<Task> act = async () => await methodInstance.InvokeAsync(scope.Object, new MethodContext(), Array.Empty<object>(), CancellationToken.None);
 
             await act.Should().ThrowAsync<InvalidOperationException>();
         }

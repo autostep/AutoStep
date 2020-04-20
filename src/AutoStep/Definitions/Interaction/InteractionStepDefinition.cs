@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
@@ -31,7 +32,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             stepScope = stepScope.ThrowIfNull(nameof(stepScope));
             context = context.ThrowIfNull(nameof(context));
@@ -79,7 +80,7 @@ namespace AutoStep.Definitions.Interaction
                     initialContext.Variables.Set(Definition!.Arguments[argIdx].Name, argText);
                 }
 
-                await stepDef.InvokeChainAsync(stepScope, initialContext, component.MethodTable);
+                await stepDef.InvokeChainAsync(stepScope, initialContext, component.MethodTable, cancelToken);
             }
             else
             {

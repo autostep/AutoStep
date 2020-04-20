@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Events
 {
@@ -12,43 +12,43 @@ namespace AutoStep.Execution.Events
     public class BaseEventHandler : IEventHandler
     {
         /// <inheritdoc/>
-        public virtual ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> nextHandler)
-        {
+        public virtual ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+    {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
-            return nextHandler(scope, ctxt);
+            return nextHandler(scope, ctxt, cancelToken);
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> nextHandler)
-        {
+        public virtual ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+    {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
-            return nextHandler(scope, ctxt);
+            return nextHandler(scope, ctxt, cancelToken);
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> nextHandler)
-        {
+        public virtual ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+    {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
-            return nextHandler(scope, ctxt);
+            return nextHandler(scope, ctxt, cancelToken);
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler)
-        {
+        public virtual ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+    {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
-            return nextHandler(scope, ctxt);
+            return nextHandler(scope, ctxt, cancelToken);
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> nextHandler)
-        {
+        public virtual ValueTask OnThreadAsync(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+    {
             nextHandler = nextHandler.ThrowIfNull(nameof(nextHandler));
 
-            return nextHandler(scope, ctxt);
+            return nextHandler(scope, ctxt, cancelToken);
         }
     }
 }

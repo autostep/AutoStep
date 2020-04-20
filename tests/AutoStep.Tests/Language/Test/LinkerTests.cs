@@ -15,6 +15,7 @@ using AutoStep.Language.Test;
 using AutoStep.Elements;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
+using System.Threading;
 
 namespace AutoStep.Tests.Language.Test
 {
@@ -46,7 +47,7 @@ namespace AutoStep.Tests.Language.Test
                 return ReferenceEquals(def, this);
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

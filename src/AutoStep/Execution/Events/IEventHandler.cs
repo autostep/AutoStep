@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Events
 {
@@ -20,8 +20,9 @@ namespace AutoStep.Execution.Events
         /// The next stage in the pipeline. Event handlers must call (and await) on this method if they want the test to continue.
         /// Once the <paramref name="nextHandler"/> has returned, the entire test run has finished.
         /// </param>
+        /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> nextHandler);
+        ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Thread Stage. This occurs per-thread, just after the thread has been started, but before any features start executing.
@@ -33,8 +34,9 @@ namespace AutoStep.Execution.Events
         /// The next stage in the pipeline. Event handlers must call (and await) on this method if they want the test to continue.
         /// Once the <paramref name="nextHandler"/> has returned, the thread has finished execution (so clean-up can be performed).
         /// </param>
+        /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> nextHandler);
+        ValueTask OnThreadAsync(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Feature Stage. This occurs per-thread and per-feature, just before the feature is started, but before any scenarios start executing.
@@ -46,8 +48,9 @@ namespace AutoStep.Execution.Events
         /// The next stage in the pipeline. Event handlers must call (and await) on this method if they want the feature to be tested.
         /// Once the <paramref name="nextHandler"/> has returned, the feature has finished execution (so clean-up can be performed).
         /// </param>
+        /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> nextHandler);
+        ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Scenario Stage. This occurs per-scenario, just before the scenario (and any background) is started.
@@ -59,8 +62,9 @@ namespace AutoStep.Execution.Events
         /// The next stage in the pipeline. Event handlers must call (and await) on this method if they want the feature to be tested.
         /// Once the <paramref name="nextHandler"/> has returned, the scenario has finished execution (so clean-up can be performed).
         /// </param>
+        /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> nextHandler);
+        ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Step Stage. This occurs per-step, just before the step executes.
@@ -71,7 +75,8 @@ namespace AutoStep.Execution.Events
         /// The next stage in the pipeline. Event handlers must call (and await) on this method if they want the step to run.
         /// Once the <paramref name="nextHandler"/> has returned, the feature has finished execution (so clean-up can be performed).
         /// </param>
+        /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler);
+        ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
     }
 }

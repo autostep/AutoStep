@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Elements.Parts;
+using AutoStep.Execution.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
 

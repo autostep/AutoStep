@@ -58,7 +58,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultRunExecutionStrategy();
 
-            await strategy.Execute(scope, runContext, features);
+            await strategy.ExecuteAsync(scope, runContext, features, CancellationToken.None);
 
             beforeThread.Should().Be(1);
             afterThread.Should().Be(1);
@@ -97,7 +97,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultRunExecutionStrategy();
 
-            await strategy.Execute(scope, runContext, features);
+            await strategy.ExecuteAsync(scope, runContext, features, CancellationToken.None);
 
             featureStrategy.AddedFeatures.Should().Contain(features.Features[0]);
             featureStrategy.AddedFeatures.Should().Contain(features.Features[1]);
@@ -145,7 +145,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultRunExecutionStrategy();
 
-            await strategy.Execute(scope, runContext, features);
+            await strategy.ExecuteAsync(scope, runContext, features, CancellationToken.None);
 
             featureStrategy.AddedFeatures.Should().Contain(features.Features[0]);
             featureStrategy.AddedFeatures.Should().Contain(features.Features[1]);
@@ -188,7 +188,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             public ConcurrentQueue<IFeatureInfo> AddedFeatures { get; } = new ConcurrentQueue<IFeatureInfo>();
 
-            public ValueTask Execute(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
+            public ValueTask ExecuteAsync(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
             {
                 threadScope.Tag.Should().Be(ScopeTags.ThreadTag);
 
@@ -218,13 +218,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnThread(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, ValueTask> next)
+            public override async ValueTask OnThreadAsync(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 
                 try
                 {
-                    await next(scope, ctxt);
+                    await next(scope, ctxt, cancelToken);
                 }
                 catch (Exception ex)
                 {

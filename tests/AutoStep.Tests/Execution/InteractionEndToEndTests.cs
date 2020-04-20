@@ -14,6 +14,7 @@ using System.Linq;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Assertion;
 using System;
+using System.Threading;
 
 namespace AutoStep.Tests.Execution
 {
@@ -87,7 +88,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             selectCalled.Should().BeTrue();
             clickCalled.Should().BeTrue();
@@ -203,7 +204,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             selectCalled.Should().BeTrue();
             selectByIdCalled.Should().BeTrue();
@@ -290,7 +291,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             // Verify the expected order of method invokes.
             actions.Should().BeEquivalentTo(new[]
@@ -349,7 +350,7 @@ namespace AutoStep.Tests.Execution
 
             public override int ArgumentCount => 2;
 
-            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments)
+            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, CancellationToken cancelToken)
             {
                 // Get the chain value, and update the variables with a name variable.
                 var propName = arguments[0]!.ToString();

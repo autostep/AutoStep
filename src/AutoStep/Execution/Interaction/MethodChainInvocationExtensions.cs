@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Control;
@@ -23,9 +24,10 @@ namespace AutoStep.Execution.Interaction
         /// <param name="stepScope">The current service scope.</param>
         /// <param name="context">The current method context.</param>
         /// <param name="methods">The known method table for the invoking component.</param>
+        /// <param name="cancelToken">Cancellation token for the call chain.</param>
         /// <param name="callStack">The method call stack.</param>
         /// <returns>A task that completes when the chain has completed.</returns>
-        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceProvider stepScope, MethodContext context, MethodTable methods, Stack<MethodContext>? callStack = null)
+        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceProvider stepScope, MethodContext context, MethodTable methods, CancellationToken cancelToken, Stack<MethodContext>? callStack = null)
         {
             if (callStack is null)
             {
@@ -67,7 +69,7 @@ namespace AutoStep.Execution.Interaction
                         // TODO - Allow step through of the methods.
                         var haltInstruction = await executionManager.CheckforHalt(stepScope, newContext, TestThreadState.StartingInteractionMethod);
 
-                        await foundMethod.InvokeAsync(stepScope, newContext, boundArguments, methods, callStack);
+                        await foundMethod.InvokeAsync(stepScope, newContext, boundArguments, methods, callStack, cancelToken);
 
                         context.ChainValue = newContext.ChainValue;
                     }

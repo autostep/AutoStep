@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
@@ -21,8 +22,9 @@ namespace AutoStep.Execution.Strategy
         /// <param name="threadScope">The current service scope (which will be a thread scope).</param>
         /// <param name="threadContext">The test thread context.</param>
         /// <param name="feature">The feature metadata.</param>
+        /// <param name="cancelToken">Cancellation token for the feature.</param>
         /// <returns>A task that should complete when the feature has finished executing.</returns>
-        public async ValueTask Execute(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature)
+        public async ValueTask ExecuteAsync(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
         {
             threadScope = threadScope.ThrowIfNull(nameof(threadScope));
 
@@ -34,7 +36,12 @@ namespace AutoStep.Execution.Strategy
             var scenarioStrategy = featureScope.GetRequiredService<IScenarioExecutionStrategy>();
             var events = featureScope.GetRequiredService<IEventPipeline>();
 
-            await events.InvokeEvent(featureScope, featureContext, (handler, sc, ctxt, next) => handler.OnFeature(sc, ctxt, next), async (_, featureContext) =>
+            await events.InvokeEventAsync(
+                featureScope,
+                featureContext,
+                (handler, sc, ctxt, next, cancel) => handler.OnFeatureAsync(sc, ctxt, next, cancel),
+                cancelToken,
+                async (_, featureContext, cancel) =>
             {
                 var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
@@ -45,11 +52,12 @@ namespace AutoStep.Execution.Strategy
                 {
                     foreach (var variableSet in ExpandScenario(scenario, featureScope))
                     {
-                        await scenarioStrategy.Execute(
+                        await scenarioStrategy.ExecuteAsync(
                             featureScope,
                             featureContext,
                             scenario,
-                            variableSet).ConfigureAwait(false);
+                            variableSet,
+                            cancel).ConfigureAwait(false);
                     }
                 }
             }).ConfigureAwait(false);

@@ -12,6 +12,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Definitions.Test;
+using System.Threading;
 
 namespace AutoStep.Tests.Execution
 {
@@ -80,7 +81,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -135,7 +136,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().Be(2);
             argumentValues[0].Should().Be("value1");
@@ -193,7 +194,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().BeTrue();
             clickedSomethingCalled.Should().BeTrue();
@@ -246,7 +247,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("argument1");
@@ -302,7 +303,7 @@ namespace AutoStep.Tests.Execution
 
             testRun.Events.Add(errorCollector);
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().BeNull();
@@ -316,9 +317,9 @@ namespace AutoStep.Tests.Execution
         {
             public Exception? FoundException { get; set; }
 
-            public override async ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> nextHandler)
-            {
-                await nextHandler(scope, ctxt);
+            public override async ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+      {
+                await nextHandler(scope, ctxt, cancelToken);
 
                 if(ctxt.FailException is object)
                 {
@@ -377,7 +378,7 @@ namespace AutoStep.Tests.Execution
 
             var testRun = project.CreateTestRun();
 
-            await testRun.ExecuteAsync(LogFactory);
+            await testRun.ExecuteAsync(LogFactory, CancellationToken.None);
 
             doneSomethingCalled.Should().BeTrue();
             argumentValue.Should().Be("an argument1");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
@@ -39,11 +40,12 @@ namespace AutoStep.Definitions.Test
         /// <param name="stepScope">The current DI scope.</param>
         /// <param name="context">The step context (including all binding information).</param>
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
+        /// <param name="cancelToken">A cancellation token for the step.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+        public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             // Need to convert the found arguments into actual type arguments.
-            var arguments = BindArguments(stepScope, context, variables);
+            var arguments = BindArguments(stepScope, context, variables, cancelToken);
 
             try
             {
@@ -102,8 +104,9 @@ namespace AutoStep.Definitions.Test
         /// <param name="scope">The current service scope.</param>
         /// <param name="context">The step context.</param>
         /// <param name="variables">The currently available set of variables.</param>
+        /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>A bound set of arguments to pass to the method.</returns>
-        protected object[] BindArguments(IServiceProvider scope, StepContext context, VariableSet variables)
+        protected object[] BindArguments(IServiceProvider scope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));
@@ -137,6 +140,10 @@ namespace AutoStep.Definitions.Test
                 if (typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType))
                 {
                     bindResult[argIdx] = scope;
+                }
+                else if (typeof(CancellationToken).IsAssignableFrom(arg.ParameterType))
+                {
+                    bindResult[argIdx] = cancelToken;
                 }
                 else
                 {

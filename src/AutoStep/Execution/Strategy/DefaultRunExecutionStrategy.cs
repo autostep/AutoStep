@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Configuration;
 using AutoStep.Elements.Metadata;
@@ -29,8 +30,9 @@ namespace AutoStep.Execution.Strategy
         /// <param name="runScope">The top-level run scope.</param>
         /// <param name="runContext">The run context.</param>
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
+        /// <param name="cancelToken">Cancellation token for the run.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        public Task Execute(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet)
+        public Task ExecuteAsync(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken)
         {
             runScope = runScope.ThrowIfNull(nameof(runScope));
             runContext = runContext.ThrowIfNull(nameof(runContext));
@@ -69,14 +71,14 @@ namespace AutoStep.Execution.Strategy
 
                 // Initially we'll just go for a feature parallel, but eventually we will
                 // probably add support for a scenario parallel.
-                parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(runScope, threadId, () => FeatureDeQueue(featureQueue)));
+                parallelTasks[idx] = Task.Run(() => TestThreadFeatureParallel(runScope, threadId, () => FeatureDeQueue(featureQueue), cancelToken));
             }
 
             // Wait for test threads to finish.
             return Task.WhenAll(parallelTasks);
         }
 
-        private async Task TestThreadFeatureParallel(IAutoStepServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature)
+        private async Task TestThreadFeatureParallel(IAutoStepServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature, CancellationToken cancelToken)
         {
             var threadContext = new ThreadContext(testThreadId);
 
@@ -87,11 +89,12 @@ namespace AutoStep.Execution.Strategy
             var logger = threadScope.GetRequiredService<ILogger<DefaultRunExecutionStrategy>>();
             var events = threadScope.GetRequiredService<IEventPipeline>();
 
-            await events.InvokeEvent(
+            await events.InvokeEventAsync(
                 threadScope,
                 threadContext,
-                (handler, sc, ctxt, next) => handler.OnThread(sc, ctxt, next),
-                async (_, ctxt) =>
+                (handler, sc, ctxt, next, cancel) => handler.OnThreadAsync(sc, ctxt, next, cancel),
+                cancelToken,
+                async (_, ctxt, cancel) =>
                 {
                     var haltInstruction = await executionManager.CheckforHalt(threadScope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
 
@@ -105,11 +108,10 @@ namespace AutoStep.Execution.Strategy
                             logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
 
                             // We have a feature.
-                            await featureStrategy.Execute(threadScope, threadContext, feature).ConfigureAwait(false);
+                            await featureStrategy.ExecuteAsync(threadScope, threadContext, feature, cancel).ConfigureAwait(false);
                         }
                         else
                         {
-                            // TODO: Logging.
                             logger.LogDebug("Test Thread ID {0}; no more features to run.", testThreadId);
                             break;
                         }

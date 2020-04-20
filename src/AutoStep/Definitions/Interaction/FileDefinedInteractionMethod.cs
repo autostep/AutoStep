@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
@@ -50,7 +51,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack)
+        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));
@@ -67,7 +68,7 @@ namespace AutoStep.Definitions.Interaction
             BindArguments(localContext, arguments);
 
             // Invoke the method chain with the new context.
-            await MethodDefinition.InvokeChainAsync(scope, localContext, methods, callStack);
+            await MethodDefinition.InvokeChainAsync(scope, localContext, methods, cancelToken, callStack);
 
             // 'Return' the chain value from the local context.
             context.ChainValue = localContext.ChainValue;

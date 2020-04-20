@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
@@ -22,9 +23,10 @@ namespace AutoStep.Execution.Strategy
         /// <param name="owningContext">The owning context.</param>
         /// <param name="stepCollection">The step collection metadata.</param>
         /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the step collection.</param>
         /// <returns>A task that should complete when the step collection has finished executing.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
-        public async ValueTask Execute(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+        public async ValueTask ExecuteAsync(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
         {
             var stepExecutionStrategy = owningScope.GetRequiredService<IStepExecutionStrategy>();
             var executionManager = owningScope.GetRequiredService<IExecutionStateManager>();
@@ -56,27 +58,33 @@ namespace AutoStep.Execution.Strategy
                         //  - Moving to a specific step position
                         //  - Stepping Up (i.e. run to next scope).
                         //  - Something else?
-                        await events.InvokeEvent(
+                        await events.InvokeEventAsync(
                             stepScope,
                             stepContext,
-                            (handler, sc, ctxt, next) => handler.OnStep(sc, ctxt, next),
-                            async (_, ctxt) =>
+                            (handler, sc, ctxt, next, cancel) => handler.OnStepAsync(sc, ctxt, next, cancel),
+                            cancelToken,
+                            async (_, ctxt, cancel) =>
                             {
                                 try
                                 {
                                     stepRan = true;
 
                                     // Execute the step.
-                                    await stepExecutionStrategy.ExecuteStep(
+                                    await stepExecutionStrategy.ExecuteStepAsync(
                                             stepScope,
                                             ctxt,
-                                            variables).ConfigureAwait(false);
+                                            variables,
+                                            cancel).ConfigureAwait(false);
                                 }
                                 catch (EventHandlingException ex)
                                 {
                                     stepContext.FailException = ex;
                                 }
                                 catch (StepFailureException ex)
+                                {
+                                    stepContext.FailException = ex;
+                                }
+                                catch (OperationCanceledException ex)
                                 {
                                     stepContext.FailException = ex;
                                 }
@@ -92,6 +100,10 @@ namespace AutoStep.Execution.Strategy
                         // Error in an event handler; fail the step.
                         stepContext.FailException = ex;
                     }
+                    catch (OperationCanceledException ex)
+                    {
+                        stepContext.FailException = ex;
+                    }
                     finally
                     {
                         timer.Stop();
@@ -99,7 +111,7 @@ namespace AutoStep.Execution.Strategy
                         stepContext.StepExecuted = stepRan;
                     }
 
-                    if (stepContext.FailException is object)
+                    if (stepContext.FailException is object && !(stepContext.FailException is OperationCanceledException))
                     {
                         // The step failed, alert the execution manager.
                         var breakInstructions = await executionManager.StepError(stepContext).ConfigureAwait(false);

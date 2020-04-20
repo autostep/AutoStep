@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -20,8 +22,9 @@ namespace AutoStep.Execution.Strategy
         /// <param name="featureContext">The current feature context.</param>
         /// <param name="scenario">The scenario metadata.</param>
         /// <param name="variableSet">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the scenario.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
-        public async ValueTask Execute(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet)
+        public async ValueTask ExecuteAsync(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet, CancellationToken cancelToken)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
 
@@ -36,18 +39,24 @@ namespace AutoStep.Execution.Strategy
 
             try
             {
-                await events.InvokeEvent(scenarioScope, scenarioContext, (handler, sc, ctxt, next) => handler.OnScenario(sc, ctxt, next), async (_, ctxt) =>
+                await events.InvokeEventAsync(
+                    scenarioScope,
+                    scenarioContext,
+                    (handler, sc, ctxt, next, cancel) => handler.OnScenarioAsync(sc, ctxt, next, cancel),
+                    cancelToken,
+                    async (_, ctxt, cancel) =>
                 {
                     scenarioContext.ScenarioRan = true;
 
                     if (featureContext.Feature.Background is object)
                     {
                         // There is a background to execute.
-                        await collectionExecutor.Execute(
+                        await collectionExecutor.ExecuteAsync(
                                 scenarioScope,
                                 ctxt,
                                 featureContext.Feature.Background,
-                                variableSet).ConfigureAwait(false);
+                                variableSet,
+                                cancelToken).ConfigureAwait(false);
 
                         if (ctxt.FailException is object)
                         {
@@ -57,12 +66,17 @@ namespace AutoStep.Execution.Strategy
                     }
 
                     // Any errors will be updated on the scenario context.
-                    await collectionExecutor.Execute(
+                    await collectionExecutor.ExecuteAsync(
                             scenarioScope,
                             scenarioContext,
                             scenario,
-                            variableSet).ConfigureAwait(false);
+                            variableSet,
+                            cancelToken).ConfigureAwait(false);
                 }).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException ex)
+            {
+                scenarioContext.FailException = ex;
             }
             catch (EventHandlingException ex)
             {

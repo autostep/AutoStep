@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -17,11 +18,13 @@ namespace AutoStep.Execution.Strategy
         /// <param name="featureContext">The current feature context.</param>
         /// <param name="scenario">The scenario metadata.</param>
         /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the scenario.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
-        ValueTask Execute(
+        ValueTask ExecuteAsync(
             IAutoStepServiceScope featureScope,
             FeatureContext featureContext,
             IScenarioInfo scenario,
-            VariableSet variables);
+            VariableSet variables,
+            CancellationToken cancelToken);
     }
 }

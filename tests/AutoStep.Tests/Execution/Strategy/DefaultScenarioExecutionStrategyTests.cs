@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
@@ -11,7 +12,6 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -115,7 +115,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var featureContext = new FeatureContext(feature);
 
-            await strategy.Execute(scope, featureContext, scenario, variables);
+            await strategy.ExecuteAsync(scope, featureContext, scenario, variables, CancellationToken.None);
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
@@ -135,7 +135,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
 
-            public ValueTask Execute(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables)
+            public ValueTask ExecuteAsync(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
             {
                 owningScope.Should().NotBeNull();
                 owningContext.Should().BeOfType<ScenarioContext>();
@@ -171,13 +171,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnScenario(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, ValueTask> next)
+            public override async ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 
                 try
                 {
-                    await next(scope, ctxt);
+                    await next(scope, ctxt, cancelToken);
                 }
                 catch (Exception ex)
                 {

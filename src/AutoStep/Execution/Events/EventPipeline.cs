@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution.Dependency;
 
@@ -22,16 +23,17 @@ namespace AutoStep.Execution.Events
         }
 
         /// <inheritdoc/>
-        public ValueTask InvokeEvent<TContext>(
+        public ValueTask InvokeEventAsync<TContext>(
             IServiceProvider serviceProvider,
             TContext context,
-            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, ValueTask>, ValueTask> callback,
-            Func<IServiceProvider, TContext, ValueTask>? final = null)
+            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback,
+            CancellationToken cancelToken,
+            Func<IServiceProvider, TContext, CancellationToken, ValueTask>? final = null)
         {
             if (final is null)
             {
                 // This means that there is nothing at the end of the pipeline, create a dummy terminator.
-                final = (s, c) => default;
+                final = (s, c, t) => default;
             }
 
             // Need to execute in reverse so we build up the 'next' properly.
@@ -40,19 +42,21 @@ namespace AutoStep.Execution.Events
                 final = ChainHandler(final, handlers[idx], callback);
             }
 
-            return final(serviceProvider, context);
+            return final(serviceProvider, context, cancelToken);
         }
 
-        private Func<IServiceProvider, TContext, ValueTask> ChainHandler<TContext>(
-            Func<IServiceProvider, TContext, ValueTask> next,
+        private Func<IServiceProvider, TContext, CancellationToken, ValueTask> ChainHandler<TContext>(
+            Func<IServiceProvider, TContext, CancellationToken, ValueTask> next,
             IEventHandler innerHandler,
-            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, ValueTask>, ValueTask> callback)
+            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback)
         {
-            return async (resolver, ctxt) =>
+            return async (resolver, ctxt, cancelToken) =>
             {
+                cancelToken.ThrowIfCancellationRequested();
+
                 try
                 {
-                    await callback(innerHandler, resolver, ctxt, next).ConfigureAwait(false);
+                    await callback(innerHandler, resolver, ctxt, next, cancelToken).ConfigureAwait(false);
                 }
                 catch (StepFailureException)
                 {

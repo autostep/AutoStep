@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
@@ -154,7 +155,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultFeatureExecutionStrategy();
 
-            await strategy.Execute(scope, threadContext, feature);
+            await strategy.ExecuteAsync(scope, threadContext, feature, CancellationToken.None);
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
@@ -167,7 +168,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             public List<(IScenarioInfo scenario, VariableSet variables)> AddedScenarios { get; } = new List<(IScenarioInfo, VariableSet)>();
 
-            public ValueTask Execute(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables)
+            public ValueTask ExecuteAsync(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables, CancellationToken cancelToken)
             {
                 AddedScenarios.Add((scenario, variables));
 
@@ -195,13 +196,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnFeature(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, ValueTask> next)
+            public override async ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 
                 try
                 {
-                    await next(scope, ctxt);
+                    await next(scope, ctxt, cancelToken);
                 }
                 catch (Exception ex)
                 {

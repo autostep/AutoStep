@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
@@ -16,7 +17,8 @@ namespace AutoStep.Execution.Strategy
         /// <param name="runScope">The top-level run scope.</param>
         /// <param name="runContext">The run context.</param>
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
+        /// <param name="cancelToken">Cancellation token for the run.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        Task Execute(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet);
+        Task ExecuteAsync(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken);
     }
 }

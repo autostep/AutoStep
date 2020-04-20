@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements;
 using AutoStep.Execution;
@@ -50,8 +51,9 @@ namespace AutoStep.Definitions.Test
         /// <param name="stepScope">The owning step scope.</param>
         /// <param name="context">The current step context.</param>
         /// <param name="variables">The set of all variables.</param>
+        /// <param name="cancelToken">Cancellation token for the step.</param>
         /// <returns>Task completion.</returns>
-        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             // Extract the arguments, and invoke the collection executor.
             var nestedVariables = new VariableSet();
@@ -88,11 +90,12 @@ namespace AutoStep.Definitions.Test
 
             var fileStepContext = new FileDefinedStepContext(Definition);
 
-            await collectionStrategy.Execute(
+            await collectionStrategy.ExecuteAsync(
                 autoStepScope,
                 fileStepContext,
                 Definition,
-                nestedVariables).ConfigureAwait(false);
+                nestedVariables,
+                cancelToken).ConfigureAwait(false);
 
             if (fileStepContext.FailException is object)
             {

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
@@ -35,10 +36,11 @@ namespace AutoStep.Definitions.Interaction
         /// <remarks>All parameters accept the 'special' ones.</remarks>
         public override int ArgumentCount => method.GetParameters()
                                                    .Count(arg => !typeof(MethodContext).IsAssignableFrom(arg.ParameterType) &&
-                                                                 !typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType));
+                                                                 !typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType) &&
+                                                                 !typeof(CancellationToken).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments)
+        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -56,7 +58,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Bind the arguments.
-            var boundArguments = BindArguments(scope, arguments, context);
+            var boundArguments = BindArguments(scope, arguments, context, cancelToken);
 
             // Get the target.
             var target = GetMethodTarget(scope);
@@ -111,7 +113,7 @@ namespace AutoStep.Definitions.Interaction
             return default;
         }
 
-        private object?[] BindArguments(IServiceProvider scope, object?[] providedArgs, MethodContext methodContext)
+        private object?[] BindArguments(IServiceProvider scope, object?[] providedArgs, MethodContext methodContext, CancellationToken cancelToken)
         {
             var methodArgs = method.GetParameters();
 
@@ -136,6 +138,10 @@ namespace AutoStep.Definitions.Interaction
                 else if (arg.ParameterType.IsAssignableFrom(typeof(MethodContext)))
                 {
                     bindResult[argIdx] = methodContext;
+                }
+                else if (arg.ParameterType.IsAssignableFrom(typeof(CancellationToken)))
+                {
+                    bindResult[argIdx] = cancelToken;
                 }
                 else if (sourceArgPosition < providedArgs.Length)
                 {

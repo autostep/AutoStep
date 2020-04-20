@@ -12,6 +12,7 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Language.Test;
+using System.Threading;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
@@ -48,7 +49,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepExecutionStrategy();
 
-            await strategy.ExecuteStep(mockScope, stepContext, variables);
+            await strategy.ExecuteStepAsync(mockScope, stepContext, variables, CancellationToken.None);
 
             ranStep.Should().BeTrue();
         }
@@ -75,7 +76,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepExecutionStrategy();
 
-            strategy.Awaiting(s => s.ExecuteStep(mockScope, stepContext, variables)).Should().Throw<UnboundStepException>();
+            strategy.Awaiting(s => s.ExecuteStepAsync(mockScope, stepContext, variables, CancellationToken.None)).Should().Throw<UnboundStepException>();
 
             ranStep.Should().BeFalse();
         }
@@ -104,12 +105,12 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep((IAutoStepServiceScope)scope, ctxt, vars);
+                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, ctxt, vars, CancellationToken.None);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
 
-            var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
+            var ex = await strategy.Awaiting(s => s.ExecuteStepAsync(scope, stepContext, variables, CancellationToken.None))
                              .Should().ThrowAsync<CircularStepReferenceException>();
 
             ex.Which.StepDefinition.Should().Be(stepDef);
@@ -146,19 +147,19 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep((IAutoStepServiceScope)scope, loopbackStepContext, vars);
+                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, loopbackStepContext, vars, CancellationToken.None);
             });
 
             var loopBackStepDef = new TestStepDef("loopbackStep", async (scope, ctxt, vars) =>
             {
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStep((IAutoStepServiceScope)scope, stepContext, vars);
+                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, stepContext, vars, CancellationToken.None);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
             loopbackStep.Bind(new StepReferenceBinding(loopBackStepDef, null, null));
 
-            var ex = await strategy.Awaiting(s => s.ExecuteStep(scope, stepContext, variables))
+            var ex = await strategy.Awaiting(s => s.ExecuteStepAsync(scope, stepContext, variables, CancellationToken.None))
                              .Should().ThrowAsync<CircularStepReferenceException>();
 
             ex.Which.StepDefinition.Should().Be(stepDef);
@@ -184,10 +185,11 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.callback = callback;
             }
 
-            public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+            public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 await callback(stepScope, context, variables);
             }
+
 
             public override bool IsSameDefinition(StepDefinition def)
             {

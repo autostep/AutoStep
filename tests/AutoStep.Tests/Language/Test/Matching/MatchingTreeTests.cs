@@ -15,6 +15,7 @@ using AutoStep.Language.Test.Matching;
 using AutoStep.Elements.Test;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language;
+using System.Threading;
 
 namespace AutoStep.Tests.Language.Test.Matching
 {
@@ -485,7 +486,7 @@ namespace AutoStep.Tests.Language.Test.Matching
                 Definition = definition;
             }
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables)
+            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

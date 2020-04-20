@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
@@ -91,22 +92,24 @@ namespace AutoStep.Execution
         /// <summary>
         /// Execute a test run.
         /// </summary>
+        /// <param name="cancelToken">A cancellation token for the test run.</param>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(CancellationToken cancelToken, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             using var nullLogger = new LoggerFactory();
 
-            return await ExecuteAsync(nullLogger, serviceRegistration).ConfigureAwait(false);
+            return await ExecuteAsync(nullLogger, cancelToken, serviceRegistration).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Execute a test run.
         /// </summary>
         /// <param name="logFactory">A logger factory.</param>
+        /// <param name="cancelToken">A cancellation token for the test run.</param>
         /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, CancellationToken cancelToken, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
             // Determined the filtered set of features/scenarios.
             var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
@@ -139,13 +142,14 @@ namespace AutoStep.Execution
 
             try
             {
-                await events.InvokeEvent(
+                await events.InvokeEventAsync(
                     runScope,
                     runContext,
-                    (handler, sc, ctxt, next) => handler.OnExecute(sc, ctxt, next),
-                    (_, ctxt) =>
+                    (handler, sc, ctxt, next, cancel) => handler.OnExecuteAsync(sc, ctxt, next, cancel),
+                    cancelToken,
+                    (_, ctxt, cancel) =>
                     {
-                        return new ValueTask(runExecutionStrategy.Execute(runScope, ctxt, executionSet));
+                        return new ValueTask(runExecutionStrategy.ExecuteAsync(runScope, ctxt, executionSet, cancel));
                     }).ConfigureAwait(false);
             }
             finally

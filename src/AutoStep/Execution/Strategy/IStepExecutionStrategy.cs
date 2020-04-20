@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
@@ -15,10 +16,12 @@ namespace AutoStep.Execution.Strategy
         /// <param name="stepScope">The step scope.</param>
         /// <param name="context">The step context.</param>
         /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the step.</param>
         /// <returns>A task that should complete when the step has finished executing.</returns>
-        ValueTask ExecuteStep(
+        ValueTask ExecuteStepAsync(
                     IAutoStepServiceScope stepScope,
                     StepContext context,
-                    VariableSet variables);
+                    VariableSet variables,
+                    CancellationToken cancelToken);
     }
 }

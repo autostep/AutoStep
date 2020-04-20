@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -18,11 +19,13 @@ namespace AutoStep.Execution.Strategy
         /// <param name="owningContext">The owning context.</param>
         /// <param name="stepCollection">The step collection metadata.</param>
         /// <param name="variables">The set of variables currently in-scope.</param>
+        /// <param name="cancelToken">Cancellation token for the step collection.</param>
         /// <returns>A task that should complete when the step collection has finished executing.</returns>
-        ValueTask Execute(
+        ValueTask ExecuteAsync(
                     IAutoStepServiceScope owningScope,
                     StepCollectionContext owningContext,
                     IStepCollectionInfo stepCollection,
-                    VariableSet variables);
+                    VariableSet variables,
+                    CancellationToken cancelToken);
     }
 }

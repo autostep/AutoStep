@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
@@ -18,7 +19,7 @@ namespace AutoStep.Tests.Execution.Events
         private IConfiguration BlankConfiguration { get; } = new ConfigurationBuilder().Build();
 
         [Fact]
-        public void InvokeEventInvokesProvidedCallbackWithNoHandlers()
+        public async Task InvokeEventInvokesProvidedCallbackWithNoHandlers()
         {
             var pipeline = new EventPipeline(new List<IEventHandler>());
             var scopeMock = new Mock<IAutoStepServiceScope>();
@@ -27,12 +28,14 @@ namespace AutoStep.Tests.Execution.Events
             var callbackInvoked = false;
             var endOfPipelineInvoked = false;
 
-            pipeline.InvokeEvent(scope, context, (h, s, c, n) =>
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, cancel, n) =>
             {
                 callbackInvoked = true;
 
                 return default;
-            }, (sc, ctxt) =>
+            },
+            CancellationToken.None,
+            (sc, ctxt, cancel) =>
             {
                 sc.Should().Be(scope);
                 ctxt.Should().Be(context);
@@ -46,7 +49,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public void InvokeEventCanCallHandlersWithNoTarget()
+        public async Task InvokeEventCanCallHandlersWithNoTarget()
         {
             bool beforeCalled = false;
             bool afterCalled = false;
@@ -59,7 +62,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None);
 
             beforeCalled.Should().BeTrue();
             afterCalled.Should().BeTrue();
@@ -78,7 +81,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), async (scope, ctxt) => {
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None, async (scope, ctxt, cancel) => {
                 order.Add(2);
                 await Task.Delay(10);
                 order.Add(3);
@@ -102,7 +105,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, myHandler2, myHandler3 });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), async (scope, ctxt) => {
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None, async (scope, ctxt, cancel) => {
                 order.Add(4);
                 await Task.Delay(10);
                 order.Add(5);
@@ -124,7 +127,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n), (scope, ctxt) => {
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None, (scope, ctxt, cancel) => {
                 throw new StepFailureException(mockStepReference, new NullReferenceException());
             });
 
@@ -146,7 +149,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, errHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None);
 
             foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
@@ -166,7 +169,7 @@ namespace AutoStep.Tests.Execution.Events
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, errHandler });
 
-            await pipeline.InvokeEvent(scope, context, (h, s, c, n) => h.OnExecute(s, c, n));
+            await pipeline.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None);
 
             foundException.Should().NotBeNull();
             foundException.Should().BeOfType<EventHandlingException>();
@@ -193,14 +196,14 @@ namespace AutoStep.Tests.Execution.Events
                 this.exception = exception;
             }
 
-            public override async ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> next)
-            {
+            public override async ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+      {
                 callBefore();
 
                 try
                 {
                     // We're only going to use execute for testing; the method called has no bearing on the pipeline object.
-                    await next(scope, ctxt);
+                    await next(scope, ctxt, cancelToken);
                 }
                 catch(Exception ex)
                 {
@@ -225,14 +228,14 @@ namespace AutoStep.Tests.Execution.Events
                 this.callAfter = callAfter;
             }
 
-            public override async ValueTask OnExecute(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, ValueTask> next)
-            {
+            public override async ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+      {
                 callBefore();
 
                 // We're only going to use execute for testing; the method called has no bearing on the pipeline object.
                 await Task.Delay(10);
 
-                await next(scope, ctxt);
+                await next(scope, ctxt, cancelToken);
 
                 callAfter();
             }

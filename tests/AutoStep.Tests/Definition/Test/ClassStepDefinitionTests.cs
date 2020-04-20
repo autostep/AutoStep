@@ -11,6 +11,7 @@ using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
 using AutoStep.Definitions.Test;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 
 namespace AutoStep.Tests.Definition
 {
@@ -41,7 +42,7 @@ namespace AutoStep.Tests.Definition
 
             var stepContext = new StepContext(0, new StepCollectionContext(), stepRef, VariableSet.Blank);
 
-            await stepDef.ExecuteStepAsync(scope, stepContext, VariableSet.Blank);
+            await stepDef.ExecuteStepAsync(scope, stepContext, VariableSet.Blank, CancellationToken.None);
 
             var stepClassInstance = scope.GetRequiredService<MyStepDef>();
             stepClassInstance.ClickCount.Should().Be(1);

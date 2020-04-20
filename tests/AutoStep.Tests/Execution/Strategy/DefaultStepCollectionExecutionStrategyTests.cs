@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
@@ -186,7 +187,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepCollectionExecutionStrategy();
 
-            await strategy.Execute(scope, owningContext, stepCollection, variables);
+            await strategy.ExecuteAsync(scope, owningContext, stepCollection, variables, CancellationToken.None);
 
             owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
@@ -208,7 +209,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.stepCallback = stepCallback;
             }
 
-            public ValueTask ExecuteStep(IAutoStepServiceScope stepScope, StepContext context, VariableSet variables)
+            public ValueTask ExecuteStepAsync(IAutoStepServiceScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 stepScope.Should().NotBeNull();
                 stepScope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
@@ -239,13 +240,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnStep(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, ValueTask> next)
+            public override async ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 
                 try
                 {
-                    await next(scope, ctxt);
+                    await next(scope, ctxt, cancelToken);
                 }
                 catch (Exception ex)
                 {
