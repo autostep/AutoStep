@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Elements.Interaction
 {
     /// <summary>
     /// Represents an interaction method call.
     /// </summary>
-    public class MethodCallElement : PositionalElement
+    public class MethodCallElement : PositionalElement, IMethodCallInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodCallElement"/> class.
@@ -25,5 +26,8 @@ namespace AutoStep.Elements.Interaction
         /// Gets the set of arguments to the method.
         /// </summary>
         public List<MethodArgumentElement> Arguments { get; } = new List<MethodArgumentElement>();
+
+        /// <inheritdoc/>
+        IReadOnlyList<IMethodCallArgumentInfo> IMethodCallInfo.Arguments => Arguments;
     }
 }
