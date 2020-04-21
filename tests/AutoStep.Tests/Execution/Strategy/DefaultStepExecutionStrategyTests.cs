@@ -23,7 +23,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask ExecutesStep()
+        public async Task ExecutesStep()
         {
             var step = new StepReferenceBuilder("I have done something", StepType.Given, StepType.Given, 1, 1).Built;
 
@@ -31,7 +31,9 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
 
-            var mockScope = new Mock<IAutoStepServiceScope>().Object;
+            var mockScope = new Mock<IAutoStepServiceScope>();
+
+            mockScope.Setup(x => x.GetService(typeof(ThreadContext))).Returns(new ThreadContext(1));
 
             var ranStep = false;
 
@@ -40,7 +42,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStep = true;
                 ctxt.Should().Be(stepContext);
                 vars.Should().Be(variables);
-                scope.Should().Be(mockScope);
+                scope.Should().Be(mockScope.Object);
 
                 return default;
             });
@@ -49,7 +51,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepExecutionStrategy();
 
-            await strategy.ExecuteStepAsync(mockScope, stepContext, variables, CancellationToken.None);
+            await strategy.ExecuteStepAsync(mockScope.Object, stepContext, variables, CancellationToken.None);
 
             ranStep.Should().BeTrue();
         }

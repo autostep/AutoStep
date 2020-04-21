@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask RunsAllSteps()
+        public async Task RunsAllSteps()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -56,7 +56,37 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask StopsTestIfStepFails()
+        public async Task StopsTestOnCancellation()
+        {
+            var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
+                                     .Given("I have done something", 2, 1)
+                                     .Then("Something else happens", 3, 1)
+                                     .And("a really big thing happens", StepType.Then, 4, 1)
+                                     .Built;
+
+            var variables = new VariableSet();
+
+            var owningContext = new ScenarioContext(stepCollection, variables);
+
+            int ranSteps = 0;
+            var cancelSource = new CancellationTokenSource();
+
+            await DoTest(stepCollection, 2, owningContext, variables, (scope, ctxt, varSet) =>
+            {
+                ranSteps++;
+
+                if (ranSteps == 2)
+                {
+                    cancelSource.Cancel();
+                }
+            }, cancelSource.Token);
+
+            ranSteps.Should().Be(2);
+            owningContext.FailException.Should().BeOfType<OperationCanceledException>();
+        }
+
+        [Fact]
+        public async Task StopsTestIfStepFails()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -96,7 +126,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask StopsTestIfEventHandlerFails()
+        public async Task StopsTestIfEventHandlerFails()
         {
             var stepCollection = new ScenarioBuilder("My Scenario", 1, 1)
                                      .Given("I have done something", 2, 1)
@@ -149,7 +179,8 @@ namespace AutoStep.Tests.Execution.Strategy
             int executionManagerInvokes,
             StepCollectionContext owningContext,
             VariableSet variables,
-            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
+            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback,
+            CancellationToken cancelToken = default)
         {
             var beforeFeat = 0;
             var afterFeat = 0;
@@ -158,7 +189,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 beforeFeat++;
             }, c => afterFeat++);
 
-            await DoTest(stepCollection, executionManagerInvokes, owningContext, variables, eventHandler, stepCallback);
+            await DoTest(stepCollection, executionManagerInvokes, owningContext, variables, eventHandler, stepCallback, cancelToken);
         }
 
         private async ValueTask DoTest(
@@ -167,7 +198,8 @@ namespace AutoStep.Tests.Execution.Strategy
             StepCollectionContext owningContext,
             VariableSet variables,
             IEventHandler eventHandler,
-            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
+            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback,
+            CancellationToken cancelToken = default)
         {
             var threadContext = new ThreadContext(1);
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
@@ -187,7 +219,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepCollectionExecutionStrategy();
 
-            await strategy.ExecuteAsync(scope, owningContext, stepCollection, variables, CancellationToken.None);
+            await strategy.ExecuteAsync(scope, owningContext, stepCollection, variables, cancelToken);
 
             owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
@@ -259,8 +291,6 @@ namespace AutoStep.Tests.Execution.Strategy
                         throw;
                     }
                 }
-
-                ctxt.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
 
                 callAfter(ctxt);
             }

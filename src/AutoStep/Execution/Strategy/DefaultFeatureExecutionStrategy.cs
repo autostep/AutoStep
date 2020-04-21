@@ -50,6 +50,11 @@ namespace AutoStep.Execution.Strategy
                 // Go through each scenario.
                 foreach (var scenario in feature.Scenarios)
                 {
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
                     foreach (var variableSet in ExpandScenario(scenario, featureScope))
                     {
                         await scenarioStrategy.ExecuteAsync(

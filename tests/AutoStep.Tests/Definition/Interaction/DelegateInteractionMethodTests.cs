@@ -197,37 +197,36 @@ namespace AutoStep.Tests.Definition.Interaction
             string? value = null;
             MethodContext? passedCtxt = null;
             IServiceProvider? passedScope = null;
+            CancellationToken cancelToken = default;
 
-            Action<MethodContext, string, IServiceProvider> action = (ctxt, val, scope) =>
+            Action<MethodContext, string, IServiceProvider, CancellationToken> action = (ctxt, val, scope, cancel) =>
             {
                 passedCtxt = ctxt;
                 value = val;
                 passedScope = scope;
+                cancelToken = cancel;
             };
 
             var methodInstance = new DelegateInteractionMethod("method", action);
             var scope = GetScopeWithRegistry();
             var ctxt = new MethodContext();
 
-            await methodInstance.InvokeAsync(scope, ctxt, new object[] { "test" }, CancellationToken.None);
+            var cancelSource = new CancellationTokenSource();
+
+            await methodInstance.InvokeAsync(scope, ctxt, new object[] { "test" }, cancelSource.Token);
 
             value.Should().Be("test");
             passedCtxt.Should().Be(ctxt);
             passedScope.Should().Be(scope);
+            cancelToken.Should().Be(cancelSource.Token);
         }
 
         [Fact]
         public void ArgumentBinding_SpecialArgumentsExcludedFromCount()
         {
-            string? value = null;
-            MethodContext? passedCtxt = null;
-            IAutoStepServiceScope? passedScope = null;
 
-            Action<MethodContext, string, IAutoStepServiceScope> action = (ctxt, val, scope) =>
+            Action<MethodContext, string, IAutoStepServiceScope, CancellationToken> action = (ctxt, val, scope, cancel) =>
             {
-                passedCtxt = ctxt;
-                value = val;
-                passedScope = scope;
             };
 
             var methodInstance = new DelegateInteractionMethod("method", action);

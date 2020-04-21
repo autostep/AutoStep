@@ -45,15 +45,18 @@ namespace AutoStep.Execution.Strategy
 
                     using var stepScope = owningScope.BeginNewScope(stepContext);
 
-                    // Halt before the step begins.
-                    var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, stepContext, TestThreadState.StartingStep).ConfigureAwait(false);
-
                     var stepRan = false;
+
                     var timer = new Stopwatch();
                     timer.Start();
 
                     try
                     {
+                        cancelToken.ThrowIfCancellationRequested();
+
+                        // Halt before the step begins.
+                        var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, stepContext, TestThreadState.StartingStep).ConfigureAwait(false);
+
                         // Halt instruction for step collections can include:
                         //  - Moving to a specific step position
                         //  - Stepping Up (i.e. run to next scope).
@@ -111,7 +114,7 @@ namespace AutoStep.Execution.Strategy
                         stepContext.StepExecuted = stepRan;
                     }
 
-                    if (stepContext.FailException is object && !(stepContext.FailException is OperationCanceledException))
+                    if (stepContext.FailException is object)
                     {
                         // The step failed, alert the execution manager.
                         var breakInstructions = await executionManager.StepError(stepContext).ConfigureAwait(false);

@@ -76,6 +76,34 @@ namespace AutoStep.Tests.Definition
         }
 
         [Fact]
+        public async Task CanInvokeDelegateDefinitionWithCancellationToken()
+        {
+            var source = new Mock<IStepDefinitionSource>();
+            var mockScope = new Mock<IServiceProvider>();
+
+            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+
+            CancellationToken foundCancelToken = default;
+
+            Action<CancellationToken> callback = cancel =>
+            {
+                foundCancelToken = cancel;
+            };
+
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
+
+            var stepRefInfo = new StepReferenceElement();
+            stepRefInfo.FreezeTokens();
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
+
+            var cancellationSource = new CancellationTokenSource();
+
+            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
+
+            foundCancelToken.Should().Be(cancellationSource.Token);
+        }
+
+        [Fact]
         public async Task CanInvokeAsyncTaskBackedDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();

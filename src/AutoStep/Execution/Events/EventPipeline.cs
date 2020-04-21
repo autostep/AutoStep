@@ -66,6 +66,10 @@ namespace AutoStep.Execution.Events
                 {
                     throw;
                 }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
                 catch (Exception ex)
                 {
                     // Anything else is an exception in this handler. Wrap it and throw.

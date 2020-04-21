@@ -26,7 +26,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask SingleScenarioTest()
+        public async Task SingleScenarioTest()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1)
@@ -36,7 +36,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask MultiScenarioTest()
+        public async Task MultiScenarioTest()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1)
@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask ExpandedScenarioOutlineTest()
+        public async Task ExpandedScenarioOutlineTest()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                 .ScenarioOutline("My Scenario Outline", 1, 1, cfg => cfg
@@ -87,7 +87,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask ExpandedScenarioOutlineMultipleExamplesTest()
+        public async Task ExpandedScenarioOutlineMultipleExamplesTest()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                 .ScenarioOutline("My Scenario Outline", 1, 1, cfg => cfg
@@ -131,6 +131,43 @@ namespace AutoStep.Tests.Execution.Strategy
             );
         }
 
+        [Fact]
+        public async Task FeatureCanBeCancelled()
+        {
+            var feature = new FeatureBuilder("My Feature 1", 1, 1)
+                                            .Scenario("My Scenario 1", 1, 1)
+                                            .Scenario("My Scenario 2", 2, 1)
+                                            .Built;
+
+            var threadContext = new ThreadContext(1);
+            var mockExecutionStateManager = new Mock<IExecutionStateManager>();
+            var cancellationSource = new CancellationTokenSource();
+
+            var scenarioStrategy = new MyScenarioStrategy((scenario, vars) =>
+            {
+                // Cancel the whole thing during the first scenario.
+                if(scenario.Name == "My Scenario 1")
+                {
+                    cancellationSource.Cancel();
+                }
+            });
+
+            var builder = new AutofacServiceBuilder();
+
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterInstance(mockExecutionStateManager.Object);
+            builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
+            builder.RegisterInstance<IEventPipeline>(new EventPipeline(Array.Empty<IEventHandler>()));
+
+            var scope = builder.BuildRootScope();
+
+            var strategy = new DefaultFeatureExecutionStrategy();
+
+            await strategy.ExecuteAsync(scope, threadContext, feature, cancellationSource.Token);
+
+            scenarioStrategy.AddedScenarios.Should().HaveCount(1);
+        }
+
         private async ValueTask DoTest(IFeatureInfo feature, params (IScenarioInfo scenario, VariableSet variables)[] scenarios)
         {
             var threadContext = new ThreadContext(1);
@@ -147,9 +184,12 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
+            var pipeline = new EventPipeline(new[] { eventHandler });
+
             builder.RegisterInstance(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
+            builder.RegisterInstance<IEventPipeline>(pipeline);
 
             var scope = builder.BuildRootScope();
 
@@ -166,11 +206,24 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class MyScenarioStrategy : IScenarioExecutionStrategy
         {
+            private readonly Action<IScenarioInfo, VariableSet>? scenarioCallback;
+
+            public MyScenarioStrategy()
+            {
+            }
+
+            public MyScenarioStrategy(Action<IScenarioInfo, VariableSet> scenarioCallback)
+            {
+                this.scenarioCallback = scenarioCallback;
+            }
+
             public List<(IScenarioInfo scenario, VariableSet variables)> AddedScenarios { get; } = new List<(IScenarioInfo, VariableSet)>();
 
             public ValueTask ExecuteAsync(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables, CancellationToken cancelToken)
             {
                 AddedScenarios.Add((scenario, variables));
+
+                scenarioCallback?.Invoke(scenario, variables);
 
                 return default;
             }

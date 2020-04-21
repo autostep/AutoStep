@@ -33,7 +33,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask SingleThreadedTest()
+        public async Task SingleThreadedTest()
         {
             var features = Get2FeatureSet();
             var runContext = new RunContext(BlankConfiguration);
@@ -50,9 +50,12 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
+            var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
+
             builder.RegisterInstance(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
+            builder.RegisterInstance<IEventPipeline>(eventPipeline);
 
             var scope = builder.BuildRootScope();
 
@@ -67,7 +70,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask MultiThreadedTest()
+        public async Task MultiThreadedTest()
         {
             var features = Get2FeatureSet();
             var runContext = new RunContext(GetTestConfig(("parallelCount", "2")));
@@ -114,7 +117,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
 
         [Fact]
-        public async ValueTask DontUseMoreThreadsThanFeatures()
+        public async Task DontUseMoreThreadsThanFeatures()
         {
             var features = Get2FeatureSet();
             // Say to use 3 threads, but we should still only use 2.

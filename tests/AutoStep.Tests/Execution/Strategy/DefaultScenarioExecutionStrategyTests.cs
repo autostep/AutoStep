@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask ScenarioWithBackground()
+        public async Task ScenarioWithBackground()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))
@@ -38,7 +38,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask BackgroundErrorStopsScenarioFromRunning()
+        public async Task BackgroundErrorStopsScenarioFromRunning()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))
@@ -50,7 +50,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask ScenarioWithoutBackground()
+        public async Task ScenarioWithoutBackground()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1, cfg => cfg.Given("I have done something else", 1, 1))
@@ -61,7 +61,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask UsesInstructedScenario()
+        public async Task UsesInstructedScenario()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Scenario("My Scenario 1", 1, 1, cfg => cfg.Given("I have done something else", 1, 1))
@@ -73,7 +73,7 @@ namespace AutoStep.Tests.Execution.Strategy
         }
 
         [Fact]
-        public async ValueTask VariableSetPassedThrough()
+        public async Task VariableSetPassedThrough()
         {
             var feature = new FeatureBuilder("My Feature 1", 1, 1)
                                             .Background(1, 1, b => b.Given("I have done something", 1, 1))

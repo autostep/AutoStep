@@ -69,7 +69,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async ValueTask AsyncTargetMethod()
+        public async Task AsyncTargetMethod()
         {
             var order = new List<int>();
 
@@ -91,7 +91,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async ValueTask EventHandlersInvokedInCorrectOrder()
+        public async Task EventHandlersInvokedInCorrectOrder()
         {
             var order = new List<int>();
 
@@ -115,7 +115,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async ValueTask StepFailuresThrownAsIs()
+        public async Task StepFailuresThrownAsIs()
         {
             var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
@@ -137,7 +137,7 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async ValueTask FailuresFromOtherEventHandlerThrownAsIs()
+        public async Task FailuresFromOtherEventHandlerThrownAsIs()
         {
             var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
@@ -157,7 +157,28 @@ namespace AutoStep.Tests.Execution.Events
         }
 
         [Fact]
-        public async ValueTask RemainingExceptionsWrappedAsEventHandlingException()
+        public void CancelledEventPipelineThrowsOperationCancelledAndPropagatesUp()
+        {
+            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scope = scopeMock.Object;
+            var context = new RunContext(BlankConfiguration);
+            var secondHandlerHit = false;
+            var cancelSource = new CancellationTokenSource();
+            
+            // Cancel in the first handler.
+            var firstHandler = new MyEventHandler(() => { cancelSource.Cancel(); }, () => { });
+            var secondHandler = new MyEventHandler(() => { secondHandlerHit = true; }, () => { });
+
+            var pipeline = new EventPipeline(new List<IEventHandler> { firstHandler, secondHandler });
+
+            pipeline.Awaiting(ep => ep.InvokeEventAsync(scope, context, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), cancelSource.Token))
+                    .Should().Throw<OperationCanceledException>();
+
+            secondHandlerHit.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task RemainingExceptionsWrappedAsEventHandlingException()
         {
             var scopeMock = new Mock<IAutoStepServiceScope>();
             var scope = scopeMock.Object;
@@ -207,9 +228,13 @@ namespace AutoStep.Tests.Execution.Events
                 }
                 catch(Exception ex)
                 {
-                    if(exception != null)
+                    if (exception != null)
                     {
                         exception(ex);
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
 
