@@ -1,8 +1,7 @@
 ﻿using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
-using AutoStep.Execution.Contexts;
 
-namespace AutoStep.Execution.Interaction
+namespace AutoStep.Execution.Contexts
 {
     /// <summary>
     /// Defines the context for a method invocation. Typically only lives for the lifetime of a single method call.

@@ -70,21 +70,6 @@ namespace AutoStep.Tests.Execution.Dependency
         }
 
         [Fact]
-        public void ContextInstanceRegisteredInNewUntaggedScope()
-        {
-            var autofacBuilder = new ContainerBuilder();
-            var container = autofacBuilder.Build();
-
-            var rootScope = new AutofacServiceScope("mytag", container);
-            var contextObject = new MyContext();
-
-            var derived = rootScope.BeginNewScope(contextObject);
-
-            derived.Tag.Should().Be(ScopeTags.GeneralScopeTag);
-            derived.GetRequiredService<MyContext>().Should().Be(contextObject);
-        }
-
-        [Fact]
         public void LifetimeScopeDisposed()
         {
             var mockAutofacScope = new Mock<ILifetimeScope>(MockBehavior.Strict);

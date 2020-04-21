@@ -42,7 +42,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await DoTest(stepCollection, 3, owningContext, variables, (scope, ctxt, varSet) =>
             {
-                scope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
+                scope.Tag.Should().Be(ScopeTags.StepTag);
                 ctxt.StepIndex.Should().Be(ranSteps);
                 ctxt.Step.Should().Be(stepCollection.Steps[ranSteps]);
                 ctxt.Variables.Should().Be(variables);
@@ -102,7 +102,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await DoTest(stepCollection, 2, owningContext, variables, (scope, ctxt, varSet) =>
             {
-                scope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
+                scope.Tag.Should().Be(ScopeTags.StepTag);
                 ctxt.StepIndex.Should().Be(ranSteps);
                 ctxt.Step.Should().Be(stepCollection.Steps[ranSteps]);
                 ctxt.Variables.Should().Be(variables);
@@ -154,7 +154,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await DoTest(stepCollection, 2, owningContext, variables, eventHandler, (scope, ctxt, varSet) =>
             {
-                scope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
+                scope.Tag.Should().Be(ScopeTags.StepTag);
                 ctxt.StepIndex.Should().Be(ranSteps);
                 ctxt.Step.Should().Be(stepCollection.Steps[ranSteps]);
                 ctxt.Variables.Should().Be(variables);
@@ -244,7 +244,7 @@ namespace AutoStep.Tests.Execution.Strategy
             public ValueTask ExecuteStepAsync(IAutoStepServiceScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 stepScope.Should().NotBeNull();
-                stepScope.Tag.Should().Be(ScopeTags.GeneralScopeTag);
+                stepScope.Tag.Should().Be(ScopeTags.StepTag);
 
                 stepCallback(stepScope, context, variables);
 

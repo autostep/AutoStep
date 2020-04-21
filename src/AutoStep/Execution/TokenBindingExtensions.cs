@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
-using AutoStep.Execution.Dependency;
-using AutoStep.Execution.Interaction;
+using AutoStep.Execution.Contexts;
 using AutoStep.Language;
 
 namespace AutoStep.Execution

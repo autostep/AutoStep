@@ -89,18 +89,18 @@ namespace AutoStep.Execution.Dependency
         }
 
         /// <inheritdoc/>
-        public void RegisterPerScopeService<TService>()
+        public void RegisterPerStepService<TService>()
             where TService : class
         {
-            builder.RegisterType<TService>().InstancePerLifetimeScope();
+            builder.RegisterType<TService>().InstancePerMatchingLifetimeScope(ScopeTags.StepTag);
         }
 
         /// <inheritdoc/>
-        public void RegisterPerScopeService<TService, TComponent>()
+        public void RegisterPerStepService<TService, TComponent>()
             where TService : class
             where TComponent : TService
         {
-            builder.RegisterType<TComponent>().As<TComponent>().InstancePerLifetimeScope();
+            builder.RegisterType<TComponent>().As<TComponent>().InstancePerMatchingLifetimeScope(ScopeTags.StepTag);
         }
 
         /// <inheritdoc/>

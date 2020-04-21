@@ -6,8 +6,8 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Execution.Binding;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
-using AutoStep.Execution.Interaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Definitions.Interaction
@@ -60,8 +60,13 @@ namespace AutoStep.Definitions.Interaction
             // Bind the arguments.
             var boundArguments = BindArguments(scope, arguments, context, cancelToken);
 
+            // Each defined method needs to live in its own scope. Access the providing scope.
+            var autoStepScope = (IAutoStepServiceScope)scope;
+
+            using var methodScope = autoStepScope.BeginNewScope(ScopeTags.MethodTag, context);
+
             // Get the target.
-            var target = GetMethodTarget(scope);
+            var target = GetMethodTarget(methodScope);
 
             try
             {

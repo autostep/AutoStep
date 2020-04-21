@@ -47,7 +47,7 @@ namespace AutoStep.Execution.Dependency
             }
             catch (DependencyResolutionException ex)
             {
-                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError, ex);
+                throw new DependencyException(ExecutionText.AutofacServiceScope_DependencyResolutionError.FormatWith(serviceType.Name), ex);
             }
         }
 
@@ -56,19 +56,6 @@ namespace AutoStep.Execution.Dependency
             where TContext : TestExecutionContext
         {
             return new AutofacServiceScope(scopeTag, newScope => scope.BeginLifetimeScope(scopeTag, cfg =>
-            {
-                // Register the relevant context object.
-                cfg.RegisterInstance(contextInstance);
-
-                cfg.RegisterInstance(newScope).As<IServiceProvider>();
-            }));
-        }
-
-        /// <inheritdoc/>
-        public IAutoStepServiceScope BeginNewScope<TContext>(TContext contextInstance)
-            where TContext : TestExecutionContext
-        {
-            return new AutofacServiceScope(ScopeTags.GeneralScopeTag, newScope => scope.BeginLifetimeScope(cfg =>
             {
                 // Register the relevant context object.
                 cfg.RegisterInstance(contextInstance);

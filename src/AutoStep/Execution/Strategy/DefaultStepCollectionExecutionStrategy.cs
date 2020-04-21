@@ -43,7 +43,18 @@ namespace AutoStep.Execution.Strategy
 
                     var stepContext = new StepContext(stepIdx, owningContext, step, variables);
 
-                    using var stepScope = owningScope.BeginNewScope(stepContext);
+                    IAutoStepServiceScope? locallyOwnedScope = null;
+                    IAutoStepServiceScope stepScope;
+
+                    if (owningScope.Tag == ScopeTags.StepTag)
+                    {
+                        stepScope = owningScope;
+                    }
+                    else
+                    {
+                        // The parent scope is not a step. Create a new one.
+                        stepScope = locallyOwnedScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
+                    }
 
                     var stepRan = false;
 
@@ -112,6 +123,9 @@ namespace AutoStep.Execution.Strategy
                         timer.Stop();
                         stepContext.Elapsed = timer.Elapsed;
                         stepContext.StepExecuted = stepRan;
+
+                        // Dispose of the locally owned scope (if we created one).
+                        locallyOwnedScope?.Dispose();
                     }
 
                     if (stepContext.FailException is object)

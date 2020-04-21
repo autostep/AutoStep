@@ -32,8 +32,13 @@
         public const string ScenarioTag = "__asScenario";
 
         /// <summary>
-        /// The general (untagged) scope tag. Each step will get its own scope.
+        /// The step scope tag. Each step will get its own scope.
         /// </summary>
-        public const string GeneralScopeTag = "__asGeneral";
+        public const string StepTag = "__asStep";
+
+        /// <summary>
+        /// The method scope tag. Each defined method will get its own scope.
+        /// </summary>
+        public const string MethodTag = "__asMethod";
     }
 }

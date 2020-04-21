@@ -15,16 +15,6 @@ namespace AutoStep.Execution.Dependency
         string Tag { get; }
 
         /// <summary>
-        /// Begins a new scope, providing the associated context object to register within the scope.
-        /// </summary>
-        /// <typeparam name="TContext">The context type.</typeparam>
-        /// <param name="contextInstance">The context object.</param>
-        /// <returns>A new scope.</returns>
-        /// <remarks>Make sure you dispose of the resulting scope.</remarks>
-        IAutoStepServiceScope BeginNewScope<TContext>(TContext contextInstance)
-            where TContext : TestExecutionContext;
-
-        /// <summary>
         /// Begins a new tagged scope, providing the associated context object to register within the scope.
         /// </summary>
         /// <typeparam name="TContext">The context type.</typeparam>

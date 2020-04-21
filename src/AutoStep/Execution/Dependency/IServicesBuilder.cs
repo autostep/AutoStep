@@ -54,19 +54,19 @@ namespace AutoStep.Execution.Dependency
             where TService : class;
 
         /// <summary>
-        /// Register a service that has one instance for each scope (typically this is per-step).
+        /// Register a service that has one instance for each step.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TComponent">The implementing type.</typeparam>
-        void RegisterPerScopeService<TService, TComponent>()
+        void RegisterPerStepService<TService, TComponent>()
             where TService : class
             where TComponent : TService;
 
         /// <summary>
-        /// Register a service that has one instance for each scope (typically this is per-step).
+        /// Register a service that has one instance for each step.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
-        void RegisterPerScopeService<TService>()
+        void RegisterPerStepService<TService>()
             where TService : class;
 
         /// <summary>

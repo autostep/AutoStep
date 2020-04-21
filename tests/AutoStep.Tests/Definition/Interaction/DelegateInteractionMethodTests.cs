@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
+using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
-using AutoStep.Execution.Interaction;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -252,9 +252,9 @@ namespace AutoStep.Tests.Definition.Interaction
 
         private class DerivedClass : BaseClass { }
 
-        private IServiceProvider GetScopeWithRegistry()
+        private IAutoStepServiceScope GetScopeWithRegistry()
         {
-            var scope = new Mock<IServiceProvider>();
+            var scope = new Mock<IAutoStepServiceScope>();
             scope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
 
             return scope.Object;

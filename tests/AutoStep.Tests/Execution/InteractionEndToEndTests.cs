@@ -7,7 +7,6 @@ using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
-using AutoStep.Execution.Interaction;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language.Interaction;
 using System.Linq;
@@ -15,6 +14,7 @@ using AutoStep.Definitions.Interaction;
 using AutoStep.Assertion;
 using System;
 using System.Threading;
+using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Tests.Execution
 {

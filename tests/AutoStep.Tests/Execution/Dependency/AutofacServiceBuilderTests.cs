@@ -4,6 +4,8 @@ using AutoStep.Execution.Dependency;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace AutoStep.Tests.Execution.Dependency
@@ -74,7 +76,7 @@ namespace AutoStep.Tests.Execution.Dependency
 
             sharedCount.Should().Be(1);
 
-            using var nested = built.BeginNewScope(new RunContext(new ConfigurationBuilder().Build()));
+            using var nested = built.BeginNewScope(ScopeTags.RunTag, new RunContext(new ConfigurationBuilder().Build()));
 
             nested.GetRequiredService<TestService>();
 
@@ -147,15 +149,15 @@ namespace AutoStep.Tests.Execution.Dependency
         }
 
         [Fact]
-        public void CanRegisterPerScopeService()
+        public void CanRegisterPerStepService()
         {
             var serviceBuilder = new AutofacServiceBuilder();
 
-            serviceBuilder.RegisterPerScopeService<TestService>();
+            serviceBuilder.RegisterPerStepService<TestService>();
 
             using var built = serviceBuilder.BuildRootScope();
 
-            using (var stepScope = built.BeginNewScope(new MyContext()))
+            using (var stepScope = built.BeginNewScope(ScopeTags.StepTag, new MyContext()))
             {
                 stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(1);
@@ -163,13 +165,27 @@ namespace AutoStep.Tests.Execution.Dependency
                 sharedCount.Should().Be(1);
             }
 
-            using (var stepScope = built.BeginNewScope(ScopeTags.GeneralScopeTag, new MyContext()))
+            using (var stepScope = built.BeginNewScope(ScopeTags.StepTag, new MyContext()))
             {
                 stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
                 stepScope.GetRequiredService<TestService>().Should().NotBeNull();
                 sharedCount.Should().Be(2);
             }
+        }
+
+        [Fact]
+        public void CanResolveOpenLogger()
+        {
+            var serviceBuilder = new AutofacServiceBuilder();
+
+            serviceBuilder.RegisterInstance<ILoggerFactory>(new NullLoggerFactory());
+
+            var built = serviceBuilder.BuildRootScope();
+
+            var logger = built.GetRequiredService<ILogger<AutofacServiceBuilderTests>>();
+
+            logger.Should().NotBeNull();
         }
 
         private class TestService

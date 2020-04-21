@@ -33,14 +33,14 @@ namespace AutoStep.Tests.Definition
             var stepDef = new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), method, attr);
 
             var builder = new AutofacServiceBuilder();
-            builder.RegisterPerScopeService<MyStepDef>();
-
-            var scope = builder.BuildRootScope();
+            builder.RegisterPerStepService<MyStepDef>();
 
             var stepRef = new StepReferenceElement();
             stepRef.Bind(new StepReferenceBinding(stepDef, null, null));
 
             var stepContext = new StepContext(0, new StepCollectionContext(), stepRef, VariableSet.Blank);
+
+            var scope = builder.BuildRootScope().BeginNewScope(ScopeTags.StepTag, stepContext);
 
             await stepDef.ExecuteStepAsync(scope, stepContext, VariableSet.Blank, CancellationToken.None);
 
