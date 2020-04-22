@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Language.Interaction
                 return null;
             }
 
-            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
+            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

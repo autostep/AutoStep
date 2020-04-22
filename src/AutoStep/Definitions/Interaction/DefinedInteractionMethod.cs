@@ -40,7 +40,7 @@ namespace AutoStep.Definitions.Interaction
                                                                  !typeof(CancellationToken).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, CancellationToken cancelToken)
+        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -52,13 +52,8 @@ namespace AutoStep.Definitions.Interaction
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (arguments is null)
-            {
-                throw new ArgumentNullException(nameof(arguments));
-            }
-
             // Bind the arguments.
-            var boundArguments = BindArguments(scope, arguments, context, cancelToken);
+            var boundArguments = BindArguments(scope, context, cancelToken);
 
             // Each defined method needs to live in its own scope. Access the providing scope.
             var autoStepScope = (IAutoStepServiceScope)scope;
@@ -118,9 +113,10 @@ namespace AutoStep.Definitions.Interaction
             return default;
         }
 
-        private object?[] BindArguments(IServiceProvider scope, object?[] providedArgs, MethodContext methodContext, CancellationToken cancelToken)
+        private object?[] BindArguments(IServiceProvider scope, MethodContext methodContext, CancellationToken cancelToken)
         {
             var methodArgs = method.GetParameters();
+            var providedArgs = methodContext.Arguments;
 
             if (methodArgs.Length == 0)
             {
@@ -148,7 +144,7 @@ namespace AutoStep.Definitions.Interaction
                 {
                     bindResult[argIdx] = cancelToken;
                 }
-                else if (sourceArgPosition < providedArgs.Length)
+                else if (sourceArgPosition < providedArgs.Count)
                 {
                     // Get the corresponding argument from the bound set.
                     var bindingArg = providedArgs[sourceArgPosition];

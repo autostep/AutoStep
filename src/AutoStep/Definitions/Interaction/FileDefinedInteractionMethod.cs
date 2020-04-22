@@ -51,11 +51,10 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, object?[] arguments, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
+        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));
-            arguments = arguments.ThrowIfNull(nameof(arguments));
             methods = methods.ThrowIfNull(nameof(methods));
             callStack = callStack.ThrowIfNull(nameof(callStack));
 
@@ -65,7 +64,7 @@ namespace AutoStep.Definitions.Interaction
                 ChainValue = context.ChainValue,
             };
 
-            BindArguments(localContext, arguments);
+            BindArguments(localContext, context.Arguments);
 
             // Invoke the method chain with the new context.
             await MethodDefinition.InvokeChainAsync(scope, localContext, methods, cancelToken, callStack);
@@ -74,15 +73,15 @@ namespace AutoStep.Definitions.Interaction
             context.ChainValue = localContext.ChainValue;
         }
 
-        private void BindArguments(MethodContext context, object?[] arguments)
+        private void BindArguments(MethodContext context, IReadOnlyList<object?> arguments)
         {
             // Last chance catch for the wrong number of arguments. Compiler should have caught this.
-            if (ArgumentCount != arguments.Length)
+            if (ArgumentCount != arguments.Count)
             {
                 throw new LanguageEngineAssertException();
             }
 
-            for (var argIdx = 0; argIdx < arguments.Length; argIdx++)
+            for (var argIdx = 0; argIdx < arguments.Count; argIdx++)
             {
                 var methodArg = MethodDefinition.Arguments[argIdx];
 

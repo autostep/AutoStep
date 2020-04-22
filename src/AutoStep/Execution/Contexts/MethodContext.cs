@@ -1,4 +1,6 @@
-﻿using AutoStep.Definitions.Interaction;
+﻿using System;
+using System.Collections.Generic;
+using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 
 namespace AutoStep.Execution.Contexts
@@ -14,6 +16,17 @@ namespace AutoStep.Execution.Contexts
         public MethodContext()
         {
             Variables = new InteractionVariables();
+            Arguments = Array.Empty<object>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MethodContext"/> class with arguments only.
+        /// </summary>
+        /// <param name="boundArguments">The set of complete argument values passed to the method.</param>
+        public MethodContext(IReadOnlyList<object?> boundArguments)
+        {
+            Variables = new InteractionVariables();
+            Arguments = boundArguments;
         }
 
         /// <summary>
@@ -22,11 +35,13 @@ namespace AutoStep.Execution.Contexts
         /// <param name="call">The method call that is invoking the method.</param>
         /// <param name="methodDef">The method definition actually being invoked.</param>
         /// <param name="variables">The set of variables available inside the method.</param>
-        public MethodContext(MethodCallElement call, InteractionMethod methodDef, InteractionVariables variables)
+        /// <param name="boundArguments">The set of complete argument values passed to the method.</param>
+        public MethodContext(MethodCallElement call, InteractionMethod methodDef, InteractionVariables variables, IReadOnlyList<object?>? boundArguments = null)
         {
             MethodCall = call;
             MethodDefinition = methodDef;
             Variables = variables;
+            Arguments = boundArguments ?? Array.Empty<object>();
         }
 
         /// <summary>
@@ -51,5 +66,10 @@ namespace AutoStep.Execution.Contexts
         /// Use <see cref="ChainValue"/> to pass values back to the caller.
         /// </summary>
         public InteractionVariables Variables { get; }
+
+        /// <summary>
+        /// Gets the set of resolved arguments passed to the method.
+        /// </summary>
+        public IReadOnlyList<object?> Arguments { get; }
     }
 }

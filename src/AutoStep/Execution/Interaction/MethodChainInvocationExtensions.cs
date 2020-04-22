@@ -55,21 +55,21 @@ namespace AutoStep.Execution.Interaction
                         throw new CircularInteractionMethodException(method, callStack);
                     }
 
-                    var newContext = new MethodContext(method, foundMethod, context.Variables)
+                    var boundArguments = BindArguments(stepScope, method, context, interactionSet.Constants);
+
+                    var newContext = new MethodContext(method, foundMethod, context.Variables, boundArguments)
                     {
                         ChainValue = context.ChainValue,
                     };
 
-                    callStack.Push(newContext);
-
                     try
                     {
-                        var boundArguments = BindArguments(stepScope, method, context, interactionSet.Constants);
+                        callStack.Push(newContext);
 
                         // TODO - Allow step through of the methods.
                         var haltInstruction = await executionManager.CheckforHalt(stepScope, newContext, TestThreadState.StartingInteractionMethod);
 
-                        await foundMethod.InvokeAsync(stepScope, newContext, boundArguments, methods, callStack, cancelToken);
+                        await foundMethod.InvokeAsync(stepScope, newContext, methods, callStack, cancelToken);
 
                         context.ChainValue = newContext.ChainValue;
                     }
