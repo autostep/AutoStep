@@ -18,6 +18,15 @@ namespace AutoStep.Execution.Dependency
         /// <summary>
         /// Register a type that is resolved fresh each time it is requested.
         /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TComponent">The implementing type.</typeparam>
+        void RegisterPerResolveService<TService, TComponent>()
+            where TService : class
+            where TComponent : TService;
+
+        /// <summary>
+        /// Register a type that is resolved fresh each time it is requested.
+        /// </summary>
         /// <param name="consumer">The service type.</param>
         void RegisterPerResolveService(Type consumer);
 

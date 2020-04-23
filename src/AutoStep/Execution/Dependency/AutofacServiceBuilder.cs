@@ -31,6 +31,14 @@ namespace AutoStep.Execution.Dependency
         }
 
         /// <inheritdoc/>
+        public void RegisterPerResolveService<TService, TComponent>()
+            where TService : class
+            where TComponent : TService
+        {
+            builder.RegisterType<TComponent>().As<TService>().InstancePerDependency();
+        }
+
+        /// <inheritdoc/>
         public void RegisterPerResolveService(Type consumer)
         {
             builder.RegisterType(consumer).InstancePerDependency();
