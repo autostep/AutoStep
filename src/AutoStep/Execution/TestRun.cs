@@ -189,7 +189,7 @@ namespace AutoStep.Execution
             exposedServiceRegistration.RegisterInstance(featureSet);
 
             // Register configuration concepts in the container.
-            exposedServiceRegistration.RegisterInstance(builtConfiguration);
+            exposedServiceRegistration.RegisterInstance<IConfiguration>(builtConfiguration);
 
             ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
 
