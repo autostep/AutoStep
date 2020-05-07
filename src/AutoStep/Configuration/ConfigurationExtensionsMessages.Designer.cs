@@ -61,16 +61,7 @@ namespace AutoStep.Configuration {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find the default run configuration. Has a &apos;default&apos; entry been configured in the allRunConfigs section?.
-        /// </summary>
-        internal static string DefaultConfigurationNotFound {
-            get {
-                return ResourceManager.GetString("DefaultConfigurationNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find the specified run configuration &apos;{0}&apos;. Has it been configured in the allRunConfigs section?.
+        ///   Looks up a localized string similar to Cannot find the specified run configuration &apos;{0}&apos;. Has it been configured in the runConfigs section?.
         /// </summary>
         internal static string RunConfigurationNotFound {
             get {

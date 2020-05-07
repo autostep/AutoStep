@@ -43,7 +43,7 @@ namespace AutoStep.Execution.Strategy
             // Create a queue of all features.
             var featureQueue = new ConcurrentQueue<IFeatureInfo>(executionSet.Features);
 
-            var parallelConfig = runContext.Configuration.GetRunConfigurationOption("parallelCount", 1);
+            var parallelConfig = runContext.Configuration.GetRunValue("parallelCount", 1);
 
             if (parallelConfig < 1)
             {
