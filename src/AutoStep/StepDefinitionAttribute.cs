@@ -27,5 +27,10 @@ namespace AutoStep
         /// Gets the type of step (Given, When, Then).
         /// </summary>
         public StepType Type { get; }
+
+        /// <summary>
+        /// Gets or sets a documentation block for the step definition.
+        /// </summary>
+        public string? Documentation { get; set; }
     }
 }

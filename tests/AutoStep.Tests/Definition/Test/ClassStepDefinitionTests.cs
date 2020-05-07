@@ -48,6 +48,16 @@ namespace AutoStep.Tests.Definition
             stepClassInstance.ClickCount.Should().Be(1);
         }
 
+        [Fact]
+        public void StepCanHaveDocumentation()
+        {
+            var method = typeof(MyStepDef).GetMethod(nameof(MyStepDef.GivenIHaveSomething))!;
+            var attr = method.GetCustomAttribute<GivenAttribute>()!;
+            var stepDef = new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), method, attr);
+
+            stepDef.GetDocumentation().Should().Be("Does something");
+        }
+
         private class MyStepDef
         {
             public int ClickCount { get; set; }
@@ -57,6 +67,17 @@ namespace AutoStep.Tests.Definition
             {
                 ClickCount++;
             }
+
+            [Given("doc", Documentation = @"
+                Does something
+            ")]
+            public void GivenIHaveSomething()
+            {
+            }
+        }
+
+        private class MyStepDefWithDocs
+        {
         }
     }
 }

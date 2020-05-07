@@ -51,6 +51,11 @@ namespace AutoStep.Tests.Language.Test
             {
                 throw new NotImplementedException();
             }
+
+            public override string? GetDocumentation()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]

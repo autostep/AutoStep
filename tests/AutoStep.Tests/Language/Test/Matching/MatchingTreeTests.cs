@@ -491,6 +491,11 @@ namespace AutoStep.Tests.Language.Test.Matching
                 throw new NotImplementedException();
             }
 
+            public override string? GetDocumentation()
+            {
+                throw new NotImplementedException();
+            }
+
             public override bool IsSameDefinition(StepDefinition def)
             {
                 if (def is TestDef testDef)

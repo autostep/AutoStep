@@ -11,6 +11,8 @@ namespace AutoStep.Definitions.Test
     public class ClassStepDefinition : MethodBackedStepDefinition
     {
         private readonly Type owner;
+        private readonly string? rawDocumentation;
+        private string? cachedProcessedDocumentation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClassStepDefinition"/> class.
@@ -23,6 +25,7 @@ namespace AutoStep.Definitions.Test
             : base(source, method, declaringAttribute?.Type ?? throw new ArgumentNullException(nameof(declaringAttribute)), declaringAttribute.Declaration)
         {
             this.owner = owner;
+            rawDocumentation = declaringAttribute.Documentation;
         }
 
         /// <summary>
@@ -52,6 +55,22 @@ namespace AutoStep.Definitions.Test
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            if (rawDocumentation is null)
+            {
+                return null;
+            }
+
+            if (cachedProcessedDocumentation is object)
+            {
+                return cachedProcessedDocumentation;
+            }
+
+            return cachedProcessedDocumentation = DocumentationHelper.GetProcessedDocumentationBlock(rawDocumentation);
         }
     }
 }

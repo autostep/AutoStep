@@ -45,6 +45,12 @@ namespace AutoStep.Definitions.Test
             return false;
         }
 
+        /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            return Definition?.Description;
+        }
+
         /// <summary>
         /// Executes the step.
         /// </summary>

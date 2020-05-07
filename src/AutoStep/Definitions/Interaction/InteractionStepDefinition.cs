@@ -90,6 +90,14 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            var el = (InteractionStepDefinitionElement)Definition!;
+
+            return el.Description;
+        }
+
+        /// <inheritdoc/>
         public override object GetSignature()
         {
             var el = (InteractionStepDefinitionElement)Definition!;

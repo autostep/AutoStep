@@ -72,6 +72,11 @@ namespace AutoStep.Tests.Utils
                 throw new System.NotImplementedException();
             }
 
+            public override string? GetDocumentation()
+            {
+                throw new NotImplementedException();
+            }
+
             public override bool IsSameDefinition(StepDefinition def)
             {
                 return def.Declaration == Declaration && def.Source == Source;

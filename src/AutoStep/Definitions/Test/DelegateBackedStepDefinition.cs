@@ -26,6 +26,13 @@ namespace AutoStep.Definitions.Test
         }
 
         /// <inheritdoc/>
+        public override string? GetDocumentation()
+        {
+            // No documentation for delegate-defined steps right now.
+            return null;
+        }
+
+        /// <inheritdoc/>
         public override bool IsSameDefinition(StepDefinition def)
         {
             if (def is DelegateBackedStepDefinition delDef)

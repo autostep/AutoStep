@@ -43,6 +43,12 @@ namespace AutoStep.Definitions
         public string Declaration { get; }
 
         /// <summary>
+        /// Get a documentation block for a step.
+        /// </summary>
+        /// <returns>A documentation block.</returns>
+        public abstract string? GetDocumentation();
+
+        /// <summary>
         /// Gets or sets the step definition element, which contains calculated metadata for the definition.
         /// </summary>
         public StepDefinitionElement? Definition { get; set; }

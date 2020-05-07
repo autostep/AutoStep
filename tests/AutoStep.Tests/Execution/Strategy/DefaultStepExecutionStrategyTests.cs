@@ -192,6 +192,10 @@ namespace AutoStep.Tests.Execution.Strategy
                 await callback(stepScope, context, variables);
             }
 
+            public override string? GetDocumentation()
+            {
+                throw new NotImplementedException();
+            }
 
             public override bool IsSameDefinition(StepDefinition def)
             {
