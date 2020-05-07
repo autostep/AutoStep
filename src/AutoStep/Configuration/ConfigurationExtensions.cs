@@ -39,7 +39,7 @@ namespace AutoStep.Configuration
             var defaultBuilder = new ConfigurationBuilder();
 
             defaultBuilder.AddInMemoryCollection(ToKeyValuePairs(
-                ("allRunConfigs:default:name", "Default")));
+                ("runConfigs:default:name", "Default")));
 
             return defaultBuilder.Build();
         }
@@ -51,13 +51,13 @@ namespace AutoStep.Configuration
 
         private static IConfigurationSection GetSelectedRunConfiguration(this IConfiguration configuration)
         {
-            var named = configuration.GetValue("runconfig", "default");
+            var named = configuration.GetValue("runConfig", "default");
 
-            var allConfigs = configuration.GetSection("allRunConfigs");
+            var allConfigs = configuration.GetSection("runConfigs");
 
             if (!allConfigs.Exists())
             {
-                allConfigs = DefaultConfiguration.GetSection("allRunConfigs");
+                allConfigs = DefaultConfiguration.GetSection("runConfigs");
             }
 
             var runConfigSection = allConfigs.GetSection(named);
