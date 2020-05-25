@@ -520,6 +520,15 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A step definition argument should not be surrounded by quote marks (e.g. &apos;{{argument}}&apos;). It will not be possible to consistently match the argument in tests..
+        /// </summary>
+        internal static string StepDefArgumentShouldNotHaveQuotes {
+            get {
+                return ResourceManager.GetString("StepDefArgumentShouldNotHaveQuotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A Step is not expected here..
         /// </summary>
         internal static string StepNotExpected {

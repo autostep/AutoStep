@@ -159,6 +159,11 @@
         /// </summary>
         UnexpectedAnnotationWhiteSpace = 10011,
 
+        /// <summary>
+        /// A step definition argument should not be surrounded by quote marks (e.g. '{argument}'). It will not be possible to consistently match the argument in tests.
+        /// </summary>
+        StepDefArgumentShouldNotHaveQuotes = 10012,
+
         //// Linker Messages ////
 
         /// <summary>

@@ -25,7 +25,9 @@ stepDeclaration: DEF_GIVEN WS? stepDeclarationBody #declareGiven
 
 stepDeclarationBody: stepDeclarationSection*;
 
-stepDeclarationSection: DEF_LCURLY stepDeclarationArgument DEF_RCURLY       # declarationArgument
+stepDeclarationSection: 
+                      (DEF_QUOTE|DEF_DBLQUOTE) DEF_LCURLY stepDeclarationArgument DEF_RCURLY (DEF_QUOTE | DEF_DBLQUOTE) # declarationArgumentErrBoundedQuotes                       
+                      | DEF_LCURLY stepDeclarationArgument DEF_RCURLY       # declarationArgument
                       | stepDeclarationSectionContent                       # declarationSection;
 
 stepDeclarationArgument: stepDeclarationArgumentName (DEF_COLON stepDeclarationTypeHint)?
@@ -35,7 +37,7 @@ stepDeclarationArgumentName: DEF_WORD;
 
 stepDeclarationTypeHint: DEF_WORD;
 
-stepDeclarationSectionContent: (DEF_WORD | DEF_GIVEN | DEF_WHEN | DEF_THEN)   # declarationWord
+stepDeclarationSectionContent: (DEF_WORD | DEF_GIVEN | DEF_WHEN | DEF_THEN | DEF_QUOTE | DEF_DBLQUOTE)   # declarationWord
                              | (DEF_ESCAPED_LCURLY | DEF_ESCAPED_RCURLY)      # declarationEscaped
                              | WS                                             # declarationWs
                              | DEF_COLON                                      # declarationColon

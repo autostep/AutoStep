@@ -80,6 +80,17 @@ namespace AutoStep.Language.Test.Visitors
             return Result;
         }
 
+        /// <inheritdoc />
+        /// <remarks>
+        /// '{argument}' - not allowed.
+        /// </remarks>
+        public override StepDefinitionElement VisitDeclarationArgumentErrBoundedQuotes([NotNull] AutoStepParser.DeclarationArgumentErrBoundedQuotesContext context)
+        {
+            MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.StepDefArgumentShouldNotHaveQuotes);
+
+            return Result!;
+        }
+
         /// <summary>
         /// Visits a declaration argument.
         /// </summary>

@@ -90,6 +90,13 @@ internal interface IAutoStepParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStepDeclarationBody([NotNull] AutoStepParser.StepDeclarationBodyContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>declarationArgumentErrBoundedQuotes</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclarationArgumentErrBoundedQuotes([NotNull] AutoStepParser.DeclarationArgumentErrBoundedQuotesContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>declarationArgument</c>
 	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
 	/// </summary>

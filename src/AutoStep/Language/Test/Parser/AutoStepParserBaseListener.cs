@@ -150,6 +150,20 @@ internal partial class AutoStepParserBaseListener : IAutoStepParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStepDeclarationBody([NotNull] AutoStepParser.StepDeclarationBodyContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>declarationArgumentErrBoundedQuotes</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDeclarationArgumentErrBoundedQuotes([NotNull] AutoStepParser.DeclarationArgumentErrBoundedQuotesContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>declarationArgumentErrBoundedQuotes</c>
+	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDeclarationArgumentErrBoundedQuotes([NotNull] AutoStepParser.DeclarationArgumentErrBoundedQuotesContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>declarationArgument</c>
 	/// labeled alternative in <see cref="AutoStepParser.stepDeclarationSection"/>.
 	/// <para>The default implementation does nothing.</para>

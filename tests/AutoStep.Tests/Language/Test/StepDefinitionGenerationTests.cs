@@ -55,6 +55,25 @@ namespace AutoStep.Tests.Language.Test
         }
 
         [Fact]
+        [Issue("https://github.com/autostep/AutoStep/issues/31")]
+        public void ArgumentWithSurroundQuotesGivesError()
+        {
+            const string TestStep = "I have '{argument1}'";
+
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var matched = compiler.CompileStepDefinitionElementFromStatementBody(LogFactory, StepType.Given, TestStep);
+
+            matched.Success.Should().BeFalse();
+            matched.Messages.Should().HaveCount(1);
+            matched.Messages.Should().Contain(
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.StepDefArgumentShouldNotHaveQuotes,
+                                    "A step definition argument should not be surrounded by quote marks (e.g. '{argument}'). It will not be possible to consistently match the argument in tests.",
+                                    1, 8, 1, 20
+                                    ));
+        }
+
+        [Fact]
         public void EmptyArgumentCausesError()
         {
             const string TestStep = "I have done something with {}";

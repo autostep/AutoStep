@@ -100,6 +100,8 @@ DEF_ESCAPED_RCURLY: '\\}';
 DEF_LCURLY: '{';
 DEF_RCURLY: '}';
 DEF_NEWLINE: DEF_WS* (NL|EOF) -> type(NEWLINE), popMode;
+DEF_QUOTE: '\'';
+DEF_DBLQUOTE: '"';
 DEF_WS: SPACE+ -> type(WS);
 DEF_COLON: ':';
 DEF_WORD: ~[ :\\\t#{}\r\n]+;
