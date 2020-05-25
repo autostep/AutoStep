@@ -33,7 +33,7 @@ namespace AutoStep.Definitions.Test
         /// <remarks>
         /// File steps cannot accept tables.
         /// </remarks>
-        public override TableRequirements TableRequirement => TableRequirements.NotSupported;
+        public override StepTableRequirement TableRequirement => StepTableRequirement.NotSupported;
 
         /// <summary>
         /// Compares two step definitions within the same source and decides if they are the same actual definition

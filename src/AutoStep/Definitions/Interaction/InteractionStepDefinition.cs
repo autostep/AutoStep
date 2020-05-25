@@ -34,7 +34,7 @@ namespace AutoStep.Definitions.Interaction
         /// <remarks>
         /// Interaction step definitions can't accept table parameters.
         /// </remarks>
-        public override TableRequirements TableRequirement => TableRequirements.NotSupported;
+        public override StepTableRequirement TableRequirement => StepTableRequirement.NotSupported;
 
         /// <inheritdoc/>
         public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)

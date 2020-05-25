@@ -43,12 +43,12 @@ namespace AutoStep.Tests.Language.Test
             {
             }
 
-            public TestDef(StepType type, string declaration, TableRequirements tableRequirement) : base(TestStepDefinitionSource.Blank, type, declaration)
+            public TestDef(StepType type, string declaration, StepTableRequirement tableRequirement) : base(TestStepDefinitionSource.Blank, type, declaration)
             {
                 TableRequirement = tableRequirement;
             }
 
-            public override TableRequirements TableRequirement { get; } = TableRequirements.Optional;
+            public override StepTableRequirement TableRequirement { get; } = StepTableRequirement.Optional;
 
             public override bool IsSameDefinition(StepDefinition def)
             {
@@ -1057,7 +1057,7 @@ namespace AutoStep.Tests.Language.Test
 
             var linker = new Linker(compiler);
 
-            var def = new TestDef(StepType.Given, "I have done something", TableRequirements.NotSupported);
+            var def = new TestDef(StepType.Given, "I have done something", StepTableRequirement.NotSupported);
 
             linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
 
@@ -1094,7 +1094,7 @@ namespace AutoStep.Tests.Language.Test
 
             var linker = new Linker(compiler);
 
-            var def = new TestDef(StepType.Given, "I have done something", TableRequirements.Required);
+            var def = new TestDef(StepType.Given, "I have done something", StepTableRequirement.Required);
 
             linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
 

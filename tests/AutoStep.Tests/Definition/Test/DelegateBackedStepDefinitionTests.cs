@@ -280,8 +280,10 @@ namespace AutoStep.Tests.Definition
 
             var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
-            var stepRefInfo = new StepReferenceElement();
-            stepRefInfo.Table = new TableElement();
+            var stepRefInfo = new StepReferenceElement
+            {
+                Table = new TableElement()
+            };
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 

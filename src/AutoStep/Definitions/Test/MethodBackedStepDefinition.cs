@@ -31,7 +31,7 @@ namespace AutoStep.Definitions.Test
 
             // For now, method defined steps do not have the concept of 'optional' tables.
             TableRequirement = Method.GetParameters().Any(p => typeof(Table).IsAssignableFrom(p.ParameterType)) ?
-                               TableRequirements.Required : TableRequirements.NotSupported;
+                               StepTableRequirement.Required : StepTableRequirement.NotSupported;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace AutoStep.Definitions.Test
         protected MethodInfo Method { get; }
 
         /// <inheritdoc/>
-        public override TableRequirements TableRequirement { get; }
+        public override StepTableRequirement TableRequirement { get; }
 
         /// <summary>
         /// This method is invoked when the step definition should be executed.
@@ -161,7 +161,7 @@ namespace AutoStep.Definitions.Test
                         throw new LanguageEngineAssertException();
                     }
 
-                    bindResult[argIdx] = new Table(context.Step.Table);
+                    bindResult[argIdx] = new Table(context.Step.Table, scope, variables);
                 }
                 else
                 {

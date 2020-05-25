@@ -486,7 +486,7 @@ namespace AutoStep.Tests.Language.Test.Matching
                 Definition = definition;
             }
 
-            public override TableRequirements TableRequirement => TableRequirements.Optional;
+            public override StepTableRequirement TableRequirement => StepTableRequirement.Optional;
 
             public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {

@@ -50,7 +50,7 @@ namespace AutoStep.Definitions
         /// <summary>
         /// Gets a value indicating whether the step definition requires a table.
         /// </summary>
-        public abstract TableRequirements TableRequirement { get; }
+        public abstract StepTableRequirement TableRequirement { get; }
 
         /// <summary>
         /// Gets or sets the step definition element, which contains calculated metadata for the definition.

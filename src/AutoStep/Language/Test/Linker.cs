@@ -227,12 +227,12 @@ namespace AutoStep.Language.Test
 
         private bool ValidateTableRequirements(string? sourceName, StepReferenceElement stepReference, StepDefinition definition, IList<LanguageOperationMessage>? messages)
         {
-            if (stepReference.Table is object && definition.TableRequirement == TableRequirements.NotSupported)
+            if (stepReference.Table is object && definition.TableRequirement == StepTableRequirement.NotSupported)
             {
                 // Supplies table, but not required. Warning.
                 messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Warning, CompilerMessageCode.TableNotRequired));
             }
-            else if (stepReference.Table is null && definition.TableRequirement == TableRequirements.Required)
+            else if (stepReference.Table is null && definition.TableRequirement == StepTableRequirement.Required)
             {
                 // Requires table, but none supplied. Error.
                 messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.TableRequired));
