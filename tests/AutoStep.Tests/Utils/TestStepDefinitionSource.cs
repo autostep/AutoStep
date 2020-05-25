@@ -67,6 +67,8 @@ namespace AutoStep.Tests.Utils
             {
             }
 
+            public override TableRequirements TableRequirement => TableRequirements.Optional;
+
             public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new System.NotImplementedException();

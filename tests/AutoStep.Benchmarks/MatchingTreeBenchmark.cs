@@ -165,6 +165,8 @@ namespace AutoStep.Benchmarks
                 Definition = definition;
             }
 
+            public override TableRequirements TableRequirement => TableRequirements.Optional;
+
             public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();

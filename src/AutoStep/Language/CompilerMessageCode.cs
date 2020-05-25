@@ -186,6 +186,16 @@
         /// </summary>
         ArgumentTypeNotCompatible = 20004,
 
+        /// <summary>
+        /// The bound step definition does not require a table, but one has been supplied.
+        /// </summary>
+        TableNotRequired = 20005,
+
+        /// <summary>
+        /// The bound step definition requires a table, but none has been supplied.
+        /// </summary>
+        TableRequired = 20006,
+
         //// Errors from the Interaction Language ////
 
         /// <summary>

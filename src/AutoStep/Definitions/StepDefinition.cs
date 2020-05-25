@@ -5,7 +5,6 @@ using AutoStep.Elements;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions
 {
@@ -47,6 +46,11 @@ namespace AutoStep.Definitions
         /// </summary>
         /// <returns>A documentation block.</returns>
         public abstract string? GetDocumentation();
+
+        /// <summary>
+        /// Gets a value indicating whether the step definition requires a table.
+        /// </summary>
+        public abstract TableRequirements TableRequirement { get; }
 
         /// <summary>
         /// Gets or sets the step definition element, which contains calculated metadata for the definition.

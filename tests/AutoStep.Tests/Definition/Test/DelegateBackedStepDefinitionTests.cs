@@ -262,5 +262,34 @@ namespace AutoStep.Tests.Definition
             delDefinition.Invoking(d => d.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None))
                          .Should().Throw<InvalidOperationException>();
         }
+
+        [Fact]
+        public async Task CanInvokeMethodWithTableBinding()
+        {
+            var source = new Mock<IStepDefinitionSource>();
+            var mockScope = new Mock<IServiceProvider>();
+
+            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+
+            Table? foundTable = default;
+
+            Action<Table> callback = table =>
+            {
+                foundTable = table;
+            };
+
+            var delDefinition = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
+
+            var stepRefInfo = new StepReferenceElement();
+            stepRefInfo.Table = new TableElement();
+            stepRefInfo.FreezeTokens();
+            stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
+
+            var cancellationSource = new CancellationTokenSource();
+
+            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
+
+            foundTable.Should().NotBeNull();
+        }
     }
 }

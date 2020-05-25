@@ -583,6 +583,24 @@ namespace AutoStep.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The step definition does not require a table, so the provided one will not be used. Did you mean to use a different step?.
+        /// </summary>
+        internal static string TableNotRequired {
+            get {
+                return ResourceManager.GetString("TableNotRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The step definition requires a table..
+        /// </summary>
+        internal static string TableRequired {
+            get {
+                return ResourceManager.GetString("TableRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Table cell has not been terminated. Expecting a table delimiter character &apos;|&apos;..
         /// </summary>
         internal static string TableRowHasNotBeenTerminated {

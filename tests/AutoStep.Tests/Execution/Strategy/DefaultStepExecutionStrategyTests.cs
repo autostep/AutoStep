@@ -187,6 +187,8 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.callback = callback;
             }
 
+            public override TableRequirements TableRequirement => TableRequirements.Optional;
+
             public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 await callback(stepScope, context, variables);

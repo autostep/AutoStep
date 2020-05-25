@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -26,13 +27,20 @@ namespace AutoStep.Definitions.Test
         public MethodBackedStepDefinition(IStepDefinitionSource source, MethodInfo method, StepType type, string declaration)
             : base(source, type, declaration)
         {
-            Method = method;
+            Method = method ?? throw new ArgumentNullException(nameof(method));
+
+            // For now, method defined steps do not have the concept of 'optional' tables.
+            TableRequirement = Method.GetParameters().Any(p => typeof(Table).IsAssignableFrom(p.ParameterType)) ?
+                               TableRequirements.Required : TableRequirements.NotSupported;
         }
 
         /// <summary>
         /// Gets the method info for the method to call.
         /// </summary>
         protected MethodInfo Method { get; }
+
+        /// <inheritdoc/>
+        public override TableRequirements TableRequirement { get; }
 
         /// <summary>
         /// This method is invoked when the step definition should be executed.
@@ -145,11 +153,19 @@ namespace AutoStep.Definitions.Test
                 {
                     bindResult[argIdx] = cancelToken;
                 }
+                else if (typeof(Table).IsAssignableFrom(arg.ParameterType))
+                {
+                    if (context.Step.Table is null)
+                    {
+                        // Should not be able to get here, the linker should refuse to bind.
+                        throw new LanguageEngineAssertException();
+                    }
+
+                    bindResult[argIdx] = new Table(context.Step.Table);
+                }
                 else
                 {
                     // Get the corresponding argument from the bound set.
-
-                    // Note; we need to special-case the Table argument here.
                     var bindingArg = boundArgs[sourceArgPosition];
                     sourceArgPosition++;
 

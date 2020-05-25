@@ -28,6 +28,7 @@ namespace AutoStep.Tests.Language.Test
 
         private class TestDef : StepDefinition
         {
+
             public TestDef(IStepDefinitionSource source, StepType type, string declaration) : base(source, type, declaration)
             {
             }
@@ -41,6 +42,13 @@ namespace AutoStep.Tests.Language.Test
             public TestDef(StepType type, string declaration) : base(TestStepDefinitionSource.Blank, type, declaration)
             {
             }
+
+            public TestDef(StepType type, string declaration, TableRequirements tableRequirement) : base(TestStepDefinitionSource.Blank, type, declaration)
+            {
+                TableRequirement = tableRequirement;
+            }
+
+            public override TableRequirements TableRequirement { get; } = TableRequirements.Optional;
 
             public override bool IsSameDefinition(StepDefinition def)
             {
@@ -1040,6 +1048,77 @@ namespace AutoStep.Tests.Language.Test
             result[0].MatchedParts.Should().Be(2);
             result[1].PlaceholderValues!["component"].Should().Be("button");
             result[1].MatchedParts.Should().Be(2);
+        }
+
+        [Fact]
+        public void TableProvidedButNotSupportedGivesWarning()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something", TableRequirements.NotSupported);
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
+
+            def.Definition.Should().NotBeNull();
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                        .Table(2, 1, table => table
+                            .Headers(2, 1, ("header1", 1, 1))
+                            .Row(3, 1, ("value", 1, 1, null))
+                    )
+                )));
+
+            var file = fileBuilder.Built!;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeTrue();
+            linkResult.Messages.Should().HaveCount(1);
+            linkResult.Messages.Should().Contain(LanguageMessageFactory.Create(null, CompilerMessageLevel.Warning, CompilerMessageCode.TableNotRequired, 1, 1, 1, 27));
+        }
+
+        [Fact]
+        public void TableRequiredButNotProvidedGivesError()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something", TableRequirements.Required);
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
+
+            def.Definition.Should().NotBeNull();
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .Given("I have done something", 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                    )
+                ));
+
+            var file = fileBuilder.Built!;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeFalse();
+            linkResult.Messages.Should().HaveCount(1);
+            linkResult.Messages.Should().Contain(LanguageMessageFactory.Create(null, CompilerMessageLevel.Error, CompilerMessageCode.TableRequired, 1, 1, 1, 27));
         }
 
         private LinkResult LinkTest(StepType type, string defText, string refText, Action<StepReferenceBuilder> builder)

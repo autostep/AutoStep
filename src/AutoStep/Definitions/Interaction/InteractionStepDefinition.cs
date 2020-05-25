@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Interaction;
 using AutoStep.Language;
 using AutoStep.Language.Interaction;
@@ -30,6 +29,12 @@ namespace AutoStep.Definitions.Interaction
         {
             Definition = stepDef;
         }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// Interaction step definitions can't accept table parameters.
+        /// </remarks>
+        public override TableRequirements TableRequirement => TableRequirements.NotSupported;
 
         /// <inheritdoc/>
         public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)

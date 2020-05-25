@@ -291,6 +291,12 @@
   <data name="TableColumnsMismatch" xml:space="preserve">
     <value>The row contains {0} cell(s), but we are expecting {1}, because of the number of headers.</value>
   </data>
+  <data name="TableNotRequired" xml:space="preserve">
+    <value>The step definition does not require a table, so the provided one will not be used. Did you mean to use a different step?</value>
+  </data>
+  <data name="TableRequired" xml:space="preserve">
+    <value>The step definition requires a table.</value>
+  </data>
   <data name="TableRowHasNotBeenTerminated" xml:space="preserve">
     <value>Table cell has not been terminated. Expecting a table delimiter character '|'.</value>
   </data>

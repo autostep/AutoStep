@@ -179,13 +179,19 @@ namespace AutoStep.Language.Test
                 var foundMatch = matches.First.Value;
 
                 // Link successful, bind the reference.
-                if (foundMatch.ArgumentSet is object && messages is object)
+                if (foundMatch.ArgumentSet is object)
                 {
                     // Run argument validation on the step (doesn't prevent it binding).
                     if (!ValidateArgumentBinding(sourceName, foundMatch.ArgumentSet, messages))
                     {
                         success = false;
                     }
+                }
+
+                // Run table validation on the step (doesn't prevent it binding).
+                if (!ValidateTableRequirements(sourceName, stepReference, foundMatch.Definition, messages))
+                {
+                    success = false;
                 }
 
                 // Needs to materialise the argument set here. Assign the reference binding.
@@ -197,7 +203,7 @@ namespace AutoStep.Language.Test
             return success;
         }
 
-        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, IList<LanguageOperationMessage> messages)
+        private bool ValidateArgumentBinding(string? sourceName, IEnumerable<ArgumentBinding> argumentSet, IList<LanguageOperationMessage>? messages)
         {
             var success = true;
 
@@ -212,11 +218,28 @@ namespace AutoStep.Language.Test
                         success = false;
                     }
 
-                    messages.Add(bindingMessage);
+                    messages?.Add(bindingMessage);
                 }
             }
 
             return success;
+        }
+
+        private bool ValidateTableRequirements(string? sourceName, StepReferenceElement stepReference, StepDefinition definition, IList<LanguageOperationMessage>? messages)
+        {
+            if (stepReference.Table is object && definition.TableRequirement == TableRequirements.NotSupported)
+            {
+                // Supplies table, but not required. Warning.
+                messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Warning, CompilerMessageCode.TableNotRequired));
+            }
+            else if (stepReference.Table is null && definition.TableRequirement == TableRequirements.Required)
+            {
+                // Requires table, but none supplied. Error.
+                messages?.Add(LanguageMessageFactory.Create(sourceName, stepReference, CompilerMessageLevel.Error, CompilerMessageCode.TableRequired));
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

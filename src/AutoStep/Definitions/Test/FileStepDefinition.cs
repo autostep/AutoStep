@@ -29,6 +29,12 @@ namespace AutoStep.Definitions.Test
             Definition = element;
         }
 
+        /// <inheritdoc />
+        /// <remarks>
+        /// File steps cannot accept tables.
+        /// </remarks>
+        public override TableRequirements TableRequirement => TableRequirements.NotSupported;
+
         /// <summary>
         /// Compares two step definitions within the same source and decides if they are the same actual definition
         /// (i.e. one can be replaced with the other).
@@ -82,7 +88,6 @@ namespace AutoStep.Definitions.Test
                 throw new LanguageEngineAssertException();
             }
 
-            // TODO: Do this once per row of the table in the step reference, or just once if there's no table?
             for (var argIdx = 0; argIdx < Definition.Arguments.Count; argIdx++)
             {
                 var argValue = context.Step.Binding.Arguments[argIdx];
