@@ -9,6 +9,9 @@ namespace AutoStep.Elements.Test
     /// </summary>
     public class FeatureElement : BuiltElement, IAnnotatableElement, IFeatureInfo
     {
+        /// <inheritdoc/>
+        public string? SourceName { get; set; }
+
         /// <summary>
         /// Gets the annotations applied to the feature, in applied order.
         /// </summary>
@@ -56,6 +59,7 @@ namespace AutoStep.Elements.Test
             var newFeature = new FeatureElement
             {
                 Name = Name,
+                SourceName = SourceName,
                 Background = Background,
                 Description = Description,
                 SourceLine = SourceLine,

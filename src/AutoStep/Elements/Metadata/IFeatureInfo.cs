@@ -13,6 +13,11 @@ namespace AutoStep.Elements.Metadata
         IReadOnlyList<IAnnotationInfo> Annotations { get; }
 
         /// <summary>
+        /// Gets the name of the containing source file.
+        /// </summary>
+        string? SourceName { get; }
+
+        /// <summary>
         /// Gets the name of the feature.
         /// </summary>
         string Name { get; }

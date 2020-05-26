@@ -85,7 +85,10 @@ namespace AutoStep.Language.Test.Visitors
                 return Result!;
             }
 
-            Result!.Feature = new FeatureElement();
+            Result!.Feature = new FeatureElement
+            {
+                SourceName = SourceName,
+            };
 
             currentAnnotatable = Result!.Feature;
 
