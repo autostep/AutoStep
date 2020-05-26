@@ -8,6 +8,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
@@ -209,11 +210,24 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
+            var contextProvider = new Mock<IContextScopeProvider>();
+            var allTrackedDisposables = new List<TestDisposable>();
+
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<StepContext>();
+
+                var newDisposable = new TestDisposable();
+                allTrackedDisposables.Add(newDisposable);
+                return newDisposable;
+            });
+
             builder.RegisterInstance(threadContext);
-            builder.RegisterInstance(LogFactory);
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance<IStepExecutionStrategy>(stepExecuteStrategy);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -225,6 +239,18 @@ namespace AutoStep.Tests.Execution.Strategy
 
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
+
+            if (cancelToken == default)
+            {
+                allTrackedDisposables.Should().HaveCount(executionManagerInvokes);
+            }
+            else
+            {
+                // Allow the number of disposables to be 1 greater than the manager invokes because of cancellation support.
+                allTrackedDisposables.Should().HaveCount(executionManagerInvokes + 1);
+            }
+
+            allTrackedDisposables.TrueForAll(d => d.IsDisposed).Should().BeTrue();
 
             if(owningContext.FailException != null)
             {

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using AutoStep.Execution.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Contexts
 {
@@ -10,6 +13,7 @@ namespace AutoStep.Execution.Contexts
     public abstract class TestExecutionContext
     {
         private readonly ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentQueue<LogEntry> logEntries = new ConcurrentQueue<LogEntry>();
 
         /// <summary>
         /// Get a value from the context.
@@ -53,6 +57,22 @@ namespace AutoStep.Execution.Contexts
 
             val = default!;
             return false;
+        }
+
+        public LogLevel LogCaptureLevel { get; set; } = LogLevel.Information;
+
+        public void Log<TState>(string categoryName, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            if (logLevel >= LogCaptureLevel)
+            {
+                // Store the log entry if it meets the threshold.
+                logEntries.Enqueue(new LogEntry<TState>(categoryName, logLevel, eventId, state, exception, formatter));
+            }
+        }
+
+        public bool TryGetNextLogEntry([NotNullWhen(true)] out LogEntry? logEntry)
+        {
+            return logEntries.TryDequeue(out logEntry);
         }
 
         /// <summary>

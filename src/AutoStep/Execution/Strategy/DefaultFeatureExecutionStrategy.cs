@@ -7,6 +7,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
@@ -35,37 +36,41 @@ namespace AutoStep.Execution.Strategy
             var executionManager = featureScope.GetRequiredService<IExecutionStateManager>();
             var scenarioStrategy = featureScope.GetRequiredService<IScenarioExecutionStrategy>();
             var events = featureScope.GetRequiredService<IEventPipeline>();
+            var contextProvider = threadScope.GetRequiredService<IContextScopeProvider>();
 
-            await events.InvokeEventAsync(
-                featureScope,
-                featureContext,
-                (handler, sc, ctxt, next, cancel) => handler.OnFeatureAsync(sc, ctxt, next, cancel),
-                cancelToken,
-                async (_, featureContext, cancel) =>
+            using (contextProvider.EnterContextScope(featureContext))
             {
-                var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
-
-                featureContext.FeatureRan = true;
-
-                // Go through each scenario.
-                foreach (var scenario in feature.Scenarios)
+                await events.InvokeEventAsync(
+                    featureScope,
+                    featureContext,
+                    (handler, sc, ctxt, next, cancel) => handler.OnFeatureAsync(sc, ctxt, next, cancel),
+                    cancelToken,
+                    async (_, featureContext, cancel) =>
                 {
-                    if (cancelToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
+                    var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
-                    foreach (var variableSet in ExpandScenario(scenario, featureScope))
+                    featureContext.FeatureRan = true;
+
+                    // Go through each scenario.
+                    foreach (var scenario in feature.Scenarios)
                     {
-                        await scenarioStrategy.ExecuteAsync(
-                            featureScope,
-                            featureContext,
-                            scenario,
-                            variableSet,
-                            cancel).ConfigureAwait(false);
+                        if (cancelToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        foreach (var variableSet in ExpandScenario(scenario, featureScope))
+                        {
+                            await scenarioStrategy.ExecuteAsync(
+                                featureScope,
+                                featureContext,
+                                scenario,
+                                variableSet,
+                                cancel).ConfigureAwait(false);
+                        }
                     }
-                }
-            }).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+            }
         }
 
         private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, IServiceProvider scope)

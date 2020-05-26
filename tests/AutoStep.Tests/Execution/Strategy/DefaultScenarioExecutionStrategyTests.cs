@@ -8,6 +8,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
@@ -104,10 +105,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterInstance(LogFactory);
+            var contextScopeDisposeTracker = new TestDisposable();
+
+            var contextProvider = new Mock<IContextScopeProvider>();
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<ScenarioContext>();
+
+                return contextScopeDisposeTracker;
+            });
+
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance<IStepCollectionExecutionStrategy>(stepCollectionStrategy);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -120,7 +132,7 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
-
+            contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
             stepCollectionStrategy.AddedCollections.Should().BeEquivalentTo(collections);
         }
 

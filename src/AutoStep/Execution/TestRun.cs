@@ -8,6 +8,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using AutoStep.Execution.Strategy;
 using AutoStep.Projects;
 using Microsoft.Extensions.Configuration;
@@ -111,62 +112,71 @@ namespace AutoStep.Execution
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
         public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, CancellationToken cancelToken, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
         {
-            // Determined the filtered set of features/scenarios.
-            var executionSet = FeatureExecutionSet.Create(Project, filter, logFactory);
+            var contextScopeProvider = new ContextScopeProvider();
 
-            var logger = logFactory.CreateLogger<TestRun>();
+            using var contextAwareLogFactory = new ContextAwareLogFactory(logFactory, contextScopeProvider);
 
             var builtConfiguration = ConfigurationBuilder.Build();
 
             // Create a top-level run context
             var runContext = new RunContext(builtConfiguration);
 
-            if (executionSet.Features.Count == 0)
+            using (contextScopeProvider.EnterContextScope(runContext))
             {
-                // No features. What should we do? Just return an empty run result, no point continuing really.
-                logger.LogInformation(ExecutionText.TestRun_NoFeatures);
-                return runContext;
-            }
+                var logger = contextAwareLogFactory.CreateLogger<TestRun>();
 
-            // Build the pipeline.
-            var events = eventPipelineBuilder.Build();
+                // Determined the filtered set of features/scenarios.
+                var executionSet = FeatureExecutionSet.Create(Project, filter, contextAwareLogFactory);
 
-            // Build the container and prepare a root scope.
-            using var rootScope = PrepareContainer(events, logFactory, builtConfiguration, serviceRegistration, executionSet);
+                if (executionSet.Features.Count == 0)
+                {
+                    // No features. What should we do? Just return an empty run result, no point continuing really.
+                    logger.LogInformation(ExecutionText.TestRun_NoFeatures);
+                    return runContext;
+                }
 
-            // Run scope (disposes at the end of the method).
-            using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
+                // Build the pipeline.
+                var events = eventPipelineBuilder.Build();
 
-            var timer = new Stopwatch();
-            timer.Start();
+                // Build the container and prepare a root scope.
+                using var rootScope = PrepareContainer(events, contextAwareLogFactory, contextScopeProvider, builtConfiguration, serviceRegistration, executionSet);
 
-            try
-            {
-                await events.InvokeEventAsync(
-                    runScope,
-                    runContext,
-                    (handler, sc, ctxt, next, cancel) => handler.OnExecuteAsync(sc, ctxt, next, cancel),
-                    cancelToken,
-                    (_, ctxt, cancel) =>
-                    {
-                        return new ValueTask(runExecutionStrategy.ExecuteAsync(runScope, ctxt, executionSet, cancel));
-                    }).ConfigureAwait(false);
-            }
-            finally
-            {
-                timer.Stop();
-                runContext.Duration = timer.Elapsed;
+                // Run scope (disposes at the end of the method).
+                using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
+
+                var timer = new Stopwatch();
+                timer.Start();
+
+                try
+                {
+                    await events.InvokeEventAsync(
+                        runScope,
+                        runContext,
+                        (handler, sc, ctxt, next, cancel) => handler.OnExecuteAsync(sc, ctxt, next, cancel),
+                        cancelToken,
+                        (_, ctxt, cancel) =>
+                        {
+                            return new ValueTask(runExecutionStrategy.ExecuteAsync(runScope, ctxt, executionSet, cancel));
+                        }).ConfigureAwait(false);
+                }
+                finally
+                {
+                    timer.Stop();
+                    runContext.Duration = timer.Elapsed;
+                }
             }
 
             return runContext;
         }
 
-        private IAutoStepServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private IAutoStepServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, ContextScopeProvider contextScopeProvider, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
             var exposedServiceRegistration = new AutofacServiceBuilder();
 
-            exposedServiceRegistration.RegisterInstance(logFactory);
+            exposedServiceRegistration.ConfigureLogging(logFactory);
+
+            exposedServiceRegistration.RegisterInstance<IContextScopeProvider>(contextScopeProvider);
 
             // Register our strategies.
             exposedServiceRegistration.RegisterInstance(runExecutionStrategy);

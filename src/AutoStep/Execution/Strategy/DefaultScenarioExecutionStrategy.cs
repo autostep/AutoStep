@@ -6,6 +6,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
@@ -28,60 +29,64 @@ namespace AutoStep.Execution.Strategy
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
 
-            var collectionExecutor = featureScope.GetRequiredService<IStepCollectionExecutionStrategy>();
-            var executionManager = featureScope.GetRequiredService<IExecutionStateManager>();
-            var events = featureScope.GetRequiredService<IEventPipeline>();
-
             using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, scenarioContext);
 
-            // Halt before the scenario begins.
-            var haltInstruction = await executionManager.CheckforHalt(scenarioScope, scenarioContext, TestThreadState.StartingScenario).ConfigureAwait(false);
+            var collectionExecutor = scenarioScope.GetRequiredService<IStepCollectionExecutionStrategy>();
+            var executionManager = scenarioScope.GetRequiredService<IExecutionStateManager>();
+            var events = scenarioScope.GetRequiredService<IEventPipeline>();
+            var contextProvider = scenarioScope.GetRequiredService<IContextScopeProvider>();
 
-            try
+            using (contextProvider.EnterContextScope(scenarioContext))
             {
-                await events.InvokeEventAsync(
-                    scenarioScope,
-                    scenarioContext,
-                    (handler, sc, ctxt, next, cancel) => handler.OnScenarioAsync(sc, ctxt, next, cancel),
-                    cancelToken,
-                    async (_, ctxt, cancel) =>
+                // Halt before the scenario begins.
+                var haltInstruction = await executionManager.CheckforHalt(scenarioScope, scenarioContext, TestThreadState.StartingScenario).ConfigureAwait(false);
+
+                try
                 {
-                    scenarioContext.ScenarioRan = true;
-
-                    if (featureContext.Feature.Background is object)
+                    await events.InvokeEventAsync(
+                        scenarioScope,
+                        scenarioContext,
+                        (handler, sc, ctxt, next, cancel) => handler.OnScenarioAsync(sc, ctxt, next, cancel),
+                        cancelToken,
+                        async (_, ctxt, cancel) =>
                     {
-                        // There is a background to execute.
-                        await collectionExecutor.ExecuteAsync(
-                                scenarioScope,
-                                ctxt,
-                                featureContext.Feature.Background,
-                                variableSet,
-                                cancelToken).ConfigureAwait(false);
+                        scenarioContext.ScenarioRan = true;
 
-                        if (ctxt.FailException is object)
+                        if (featureContext.Feature.Background is object)
                         {
+                            // There is a background to execute.
+                            await collectionExecutor.ExecuteAsync(
+                                        scenarioScope,
+                                        ctxt,
+                                        featureContext.Feature.Background,
+                                        variableSet,
+                                        cancelToken).ConfigureAwait(false);
+
+                            if (ctxt.FailException is object)
+                            {
                             // Something went wrong executing the background. Don't run the main scenario body.
                             return;
+                            }
                         }
-                    }
 
-                    // Any errors will be updated on the scenario context.
-                    await collectionExecutor.ExecuteAsync(
-                            scenarioScope,
-                            scenarioContext,
-                            scenario,
-                            variableSet,
-                            cancelToken).ConfigureAwait(false);
-                }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException ex)
-            {
-                scenarioContext.FailException = ex;
-            }
-            catch (EventHandlingException ex)
-            {
-                // Something went wrong in the event handler, fail the scenario.
-                scenarioContext.FailException = ex;
+                        // Any errors will be updated on the scenario context.
+                        await collectionExecutor.ExecuteAsync(
+                                scenarioScope,
+                                scenarioContext,
+                                scenario,
+                                variableSet,
+                                cancelToken).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    scenarioContext.FailException = ex;
+                }
+                catch (EventHandlingException ex)
+                {
+                    // Something went wrong in the event handler, fail the scenario.
+                    scenarioContext.FailException = ex;
+                }
             }
         }
     }

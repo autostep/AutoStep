@@ -7,6 +7,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
@@ -31,6 +32,7 @@ namespace AutoStep.Execution.Strategy
             var stepExecutionStrategy = owningScope.GetRequiredService<IStepExecutionStrategy>();
             var executionManager = owningScope.GetRequiredService<IExecutionStateManager>();
             var events = owningScope.GetRequiredService<IEventPipeline>();
+            var contextScopeProvider = owningScope.GetRequiredService<IContextScopeProvider>();
 
             var collectionTimer = new Stopwatch();
             collectionTimer.Start();
@@ -43,107 +45,110 @@ namespace AutoStep.Execution.Strategy
 
                     var stepContext = new StepContext(stepIdx, owningContext, step, variables);
 
-                    IAutoStepServiceScope? locallyOwnedScope = null;
-                    IAutoStepServiceScope stepScope;
-
-                    if (owningScope.Tag == ScopeTags.StepTag)
+                    using (contextScopeProvider.EnterContextScope(stepContext))
                     {
-                        stepScope = owningScope;
-                    }
-                    else
-                    {
-                        // The parent scope is not a step. Create a new one.
-                        stepScope = locallyOwnedScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
-                    }
+                        IAutoStepServiceScope? locallyOwnedScope = null;
+                        IAutoStepServiceScope stepScope;
 
-                    var stepRan = false;
+                        if (owningScope.Tag == ScopeTags.StepTag)
+                        {
+                            stepScope = owningScope;
+                        }
+                        else
+                        {
+                            // The parent scope is not a step. Create a new one.
+                            stepScope = locallyOwnedScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
+                        }
 
-                    var timer = new Stopwatch();
-                    timer.Start();
+                        var stepRan = false;
 
-                    try
-                    {
-                        cancelToken.ThrowIfCancellationRequested();
+                        var timer = new Stopwatch();
+                        timer.Start();
 
-                        // Halt before the step begins.
-                        var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, stepContext, TestThreadState.StartingStep).ConfigureAwait(false);
+                        try
+                        {
+                            cancelToken.ThrowIfCancellationRequested();
 
-                        // Halt instruction for step collections can include:
-                        //  - Moving to a specific step position
-                        //  - Stepping Up (i.e. run to next scope).
-                        //  - Something else?
-                        await events.InvokeEventAsync(
-                            stepScope,
-                            stepContext,
-                            (handler, sc, ctxt, next, cancel) => handler.OnStepAsync(sc, ctxt, next, cancel),
-                            cancelToken,
-                            async (_, ctxt, cancel) =>
-                            {
-                                try
+                            // TODO: Halt before the step begins.
+                            // Halt instruction for step collections can include:
+                            //  - Moving to a specific step position
+                            //  - Stepping Up (i.e. run to next scope).
+                            //  - Something else?
+                            var stepHaltInstruction = await executionManager.CheckforHalt(stepScope, stepContext, TestThreadState.StartingStep).ConfigureAwait(false);
+
+                            await events.InvokeEventAsync(
+                                stepScope,
+                                stepContext,
+                                (handler, sc, ctxt, next, cancel) => handler.OnStepAsync(sc, ctxt, next, cancel),
+                                cancelToken,
+                                async (_, ctxt, cancel) =>
                                 {
-                                    stepRan = true;
+                                    try
+                                    {
+                                        stepRan = true;
 
-                                    // Execute the step.
-                                    await stepExecutionStrategy.ExecuteStepAsync(
-                                            stepScope,
-                                            ctxt,
-                                            variables,
-                                            cancel).ConfigureAwait(false);
-                                }
-                                catch (EventHandlingException ex)
-                                {
-                                    stepContext.FailException = ex;
-                                }
-                                catch (StepFailureException ex)
-                                {
-                                    stepContext.FailException = ex;
-                                }
-                                catch (OperationCanceledException ex)
-                                {
-                                    stepContext.FailException = ex;
-                                }
-                                catch (Exception ex)
-                                {
+                                        // Execute the step.
+                                        await stepExecutionStrategy.ExecuteStepAsync(
+                                                    stepScope,
+                                                    ctxt,
+                                                    variables,
+                                                    cancel).ConfigureAwait(false);
+                                    }
+                                    catch (EventHandlingException ex)
+                                    {
+                                        stepContext.FailException = ex;
+                                    }
+                                    catch (StepFailureException ex)
+                                    {
+                                        stepContext.FailException = ex;
+                                    }
+                                    catch (OperationCanceledException ex)
+                                    {
+                                        stepContext.FailException = ex;
+                                    }
+                                    catch (Exception ex)
+                                    {
                                     // Wrap the context.
                                     stepContext.FailException = new StepFailureException(stepContext.Step, ex);
-                                }
-                            }).ConfigureAwait(false);
-                    }
-                    catch (EventHandlingException ex)
-                    {
-                        // Error in an event handler; fail the step.
-                        stepContext.FailException = ex;
-                    }
-                    catch (OperationCanceledException ex)
-                    {
-                        stepContext.FailException = ex;
-                    }
-                    finally
-                    {
-                        timer.Stop();
-                        stepContext.Elapsed = timer.Elapsed;
-                        stepContext.StepExecuted = stepRan;
+                                    }
+                                }).ConfigureAwait(false);
+                        }
+                        catch (EventHandlingException ex)
+                        {
+                            // Error in an event handler; fail the step.
+                            stepContext.FailException = ex;
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            stepContext.FailException = ex;
+                        }
+                        finally
+                        {
+                            timer.Stop();
+                            stepContext.Elapsed = timer.Elapsed;
+                            stepContext.StepExecuted = stepRan;
 
-                        // Dispose of the locally owned scope (if we created one).
-                        locallyOwnedScope?.Dispose();
-                    }
+                            // Dispose of the locally owned scope (if we created one).
+                            locallyOwnedScope?.Dispose();
+                        }
 
-                    if (stepContext.FailException is object)
-                    {
-                        // The step failed, alert the execution manager.
-                        var breakInstructions = await executionManager.StepError(stepContext).ConfigureAwait(false);
+                        if (stepContext.FailException is object)
+                        {
+                            // The step failed, alert the execution manager.
+                            var breakInstructions = await executionManager.StepError(stepContext).ConfigureAwait(false);
 
-                        // React to the 'break'. Retry step?
-                        // Can we re-bind/recompile partway through a test?
-                        // Re-linking won't be an issue, because all that will change is the step definition,
-                        // but re-compilation will re-construct our tree structure. Perhaps there is a way for the
-                        // break response to instruct the caller.
-                        // Regardless, we need to mark the owner as failing.
-                        owningContext.FailException = stepContext.FailException;
-                        owningContext.FailingStep = stepContext.Step;
+                            // React to the 'break'. Retry step?
+                            // Can we re-bind/recompile partway through a test?
+                            // Re-linking won't be an issue, because all that will change is the step definition,
+                            // but re-compilation will re-construct our tree structure. Perhaps there is a way for the
+                            // break response to instruct the caller.
+                            // Regardless, we need to mark the owner as failing.
+                            owningContext.FailException = stepContext.FailException;
+                            owningContext.FailingStep = stepContext.Step;
 
-                        // Consider allowing the scenario to continue until the next non-assert step (i.e. Then/When, etc).
-                        break;
+                            // Consider allowing the scenario to continue until the next non-assert step (i.e. Then/When, etc).
+                            break;
+                        }
                     }
                 }
             }
