@@ -98,6 +98,26 @@ namespace AutoStep.Execution.Contexts
         }
 
         /// <summary>
+        /// Capture the logs from an external log entry source (for example, a more nested context).
+        /// </summary>
+        /// <param name="externalLogConsumer">The external log consumer to read log entries from.</param>
+        public void CaptureLogs(LogConsumer externalLogConsumer)
+        {
+            if (externalLogConsumer is null)
+            {
+                throw new ArgumentNullException(nameof(externalLogConsumer));
+            }
+
+            while (externalLogConsumer.TryGetNextEntry(out var logEntry))
+            {
+                if (logEntry.LogLevel >= LogCaptureLevel)
+                {
+                    logEntries.Add(logEntry);
+                }
+            }
+        }
+
+        /// <summary>
         /// Try to retrieve a value from the context.
         /// </summary>
         /// <typeparam name="TValue">The expected type of the value.</typeparam>
