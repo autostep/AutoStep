@@ -1,7 +1,5 @@
 ﻿using System;
 using Autofac;
-using AutoStep.Execution.Events;
-using AutoStep.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Dependency
@@ -19,8 +17,16 @@ namespace AutoStep.Execution.Dependency
         public AutofacServiceBuilder()
         {
             builder = new ContainerBuilder();
+        }
 
-            builder.RegisterGeneric(typeof(LoggerWrapper<>)).As(typeof(ILogger<>));
+        /// <summary>
+        /// Configures the service builder to provide loggers as injected services.
+        /// </summary>
+        /// <param name="logFactory">The log factory to get loggers from.</param>
+        public void ConfigureLogging(ILoggerFactory logFactory)
+        {
+            builder.RegisterInstance(logFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
         }
 
         /// <inheritdoc/>

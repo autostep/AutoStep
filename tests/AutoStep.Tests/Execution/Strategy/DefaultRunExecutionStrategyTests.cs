@@ -21,6 +21,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using AutoStep.Execution.Logging;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
@@ -52,10 +53,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
 
-            builder.RegisterInstance(LogFactory);
+            var contextScopeDisposeTracker = new TestDisposable();
+
+            var contextProvider = new Mock<IContextScopeProvider>();
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<ThreadContext>();
+
+                return contextScopeDisposeTracker;
+            });
+
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -67,6 +79,7 @@ namespace AutoStep.Tests.Execution.Strategy
             afterThread.Should().Be(1);
             featureStrategy.AddedFeatures.Should().ContainInOrder(new[] { features.Features[0], features.Features[1] });
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
+            contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
         }
 
         [Fact]
@@ -91,10 +104,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterInstance(LogFactory);
+            var contextScopeDisposeTracker = new TestDisposable();
+
+            var contextProvider = new Mock<IContextScopeProvider>();
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<ThreadContext>();
+
+                return contextScopeDisposeTracker;
+            });
+
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -108,13 +132,13 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
 
             LoggedMessages.ShouldContain(LogLevel.Debug, "executing", "Feature 1");
             LoggedMessages.ShouldContain(LogLevel.Debug, "executing", "Feature 2");
             LoggedMessages.ShouldContain(LogLevel.Debug, "Test Thread ID 1", "no more features");
             LoggedMessages.ShouldContain(LogLevel.Debug, "Test Thread ID 2", "no more features");
         }
-
 
         [Fact]
         public async Task DontUseMoreThreadsThanFeatures()
@@ -139,10 +163,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var builder = new AutofacServiceBuilder();
 
-            builder.RegisterInstance(LogFactory);
+            var contextScopeDisposeTracker = new TestDisposable();
+
+            var contextProvider = new Mock<IContextScopeProvider>();
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<ThreadContext>();
+
+                return contextScopeDisposeTracker;
+            });
+
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -157,6 +192,7 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
         }
 
         private FeatureExecutionSet Get2FeatureSet()

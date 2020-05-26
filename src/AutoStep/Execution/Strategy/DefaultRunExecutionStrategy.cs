@@ -8,6 +8,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -88,35 +89,39 @@ namespace AutoStep.Execution.Strategy
             var featureStrategy = threadScope.GetRequiredService<IFeatureExecutionStrategy>();
             var logger = threadScope.GetRequiredService<ILogger<DefaultRunExecutionStrategy>>();
             var events = threadScope.GetRequiredService<IEventPipeline>();
+            var contextProvider = threadScope.GetRequiredService<IContextScopeProvider>();
 
-            await events.InvokeEventAsync(
-                threadScope,
-                threadContext,
-                (handler, sc, ctxt, next, cancel) => handler.OnThreadAsync(sc, ctxt, next, cancel),
-                cancelToken,
-                async (_, ctxt, cancel) =>
-                {
-                    var haltInstruction = await executionManager.CheckforHalt(threadScope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
-
-                    // TODO: Do something with halt instruction (terminate, for example?).
-                    while (true)
+            using (contextProvider.EnterContextScope(threadContext))
+            {
+                await events.InvokeEventAsync(
+                    threadScope,
+                    threadContext,
+                    (handler, sc, ctxt, next, cancel) => handler.OnThreadAsync(sc, ctxt, next, cancel),
+                    cancelToken,
+                    async (_, ctxt, cancel) =>
                     {
-                        var feature = nextFeature();
+                        var haltInstruction = await executionManager.CheckforHalt(threadScope, ctxt, TestThreadState.Starting).ConfigureAwait(false);
 
-                        if (feature is object)
+                        // TODO: Do something with halt instruction (terminate, for example?).
+                        while (true)
                         {
-                            logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
+                            var feature = nextFeature();
 
-                            // We have a feature.
-                            await featureStrategy.ExecuteAsync(threadScope, threadContext, feature, cancel).ConfigureAwait(false);
+                            if (feature is object)
+                            {
+                                logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
+
+                                // We have a feature.
+                                await featureStrategy.ExecuteAsync(threadScope, threadContext, feature, cancel).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                logger.LogDebug("Test Thread ID {0}; no more features to run.", testThreadId);
+                                break;
+                            }
                         }
-                        else
-                        {
-                            logger.LogDebug("Test Thread ID {0}; no more features to run.", testThreadId);
-                            break;
-                        }
-                    }
-                }).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
+            }
         }
     }
 }

@@ -179,7 +179,7 @@ namespace AutoStep.Tests.Execution.Dependency
         {
             var serviceBuilder = new AutofacServiceBuilder();
 
-            serviceBuilder.RegisterInstance<ILoggerFactory>(new NullLoggerFactory());
+            serviceBuilder.ConfigureLogging(new NullLoggerFactory());
 
             var built = serviceBuilder.BuildRootScope();
 

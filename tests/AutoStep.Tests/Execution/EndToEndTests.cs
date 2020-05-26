@@ -318,7 +318,7 @@ namespace AutoStep.Tests.Execution
             public Exception? FoundException { get; set; }
 
             public override async ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
-      {
+            {
                 await nextHandler(scope, ctxt, cancelToken);
 
                 if(ctxt.FailException is object)

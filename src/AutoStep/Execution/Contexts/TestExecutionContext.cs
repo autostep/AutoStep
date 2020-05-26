@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using AutoStep.Execution.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace AutoStep.Execution.Contexts
 {
@@ -10,6 +13,7 @@ namespace AutoStep.Execution.Contexts
     public abstract class TestExecutionContext
     {
         private readonly ConcurrentDictionary<string, object> contextValues = new ConcurrentDictionary<string, object>();
+        private readonly List<LogEntry> logEntries = new List<LogEntry>();
 
         /// <summary>
         /// Get a value from the context.
@@ -53,6 +57,44 @@ namespace AutoStep.Execution.Contexts
 
             val = default!;
             return false;
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum log level required for a given log entry before it will be captured against this context.
+        /// </summary>
+        public LogLevel LogCaptureLevel { get; set; } = LogLevel.Information;
+
+        /// <summary>
+        /// Capture a log event against this context.
+        /// </summary>
+        /// <typeparam name="TState">The logger state object.</typeparam>
+        /// <param name="categoryName">The logger category name.</param>
+        /// <param name="logLevel">The log level.</param>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="state">The log event state.</param>
+        /// <param name="exception">An optional exception.</param>
+        /// <param name="formatter">The formatter callback that renders the log entry to a string.</param>
+        internal void CaptureLog<TState>(string categoryName, LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            if (logLevel >= LogCaptureLevel)
+            {
+                // Store the log entry if it meets the threshold.
+                logEntries.Add(new LogEntry<TState>(categoryName, logLevel, eventId, state, exception, formatter));
+            }
+        }
+
+        /// <summary>
+        /// Gets the set of all logs captured against this context.
+        /// </summary>
+        public IReadOnlyList<LogEntry> AllLogs => logEntries;
+
+        /// <summary>
+        /// Get a log consumer that allows you to retrieve sequential log events that have been captured against this context.
+        /// </summary>
+        /// <returns>A new log consumer.</returns>
+        public LogConsumer GetLogConsumer()
+        {
+            return new LogConsumer(logEntries);
         }
 
         /// <summary>

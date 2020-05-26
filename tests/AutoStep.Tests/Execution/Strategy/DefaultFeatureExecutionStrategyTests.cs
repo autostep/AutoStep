@@ -8,6 +8,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
+using AutoStep.Execution.Logging;
 using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
@@ -158,6 +159,7 @@ namespace AutoStep.Tests.Execution.Strategy
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
             builder.RegisterInstance<IEventPipeline>(new EventPipeline(Array.Empty<IEventHandler>()));
+            builder.RegisterInstance(new Mock<IContextScopeProvider>().Object);
 
             var scope = builder.BuildRootScope();
 
@@ -186,10 +188,21 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var pipeline = new EventPipeline(new[] { eventHandler });
 
-            builder.RegisterInstance(LogFactory);
+            var contextScopeDisposeTracker = new TestDisposable();
+
+            var contextProvider = new Mock<IContextScopeProvider>();
+            contextProvider.Setup(x => x.EnterContextScope(It.IsAny<TestExecutionContext>())).Returns<TestExecutionContext>(ctxt =>
+            {
+                ctxt.Should().BeOfType<FeatureContext>();
+
+                return contextScopeDisposeTracker;
+            });
+
+            builder.ConfigureLogging(LogFactory);
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
             builder.RegisterInstance<IEventPipeline>(pipeline);
+            builder.RegisterInstance(contextProvider.Object);
 
             var scope = builder.BuildRootScope();
 
@@ -200,6 +213,7 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceProvider>(), It.IsAny<FeatureContext>(), TestThreadState.StartingFeature), Times.Once());
+            contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
 
             scenarioStrategy.AddedScenarios.Should().BeEquivalentTo(scenarios);
         }
