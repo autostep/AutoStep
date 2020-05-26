@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Elements.Metadata;
@@ -52,30 +53,41 @@ namespace AutoStep.Execution.Strategy
                     {
                         scenarioContext.ScenarioRan = true;
 
-                        if (featureContext.Feature.Background is object)
+                        var scenarioTimer = new Stopwatch();
+                        scenarioTimer.Start();
+
+                        try
                         {
-                            // There is a background to execute.
-                            await collectionExecutor.ExecuteAsync(
-                                        scenarioScope,
-                                        ctxt,
-                                        featureContext.Feature.Background,
-                                        variableSet,
-                                        cancelToken).ConfigureAwait(false);
-
-                            if (ctxt.FailException is object)
+                            if (featureContext.Feature.Background is object)
                             {
-                            // Something went wrong executing the background. Don't run the main scenario body.
-                            return;
-                            }
-                        }
+                                // There is a background to execute.
+                                await collectionExecutor.ExecuteAsync(
+                                            scenarioScope,
+                                            ctxt,
+                                            featureContext.Feature.Background,
+                                            variableSet,
+                                            cancelToken).ConfigureAwait(false);
 
-                        // Any errors will be updated on the scenario context.
-                        await collectionExecutor.ExecuteAsync(
-                                scenarioScope,
-                                scenarioContext,
-                                scenario,
-                                variableSet,
-                                cancelToken).ConfigureAwait(false);
+                                if (ctxt.FailException is object)
+                                {
+                                    // Something went wrong executing the background. Don't run the main scenario body.
+                                    return;
+                                }
+                            }
+
+                            // Any errors will be updated on the scenario context.
+                            await collectionExecutor.ExecuteAsync(
+                                    scenarioScope,
+                                    scenarioContext,
+                                    scenario,
+                                    variableSet,
+                                    cancelToken).ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            scenarioTimer.Stop();
+                            scenarioContext.Elapsed = scenarioTimer.Elapsed;
+                        }
                     }).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException ex)

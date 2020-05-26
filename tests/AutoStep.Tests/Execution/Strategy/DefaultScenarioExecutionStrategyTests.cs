@@ -92,13 +92,16 @@ namespace AutoStep.Tests.Execution.Strategy
         private async ValueTask DoTest(IFeatureInfo feature, IScenarioInfo scenario, VariableSet variables, bool raiseException, params (IStepCollectionInfo collection, VariableSet variables)[] collections)
         {
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            var beforeFeat = 0;
-            var afterFeat = 0;
+            var beforeScenario = 0;
+            var afterScenario = 0;
             var eventHandler = new MyEventHandler(ctxt =>
             {
                 ctxt.Scenario.Should().Be(scenario);
-                beforeFeat++;
-            }, c => afterFeat++);
+                beforeScenario++;
+            }, ctxt => {
+                afterScenario++;
+                ctxt.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
+            });
 
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var stepCollectionStrategy = new MyStepCollectionStrategy(raiseException);
@@ -129,8 +132,8 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await strategy.ExecuteAsync(scope, featureContext, scenario, variables, CancellationToken.None);
 
-            beforeFeat.Should().Be(1);
-            afterFeat.Should().Be(1);
+            beforeScenario.Should().Be(1);
+            afterScenario.Should().Be(1);
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
             stepCollectionStrategy.AddedCollections.Should().BeEquivalentTo(collections);

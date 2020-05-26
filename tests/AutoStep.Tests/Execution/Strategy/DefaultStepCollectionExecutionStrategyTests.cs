@@ -235,8 +235,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
             await strategy.ExecuteAsync(scope, owningContext, stepCollection, variables, cancelToken);
 
-            owningContext.Elapsed.TotalMilliseconds.Should().BeGreaterThan(0);
-
             mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
 
