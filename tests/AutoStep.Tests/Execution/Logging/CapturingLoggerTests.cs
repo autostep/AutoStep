@@ -25,7 +25,7 @@ namespace AutoStep.Tests.Execution.Logging
                 forwardedLog = log;
             });
 
-            var loggerWrapper = new CapturingLogger(contextProvider, "category", NullLogger.Instance);
+            var loggerWrapper = new CapturingLogger(contextProvider, "category", delegatingLogger);
 
             using (contextProvider.EnterContextScope(threadContext))
             {
