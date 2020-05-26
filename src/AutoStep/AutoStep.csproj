@@ -58,6 +58,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ElementExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Execution\Logging\LoggingMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LoggingMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Execution\Strategy\StrategyMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -148,6 +153,10 @@
     <EmbeddedResource Update="Elements\Interaction\ElementExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ElementExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Execution\Logging\LoggingMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LoggingMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Execution\Strategy\StrategyMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

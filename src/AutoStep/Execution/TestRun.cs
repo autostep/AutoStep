@@ -114,7 +114,7 @@ namespace AutoStep.Execution
         {
             var contextScopeProvider = new ContextScopeProvider();
 
-            using var contextAwareLogFactory = new ContextAwareLogFactory(logFactory, contextScopeProvider);
+            using var contextAwareLogFactory = new CapturingLogFactory(logFactory, contextScopeProvider);
 
             var builtConfiguration = ConfigurationBuilder.Build();
 

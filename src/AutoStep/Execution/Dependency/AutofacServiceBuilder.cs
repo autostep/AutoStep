@@ -19,6 +19,10 @@ namespace AutoStep.Execution.Dependency
             builder = new ContainerBuilder();
         }
 
+        /// <summary>
+        /// Configures the service builder to provide loggers as injected services.
+        /// </summary>
+        /// <param name="logFactory">The log factory to get loggers from.</param>
         public void ConfigureLogging(ILoggerFactory logFactory)
         {
             builder.RegisterInstance(logFactory);

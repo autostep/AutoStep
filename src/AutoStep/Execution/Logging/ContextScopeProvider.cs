@@ -4,24 +4,25 @@ using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Logging
 {
-    public interface IContextScopeProvider
-    {
-        TestExecutionContext? Current { get; }
-
-        IDisposable EnterContextScope(TestExecutionContext context);
-    }
-
+    /// <summary>
+    /// Default implementation of the <see cref="IContextScopeProvider"/>.
+    /// </summary>
     internal class ContextScopeProvider : IContextScopeProvider
     {
         private AsyncLocal<Scope?> activeScope = new AsyncLocal<Scope?>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContextScopeProvider"/> class.
+        /// </summary>
         public ContextScopeProvider()
         {
             activeScope.Value = null;
         }
 
+        /// <inheritdoc/>
         public TestExecutionContext? Current => activeScope.Value?.Context;
 
+        /// <inheritdoc/>
         public IDisposable EnterContextScope(TestExecutionContext context)
         {
             var newScope = new Scope(this, context, activeScope.Value);
