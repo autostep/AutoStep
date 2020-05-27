@@ -86,7 +86,7 @@ namespace AutoStep.Execution.Strategy
                         throw new LanguageEngineAssertException();
                     }
 
-                    foreach (var variableSet in VariableSet.CreateSetsForRows(example.Table, scope, VariableSet.Blank))
+                    foreach (var variableSet in TableVariableSet.CreateSetsForRows(example.Table, scope, VariableSet.Blank))
                     {
                         yield return variableSet;
                     }
