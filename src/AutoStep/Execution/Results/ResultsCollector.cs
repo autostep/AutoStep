@@ -37,10 +37,14 @@ namespace AutoStep.Execution.Results
 
             try
             {
+                resultData.StartTimeUtc = DateTime.UtcNow;
+
                 await nextHandler(scope, ctxt, cancelToken);
             }
             finally
             {
+                resultData.EndTimeUtc = DateTime.UtcNow;
+
                 await OnResultsReady(scope, ctxt, resultData, cancelToken);
             }
         }

@@ -20,6 +20,12 @@ namespace AutoStep.Execution.Results
         /// <inheritdoc/>
         public bool AllPassed => Features.All(x => x.Passed);
 
+        /// <inheritdoc/>
+        public DateTime StartTimeUtc { get; set; }
+
+        /// <inheritdoc />
+        public DateTime EndTimeUtc { get; set; }
+
         /// <summary>
         /// Adds a feature to the result set.
         /// </summary>
