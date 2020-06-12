@@ -84,6 +84,10 @@ namespace AutoStep.Execution
         /// </summary>
         public IConfigurationBuilder ConfigurationBuilder { get; }
 
+        /// <summary>
+        /// Add a callback that will be invoked when the test run starts, to configure the set of available services.
+        /// </summary>
+        /// <param name="serviceSetupCallback">A callback to invoke that can configure the set of services.</param>
         public void AddServiceSetupCallback(Action<IConfiguration, IServicesBuilder> serviceSetupCallback)
         {
             if (serviceSetupCallback is null)

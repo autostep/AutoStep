@@ -95,7 +95,7 @@ namespace AutoStep.Tests.Execution.Results
                 this.callback = callback;
             }
 
-            public ValueTask Export(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
+            public ValueTask ExportAsync(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
             {
                 scope.Should().NotBeNull();
                 runContext.Should().NotBeNull();

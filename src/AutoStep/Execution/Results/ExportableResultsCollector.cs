@@ -94,7 +94,7 @@ namespace AutoStep.Execution.Results
                 {
                     logger.LogDebug(ExportableResultsCollectorMessages.ExportingResults, exporterName);
 
-                    await exporter.Export(scope, runContext, results, cancelToken);
+                    await exporter.ExportAsync(scope, runContext, results, cancelToken);
 
                     logger.LogDebug(ExportableResultsCollectorMessages.ExportComplete, exporterName);
                 }

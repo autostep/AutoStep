@@ -5,8 +5,19 @@ using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Results
 {
+    /// <summary>
+    /// Defines the interface for a service that can export results at the end of a test run.
+    /// </summary>
     public interface IResultsExporter
     {
-        ValueTask Export(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken);
+        /// <summary>
+        /// Export the provided results.
+        /// </summary>
+        /// <param name="scope">The current service scope.</param>
+        /// <param name="runContext">The context of the test run.</param>
+        /// <param name="results">The set of all results from the run.</param>
+        /// <param name="cancelToken">A cancellation token.</param>
+        /// <returns>An async completion task.</returns>
+        ValueTask ExportAsync(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken);
     }
 }

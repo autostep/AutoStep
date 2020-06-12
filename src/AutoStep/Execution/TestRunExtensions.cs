@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoStep.Execution.Results;
 
 namespace AutoStep.Execution
