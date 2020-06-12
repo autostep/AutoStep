@@ -63,6 +63,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LoggingMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Execution\Results\ExportableResultsCollectorMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExportableResultsCollectorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Execution\Results\WorkingResultSetMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WorkingResultSetMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Execution\Strategy\StrategyMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -157,6 +167,14 @@
     <EmbeddedResource Update="Execution\Logging\LoggingMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LoggingMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Execution\Results\ExportableResultsCollectorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExportableResultsCollectorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Execution\Results\WorkingResultSetMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>WorkingResultSetMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Execution\Strategy\StrategyMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

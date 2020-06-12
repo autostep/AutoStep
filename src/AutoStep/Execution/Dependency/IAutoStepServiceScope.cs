@@ -24,5 +24,13 @@ namespace AutoStep.Execution.Dependency
         /// <remarks>Make sure you dispose of the resulting scope.</remarks>
         IAutoStepServiceScope BeginNewScope<TContext>(string scopeTag, TContext contextInstance)
             where TContext : TestExecutionContext;
+
+        /// <summary>
+        /// Begins a new tagged scope.
+        /// </summary>
+        /// <param name="scopeTag">The tag (usually a value from <see cref="ScopeTags"/>).</param>
+        /// <returns>A new scope.</returns>
+        /// <remarks>Make sure you dispose of the resulting scope.</remarks>
+        IAutoStepServiceScope BeginNewScope(string scopeTag);
     }
 }
