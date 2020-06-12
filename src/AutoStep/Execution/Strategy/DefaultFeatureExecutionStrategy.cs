@@ -40,36 +40,48 @@ namespace AutoStep.Execution.Strategy
 
             using (contextProvider.EnterContextScope(featureContext))
             {
-                await events.InvokeEventAsync(
-                    featureScope,
-                    featureContext,
-                    (handler, sc, ctxt, next, cancel) => handler.OnFeatureAsync(sc, ctxt, next, cancel),
-                    cancelToken,
-                    async (_, featureContext, cancel) =>
+                try
                 {
-                    var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
-
-                    featureContext.FeatureRan = true;
-
-                    // Go through each scenario.
-                    foreach (var scenario in feature.Scenarios)
+                    await events.InvokeEventAsync(
+                        featureScope,
+                        featureContext,
+                        (handler, sc, ctxt, next, cancel) => handler.OnFeatureAsync(sc, ctxt, next, cancel),
+                        cancelToken,
+                        async (_, featureContext, cancel) =>
                     {
-                        if (cancelToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
+                        var haltInstruction = await executionManager.CheckforHalt(featureScope, featureContext, TestThreadState.StartingFeature).ConfigureAwait(false);
 
-                        foreach (var variableSet in ExpandScenario(scenario, featureScope))
-                        {
-                            await scenarioStrategy.ExecuteAsync(
-                                featureScope,
-                                featureContext,
-                                scenario,
-                                variableSet,
-                                cancel).ConfigureAwait(false);
-                        }
-                    }
-                }).ConfigureAwait(false);
+                        featureContext.FeatureRan = true;
+
+                        // Go through each scenario.
+                        foreach (var scenario in feature.Scenarios)
+                            {
+                                if (cancelToken.IsCancellationRequested)
+                                {
+                                    break;
+                                }
+
+                                foreach (var variableSet in ExpandScenario(scenario, featureScope))
+                                {
+                                    await scenarioStrategy.ExecuteAsync(
+                                        featureScope,
+                                        featureContext,
+                                        scenario,
+                                        variableSet,
+                                        cancel).ConfigureAwait(false);
+                                }
+                            }
+                        }).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    featureContext.FeatureFailureException = ex;
+                }
+                catch (EventHandlingException ex)
+                {
+                    // Event handler fail; store the exception against the feature context.
+                    featureContext.FeatureFailureException = ex;
+                }
             }
         }
 

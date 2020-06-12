@@ -65,6 +65,15 @@ namespace AutoStep.Execution.Dependency
         }
 
         /// <inheritdoc/>
+        public IAutoStepServiceScope BeginNewScope(string scopeTag)
+        {
+            return new AutofacServiceScope(scopeTag, newScope => scope.BeginLifetimeScope(scopeTag, cfg =>
+            {
+                cfg.RegisterInstance(newScope).As<IServiceProvider>();
+            }));
+        }
+
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

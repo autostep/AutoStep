@@ -84,6 +84,28 @@ namespace AutoStep.Tests.Execution
 
             runResult.Should().NotBeNull();
             runStrategyInvoked.Should().BeTrue();
-        }        
+        }
+
+        [Fact]
+        public async Task ExecuteTestInvokesRegisteredServiceConfigCallbacks()
+        {
+            var fakeProject = await ProjectMocks.CreateBuiltProject(("test", @"
+                Feature: My Feature
+
+                Scenario: Scenario 1
+
+                    Then it fails
+            "));
+
+            var testRun = fakeProject.CreateTestRun();
+
+            var wasInvoked = false;
+
+            testRun.AddServiceSetupCallback((cfg, srv) => { wasInvoked = true; });
+
+            await testRun.ExecuteAsync(default);
+
+            wasInvoked.Should().BeTrue();
+        }
     }
 }

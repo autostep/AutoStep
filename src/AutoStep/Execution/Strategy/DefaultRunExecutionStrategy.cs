@@ -79,6 +79,10 @@ namespace AutoStep.Execution.Strategy
             return Task.WhenAll(parallelTasks);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "CA1031:Do not catch general exception types",
+            Justification = "Need a 'last possible catch' handler for unexpected errors.")]
         private async Task TestThreadFeatureParallel(IAutoStepServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature, CancellationToken cancelToken)
         {
             var threadContext = new ThreadContext(testThreadId);
@@ -111,8 +115,15 @@ namespace AutoStep.Execution.Strategy
                             {
                                 logger.LogDebug("Test Thread ID {0}; executing feature '{1}'", testThreadId, feature.Name);
 
-                                // We have a feature.
-                                await featureStrategy.ExecuteAsync(threadScope, threadContext, feature, cancel).ConfigureAwait(false);
+                                try
+                                {
+                                    // We have a feature.
+                                    await featureStrategy.ExecuteAsync(threadScope, threadContext, feature, cancel).ConfigureAwait(false);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.LogError(ex, "Unhandled Exception during execution of feature '{0}': {1}", feature.Name, ex.Message);
+                                }
                             }
                             else
                             {

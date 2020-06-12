@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoStep.Definitions.Interaction;
@@ -24,6 +26,7 @@ namespace AutoStep.Execution
         private readonly IRunFilter filter;
         private readonly IExecutionStateManager executionManager;
         private readonly EventPipelineBuilder eventPipelineBuilder;
+        private readonly List<Action<IConfiguration, IServicesBuilder>> cfgCallbacks = new List<Action<IConfiguration, IServicesBuilder>>();
 
         private IRunExecutionStrategy runExecutionStrategy;
         private IFeatureExecutionStrategy featureExecutionStrategy;
@@ -80,6 +83,21 @@ namespace AutoStep.Execution
         /// Gets the configuration being used for the test run.
         /// </summary>
         public IConfigurationBuilder ConfigurationBuilder { get; }
+
+        /// <summary>
+        /// Add a callback that will be invoked when the test run starts, to configure the set of available services.
+        /// </summary>
+        /// <param name="serviceSetupCallback">A callback to invoke that can configure the set of services.</param>
+        public void AddServiceSetupCallback(Action<IConfiguration, IServicesBuilder> serviceSetupCallback)
+        {
+            if (serviceSetupCallback is null)
+            {
+                throw new ArgumentNullException(nameof(serviceSetupCallback));
+            }
+
+            // Will call this back later.
+            cfgCallbacks.Add(serviceSetupCallback);
+        }
 
         /// <summary>
         /// Change the Run Execution strategy for the test run.
@@ -202,6 +220,11 @@ namespace AutoStep.Execution
             exposedServiceRegistration.RegisterInstance<IConfiguration>(builtConfiguration);
 
             ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
+
+            foreach (var callback in cfgCallbacks)
+            {
+                callback(builtConfiguration, exposedServiceRegistration);
+            }
 
             serviceRegistration?.Invoke(builtConfiguration, exposedServiceRegistration);
 
