@@ -394,7 +394,9 @@ namespace AutoStep.Tests.Language.Test.Parsing
             await CompileAndAssertWarnings(TestFile, file => file
                 .Feature("My Feature", 2, 15, feat => feat
                     .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
-                        .Given("I pass an argument '<not a variable>'", 6, 21
+                        .Given("I pass an argument '<not a variable>'", 6, 21, cfg => cfg
+                            .Text("I pass an argument")
+                            .Variable("not a variable")
                         )
                         .Examples(8, 17, example => example
                             .Table(9, 21, tab => tab

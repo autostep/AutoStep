@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoStep.Elements.Metadata;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Test;
@@ -58,6 +59,9 @@ namespace AutoStep.Elements.Test
 
         /// <inheritdoc/>
         ITableInfo? IStepReferenceInfo.Table => Table;
+
+        /// <inheritdoc/>
+        public IEnumerable<string> ReferencedVariables => frozenTokens?.OfType<VariableToken>().Select(t => t.VariableName) ?? throw new InvalidOperationException(ElementExceptionMessages.TokensNotFrozen);
 
         /// <summary>
         /// Adds a token to the step reference.

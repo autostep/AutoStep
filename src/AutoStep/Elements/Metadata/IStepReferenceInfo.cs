@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoStep.Elements.StepTokens;
 using AutoStep.Language.Test;
 
@@ -38,5 +39,10 @@ namespace AutoStep.Elements.Metadata
         /// Gets the span of tokens for this step reference. Internal.
         /// </summary>
         internal ReadOnlySpan<StepToken> TokenSpan { get; }
+
+        /// <summary>
+        /// Gets the set of all named scenario outline variables referenced by the step.
+        /// </summary>
+        public IEnumerable<string> ReferencedVariables { get; }
     }
 }
