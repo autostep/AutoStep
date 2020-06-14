@@ -54,12 +54,12 @@ namespace AutoStep.Tests.Execution
             var mockInteractions = new Mock<IInteractionsConfiguration>();
             mockInteractions.Setup(c => c.RootMethodTable).Returns(new RootMethodTable());
 
-            var mockProjectCompiler = new Mock<IProjectCompiler>();
-            mockProjectCompiler.Setup(c => c.Interactions).Returns(mockInteractions.Object);
+            var mockProjectBuilder = new Mock<IProjectBuilder>();
+            mockProjectBuilder.Setup(c => c.Interactions).Returns(mockInteractions.Object);
 
             file.SetFileReadyForRunTest(builtFile);
 
-            var project = new Project(p => mockProjectCompiler.Object);
+            var project = new Project(p => mockProjectBuilder.Object);
             project.TryAddFile(file);
 
             var testRun = new TestRun(project, BlankConfiguration);

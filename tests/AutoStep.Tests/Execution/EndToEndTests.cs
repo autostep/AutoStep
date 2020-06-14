@@ -73,11 +73,11 @@ namespace AutoStep.Tests.Execution
                 await Task.Delay(1);
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
 
@@ -128,11 +128,11 @@ namespace AutoStep.Tests.Execution
                 argumentValues.Add(arg1);
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
 
@@ -186,11 +186,11 @@ namespace AutoStep.Tests.Execution
                 thisHappened = true;
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
 
@@ -239,11 +239,11 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
 
@@ -292,11 +292,11 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
             var errorCollector = new StepExceptionCollector();
@@ -370,11 +370,11 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             var testRun = project.CreateTestRun();
 

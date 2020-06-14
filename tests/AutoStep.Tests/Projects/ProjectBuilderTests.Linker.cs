@@ -14,7 +14,7 @@ using AutoStep.Language.Interaction;
 
 namespace AutoStep.Tests.Projects
 {
-    public partial class ProjectCompilerTests
+    public partial class ProjectBuilderTests
     {
         [Fact]
         public void LinksForTheFirstTime()
@@ -35,9 +35,9 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = projectCompiler.Link();
+            var result = projectBuilder.Link();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -57,9 +57,9 @@ namespace AutoStep.Tests.Projects
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(l => l.Link(It.IsAny<FileElement>()), Times.Never());
         }
@@ -83,12 +83,12 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             // The second link shouldn't do anything, because nothing has changed.
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(x => x.Link(builtFile), Times.Once());
         }
@@ -115,12 +115,12 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             // First link failed, so this will link again.
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(x => x.Link(builtFile), Times.Exactly(2));
         }
@@ -147,12 +147,12 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             // First link has warnings, so this will link again.
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(x => x.Link(builtFile), Times.Exactly(2));
         }
@@ -176,9 +176,9 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             // Sleep for a moment to indicate a delay before the next compile.
             Thread.Sleep(1);
@@ -187,7 +187,7 @@ namespace AutoStep.Tests.Projects
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
             // This should relink.
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(x => x.Link(builtFile), Times.Exactly(2));
         }
@@ -216,9 +216,9 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            var overallLink = projectCompiler.Link();
+            var overallLink = projectBuilder.Link();
 
             overallLink.Messages.First().Should().Be(msg);
         }
@@ -248,15 +248,15 @@ namespace AutoStep.Tests.Projects
             // Tell the file it's been compiled before.
             projFile.UpdateLastCompileResult(new FileCompilerResult(true, builtFile));
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             // Change the linker dependency modification time.
             linkerDepLastModify = projFile.LastLinkTime!.Value.AddMinutes(1);
 
             // This should relink.
-            projectCompiler.Link();
+            projectBuilder.Link();
 
             mockLinker.Verify(x => x.Link(builtFile), Times.Exactly(2));
         }
@@ -274,16 +274,16 @@ namespace AutoStep.Tests.Projects
 
             mockLinker.Setup(x => x.Link(It.IsAny<FileElement>())).Verifiable();
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             var cancelledToken = new CancellationToken(true);
 
-            projectCompiler.Invoking(c => c.Link(cancelledToken)).Should().Throw<OperationCanceledException>();
+            projectBuilder.Invoking(c => c.Link(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
-        private ProjectCompiler GetCompiler(Project project, ITestCompiler compiler, ILinker linker)
+        private ProjectBuilder GetBuilder(Project project, ITestCompiler compiler, ILinker linker)
         {
-            return new ProjectCompiler(project, compiler, linker,
+            return new ProjectBuilder(project, compiler, linker,
                                        new Mock<IInteractionCompiler>().Object,
                                        () => new Mock<IInteractionSetBuilder>().Object,
                                        true);

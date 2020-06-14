@@ -19,7 +19,7 @@ namespace AutoStep.Projects
     /// <summary>
     /// Provides the functionality to compile and link an entire project.
     /// </summary>
-    public class ProjectCompiler : IProjectCompiler
+    public class ProjectBuilder : IProjectBuilder
     {
         private static readonly InteractionsFileSetBuildResult EmptySuccess = new InteractionsFileSetBuildResult(true, Enumerable.Empty<LanguageOperationMessage>());
 
@@ -36,7 +36,7 @@ namespace AutoStep.Projects
         private IInteractionSet? currentInteractionSet;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectCompiler"/> class.
+        /// Initializes a new instance of the <see cref="ProjectBuilder"/> class.
         /// </summary>
         /// <param name="project">The project to work on.</param>
         /// <param name="compiler">The compiler implementation to use.</param>
@@ -44,7 +44,7 @@ namespace AutoStep.Projects
         /// <param name="interactionCompiler">The interaction compiler.</param>
         /// <param name="setBuilderFactory">A factory for creating instances of <see cref="IInteractionSetBuilder" />.</param>
         /// <param name="buildExtendedMethodTableReferences">If true, then when building the interaction set, the extended reference data will be included.</param>
-        public ProjectCompiler(
+        public ProjectBuilder(
             Project project,
             ITestCompiler compiler,
             ILinker linker,
@@ -69,40 +69,40 @@ namespace AutoStep.Projects
         public IInteractionsConfiguration Interactions { get; } = new InteractionsConfiguration();
 
         /// <summary>
-        /// Creates a default project compiler with the normal compiler and linker settings.
+        /// Creates a default project builder with the normal compiler and linker settings.
         /// </summary>
         /// <param name="project">The project to work against.</param>
         /// <returns>A project compiler.</returns>
-        public static ProjectCompiler CreateDefault(Project project)
+        public static ProjectBuilder CreateDefault(Project project)
         {
             return CreateWithOptions(project, TestCompilerOptions.Default, InteractionsCompilerOptions.Default, false);
         }
 
         /// <summary>
-        /// Creates a project compiler configured for code editing.
+        /// Creates a project builder configured for code editing.
         /// </summary>
         /// <param name="project">The project to work against.</param>
-        /// <returns>A project compiler.</returns>
-        public static ProjectCompiler CreateForEditing(Project project)
+        /// <returns>A project builder.</returns>
+        public static ProjectBuilder CreateForEditing(Project project)
         {
             return CreateWithOptions(project, TestCompilerOptions.CreatePositionIndex, InteractionsCompilerOptions.CreatePositionIndex, true);
         }
 
         /// <summary>
-        /// Creates a project compiler with the provided compiler options.
+        /// Creates a project builder with the provided compiler options.
         /// </summary>
         /// <param name="project">The project to work against.</param>
         /// <param name="testOptions">Options for the test compiler.</param>
         /// <param name="interactionOptions">Options for the interaction compiler.</param>
         /// <param name="buildExtendedMethodTableReferences">Generate extended method table reference set.</param>
-        /// <returns>A project compiler.</returns>
-        public static ProjectCompiler CreateWithOptions(Project project, TestCompilerOptions testOptions, InteractionsCompilerOptions interactionOptions, bool buildExtendedMethodTableReferences)
+        /// <returns>A project builder.</returns>
+        public static ProjectBuilder CreateWithOptions(Project project, TestCompilerOptions testOptions, InteractionsCompilerOptions interactionOptions, bool buildExtendedMethodTableReferences)
         {
             var compiler = new TestCompiler(testOptions);
 
             var defaultCallChainValidator = new DefaultCallChainValidator();
 
-            return new ProjectCompiler(
+            return new ProjectBuilder(
                 project,
                 compiler,
                 new Linker(compiler),
@@ -116,7 +116,7 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        public async Task<ProjectCompilerResult> CompileAsync(CancellationToken cancelToken = default)
+        public async Task<ProjectBuilderResult> CompileAsync(CancellationToken cancelToken = default)
         {
             using var logFactory = new LoggerFactory();
 
@@ -129,7 +129,7 @@ namespace AutoStep.Projects
         /// <param name="loggerFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        public async Task<ProjectCompilerResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
+        public async Task<ProjectBuilderResult> CompileAsync(ILoggerFactory loggerFactory, CancellationToken cancelToken = default)
         {
             var allMessages = new List<LanguageOperationMessage>();
 
@@ -143,7 +143,7 @@ namespace AutoStep.Projects
 
             // Project compilation always succeeds, but possibly with individual file errors. We will aggregate all the file
             // messages and report them at once.
-            return new ProjectCompilerResult(true, allMessages, project);
+            return new ProjectBuilderResult(true, allMessages, project);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to convert exceptions into compiler messsages.")]
@@ -190,7 +190,7 @@ namespace AutoStep.Projects
         {
             if (interactionCompiler is null && project.AllFiles.Values.OfType<ProjectInteractionFile>().Any())
             {
-                throw new InvalidOperationException(ProjectCompilerMessages.MissingInteractionCompiler);
+                throw new InvalidOperationException(ProjectBuilderMessages.MissingInteractionCompiler);
             }
 
             var fileWasCompiled = false;
@@ -347,7 +347,7 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="cancelToken">A cancellation token for the linker process.</param>
         /// <returns>The overall project link result.</returns>
-        public ProjectCompilerResult Link(CancellationToken cancelToken = default)
+        public ProjectBuilderResult Link(CancellationToken cancelToken = default)
         {
             var allMessages = new List<LanguageOperationMessage>();
             var fixedFiles = new List<ProjectTestFile>(project.AllFiles.Values.OfType<ProjectTestFile>());
@@ -384,7 +384,7 @@ namespace AutoStep.Projects
                 }
             }
 
-            return new ProjectCompilerResult(true, allMessages, project);
+            return new ProjectBuilderResult(true, allMessages, project);
         }
 
         private static bool AnyLinkerDependenciesUpdated(ProjectTestFile file)

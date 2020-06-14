@@ -40,16 +40,16 @@ namespace AutoStep.Tests.Execution
                 }
             });
 
-            project.Compiler.AddStepDefinitionSource(steps);
+            project.Builder.AddStepDefinitionSource(steps);
 
-            var compileResult = await project.Compiler.CompileAsync();
+            var compileResult = await project.Builder.CompileAsync();
 
             if (!compileResult.Success)
             {
                 throw new AssertionException("Failed to build.");
             }
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             if (!linkResult.Success)
             {

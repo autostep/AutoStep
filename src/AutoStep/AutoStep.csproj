@@ -138,10 +138,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>FileSetMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Projects\ProjectCompilerMessages.Designer.cs">
+    <Compile Update="Projects\ProjectBuilderMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ProjectCompilerMessages.resx</DependentUpon>
+      <DependentUpon>ProjectBuilderMessages.resx</DependentUpon>
     </Compile>
     <Compile Update="Projects\ProjectMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -232,9 +232,9 @@
       <LastGenOutput>ProjectMessages.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Projects\ProjectCompilerMessages.resx">
+    <EmbeddedResource Update="Projects\ProjectBuilderMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ProjectCompilerMessages.Designer.cs</LastGenOutput>
+      <LastGenOutput>ProjectBuilderMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="TableMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>

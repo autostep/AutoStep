@@ -12,9 +12,9 @@ using Microsoft.Extensions.Logging;
 namespace AutoStep.Projects
 {
     /// <summary>
-    /// Defines an interface to a project compiler, which manages compilation and linking for a project.
+    /// Defines an interface to a project builder, which manages compilation and linking for a project.
     /// </summary>
-    public interface IProjectCompiler
+    public interface IProjectBuilder
     {
         /// <summary>
         /// Gets the interaction configuration, that allows the root set of methods and constants to be defined.
@@ -39,14 +39,14 @@ namespace AutoStep.Projects
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        Task<ProjectCompilerResult> CompileAsync(ILoggerFactory logFactory, CancellationToken cancelToken = default);
+        Task<ProjectBuilderResult> CompileAsync(ILoggerFactory logFactory, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Compile the project. Goes through all the project files and compiles those that need compilation.
         /// </summary>
         /// <param name="cancelToken">A cancellation token that halts compilation partway through.</param>
         /// <returns>The overall project compilation result.</returns>
-        Task<ProjectCompilerResult> CompileAsync(CancellationToken cancelToken = default);
+        Task<ProjectBuilderResult> CompileAsync(CancellationToken cancelToken = default);
 
         /// <summary>
         /// Retrieve the set of all step definition sources.
@@ -59,7 +59,7 @@ namespace AutoStep.Projects
         /// </summary>
         /// <param name="cancelToken">A cancellation token for the linker process.</param>
         /// <returns>The overall project link result.</returns>
-        ProjectCompilerResult Link(CancellationToken cancelToken = default);
+        ProjectBuilderResult Link(CancellationToken cancelToken = default);
 
         /// <summary>
         /// Tokenises a line of text, returning a set of line tokens. Used mostly for syntax highlighting; faster than a regular compile.

@@ -51,9 +51,9 @@ namespace AutoStep.Tests.Language
 
             project.TryAddFile(projFile);
 
-            await project.Compiler.CompileAsync(LogFactory);
+            await project.Builder.CompileAsync(LogFactory);
 
-            project.Compiler.Link();
+            project.Builder.Link();
 
             projFile.LastLinkResult!.Success.Should().BeTrue();
 
@@ -64,9 +64,9 @@ namespace AutoStep.Tests.Language
             source.Content = TestFileWithoutDef;
             source.LastModify = projFile.LastCompileTime.AddSeconds(10);
 
-            await project.Compiler.CompileAsync(LogFactory);
+            await project.Builder.CompileAsync(LogFactory);
 
-            project.Compiler.Link();
+            project.Builder.Link();
 
             projFile.LastLinkResult!.Success.Should().BeFalse();
 

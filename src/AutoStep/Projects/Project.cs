@@ -25,36 +25,36 @@ namespace AutoStep.Projects
         {
             if (forEditing)
             {
-                Compiler = ProjectCompiler.CreateForEditing(this);
+                Builder = ProjectBuilder.CreateForEditing(this);
             }
             else
             {
-                Compiler = ProjectCompiler.CreateDefault(this);
+                Builder = ProjectBuilder.CreateDefault(this);
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class, using a custom
-        /// project compiler factory.
+        /// project builder factory.
         /// </summary>
-        /// <param name="compilerFactory">
-        /// Factory to create a compiler instance.
+        /// <param name="builderFactory">
+        /// Factory to create a builder instance.
         /// </param>
-        public Project(Func<Project, IProjectCompiler> compilerFactory)
+        public Project(Func<Project, IProjectBuilder> builderFactory)
         {
-            if (compilerFactory is null)
+            if (builderFactory is null)
             {
-                throw new ArgumentNullException(nameof(compilerFactory));
+                throw new ArgumentNullException(nameof(builderFactory));
             }
 
-            var builtCompiler = compilerFactory(this);
+            var createdBuilder = builderFactory(this);
 
-            if (builtCompiler is null)
+            if (createdBuilder is null)
             {
-                throw new InvalidOperationException(ProjectMessages.ProjectCompilerCannotReturnNull);
+                throw new InvalidOperationException(ProjectMessages.ProjectBuilderCannotReturnNull);
             }
 
-            Compiler = builtCompiler;
+            Builder = createdBuilder;
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace AutoStep.Projects
         public IReadOnlyDictionary<string, ProjectFile> AllFiles => allFiles;
 
         /// <summary>
-        /// Gets the project compiler.
+        /// Gets the project builder.
         /// </summary>
-        public IProjectCompiler Compiler { get; }
+        public IProjectBuilder Builder { get; }
 
         /// <summary>
         /// Attempts to add a file to the project (will return false if it's already in the project).

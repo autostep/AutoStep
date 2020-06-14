@@ -61,11 +61,11 @@ namespace AutoStep.Projects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project compiler factory cannot return null..
+        ///   Looks up a localized string similar to Project builder factory cannot return null..
         /// </summary>
-        internal static string ProjectCompilerCannotReturnNull {
+        internal static string ProjectBuilderCannotReturnNull {
             get {
-                return ResourceManager.GetString("ProjectCompilerCannotReturnNull", resourceCulture);
+                return ResourceManager.GetString("ProjectBuilderCannotReturnNull", resourceCulture);
             }
         }
     }

@@ -219,7 +219,7 @@ namespace AutoStep.Execution
             // Register configuration concepts in the container.
             exposedServiceRegistration.RegisterInstance<IConfiguration>(builtConfiguration);
 
-            ConfigureLanguageServices(exposedServiceRegistration, Project.Compiler, builtConfiguration);
+            ConfigureLanguageServices(exposedServiceRegistration, Project.Builder, builtConfiguration);
 
             foreach (var callback in cfgCallbacks)
             {
@@ -231,17 +231,17 @@ namespace AutoStep.Execution
             return exposedServiceRegistration.BuildRootScope();
         }
 
-        private static void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectCompiler compiler, IConfiguration configuration)
+        private static void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectBuilder builder, IConfiguration configuration)
         {
             // Ask the project's compiler for the list of step definition sources.
-            foreach (var source in compiler.EnumerateStepDefinitionSources())
+            foreach (var source in builder.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
                 source.ConfigureServices(exposedServiceRegistration, configuration);
             }
 
             // Iterate over the methods in the root method table.
-            foreach (var service in compiler.Interactions.RootMethodTable.GetAllMethodProvidingServices())
+            foreach (var service in builder.Interactions.RootMethodTable.GetAllMethodProvidingServices())
             {
                 exposedServiceRegistration.RegisterPerResolveService(service);
             }

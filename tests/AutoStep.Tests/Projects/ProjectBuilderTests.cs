@@ -16,12 +16,12 @@ using AutoStep.Language.Test;
 
 namespace AutoStep.Tests.Projects
 {
-    public partial class ProjectCompilerTests
+    public partial class ProjectBuilderTests
     {
         [Fact]
         public void ConstructorThrowsProjectNullArgumentException()
         {
-            Action act = () => GetCompiler(null!, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object);
+            Action act = () => GetBuilder(null!, new Mock<ITestCompiler>().Object, new Mock<ILinker>().Object);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -29,7 +29,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorThrowsCompilerNullArgumentException()
         {
-            Action act = () => GetCompiler(new Project(), null!, new Mock<ILinker>().Object);
+            Action act = () => GetBuilder(new Project(), null!, new Mock<ILinker>().Object);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -37,7 +37,7 @@ namespace AutoStep.Tests.Projects
         [Fact]
         public void ConstructorThrowsLinkerNullArgumentException()
         {
-            Action act = () => GetCompiler(new Project(), new Mock<ITestCompiler>().Object, null!);
+            Action act = () => GetBuilder(new Project(), new Mock<ITestCompiler>().Object, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }
@@ -58,9 +58,9 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = await projectCompiler.CompileAsync();
+            var result = await projectBuilder.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -99,9 +99,9 @@ namespace AutoStep.Tests.Projects
             project.TryAddFile(projFile1);
             project.TryAddFile(projFile2);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            var result = await projectCompiler.CompileAsync();
+            var result = await projectBuilder.CompileAsync();
 
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
@@ -131,15 +131,15 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             var originalCompilationResult = projFile.LastCompileResult;
 
             // Just do it again.
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             // Result should be the same.
             projFile.LastCompileResult.Should().BeSameAs(originalCompilationResult);
@@ -165,10 +165,10 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             var originalCompilationResult = projFile.LastCompileResult;
 
@@ -176,7 +176,7 @@ namespace AutoStep.Tests.Projects
             changeTime = projFile.LastCompileTime.AddMinutes(1);
 
             // Run it again.
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             // Result should have changed.
             projFile.Should().NotBeSameAs(originalCompilationResult);
@@ -201,10 +201,10 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = await projectCompiler.CompileAsync();
+            var overallResult = await projectBuilder.CompileAsync();
 
             overallResult.Messages.Should().Contain(fileMessage);
         }
@@ -226,10 +226,10 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = await projectCompiler.CompileAsync();
+            var overallResult = await projectBuilder.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.IOException,
                                                       "File access error: IO Error", 0, 0);
@@ -254,10 +254,10 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             // Compile once.
-            var overallResult = await projectCompiler.CompileAsync();
+            var overallResult = await projectBuilder.CompileAsync();
 
             var expectedMessage = new LanguageOperationMessage("/file1", CompilerMessageLevel.Error, CompilerMessageCode.UncategorisedException,
                                                       "Internal Error: Unknown Error", 0, 0);
@@ -272,7 +272,7 @@ namespace AutoStep.Tests.Projects
             var mockCompiler = new Mock<ITestCompiler>();
             var mockLinker = new Mock<ILinker>();
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
             var projFile = new ProjectTestFile("/file1", new Mock<IContentSource>().Object);
             project.TryAddFile(projFile);
@@ -280,7 +280,7 @@ namespace AutoStep.Tests.Projects
             var cancelledToken = new CancellationToken(true);
 
             // Compile once.
-            projectCompiler.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
+            projectBuilder.Invoking(c => c.CompileAsync(cancelledToken)).Should().Throw<OperationCanceledException>();
         }
 
         [Fact]
@@ -311,9 +311,9 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             projFile.StepDefinitionSource.Should().NotBeNull();
             // Linker was called.
@@ -349,9 +349,9 @@ namespace AutoStep.Tests.Projects
             var projFile = new ProjectTestFile("/file1", mockSource.Object);
             project.TryAddFile(projFile);
 
-            var projectCompiler = GetCompiler(project, mockCompiler.Object, mockLinker.Object);
+            var projectBuilder = GetBuilder(project, mockCompiler.Object, mockLinker.Object);
 
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             projFile.StepDefinitionSource.Should().NotBeNull();
 
@@ -362,7 +362,7 @@ namespace AutoStep.Tests.Projects
             mockSource.Setup(s => s.GetLastContentModifyTime()).Returns(projFile.LastCompileTime + TimeSpan.FromSeconds(10));
 
             // Compile again.
-            await projectCompiler.CompileAsync();
+            await projectBuilder.CompileAsync();
 
             // We should have updated the source.
             updatedSourceCount.Should().Be(2);

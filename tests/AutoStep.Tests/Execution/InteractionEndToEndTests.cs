@@ -65,24 +65,24 @@ namespace AutoStep.Tests.Execution
             var selectCalled = false;
             var clickCalled = false;
 
-            project.Compiler.Interactions.AddOrReplaceMethod("select", (IServiceProvider scope, MethodContext ctxt, string selector) =>
+            project.Builder.Interactions.AddOrReplaceMethod("select", (IServiceProvider scope, MethodContext ctxt, string selector) =>
             {
                 ctxt.ChainValue.Should().BeNull();
                 ctxt.ChainValue = "element";
                 selectCalled = true;
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("click", (IServiceProvider scope, MethodContext ctxt) =>
+            project.Builder.Interactions.AddOrReplaceMethod("click", (IServiceProvider scope, MethodContext ctxt) =>
             {
                 ctxt.ChainValue.Should().Be("element");
                 clickCalled = true;
             });
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
             compileResult.Messages.Should().BeEmpty();
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             linkResult.Messages.Should().BeEmpty();
 
@@ -155,20 +155,20 @@ namespace AutoStep.Tests.Execution
                 new TestElement("input") { Id = "age" }
             };
 
-            project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
+            project.Builder.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
             {
                 ctxt.ChainValue.Should().BeNull();
                 ctxt.ChainValue = testElements.Where(c => c.Type == selector);
                 selectCalled = true;
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("selectById", (MethodContext ctxt, string id) =>
+            project.Builder.Interactions.AddOrReplaceMethod("selectById", (MethodContext ctxt, string id) =>
             {
                 ctxt.ChainValue = testElements.Where(c => c.Id == id);
                 selectByIdCalled = true;
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("withText", (MethodContext ctxt, string text) =>
+            project.Builder.Interactions.AddOrReplaceMethod("withText", (MethodContext ctxt, string text) =>
             {
                 // The chain contains an IEnumerable of TestElement.
                 var elements = ctxt.ChainValue as IEnumerable<TestElement>;
@@ -176,7 +176,7 @@ namespace AutoStep.Tests.Execution
                 ctxt.ChainValue = elements.Where(x => x.Text == text);
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
+            project.Builder.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
             {
                 var elements = ctxt.ChainValue as IEnumerable<TestElement>;
 
@@ -192,13 +192,13 @@ namespace AutoStep.Tests.Execution
                 }
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod(new AttributeToVariableMethod());
+            project.Builder.Interactions.AddOrReplaceMethod(new AttributeToVariableMethod());
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
             compileResult.Messages.Should().BeEmpty();
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             linkResult.Messages.Should().BeEmpty();
 
@@ -266,26 +266,26 @@ namespace AutoStep.Tests.Execution
 
             var actions = new List<string>();
 
-            project.Compiler.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
+            project.Builder.Interactions.AddOrReplaceMethod("select", (MethodContext ctxt, string selector) =>
             {
                 actions.Add(selector);
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("click", (MethodContext ctxt) =>
+            project.Builder.Interactions.AddOrReplaceMethod("click", (MethodContext ctxt) =>
             {
                 actions.Add("click");
             });
 
-            project.Compiler.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
+            project.Builder.Interactions.AddOrReplaceMethod("assertExists", (MethodContext ctxt) =>
             {
                 actions.Add("assertExists");
             });
 
-            var compileResult = await project.Compiler.CompileAsync(LogFactory);
+            var compileResult = await project.Builder.CompileAsync(LogFactory);
 
             compileResult.Messages.Should().BeEmpty();
 
-            var linkResult = project.Compiler.Link();
+            var linkResult = project.Builder.Link();
 
             linkResult.Messages.Should().BeEmpty();
 
