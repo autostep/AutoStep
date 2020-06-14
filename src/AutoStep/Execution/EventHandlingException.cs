@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoStep.Execution.Events;
 
 namespace AutoStep.Execution
 {
@@ -10,10 +11,14 @@ namespace AutoStep.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="EventHandlingException"/> class.
         /// </summary>
+        /// <param name="handler">The handler that failed.</param>
         /// <param name="innerException">The underlying exception.</param>
-        public EventHandlingException(Exception innerException)
+        public EventHandlingException(IEventHandler handler, Exception innerException)
             : base(ExecutionText.EventHandlingException_Message, innerException)
         {
+            FailedEventHandler = handler;
         }
+
+        public IEventHandler FailedEventHandler { get; }
     }
 }

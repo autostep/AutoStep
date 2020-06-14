@@ -73,7 +73,7 @@ namespace AutoStep.Execution.Events
                 catch (Exception ex)
                 {
                     // Anything else is an exception in this handler. Wrap it and throw.
-                    throw new EventHandlingException(ex);
+                    throw new EventHandlingException(innerHandler, ex);
                 }
             };
         }
