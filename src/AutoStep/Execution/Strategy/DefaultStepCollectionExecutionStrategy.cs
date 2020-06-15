@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -27,12 +28,12 @@ namespace AutoStep.Execution.Strategy
         /// <param name="cancelToken">Cancellation token for the step collection.</param>
         /// <returns>A task that should complete when the step collection has finished executing.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to capture any error arising from a nested step.")]
-        public async ValueTask ExecuteAsync(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
+        public async ValueTask ExecuteAsync(ILifetimeScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
         {
-            var stepExecutionStrategy = owningScope.GetRequiredService<IStepExecutionStrategy>();
-            var executionManager = owningScope.GetRequiredService<IExecutionStateManager>();
-            var events = owningScope.GetRequiredService<IEventPipeline>();
-            var contextScopeProvider = owningScope.GetRequiredService<IContextScopeProvider>();
+            var stepExecutionStrategy = owningScope.Resolve<IStepExecutionStrategy>();
+            var executionManager = owningScope.Resolve<IExecutionStateManager>();
+            var events = owningScope.Resolve<IEventPipeline>();
+            var contextScopeProvider = owningScope.Resolve<IContextScopeProvider>();
 
             for (var stepIdx = 0; stepIdx < stepCollection.Steps.Count; stepIdx++)
             {
@@ -42,17 +43,17 @@ namespace AutoStep.Execution.Strategy
 
                 using (contextScopeProvider.EnterContextScope(stepContext))
                 {
-                    IAutoStepServiceScope? locallyOwnedScope = null;
-                    IAutoStepServiceScope stepScope;
+                    ILifetimeScope? locallyOwnedScope = null;
+                    ILifetimeScope stepScope;
 
-                    if (owningScope.Tag == ScopeTags.StepTag)
+                    if (ScopeTags.StepTag.Equals(owningScope.Tag))
                     {
                         stepScope = owningScope;
                     }
                     else
                     {
                         // The parent scope is not a step. Create a new one.
-                        stepScope = locallyOwnedScope = owningScope.BeginNewScope(ScopeTags.StepTag, stepContext);
+                        stepScope = locallyOwnedScope = owningScope.BeginContextScope(ScopeTags.StepTag, stepContext);
                     }
 
                     var stepRan = false;

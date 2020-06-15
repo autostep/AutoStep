@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Execution;
@@ -56,7 +57,7 @@ namespace AutoStep.Tests.Utils
             return defs;
         }
 
-        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration config)
+        public void ConfigureServices(ContainerBuilder servicesBuilder, IConfiguration config)
         {
             ConfigureServicesCalled = true;
         }
@@ -69,8 +70,13 @@ namespace AutoStep.Tests.Utils
 
             public override StepTableRequirement TableRequirement => StepTableRequirement.Optional;
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+            public override ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
+                if (stepScope is null)
+                {
+                    throw new ArgumentNullException(nameof(stepScope));
+                }
+
                 throw new System.NotImplementedException();
             }
 

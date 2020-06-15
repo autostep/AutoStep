@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Contexts;
 using AutoStep.Language.Interaction;
@@ -56,7 +57,7 @@ namespace AutoStep.Definitions.Interaction
         /// <param name="context">The current method context (containing the method arguments, current variables and chain value, among other things).</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>A completion task for when the method has completed.</returns>
-        public virtual ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, CancellationToken cancelToken)
+        public virtual ValueTask InvokeAsync(ILifetimeScope scope, MethodContext context, CancellationToken cancelToken)
         {
             throw new NotImplementedException("Registered Interaction Method '{0}' has not been implemented".FormatWith(Name));
         }
@@ -70,7 +71,7 @@ namespace AutoStep.Definitions.Interaction
         /// <param name="callStack">The current call stack.</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>A completion task for when the method has completed.</returns>
-        public virtual ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
+        public virtual ValueTask InvokeAsync(ILifetimeScope scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
         {
             return InvokeAsync(scope, context, cancelToken);
         }

@@ -13,6 +13,8 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Language.Test;
 using System.Threading;
+using Autofac;
+using System.Net.WebSockets;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
@@ -31,9 +33,8 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
 
-            var mockScope = new Mock<IAutoStepServiceScope>();
-
-            mockScope.Setup(x => x.GetService(typeof(ThreadContext))).Returns(new ThreadContext(1));
+            var containerBuilder = new ContainerBuilder();
+            var mockScope = containerBuilder.Build().BeginContextScope(ScopeTags.ThreadTag, new ThreadContext(1));
 
             var ranStep = false;
 
@@ -42,7 +43,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStep = true;
                 ctxt.Should().Be(stepContext);
                 vars.Should().Be(variables);
-                scope.Should().Be(mockScope.Object);
+                scope.Should().Be(mockScope);
 
                 return default;
             });
@@ -51,7 +52,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var strategy = new DefaultStepExecutionStrategy();
 
-            await strategy.ExecuteStepAsync(mockScope.Object, stepContext, variables, CancellationToken.None);
+            await strategy.ExecuteStepAsync(mockScope, stepContext, variables, CancellationToken.None);
 
             ranStep.Should().BeTrue();
         }
@@ -65,7 +66,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var stepContext = new StepContext(0, new StepCollectionContext(), step, variables);
 
-            var mockScope = new Mock<IAutoStepServiceScope>().Object;
+            var mockScope = new Mock<ILifetimeScope>().Object;
 
             var ranStep = false;
 
@@ -94,9 +95,8 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var threadContext = new ThreadContext(1);
 
-            var builder = new AutofacServiceBuilder();
-            builder.RegisterInstance(threadContext);
-            var scope = builder.BuildRootScope();
+            var builder = new ContainerBuilder();
+            var scope = builder.Build().BeginContextScope(ScopeTags.ThreadTag, threadContext);
 
             var ranStepCount = 0;
 
@@ -107,7 +107,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, ctxt, vars, CancellationToken.None);
+                await strategy.ExecuteStepAsync(scope, ctxt, vars, CancellationToken.None);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
@@ -136,9 +136,8 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var threadContext = new ThreadContext(1);
 
-            var builder = new AutofacServiceBuilder();
-            builder.RegisterInstance(threadContext);
-            var scope = builder.BuildRootScope();
+            var builder = new ContainerBuilder();
+            var scope = builder.Build().BeginContextScope(ScopeTags.ThreadTag, threadContext);
 
             var ranStepCount = 0;
 
@@ -149,13 +148,13 @@ namespace AutoStep.Tests.Execution.Strategy
                 ranStepCount++;
 
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, loopbackStepContext, vars, CancellationToken.None);
+                await strategy.ExecuteStepAsync(scope, loopbackStepContext, vars, CancellationToken.None);
             });
 
             var loopBackStepDef = new TestStepDef("loopbackStep", async (scope, ctxt, vars) =>
             {
                 // Execute the same step inside itself to trigger a circular reference.
-                await strategy.ExecuteStepAsync((IAutoStepServiceScope)scope, stepContext, vars, CancellationToken.None);
+                await strategy.ExecuteStepAsync(scope, stepContext, vars, CancellationToken.None);
             });
 
             step.Bind(new StepReferenceBinding(stepDef, null, null));
@@ -173,15 +172,15 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class TestStepDef : StepDefinition
         {
-            private readonly Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback;
+            private readonly Func<ILifetimeScope, StepContext, VariableSet, ValueTask> callback;
 
-            public TestStepDef(Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback)
+            public TestStepDef(Func<ILifetimeScope, StepContext, VariableSet, ValueTask> callback)
                 : base(TestStepDefinitionSource.Blank, StepType.Given, "something")
             {
                 this.callback = callback;
             }
 
-            public TestStepDef(string name, Func<IServiceProvider, StepContext, VariableSet, ValueTask> callback)
+            public TestStepDef(string name, Func<ILifetimeScope, StepContext, VariableSet, ValueTask> callback)
                 : base(TestStepDefinitionSource.Blank, StepType.Given, name)
             {
                 this.callback = callback;
@@ -189,7 +188,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public override StepTableRequirement TableRequirement => StepTableRequirement.Optional;
 
-            public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+            public override async ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 await callback(stepScope, context, variables);
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
@@ -81,6 +82,6 @@ namespace AutoStep.Definitions
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
         /// <param name="cancelToken">A cancellation token for the step execution.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public abstract ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken);
+        public abstract ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken);
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -26,16 +27,16 @@ namespace AutoStep.Execution.Strategy
         /// <param name="variableSet">The set of variables currently in-scope.</param>
         /// <param name="cancelToken">Cancellation token for the scenario.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
-        public async ValueTask ExecuteAsync(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet, CancellationToken cancelToken)
+        public async ValueTask ExecuteAsync(ILifetimeScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variableSet, CancellationToken cancelToken)
         {
             var scenarioContext = new ScenarioContext(scenario, variableSet);
 
-            using var scenarioScope = featureScope.BeginNewScope(ScopeTags.ScenarioTag, scenarioContext);
+            using var scenarioScope = featureScope.BeginContextScope(ScopeTags.ScenarioTag, scenarioContext);
 
-            var collectionExecutor = scenarioScope.GetRequiredService<IStepCollectionExecutionStrategy>();
-            var executionManager = scenarioScope.GetRequiredService<IExecutionStateManager>();
-            var events = scenarioScope.GetRequiredService<IEventPipeline>();
-            var contextProvider = scenarioScope.GetRequiredService<IContextScopeProvider>();
+            var collectionExecutor = scenarioScope.Resolve<IStepCollectionExecutionStrategy>();
+            var executionManager = scenarioScope.Resolve<IExecutionStateManager>();
+            var events = scenarioScope.Resolve<IEventPipeline>();
+            var contextProvider = scenarioScope.Resolve<IContextScopeProvider>();
 
             using (contextProvider.EnterContextScope(scenarioContext))
             {

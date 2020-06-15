@@ -22,6 +22,7 @@ namespace ExtensionMethodsGenerator
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("Autofac"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Interaction"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Contexts"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Execution.Interaction"));
@@ -36,6 +37,7 @@ namespace ExtensionMethodsGenerator
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("System.Threading.Tasks"));
+                myNameSpace.Imports.Add(new CodeNamespaceImport("Autofac"));
                 myNameSpace.Imports.Add(new CodeNamespaceImport("AutoStep.Definitions.Test"));
 
                 var defType = GenerateDefinitionExtensions();
@@ -180,8 +182,10 @@ namespace ExtensionMethodsGenerator
             {
                 AddDocComments(method.Comments,
                     "Type parameters for the callback are the type of values to bind step arguments to.",
-                    "- A type argument of <see cref=\"IServiceProvider\" /> will cause the current scope to be injected into the method.",
-                    "- A type argument of <see cref=\"CancellationToken\" /> will cause the active cancellation token to be injected into the method.");
+                    "<list>",
+                    "<item>A type argument of <see cref=\"ILifetimeScope\" /> will cause the current scope to be injected into the method.</item>",
+                    "<item>A type argument of <see cref=\"CancellationToken\" /> will cause the active cancellation token to be injected into the method.</item>",
+                    "</list>");
             }
 
             AddDocComments(method.Comments, "</summary>");
@@ -271,9 +275,11 @@ namespace ExtensionMethodsGenerator
             {
                 AddDocComments(method.Comments,
                     "Type parameters for the callback are the type of values to bind interaction arguments to.",
-                    "- A type argument of <see cref=\"IServiceProvider\" /> will cause the current scope to be injected into the method.",
-                    "- A type argument of <see cref=\"MethodContext\" /> will receive the current interaction method context.",
-                    "- A type argument of <see cref=\"CancellationToken\" /> will cause the active cancellation token to be injected into the method.");
+                    "<list>",
+                    "<item>A type argument of <see cref=\"ILifetimeScope\" /> will cause the current scope to be injected into the method.</item>",
+                    "<item>A type argument of <see cref=\"MethodContext\" /> will receive the current interaction method context.</item>",
+                    "<item>A type argument of <see cref=\"CancellationToken\" /> will cause the active cancellation token to be injected into the method.</item>",
+                    "</list>");
             }
 
             AddDocComments(method.Comments, "</summary>");

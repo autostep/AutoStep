@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -22,7 +23,7 @@ namespace AutoStep.Tests.Execution.Events
         public async Task InvokeEventInvokesProvidedCallbackWithNoHandlers()
         {
             var pipeline = new EventPipeline(new List<IEventHandler>());
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             var callbackInvoked = false;
@@ -54,7 +55,7 @@ namespace AutoStep.Tests.Execution.Events
             bool beforeCalled = false;
             bool afterCalled = false;
 
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -73,7 +74,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var order = new List<int>();
 
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -95,7 +96,7 @@ namespace AutoStep.Tests.Execution.Events
         {
             var order = new List<int>();
 
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
 
@@ -117,7 +118,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async Task StepFailuresThrownAsIs()
         {
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             var mockStepReference = new StepReferenceElement();
@@ -139,13 +140,14 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async Task FailuresFromOtherEventHandlerThrownAsIs()
         {
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
 
             var myHandler = new MyEventHandler(ex => foundException = ex);
-            var errHandler = new MyEventHandler(() => { }, () => throw new EventHandlingException(new NullReferenceException()));
+            IEventHandler errHandler = null!;
+            errHandler = new MyEventHandler(() => { }, () => throw new EventHandlingException(errHandler, new NullReferenceException()));
 
             var pipeline = new EventPipeline(new List<IEventHandler> { myHandler, errHandler });
 
@@ -159,7 +161,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public void CancelledEventPipelineThrowsOperationCancelledAndPropagatesUp()
         {
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             var secondHandlerHit = false;
@@ -180,7 +182,7 @@ namespace AutoStep.Tests.Execution.Events
         [Fact]
         public async Task RemainingExceptionsWrappedAsEventHandlingException()
         {
-            var scopeMock = new Mock<IAutoStepServiceScope>();
+            var scopeMock = new Mock<ILifetimeScope>();
             var scope = scopeMock.Object;
             var context = new RunContext(BlankConfiguration);
             Exception? foundException = null;
@@ -217,8 +219,8 @@ namespace AutoStep.Tests.Execution.Events
                 this.exception = exception;
             }
 
-            public override async ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
-      {
+            public override async ValueTask OnExecuteAsync(ILifetimeScope scope, RunContext ctxt, Func<ILifetimeScope, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            {
                 callBefore();
 
                 try
@@ -253,8 +255,8 @@ namespace AutoStep.Tests.Execution.Events
                 this.callAfter = callAfter;
             }
 
-            public override async ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
-      {
+            public override async ValueTask OnExecuteAsync(ILifetimeScope scope, RunContext ctxt, Func<ILifetimeScope, RunContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            {
                 callBefore();
 
                 // We're only going to use execute for testing; the method called has no bearing on the pipeline object.

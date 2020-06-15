@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -51,7 +52,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public override async ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
+        public override async ValueTask InvokeAsync(ILifetimeScope scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));

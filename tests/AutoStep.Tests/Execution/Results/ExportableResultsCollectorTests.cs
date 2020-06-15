@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Results;
@@ -95,7 +96,7 @@ namespace AutoStep.Tests.Execution.Results
                 this.callback = callback;
             }
 
-            public ValueTask ExportAsync(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
+            public ValueTask ExportAsync(ILifetimeScope scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
             {
                 scope.Should().NotBeNull();
                 runContext.Should().NotBeNull();

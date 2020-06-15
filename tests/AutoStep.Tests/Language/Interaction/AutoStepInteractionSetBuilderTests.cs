@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Parts;
@@ -37,7 +38,7 @@ namespace AutoStep.Tests.Language.Interaction
                 return null;
             }
 
-            public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
+            public override ValueTask InvokeAsync(ILifetimeScope scope, MethodContext context, MethodTable methods, Stack<MethodContext> callStack, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

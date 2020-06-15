@@ -12,6 +12,7 @@ using AutoStep.Language.Test;
 using AutoStep.Definitions.Test;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using Autofac;
 
 namespace AutoStep.Tests.Definition
 {
@@ -32,19 +33,19 @@ namespace AutoStep.Tests.Definition
             var attr = method.GetCustomAttribute<GivenAttribute>()!;
             var stepDef = new ClassStepDefinition(TestStepDefinitionSource.Blank, typeof(MyStepDef), method, attr);
 
-            var builder = new AutofacServiceBuilder();
-            builder.RegisterPerStepService<MyStepDef>();
+            var builder = new ContainerBuilder();
+            builder.RegisterType<MyStepDef>().InstancePerStep();
 
             var stepRef = new StepReferenceElement();
             stepRef.Bind(new StepReferenceBinding(stepDef, null, null));
 
             var stepContext = new StepContext(0, new StepCollectionContext(), stepRef, VariableSet.Blank);
 
-            var scope = builder.BuildRootScope().BeginNewScope(ScopeTags.StepTag, stepContext);
+            var scope = builder.Build().BeginContextScope(ScopeTags.StepTag, stepContext);
 
             await stepDef.ExecuteStepAsync(scope, stepContext, VariableSet.Blank, CancellationToken.None);
 
-            var stepClassInstance = scope.GetRequiredService<MyStepDef>();
+            var stepClassInstance = scope.Resolve<MyStepDef>();
             stepClassInstance.ClickCount.Should().Be(1);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Autofac;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions.Test
@@ -44,7 +45,7 @@ namespace AutoStep.Definitions.Test
         }
 
         /// <inheritdoc/>
-        protected override object GetMethodTarget(IServiceProvider scope)
+        protected override object GetMethodTarget(ILifetimeScope scope)
         {
             return target;
         }

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -22,10 +23,10 @@ namespace AutoStep.Execution.Strategy
         /// <param name="cancelToken">Cancellation token for the step collection.</param>
         /// <returns>A task that should complete when the step collection has finished executing.</returns>
         ValueTask ExecuteAsync(
-                    IAutoStepServiceScope owningScope,
-                    StepCollectionContext owningContext,
-                    IStepCollectionInfo stepCollection,
-                    VariableSet variables,
-                    CancellationToken cancelToken);
+            ILifetimeScope owningScope,
+            StepCollectionContext owningContext,
+            IStepCollectionInfo stepCollection,
+            VariableSet variables,
+            CancellationToken cancelToken);
     }
 }

@@ -1,17 +1,14 @@
-﻿namespace AutoStep.Execution.Dependency
+﻿using Autofac;
+
+namespace AutoStep.Execution.Dependency
 {
     /// <summary>
-    /// Defines standard tags for the various <see cref="IAutoStepServiceScope"/> scopes created during execution.
+    /// Defines standard tags for the various <see cref="ILifetimeScope"/> scopes created during execution.
     /// </summary>
     public static class ScopeTags
     {
         /// <summary>
-        /// The root scope. All other scopes are created from this.
-        /// </summary>
-        public const string Root = "__asRoot";
-
-        /// <summary>
-        /// The run scope. This scope is created from the root scope, and encompasses the entire text execution (across all threads).
+        /// The run scope. This scope is created from the root container, and encompasses the entire text execution (across all threads).
         /// </summary>
         public const string RunTag = "__asRun";
 

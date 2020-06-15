@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Events
@@ -22,7 +23,7 @@ namespace AutoStep.Execution.Events
         /// </param>
         /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
+        ValueTask OnExecuteAsync(ILifetimeScope scope, RunContext ctxt, Func<ILifetimeScope, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Thread Stage. This occurs per-thread, just after the thread has been started, but before any features start executing.
@@ -36,7 +37,7 @@ namespace AutoStep.Execution.Events
         /// </param>
         /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnThreadAsync(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
+        ValueTask OnThreadAsync(ILifetimeScope scope, ThreadContext ctxt, Func<ILifetimeScope, ThreadContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Feature Stage. This occurs per-thread and per-feature, just before the feature is started, but before any scenarios start executing.
@@ -50,7 +51,7 @@ namespace AutoStep.Execution.Events
         /// </param>
         /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
+        ValueTask OnFeatureAsync(ILifetimeScope scope, FeatureContext ctxt, Func<ILifetimeScope, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Scenario Stage. This occurs per-scenario, just before the scenario (and any background) is started.
@@ -64,7 +65,7 @@ namespace AutoStep.Execution.Events
         /// </param>
         /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
+        ValueTask OnScenarioAsync(ILifetimeScope scope, ScenarioContext ctxt, Func<ILifetimeScope, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
 
         /// <summary>
         /// Invoked at the Step Stage. This occurs per-step, just before the step executes.
@@ -77,6 +78,6 @@ namespace AutoStep.Execution.Events
         /// </param>
         /// <param name="cancelToken">Cancellation token for the execution.</param>
         /// <returns>A task that can be awaited on by the execution system or a prior event handler.</returns>
-        ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
+        ValueTask OnStepAsync(ILifetimeScope scope, StepContext ctxt, Func<ILifetimeScope, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken);
     }
 }

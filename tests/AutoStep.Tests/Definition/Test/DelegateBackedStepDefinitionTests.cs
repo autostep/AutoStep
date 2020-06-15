@@ -15,6 +15,8 @@ using AutoStep.Elements.Test;
 using AutoStep.Language.Test;
 using AutoStep.Definitions.Test;
 using System.Threading;
+using Autofac.Core;
+using Autofac;
 
 namespace AutoStep.Tests.Definition
 {
@@ -25,7 +27,7 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
 
-            Action<IServiceProvider> callback = sc => { };
+            Action<ILifetimeScope> callback = sc => { };
 
             var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
@@ -39,8 +41,8 @@ namespace AutoStep.Tests.Definition
         {
             var source = new Mock<IStepDefinitionSource>();
 
-            Action<IServiceProvider> callback = sc => { };
-            Action<IServiceProvider> callback2 = sc => { };
+            Action<ILifetimeScope> callback = sc => { };
+            Action<ILifetimeScope> callback2 = sc => { };
 
             var delDefinition1 = new DelegateBackedStepDefinition(source.Object, callback.Target!, callback.Method, StepType.Given, "I test");
 
@@ -53,13 +55,15 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
 
-            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+
+            var mockScope = builder.Build();
 
             var callbackInvoked = false;
 
-            Action<IServiceProvider> callback = sc =>
+            Action<ILifetimeScope> callback = sc =>
             {
                 callbackInvoked = true;
             };
@@ -70,7 +74,7 @@ namespace AutoStep.Tests.Definition
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
+            await delDefinition.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
 
             callbackInvoked.Should().BeTrue();
         }
@@ -79,9 +83,10 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinitionWithCancellationToken()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
-
-            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+            
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+            var mockScope = builder.Build();
 
             CancellationToken foundCancelToken = default;
 
@@ -98,7 +103,7 @@ namespace AutoStep.Tests.Definition
 
             var cancellationSource = new CancellationTokenSource();
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
+            await delDefinition.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
 
             foundCancelToken.Should().Be(cancellationSource.Token);
         }
@@ -107,13 +112,14 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeAsyncTaskBackedDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
+
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+            var mockScope = builder.Build();
 
             var callbackInvoked = false;
 
-            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
-
-            Func<IServiceProvider, Task> callback = async sc =>
+            Func<ILifetimeScope, Task> callback = async sc =>
             {
                 await Task.Delay(10);
                 callbackInvoked = true;
@@ -125,7 +131,7 @@ namespace AutoStep.Tests.Definition
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
+            await delDefinition.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
 
             callbackInvoked.Should().BeTrue();
         }
@@ -134,13 +140,14 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeAsyncValueTaskDelegateDefinition()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
 
-            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+            var mockScope = builder.Build();
 
             var callbackInvoked = false;
 
-            Func<IServiceProvider, ValueTask> callback = sc =>
+            Func<ILifetimeScope, ValueTask> callback = sc =>
             {
                 callbackInvoked = true;
                 return default;
@@ -152,7 +159,7 @@ namespace AutoStep.Tests.Definition
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
+            await delDefinition.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
 
             callbackInvoked.Should().BeTrue();
         }
@@ -161,7 +168,7 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinitionBindArgument()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var scopeBuilder = new AutofacServiceBuilder();
+            var scopeBuilder = new ContainerBuilder();
             scopeBuilder.RegisterInstance(new ArgumentBinderRegistry());
 
             string? argValue = null;
@@ -183,7 +190,7 @@ namespace AutoStep.Tests.Definition
                                     new StepReferenceMatchResult(4, true, new ReadOnlySpan<StepToken>(), step.TokenSpan.Slice(1)))
             }, null));
 
-            await delDefinition.ExecuteStepAsync(scopeBuilder.BuildRootScope(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
+            await delDefinition.ExecuteStepAsync(scopeBuilder.Build(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
 
             argValue.Should().Be("test");
         }
@@ -192,7 +199,7 @@ namespace AutoStep.Tests.Definition
         public void ConversionExceptionsResultInArgumentBindingException()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var scopeBuilder = new AutofacServiceBuilder();
+            var scopeBuilder = new ContainerBuilder();
             scopeBuilder.RegisterInstance(new ArgumentBinderRegistry());
 
             Action<int> callback = arg1 =>
@@ -211,7 +218,7 @@ namespace AutoStep.Tests.Definition
                                     new StepReferenceMatchResult(4, true, new ReadOnlySpan<StepToken>(), step.TokenSpan.Slice(1)))
             }, null));
 
-            delDefinition.Invoking(x => x.ExecuteStepAsync(scopeBuilder.BuildRootScope(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank, CancellationToken.None))
+            delDefinition.Invoking(x => x.ExecuteStepAsync(scopeBuilder.Build(), new StepContext(0, null, step, VariableSet.Blank), VariableSet.Blank, CancellationToken.None))
                          .Should()
                          .Throw<ArgumentBindingException>()
                          .Where(e => e.TextValue == "test")
@@ -222,7 +229,8 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeDelegateDefinitionNoArguments()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
+            var scopeBuilder = new ContainerBuilder();
+            scopeBuilder.RegisterInstance(new ArgumentBinderRegistry());
 
             var callbackInvoked = false;
 
@@ -237,7 +245,7 @@ namespace AutoStep.Tests.Definition
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
+            await delDefinition.ExecuteStepAsync(scopeBuilder.Build(), new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None);
 
             callbackInvoked.Should().BeTrue();
         }
@@ -246,9 +254,12 @@ namespace AutoStep.Tests.Definition
         public void DelegateExceptionIsUnwrapped()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
 
-            Action<IServiceProvider> callback = sc =>
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+            var mockScope = builder.Build();
+
+            Action<ILifetimeScope> callback = sc =>
             {
                 throw new InvalidOperationException();
             };
@@ -259,7 +270,7 @@ namespace AutoStep.Tests.Definition
             stepRefInfo.FreezeTokens();
             stepRefInfo.Bind(new StepReferenceBinding(delDefinition, null, null));
 
-            delDefinition.Invoking(d => d.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None))
+            delDefinition.Invoking(d => d.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, CancellationToken.None))
                          .Should().Throw<InvalidOperationException>();
         }
 
@@ -267,9 +278,10 @@ namespace AutoStep.Tests.Definition
         public async Task CanInvokeMethodWithTableBinding()
         {
             var source = new Mock<IStepDefinitionSource>();
-            var mockScope = new Mock<IServiceProvider>();
 
-            mockScope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+            var mockScope = builder.Build();
 
             Table? foundTable = default;
 
@@ -289,7 +301,7 @@ namespace AutoStep.Tests.Definition
 
             var cancellationSource = new CancellationTokenSource();
 
-            await delDefinition.ExecuteStepAsync(mockScope.Object, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
+            await delDefinition.ExecuteStepAsync(mockScope, new StepContext(0, null, stepRefInfo, VariableSet.Blank), VariableSet.Blank, cancellationSource.Token);
 
             foundTable.Should().NotBeNull();
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Execution.Events
@@ -21,10 +22,10 @@ namespace AutoStep.Execution.Events
         /// <param name="final">An optional callback to invoke at the end of the pipeline.</param>
         /// <returns>A completion task.</returns>
         ValueTask InvokeEventAsync<TContext>(
-            IServiceProvider serviceProvider,
+            ILifetimeScope serviceProvider,
             TContext context,
-            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback,
+            Func<IEventHandler, ILifetimeScope, TContext, Func<ILifetimeScope, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback,
             CancellationToken cancelToken,
-            Func<IServiceProvider, TContext, CancellationToken, ValueTask>? final = null);
+            Func<ILifetimeScope, TContext, CancellationToken, ValueTask>? final = null);
     }
 }

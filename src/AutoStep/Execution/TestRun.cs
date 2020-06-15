@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Core.Lifetime;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
@@ -26,7 +28,7 @@ namespace AutoStep.Execution
         private readonly IRunFilter filter;
         private readonly IExecutionStateManager executionManager;
         private readonly EventPipelineBuilder eventPipelineBuilder;
-        private readonly List<Action<IConfiguration, IServicesBuilder>> cfgCallbacks = new List<Action<IConfiguration, IServicesBuilder>>();
+        private readonly List<Action<IConfiguration, ContainerBuilder>> cfgCallbacks = new List<Action<IConfiguration, ContainerBuilder>>();
 
         private IRunExecutionStrategy runExecutionStrategy;
         private IFeatureExecutionStrategy featureExecutionStrategy;
@@ -88,7 +90,7 @@ namespace AutoStep.Execution
         /// Add a callback that will be invoked when the test run starts, to configure the set of available services.
         /// </summary>
         /// <param name="serviceSetupCallback">A callback to invoke that can configure the set of services.</param>
-        public void AddServiceSetupCallback(Action<IConfiguration, IServicesBuilder> serviceSetupCallback)
+        public void AddServiceSetupCallback(Action<IConfiguration, ContainerBuilder> serviceSetupCallback)
         {
             if (serviceSetupCallback is null)
             {
@@ -112,13 +114,13 @@ namespace AutoStep.Execution
         /// Execute a test run.
         /// </summary>
         /// <param name="cancelToken">A cancellation token for the test run.</param>
-        /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
+        /// <param name="diConfiguration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(CancellationToken cancelToken, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(CancellationToken cancelToken, Action<IConfiguration, ContainerBuilder>? diConfiguration = null)
         {
             using var nullLogger = new LoggerFactory();
 
-            return await ExecuteAsync(nullLogger, cancelToken, serviceRegistration).ConfigureAwait(false);
+            return await ExecuteAsync(nullLogger, cancelToken, diConfiguration).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -126,9 +128,9 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="logFactory">A logger factory.</param>
         /// <param name="cancelToken">A cancellation token for the test run.</param>
-        /// <param name="serviceRegistration">An optional callback that allows additional services to be registered.</param>
+        /// <param name="diConfiguration">An optional callback that allows additional services to be registered.</param>
         /// <returns>A task that completes when the run completes, including the final run context.</returns>
-        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, CancellationToken cancelToken, Action<IConfiguration, IServicesBuilder>? serviceRegistration = null)
+        public async Task<RunContext> ExecuteAsync(ILoggerFactory logFactory, CancellationToken cancelToken, Action<IConfiguration, ContainerBuilder>? diConfiguration = null)
         {
             var contextScopeProvider = new ContextScopeProvider();
 
@@ -157,10 +159,10 @@ namespace AutoStep.Execution
                 var events = eventPipelineBuilder.Build();
 
                 // Build the container and prepare a root scope.
-                using var rootScope = PrepareContainer(events, contextAwareLogFactory, contextScopeProvider, builtConfiguration, serviceRegistration, executionSet);
+                using var rootScope = PrepareContainer(events, contextAwareLogFactory, contextScopeProvider, builtConfiguration, diConfiguration, executionSet);
 
                 // Run scope (disposes at the end of the method).
-                using var runScope = rootScope.BeginNewScope(ScopeTags.RunTag, runContext);
+                using var runScope = rootScope.BeginContextScope(ScopeTags.RunTag, runContext);
 
                 var timer = new Stopwatch();
                 timer.Start();
@@ -187,63 +189,64 @@ namespace AutoStep.Execution
             return runContext;
         }
 
-        private IAutoStepServiceScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, ContextScopeProvider contextScopeProvider, IConfigurationRoot builtConfiguration, Action<IConfiguration, IServicesBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
+        private ILifetimeScope PrepareContainer(EventPipeline events, ILoggerFactory logFactory, ContextScopeProvider contextScopeProvider, IConfigurationRoot builtConfiguration, Action<IConfiguration, ContainerBuilder>? serviceRegistration, FeatureExecutionSet featureSet)
         {
             // Built the DI container for the execution.
-            var exposedServiceRegistration = new AutofacServiceBuilder();
+            var containerBuilder = new ContainerBuilder();
 
-            exposedServiceRegistration.ConfigureLogging(logFactory);
+            containerBuilder.RegisterInstance(logFactory);
+            containerBuilder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
 
-            exposedServiceRegistration.RegisterInstance<IContextScopeProvider>(contextScopeProvider);
+            containerBuilder.RegisterInstance<IContextScopeProvider>(contextScopeProvider);
 
             // Register our strategies.
-            exposedServiceRegistration.RegisterInstance(runExecutionStrategy);
-            exposedServiceRegistration.RegisterInstance(featureExecutionStrategy);
-            exposedServiceRegistration.RegisterInstance(stepCollectionExecutionStrategy);
-            exposedServiceRegistration.RegisterInstance(stepExecutionStrategy);
-            exposedServiceRegistration.RegisterInstance(scenarioStrategy);
+            containerBuilder.RegisterInstance(runExecutionStrategy);
+            containerBuilder.RegisterInstance(featureExecutionStrategy);
+            containerBuilder.RegisterInstance(stepCollectionExecutionStrategy);
+            containerBuilder.RegisterInstance(stepExecutionStrategy);
+            containerBuilder.RegisterInstance(scenarioStrategy);
 
             // Register our argument binder registry.
             var argumentBinderRegistry = new ArgumentBinderRegistry();
-            exposedServiceRegistration.RegisterInstance(argumentBinderRegistry);
+            containerBuilder.RegisterInstance(argumentBinderRegistry);
 
             // Register the execution manager.
-            exposedServiceRegistration.RegisterInstance(executionManager);
+            containerBuilder.RegisterInstance(executionManager);
 
             // Add our built event pipeline to DI.
-            exposedServiceRegistration.RegisterInstance<IEventPipeline>(events);
+            containerBuilder.RegisterInstance<IEventPipeline>(events);
 
             // Register the entire set in the container.
-            exposedServiceRegistration.RegisterInstance(featureSet);
+            containerBuilder.RegisterInstance(featureSet);
 
             // Register configuration concepts in the container.
-            exposedServiceRegistration.RegisterInstance<IConfiguration>(builtConfiguration);
+            containerBuilder.RegisterInstance<IConfiguration>(builtConfiguration);
 
-            ConfigureLanguageServices(exposedServiceRegistration, Project.Builder, builtConfiguration);
+            ConfigureLanguageServices(containerBuilder, Project.Builder, builtConfiguration);
 
             foreach (var callback in cfgCallbacks)
             {
-                callback(builtConfiguration, exposedServiceRegistration);
+                callback(builtConfiguration, containerBuilder);
             }
 
-            serviceRegistration?.Invoke(builtConfiguration, exposedServiceRegistration);
+            serviceRegistration?.Invoke(builtConfiguration, containerBuilder);
 
-            return exposedServiceRegistration.BuildRootScope();
+            return containerBuilder.Build();
         }
 
-        private static void ConfigureLanguageServices(IServicesBuilder exposedServiceRegistration, IProjectBuilder builder, IConfiguration configuration)
+        private static void ConfigureLanguageServices(ContainerBuilder containerBuilder, IProjectBuilder builder, IConfiguration configuration)
         {
             // Ask the project's compiler for the list of step definition sources.
             foreach (var source in builder.EnumerateStepDefinitionSources())
             {
                 // Let each step definition source register services (e.g. step classes).
-                source.ConfigureServices(exposedServiceRegistration, configuration);
+                source.ConfigureServices(containerBuilder, configuration);
             }
 
             // Iterate over the methods in the root method table.
             foreach (var service in builder.Interactions.RootMethodTable.GetAllMethodProvidingServices())
             {
-                exposedServiceRegistration.RegisterPerResolveService(service);
+                containerBuilder.RegisterType(service).InstancePerDependency();
             }
         }
     }

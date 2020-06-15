@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 
@@ -19,6 +20,6 @@ namespace AutoStep.Execution.Strategy
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
         /// <param name="cancelToken">Cancellation token for the run.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        Task ExecuteAsync(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken);
+        Task ExecuteAsync(ILifetimeScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken);
     }
 }

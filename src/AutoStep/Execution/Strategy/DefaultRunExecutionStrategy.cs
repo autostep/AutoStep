@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Configuration;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
@@ -33,7 +34,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="executionSet">The set of all features and scenarios to test.</param>
         /// <param name="cancelToken">Cancellation token for the run.</param>
         /// <returns>A task that should complete when the test run has finished executing.</returns>
-        public Task ExecuteAsync(IAutoStepServiceScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken)
+        public Task ExecuteAsync(ILifetimeScope runScope, RunContext runContext, FeatureExecutionSet executionSet, CancellationToken cancelToken)
         {
             runScope = runScope.ThrowIfNull(nameof(runScope));
             runContext = runContext.ThrowIfNull(nameof(runContext));
@@ -83,17 +84,17 @@ namespace AutoStep.Execution.Strategy
             "Design",
             "CA1031:Do not catch general exception types",
             Justification = "Need a 'last possible catch' handler for unexpected errors.")]
-        private async Task TestThreadFeatureParallel(IAutoStepServiceScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature, CancellationToken cancelToken)
+        private async Task TestThreadFeatureParallel(ILifetimeScope runScope, int testThreadId, Func<IFeatureInfo?> nextFeature, CancellationToken cancelToken)
         {
             var threadContext = new ThreadContext(testThreadId);
 
-            using var threadScope = runScope.BeginNewScope(ScopeTags.ThreadTag, threadContext);
+            using var threadScope = runScope.BeginContextScope(ScopeTags.ThreadTag, threadContext);
 
-            var executionManager = threadScope.GetRequiredService<IExecutionStateManager>();
-            var featureStrategy = threadScope.GetRequiredService<IFeatureExecutionStrategy>();
-            var logger = threadScope.GetRequiredService<ILogger<DefaultRunExecutionStrategy>>();
-            var events = threadScope.GetRequiredService<IEventPipeline>();
-            var contextProvider = threadScope.GetRequiredService<IContextScopeProvider>();
+            var executionManager = threadScope.Resolve<IExecutionStateManager>();
+            var featureStrategy = threadScope.Resolve<IFeatureExecutionStrategy>();
+            var logger = threadScope.Resolve<ILogger<DefaultRunExecutionStrategy>>();
+            var events = threadScope.Resolve<IEventPipeline>();
+            var contextProvider = threadScope.Resolve<IContextScopeProvider>();
 
             using (contextProvider.EnterContextScope(threadContext))
             {

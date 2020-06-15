@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Contexts;
-using AutoStep.Execution.Dependency;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,12 +19,12 @@ namespace AutoStep.Execution.Results
         private const string ExportScopeTag = "export";
 
         /// <inheritdoc/>
-        protected override async ValueTask OnResultsReady(IServiceProvider scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken)
+        protected override async ValueTask OnResultsReady(ILifetimeScope scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken)
         {
-            var logger = scope.GetRequiredService<ILogger<ExportableResultsCollector>>();
+            var logger = scope.Resolve<ILogger<ExportableResultsCollector>>();
             var allTasks = new List<Task>();
 
-            var exporters = scope.GetRequiredService<IEnumerable<IResultsExporter>>();
+            var exporters = scope.Resolve<IEnumerable<IResultsExporter>>();
 
             logger.LogDebug(ExportableResultsCollectorMessages.StartingResultExport);
 
@@ -59,7 +59,7 @@ namespace AutoStep.Execution.Results
             "Design",
             "CA1031:Do not catch general exception types",
             Justification = "Need to handle any error an exporter might raise.")]
-        protected virtual async Task InvokeExporter(IResultsExporter exporter, IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
+        protected virtual async Task InvokeExporter(IResultsExporter exporter, ILifetimeScope scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken)
         {
             if (exporter is null)
             {
@@ -81,12 +81,10 @@ namespace AutoStep.Execution.Results
                 throw new ArgumentNullException(nameof(results));
             }
 
-            var asScope = (IAutoStepServiceScope)scope;
-
             // Give each exporter its own service scope; that way they are somewhat isolated from each other when we run them in parallel.
-            using (var exportScope = asScope.BeginNewScope(ExportScopeTag))
+            using (var exportScope = scope.BeginLifetimeScope(ExportScopeTag))
             {
-                var logger = scope.GetRequiredService<ILogger<ExportableResultsCollector>>();
+                var logger = scope.Resolve<ILogger<ExportableResultsCollector>>();
 
                 var exporterName = exporter.ToString();
 

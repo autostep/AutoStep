@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -21,7 +22,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="cancelToken">Cancellation token for the scenario.</param>
         /// <returns>A task that should complete when the scenario has finished executing.</returns>
         ValueTask ExecuteAsync(
-            IAutoStepServiceScope featureScope,
+            ILifetimeScope featureScope,
             FeatureContext featureContext,
             IScenarioInfo scenario,
             VariableSet variables,

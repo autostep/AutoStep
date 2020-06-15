@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Results;
@@ -355,7 +356,7 @@ namespace AutoStep.Tests.Execution.Results
         {
             public WorkingResultSet? Results { get; set; }
 
-            protected override ValueTask OnResultsReady(IServiceProvider scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken)
+            protected override ValueTask OnResultsReady(ILifetimeScope scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken)
             {
                 Results = results;
 

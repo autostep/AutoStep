@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -14,6 +15,7 @@ using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -180,7 +182,7 @@ namespace AutoStep.Tests.Execution.Strategy
             int executionManagerInvokes,
             StepCollectionContext owningContext,
             VariableSet variables,
-            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback,
+            Action<ILifetimeScope, StepContext, VariableSet> stepCallback,
             CancellationToken cancelToken = default)
         {
             var beforeFeat = 0;
@@ -199,7 +201,7 @@ namespace AutoStep.Tests.Execution.Strategy
             StepCollectionContext owningContext,
             VariableSet variables,
             IEventHandler eventHandler,
-            Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback,
+            Action<ILifetimeScope, StepContext, VariableSet> stepCallback,
             CancellationToken cancelToken = default)
         {
             var threadContext = new ThreadContext(1);
@@ -207,8 +209,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var stepExecuteStrategy = new MyStepExecutionStrategy(stepCallback);
-
-            var builder = new AutofacServiceBuilder();
 
             var contextProvider = new Mock<IContextScopeProvider>();
             var allTrackedDisposables = new List<TestDisposable>();
@@ -222,20 +222,23 @@ namespace AutoStep.Tests.Execution.Strategy
                 return newDisposable;
             });
 
-            builder.RegisterInstance(threadContext);
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
+            builder.RegisterInstance(contextProvider.Object);
+            builder.RegisterInstance(threadContext);
             builder.RegisterInstance<IStepExecutionStrategy>(stepExecuteStrategy);
             builder.RegisterInstance(contextProvider.Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultStepCollectionExecutionStrategy();
 
             await strategy.ExecuteAsync(scope, owningContext, stepCollection, variables, cancelToken);
 
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<StepContext>(), TestThreadState.StartingStep),
                                              Times.Exactly(executionManagerInvokes));
 
             if (cancelToken == default)
@@ -258,14 +261,14 @@ namespace AutoStep.Tests.Execution.Strategy
 
         private class MyStepExecutionStrategy : IStepExecutionStrategy
         {
-            private readonly Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback;
+            private readonly Action<ILifetimeScope, StepContext, VariableSet> stepCallback;
 
-            public MyStepExecutionStrategy(Action<IAutoStepServiceScope, StepContext, VariableSet> stepCallback)
+            public MyStepExecutionStrategy(Action<ILifetimeScope, StepContext, VariableSet> stepCallback)
             {
                 this.stepCallback = stepCallback;
             }
 
-            public ValueTask ExecuteStepAsync(IAutoStepServiceScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+            public ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 stepScope.Should().NotBeNull();
                 stepScope.Tag.Should().Be(ScopeTags.StepTag);
@@ -296,7 +299,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            public override async ValueTask OnStepAsync(ILifetimeScope scope, StepContext ctxt, Func<ILifetimeScope, StepContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 

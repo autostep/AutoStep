@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using AutoStep.Execution;
-using AutoStep.Execution.Dependency;
+using Autofac;
 using Microsoft.Extensions.Configuration;
 
 namespace AutoStep.Definitions
@@ -29,8 +28,8 @@ namespace AutoStep.Definitions
         /// <summary>
         /// Called before any tests execute to allow the source to register its own services to be resolved.
         /// </summary>
-        /// <param name="servicesBuilder">The services builder.</param>
+        /// <param name="containerBuilder">The DI container builder.</param>
         /// <param name="configuration">The run-time configuration.</param>
-        void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration);
+        void ConfigureServices(ContainerBuilder containerBuilder, IConfiguration configuration);
     }
 }

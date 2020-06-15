@@ -15,6 +15,7 @@ using AutoStep.Execution.Contexts;
 using AutoStep.Language.Interaction;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
+using Autofac;
 
 namespace AutoStep.Tests.Execution
 {
@@ -66,8 +67,8 @@ namespace AutoStep.Tests.Execution
             var runStrategyInvoked = false;
 
             var mockRunStrategy = new Mock<IRunExecutionStrategy>();
-            mockRunStrategy.Setup(x => x.ExecuteAsync(It.IsAny<IAutoStepServiceScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>(), CancellationToken.None))
-                           .Callback((IAutoStepServiceScope scope, RunContext ctxt, FeatureExecutionSet featureSet, CancellationToken cancelToken) =>
+            mockRunStrategy.Setup(x => x.ExecuteAsync(It.IsAny<ILifetimeScope>(), It.IsAny<RunContext>(), It.IsAny<FeatureExecutionSet>(), CancellationToken.None))
+                           .Callback((ILifetimeScope scope, RunContext ctxt, FeatureExecutionSet featureSet, CancellationToken cancelToken) =>
                            {
                                runStrategyInvoked = true;
 

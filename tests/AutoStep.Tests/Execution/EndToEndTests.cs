@@ -13,6 +13,7 @@ using Xunit;
 using Xunit.Abstractions;
 using AutoStep.Definitions.Test;
 using System.Threading;
+using Autofac;
 
 namespace AutoStep.Tests.Execution
 {
@@ -61,7 +62,7 @@ namespace AutoStep.Tests.Execution
                 argumentValue = arg1;
             });
 
-            steps.When("I do this", (IAutoStepServiceScope scope) =>
+            steps.When("I do this", (ILifetimeScope scope) =>
             {
                 scope.Should().NotBeNull();
                 whenCalled = true;
@@ -317,7 +318,7 @@ namespace AutoStep.Tests.Execution
         {
             public Exception? FoundException { get; set; }
 
-            public override async ValueTask OnStepAsync(IServiceProvider scope, StepContext ctxt, Func<IServiceProvider, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+            public override async ValueTask OnStepAsync(ILifetimeScope scope, StepContext ctxt, Func<ILifetimeScope, StepContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
             {
                 await nextHandler(scope, ctxt, cancelToken);
 

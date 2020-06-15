@@ -19,6 +19,9 @@ namespace AutoStep.Execution
             FailedEventHandler = handler;
         }
 
+        /// <summary>
+        /// Gets the event handler that failed.
+        /// </summary>
         public IEventHandler FailedEventHandler { get; }
     }
 }

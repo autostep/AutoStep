@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
+using Autofac;
 using AutoStep.Execution.Dependency;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,7 +51,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        protected override object? GetMethodTarget(IServiceProvider scope)
+        protected override object? GetMethodTarget(ILifetimeScope scope)
         {
             if (scope is null)
             {
@@ -58,7 +59,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve an instance of the type from the scope.
-            return scope.GetRequiredService(ServiceType);
+            return scope.Resolve(ServiceType);
         }
     }
 }

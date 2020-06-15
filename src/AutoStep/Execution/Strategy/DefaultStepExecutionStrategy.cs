@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -24,7 +25,7 @@ namespace AutoStep.Execution.Strategy
         /// <param name="cancelToken">Cancellation token for the step.</param>
         /// <returns>A task that should complete when the step has finished executing.</returns>
         public async ValueTask ExecuteStepAsync(
-            IAutoStepServiceScope stepScope,
+            ILifetimeScope stepScope,
             StepContext context,
             VariableSet variables,
             CancellationToken cancelToken)
@@ -37,7 +38,7 @@ namespace AutoStep.Execution.Strategy
                 throw new UnboundStepException(reference);
             }
 
-            var threadContext = stepScope.ThreadContext();
+            var threadContext = stepScope.Resolve<ThreadContext>();
 
             var stepStack = threadContext.GetOrAdd(StepExecutionStack, () => new Stack<IStepReferenceInfo>());
 

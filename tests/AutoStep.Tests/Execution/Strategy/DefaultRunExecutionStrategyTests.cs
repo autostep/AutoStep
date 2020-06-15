@@ -22,6 +22,7 @@ using Xunit.Abstractions;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using AutoStep.Execution.Logging;
+using Autofac;
 
 namespace AutoStep.Tests.Execution.Strategy
 {
@@ -49,8 +50,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var featureStrategy = new MyFeatureStrategy();
 
-            var builder = new AutofacServiceBuilder();
-
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
 
             var contextScopeDisposeTracker = new TestDisposable();
@@ -63,13 +62,15 @@ namespace AutoStep.Tests.Execution.Strategy
                 return contextScopeDisposeTracker;
             });
 
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance(contextProvider.Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultRunExecutionStrategy();
 
@@ -78,7 +79,7 @@ namespace AutoStep.Tests.Execution.Strategy
             beforeThread.Should().Be(1);
             afterThread.Should().Be(1);
             featureStrategy.AddedFeatures.Should().ContainInOrder(new[] { features.Features[0], features.Features[1] });
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Once());
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
         }
 
@@ -88,7 +89,7 @@ namespace AutoStep.Tests.Execution.Strategy
             var features = Get2FeatureSet();
             var runContext = new RunContext(GetTestConfig(("parallelCount", "2")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
+            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
             var beforeThread = 0;
             var afterThread = 0;
@@ -102,8 +103,6 @@ namespace AutoStep.Tests.Execution.Strategy
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var featureStrategy = new MyFeatureStrategy();
 
-            var builder = new AutofacServiceBuilder();
-
             var contextScopeDisposeTracker = new TestDisposable();
 
             var contextProvider = new Mock<IContextScopeProvider>();
@@ -114,13 +113,15 @@ namespace AutoStep.Tests.Execution.Strategy
                 return contextScopeDisposeTracker;
             });
 
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance(contextProvider.Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultRunExecutionStrategy();
 
@@ -131,7 +132,7 @@ namespace AutoStep.Tests.Execution.Strategy
             threadBag.Should().Contain(new[] { 1, 2 });
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
 
             LoggedMessages.ShouldContain(LogLevel.Debug, "executing", "Feature 1");
@@ -147,7 +148,7 @@ namespace AutoStep.Tests.Execution.Strategy
             // Say to use 3 threads, but we should still only use 2.
             var runContext = new RunContext(GetTestConfig(("parallelCount", "3")));
             var mockExecutionStateManager = new Mock<IExecutionStateManager>();
-            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
+            mockExecutionStateManager.Setup(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting)).Verifiable();
 
             var beforeThread = 0;
             var afterThread = 0;
@@ -161,7 +162,6 @@ namespace AutoStep.Tests.Execution.Strategy
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var featureStrategy = new MyFeatureStrategy();
 
-            var builder = new AutofacServiceBuilder();
 
             var contextScopeDisposeTracker = new TestDisposable();
 
@@ -173,13 +173,15 @@ namespace AutoStep.Tests.Execution.Strategy
                 return contextScopeDisposeTracker;
             });
 
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IFeatureExecutionStrategy>(featureStrategy);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance(contextProvider.Object);
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultRunExecutionStrategy();
 
@@ -191,7 +193,7 @@ namespace AutoStep.Tests.Execution.Strategy
             threadBag.Should().Contain(new[] { 1, 2 });
             beforeThread.Should().Be(2);
             afterThread.Should().Be(2);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ThreadContext>(), TestThreadState.Starting), Times.Exactly(2));
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
         }
 
@@ -227,7 +229,7 @@ namespace AutoStep.Tests.Execution.Strategy
         {
             public ConcurrentQueue<IFeatureInfo> AddedFeatures { get; } = new ConcurrentQueue<IFeatureInfo>();
 
-            public ValueTask ExecuteAsync(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
+            public ValueTask ExecuteAsync(ILifetimeScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
             {
                 threadScope.Tag.Should().Be(ScopeTags.ThreadTag);
 
@@ -257,7 +259,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnThreadAsync(IServiceProvider scope, ThreadContext ctxt, Func<IServiceProvider, ThreadContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            public override async ValueTask OnThreadAsync(ILifetimeScope scope, ThreadContext ctxt, Func<ILifetimeScope, ThreadContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 

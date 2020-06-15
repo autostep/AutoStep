@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
@@ -27,7 +28,7 @@ namespace AutoStep.Execution.Interaction
         /// <param name="cancelToken">Cancellation token for the call chain.</param>
         /// <param name="callStack">The method call stack.</param>
         /// <returns>A task that completes when the chain has completed.</returns>
-        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, IServiceProvider stepScope, MethodContext context, MethodTable methods, CancellationToken cancelToken, Stack<MethodContext>? callStack = null)
+        public static async ValueTask InvokeChainAsync(this ICallChainSource callSource, ILifetimeScope stepScope, MethodContext context, MethodTable methods, CancellationToken cancelToken, Stack<MethodContext>? callStack = null)
         {
             if (callStack is null)
             {
@@ -35,10 +36,10 @@ namespace AutoStep.Execution.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.GetRequiredService<IInteractionSet>();
+            var interactionSet = stepScope.Resolve<IInteractionSet>();
 
             // Get the execution manager.
-            var executionManager = stepScope.GetRequiredService<IExecutionStateManager>();
+            var executionManager = stepScope.Resolve<IExecutionStateManager>();
 
             // Define a new set of variables for this call.
 
@@ -86,7 +87,7 @@ namespace AutoStep.Execution.Interaction
             }
         }
 
-        private static object?[] BindArguments(IServiceProvider scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
+        private static object?[] BindArguments(ILifetimeScope scope, MethodCallElement call, MethodContext callingContext, InteractionConstantSet constants)
         {
             var providedArgs = call.Arguments;
 

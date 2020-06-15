@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Definitions.Interaction;
 using AutoStep.Execution.Binding;
@@ -32,7 +33,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var method = new DelegateInteractionMethod("method", test);
 
-            method.Invoking(async m => await m.InvokeAsync(new Mock<IAutoStepServiceScope>().Object, null!, CancellationToken.None))
+            method.Invoking(async m => await m.InvokeAsync(new Mock<ILifetimeScope>().Object, null!, CancellationToken.None))
                   .Should().Throw<ArgumentNullException>();
         }
 
@@ -45,7 +46,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            var scope = new Mock<IAutoStepServiceScope>();
+            var scope = new Mock<ILifetimeScope>();
 
             await methodInstance.InvokeAsync(scope.Object, new MethodContext(), CancellationToken.None);
 
@@ -61,7 +62,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            var scope = new Mock<IAutoStepServiceScope>();
+            var scope = new Mock<ILifetimeScope>();
 
             await methodInstance.InvokeAsync(scope.Object, new MethodContext(), CancellationToken.None);
 
@@ -185,10 +186,10 @@ namespace AutoStep.Tests.Definition.Interaction
         {
             string? value = null;
             MethodContext? passedCtxt = null;
-            IServiceProvider? passedScope = null;
+            ILifetimeScope? passedScope = null;
             CancellationToken cancelToken = default;
 
-            Action<MethodContext, string, IServiceProvider, CancellationToken> action = (ctxt, val, scope, cancel) =>
+            Action<MethodContext, string, ILifetimeScope, CancellationToken> action = (ctxt, val, scope, cancel) =>
             {
                 passedCtxt = ctxt;
                 value = val;
@@ -214,7 +215,7 @@ namespace AutoStep.Tests.Definition.Interaction
         public void ArgumentBinding_SpecialArgumentsExcludedFromCount()
         {
 
-            Action<MethodContext, string, IAutoStepServiceScope, CancellationToken> action = (ctxt, val, scope, cancel) =>
+            Action<MethodContext, string, ILifetimeScope, CancellationToken> action = (ctxt, val, scope, cancel) =>
             {
             };
 
@@ -230,7 +231,7 @@ namespace AutoStep.Tests.Definition.Interaction
 
             var methodInstance = new DelegateInteractionMethod("method", action);
 
-            var scope = new Mock<IAutoStepServiceScope>();
+            var scope = new Mock<ILifetimeScope>();
 
             Func<Task> act = async () => await methodInstance.InvokeAsync(scope.Object, new MethodContext(), CancellationToken.None);
 
@@ -241,23 +242,25 @@ namespace AutoStep.Tests.Definition.Interaction
 
         private class DerivedClass : BaseClass { }
 
-        private IAutoStepServiceScope GetScopeWithRegistry()
+        private ILifetimeScope GetScopeWithRegistry()
         {
-            var scope = new Mock<IAutoStepServiceScope>();
-            scope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(new ArgumentBinderRegistry());
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ArgumentBinderRegistry());
 
-            return scope.Object;
+            return builder.Build();
         }
 
-        private IAutoStepServiceScope GetScopeWithFailingArgumentBinder<TBind>()
+        private ILifetimeScope GetScopeWithFailingArgumentBinder<TBind>()
         {
-            var scope = new Mock<IAutoStepServiceScope>();
+            var builder = new ContainerBuilder();
+
             var binder = new ArgumentBinderRegistry();
             binder.RegisterArgumentBinder<FailingBinder>(typeof(TBind));
-            scope.Setup(x => x.GetService(typeof(FailingBinder))).Returns(new FailingBinder());
-            scope.Setup(x => x.GetService(typeof(ArgumentBinderRegistry))).Returns(binder);
 
-            return scope.Object;
+            builder.RegisterInstance(new FailingBinder());
+            builder.RegisterInstance(new ArgumentBinderRegistry());
+
+            return builder.Build();
         }
 
         private class FailingBinder : IArgumentBinder

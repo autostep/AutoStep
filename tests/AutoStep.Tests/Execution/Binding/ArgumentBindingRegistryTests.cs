@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Dependency;
 using FluentAssertions;
@@ -15,14 +16,15 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            var scope = new Mock<IAutoStepServiceScope>(MockBehavior.Strict);
+            var builder = new ContainerBuilder();
 
             var binder = new MyCustomBinder<DateTime>();
-            scope.Setup(x => x.GetService(typeof(MyCustomBinder<DateTime>))).Returns(binder);
+
+            builder.RegisterInstance(binder);
 
             binderRegistry.RegisterArgumentBinder<MyCustomBinder<DateTime>>(typeof(DateTime));
 
-            var foundBinder = binderRegistry.GetBinderForType(scope.Object, typeof(DateTime));
+            var foundBinder = binderRegistry.GetBinderForType(builder.Build(), typeof(DateTime));
 
             foundBinder.Should().Be(binder);
         }
@@ -32,11 +34,9 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            var scope = new Mock<IAutoStepServiceScope>(MockBehavior.Strict);
-
             binderRegistry.RegisterArgumentBinder<MyCustomBinder<DateTime>>(typeof(DateTime));
 
-            var foundBinder = binderRegistry.GetBinderForType(scope.Object, typeof(decimal));
+            var foundBinder = binderRegistry.GetBinderForType(new ContainerBuilder().Build(), typeof(decimal));
 
             foundBinder.Should().BeOfType(typeof(DefaultArgumentBinder));
         }
@@ -46,17 +46,20 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            var scope = new Mock<IAutoStepServiceScope>(MockBehavior.Strict);
+            var builder = new ContainerBuilder();
 
-            var binder = new MyCustomBinder<DateTime>();
-            scope.Setup(x => x.GetService(typeof(MyCustomBinder<DateTime>))).Returns(binder).Verifiable();
+            var activatedCount = 0;
+
+            builder.RegisterType<MyCustomBinder<DateTime>>().InstancePerDependency().OnActivating(args => activatedCount++);
+
+            var container = builder.Build();
 
             binderRegistry.RegisterArgumentBinder<MyCustomBinder<DateTime>>(typeof(DateTime));
 
-            binderRegistry.GetBinderForType(scope.Object, typeof(DateTime));
-            binderRegistry.GetBinderForType(scope.Object, typeof(DateTime));
+            binderRegistry.GetBinderForType(container, typeof(DateTime));
+            binderRegistry.GetBinderForType(container, typeof(DateTime));
 
-            scope.Verify(x => x.GetService(typeof(MyCustomBinder<DateTime>)), Times.Exactly(2));
+            activatedCount.Should().Be(2);
         }
 
         [Fact]
@@ -67,7 +70,6 @@ namespace AutoStep.Tests.Execution.Binding
             Action act = () => binderRegistry.GetBinderForType(null!, typeof(decimal));
 
             act.Should().Throw<ArgumentNullException>();
-
         }
 
         [Fact]
@@ -75,7 +77,7 @@ namespace AutoStep.Tests.Execution.Binding
         {
             var binderRegistry = new ArgumentBinderRegistry();
 
-            Action act = () => binderRegistry.GetBinderForType(new Mock<IAutoStepServiceScope>().Object, null!);
+            Action act = () => binderRegistry.GetBinderForType(new Mock<ILifetimeScope>().Object, null!);
 
             act.Should().Throw<ArgumentNullException>();
         }

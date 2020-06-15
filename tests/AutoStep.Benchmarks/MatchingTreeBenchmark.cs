@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Definitions;
 using AutoStep.Elements;
 using AutoStep.Elements.Parts;
@@ -167,7 +168,7 @@ namespace AutoStep.Benchmarks
 
             public override StepTableRequirement TableRequirement => StepTableRequirement.Optional;
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+            public override ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

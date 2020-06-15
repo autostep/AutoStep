@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Control;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
 using AutoStep.Execution.Logging;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoStep.Execution.Strategy
 {
@@ -25,18 +25,18 @@ namespace AutoStep.Execution.Strategy
         /// <param name="feature">The feature metadata.</param>
         /// <param name="cancelToken">Cancellation token for the feature.</param>
         /// <returns>A task that should complete when the feature has finished executing.</returns>
-        public async ValueTask ExecuteAsync(IAutoStepServiceScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
+        public async ValueTask ExecuteAsync(ILifetimeScope threadScope, ThreadContext threadContext, IFeatureInfo feature, CancellationToken cancelToken)
         {
             threadScope = threadScope.ThrowIfNull(nameof(threadScope));
 
             var featureContext = new FeatureContext(feature);
 
-            using var featureScope = threadScope.BeginNewScope(ScopeTags.FeatureTag, featureContext);
+            using var featureScope = threadScope.BeginContextScope(ScopeTags.FeatureTag, featureContext);
 
-            var executionManager = featureScope.GetRequiredService<IExecutionStateManager>();
-            var scenarioStrategy = featureScope.GetRequiredService<IScenarioExecutionStrategy>();
-            var events = featureScope.GetRequiredService<IEventPipeline>();
-            var contextProvider = threadScope.GetRequiredService<IContextScopeProvider>();
+            var executionManager = featureScope.Resolve<IExecutionStateManager>();
+            var scenarioStrategy = featureScope.Resolve<IScenarioExecutionStrategy>();
+            var events = featureScope.Resolve<IEventPipeline>();
+            var contextProvider = threadScope.Resolve<IContextScopeProvider>();
 
             using (contextProvider.EnterContextScope(featureContext))
             {
@@ -85,7 +85,7 @@ namespace AutoStep.Execution.Strategy
             }
         }
 
-        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, IServiceProvider scope)
+        private IEnumerable<VariableSet> ExpandScenario(IScenarioInfo scenario, ILifetimeScope scope)
         {
             if (scenario is IScenarioOutlineInfo outline)
             {

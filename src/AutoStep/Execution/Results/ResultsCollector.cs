@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Events;
@@ -18,7 +19,7 @@ namespace AutoStep.Execution.Results
         private readonly WorkingResultSet resultData = new WorkingResultSet();
 
         /// <inheritdoc/>
-        public override async ValueTask OnExecuteAsync(IServiceProvider scope, RunContext ctxt, Func<IServiceProvider, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+        public override async ValueTask OnExecuteAsync(ILifetimeScope scope, RunContext ctxt, Func<ILifetimeScope, RunContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -57,10 +58,10 @@ namespace AutoStep.Execution.Results
         /// <param name="results">The complete set of results.</param>
         /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>An asynchronous completion task.</returns>
-        protected abstract ValueTask OnResultsReady(IServiceProvider scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken);
+        protected abstract ValueTask OnResultsReady(ILifetimeScope scope, RunContext ctxt, WorkingResultSet results, CancellationToken cancelToken);
 
         /// <inheritdoc/>
-        public override async ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+        public override async ValueTask OnFeatureAsync(ILifetimeScope scope, FeatureContext ctxt, Func<ILifetimeScope, FeatureContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -95,7 +96,7 @@ namespace AutoStep.Execution.Results
         }
 
         /// <inheritdoc/>
-        public override async ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
+        public override async ValueTask OnScenarioAsync(ILifetimeScope scope, ScenarioContext ctxt, Func<ILifetimeScope, ScenarioContext, CancellationToken, ValueTask> nextHandler, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -112,7 +113,7 @@ namespace AutoStep.Execution.Results
                 throw new ArgumentNullException(nameof(nextHandler));
             }
 
-            var featureContext = scope.GetRequiredService<FeatureContext>();
+            var featureContext = scope.Resolve<FeatureContext>();
 
             ScenarioInvocationResultData invokeData;
 

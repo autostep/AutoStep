@@ -16,6 +16,7 @@ using AutoStep.Elements.Test;
 using AutoStep.Elements.Interaction;
 using AutoStep.Language;
 using System.Threading;
+using Autofac;
 
 namespace AutoStep.Tests.Language.Test.Matching
 {
@@ -488,7 +489,7 @@ namespace AutoStep.Tests.Language.Test.Matching
 
             public override StepTableRequirement TableRequirement => StepTableRequirement.Optional;
 
-            public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+            public override ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
             {
                 throw new NotImplementedException();
             }

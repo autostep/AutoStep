@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -13,6 +14,7 @@ using AutoStep.Execution.Strategy;
 using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -106,8 +108,6 @@ namespace AutoStep.Tests.Execution.Strategy
             var eventPipeline = new EventPipeline(new List<IEventHandler> { eventHandler });
             var stepCollectionStrategy = new MyStepCollectionStrategy(raiseException);
 
-            var builder = new AutofacServiceBuilder();
-
             var contextScopeDisposeTracker = new TestDisposable();
 
             var contextProvider = new Mock<IContextScopeProvider>();
@@ -118,13 +118,15 @@ namespace AutoStep.Tests.Execution.Strategy
                 return contextScopeDisposeTracker;
             });
 
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IEventPipeline>(eventPipeline);
             builder.RegisterInstance<IStepCollectionExecutionStrategy>(stepCollectionStrategy);
             builder.RegisterInstance(contextProvider.Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultScenarioExecutionStrategy();
 
@@ -134,7 +136,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             beforeScenario.Should().Be(1);
             afterScenario.Should().Be(1);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IAutoStepServiceScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<ScenarioContext>(), TestThreadState.StartingScenario), Times.Once());
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
             stepCollectionStrategy.AddedCollections.Should().BeEquivalentTo(collections);
         }
@@ -150,7 +152,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public List<(IStepCollectionInfo scenario, VariableSet variables)> AddedCollections { get; } = new List<(IStepCollectionInfo, VariableSet)>();
 
-            public ValueTask ExecuteAsync(IAutoStepServiceScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
+            public ValueTask ExecuteAsync(ILifetimeScope owningScope, StepCollectionContext owningContext, IStepCollectionInfo stepCollection, VariableSet variables, CancellationToken cancelToken)
             {
                 owningScope.Should().NotBeNull();
                 owningContext.Should().BeOfType<ScenarioContext>();
@@ -186,7 +188,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnScenarioAsync(IServiceProvider scope, ScenarioContext ctxt, Func<IServiceProvider, ScenarioContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            public override async ValueTask OnScenarioAsync(ILifetimeScope scope, ScenarioContext ctxt, Func<ILifetimeScope, ScenarioContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 

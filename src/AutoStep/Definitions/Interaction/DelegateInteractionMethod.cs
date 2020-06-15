@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using AutoStep.Execution.Dependency;
 
 namespace AutoStep.Definitions.Interaction
@@ -30,7 +31,7 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        protected override object? GetMethodTarget(IServiceProvider scope)
+        protected override object? GetMethodTarget(ILifetimeScope scope)
         {
             return target;
         }

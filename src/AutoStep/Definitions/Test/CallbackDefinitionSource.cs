@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using Microsoft.Extensions.Configuration;
@@ -23,12 +24,8 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         public string Name => "Callbacks";
 
-        /// <summary>
-        /// Called before any tests execute to allow the source to register its own services to be resolved.
-        /// </summary>
-        /// <param name="servicesBuilder">The services builder.</param>
-        /// <param name="configuration">The run-time configuration.</param>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
+        /// <inheritdoc/>
+        public void ConfigureServices(ContainerBuilder containerBuilder, IConfiguration configuration)
         {
             // No extra services.
         }

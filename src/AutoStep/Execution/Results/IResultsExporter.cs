@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Contexts;
 
 namespace AutoStep.Execution.Results
@@ -18,6 +19,6 @@ namespace AutoStep.Execution.Results
         /// <param name="results">The set of all results from the run.</param>
         /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>An async completion task.</returns>
-        ValueTask ExportAsync(IServiceProvider scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken);
+        ValueTask ExportAsync(ILifetimeScope scope, RunContext runContext, IRunResultSet results, CancellationToken cancelToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -65,7 +66,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="variables">The set of all variables.</param>
         /// <param name="cancelToken">Cancellation token for the step.</param>
         /// <returns>Task completion.</returns>
-        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+        public override async ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             // Extract the arguments, and invoke the collection executor.
             var nestedVariables = new VariableSet();
@@ -73,14 +74,6 @@ namespace AutoStep.Definitions.Test
             if (context.Step.Binding is null)
             {
                 throw new LanguageEngineAssertException();
-            }
-
-            var autoStepScope = stepScope as IAutoStepServiceScope;
-
-            if (autoStepScope is null)
-            {
-                // This should be impossible if it's our code calling this method.
-                throw new InvalidOperationException();
             }
 
             if (Definition is null || Definition.Arguments.Count != context.Step.Binding.Arguments.Length)
@@ -97,12 +90,12 @@ namespace AutoStep.Definitions.Test
                 nestedVariables.Set(Definition.Arguments[argIdx].Name, argText);
             }
 
-            var collectionStrategy = stepScope.GetRequiredService<IStepCollectionExecutionStrategy>();
+            var collectionStrategy = stepScope.Resolve<IStepCollectionExecutionStrategy>();
 
             var fileStepContext = new FileDefinedStepContext(Definition);
 
             await collectionStrategy.ExecuteAsync(
-                autoStepScope,
+                stepScope,
                 fileStepContext,
                 Definition,
                 nestedVariables,

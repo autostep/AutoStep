@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -14,6 +15,7 @@ using AutoStep.Tests.Builders;
 using AutoStep.Tests.Utils;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -153,15 +155,18 @@ namespace AutoStep.Tests.Execution.Strategy
                 }
             });
 
-            var builder = new AutofacServiceBuilder();
+            var pipeline = new EventPipeline(Array.Empty<IEventHandler>());
 
+            var builder = new ContainerBuilder();
             builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
             builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
+            builder.RegisterInstance<IEventPipeline>(pipeline);
             builder.RegisterInstance<IEventPipeline>(new EventPipeline(Array.Empty<IEventHandler>()));
             builder.RegisterInstance(new Mock<IContextScopeProvider>().Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultFeatureExecutionStrategy();
 
@@ -184,8 +189,6 @@ namespace AutoStep.Tests.Execution.Strategy
 
             var scenarioStrategy = new MyScenarioStrategy();
 
-            var builder = new AutofacServiceBuilder();
-
             var pipeline = new EventPipeline(new[] { eventHandler });
 
             var contextScopeDisposeTracker = new TestDisposable();
@@ -198,13 +201,15 @@ namespace AutoStep.Tests.Execution.Strategy
                 return contextScopeDisposeTracker;
             });
 
-            builder.ConfigureLogging(LogFactory);
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(LogFactory);
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>));
             builder.RegisterInstance(mockExecutionStateManager.Object);
-            builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy);
+            builder.RegisterInstance<IScenarioExecutionStrategy>(scenarioStrategy); ;
             builder.RegisterInstance<IEventPipeline>(pipeline);
             builder.RegisterInstance(contextProvider.Object);
 
-            var scope = builder.BuildRootScope();
+            var scope = builder.Build();
 
             var strategy = new DefaultFeatureExecutionStrategy();
 
@@ -212,7 +217,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             beforeFeat.Should().Be(1);
             afterFeat.Should().Be(1);
-            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<IServiceProvider>(), It.IsAny<FeatureContext>(), TestThreadState.StartingFeature), Times.Once());
+            mockExecutionStateManager.Verify(x => x.CheckforHalt(It.IsAny<ILifetimeScope>(), It.IsAny<FeatureContext>(), TestThreadState.StartingFeature), Times.Once());
             contextScopeDisposeTracker.IsDisposed.Should().BeTrue();
 
             scenarioStrategy.AddedScenarios.Should().BeEquivalentTo(scenarios);
@@ -233,7 +238,7 @@ namespace AutoStep.Tests.Execution.Strategy
 
             public List<(IScenarioInfo scenario, VariableSet variables)> AddedScenarios { get; } = new List<(IScenarioInfo, VariableSet)>();
 
-            public ValueTask ExecuteAsync(IAutoStepServiceScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables, CancellationToken cancelToken)
+            public ValueTask ExecuteAsync(ILifetimeScope featureScope, FeatureContext featureContext, IScenarioInfo scenario, VariableSet variables, CancellationToken cancelToken)
             {
                 AddedScenarios.Add((scenario, variables));
 
@@ -263,7 +268,7 @@ namespace AutoStep.Tests.Execution.Strategy
                 this.exception = exception;
             }
 
-            public override async ValueTask OnFeatureAsync(IServiceProvider scope, FeatureContext ctxt, Func<IServiceProvider, FeatureContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
+            public override async ValueTask OnFeatureAsync(ILifetimeScope scope, FeatureContext ctxt, Func<ILifetimeScope, FeatureContext, CancellationToken, ValueTask> next, CancellationToken cancelToken)
             {
                 callBefore(ctxt);
 

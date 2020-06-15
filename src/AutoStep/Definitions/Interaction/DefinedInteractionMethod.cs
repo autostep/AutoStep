@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
@@ -36,11 +37,11 @@ namespace AutoStep.Definitions.Interaction
         /// <remarks>All parameters accept the 'special' ones.</remarks>
         public override int ArgumentCount => method.GetParameters()
                                                    .Count(arg => !typeof(MethodContext).IsAssignableFrom(arg.ParameterType) &&
-                                                                 !typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType) &&
+                                                                 !typeof(ILifetimeScope).IsAssignableFrom(arg.ParameterType) &&
                                                                  !typeof(CancellationToken).IsAssignableFrom(arg.ParameterType));
 
         /// <inheritdoc/>
-        public override ValueTask InvokeAsync(IServiceProvider scope, MethodContext context, CancellationToken cancelToken)
+        public override ValueTask InvokeAsync(ILifetimeScope scope, MethodContext context, CancellationToken cancelToken)
         {
             if (scope is null)
             {
@@ -55,10 +56,7 @@ namespace AutoStep.Definitions.Interaction
             // Bind the arguments.
             var boundArguments = BindArguments(scope, context, cancelToken);
 
-            // Each defined method needs to live in its own scope. Access the providing scope.
-            var autoStepScope = (IAutoStepServiceScope)scope;
-
-            using var methodScope = autoStepScope.BeginNewScope(ScopeTags.MethodTag, context);
+            using var methodScope = scope.BeginContextScope(ScopeTags.MethodTag, context);
 
             // Get the target.
             var target = GetMethodTarget(methodScope);
@@ -85,7 +83,7 @@ namespace AutoStep.Definitions.Interaction
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
         /// <returns>An instance of the method target.</returns>
-        protected abstract object? GetMethodTarget(IServiceProvider scope);
+        protected abstract object? GetMethodTarget(ILifetimeScope scope);
 
         /// <summary>
         /// Invoke an instance method, generating a task wrapper if needed.
@@ -113,7 +111,7 @@ namespace AutoStep.Definitions.Interaction
             return default;
         }
 
-        private object?[] BindArguments(IServiceProvider scope, MethodContext methodContext, CancellationToken cancelToken)
+        private object?[] BindArguments(ILifetimeScope scope, MethodContext methodContext, CancellationToken cancelToken)
         {
             var methodArgs = method.GetParameters();
             var providedArgs = methodContext.Arguments;
@@ -124,7 +122,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Get the argument bind registry.
-            var binderRegistry = scope.GetRequiredService<ArgumentBinderRegistry>();
+            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
             var bindResult = new object?[methodArgs.Length];
             var sourceArgPosition = 0;
 
@@ -132,7 +130,7 @@ namespace AutoStep.Definitions.Interaction
             {
                 var arg = methodArgs[argIdx];
 
-                if (arg.ParameterType.IsAssignableFrom(typeof(IServiceProvider)))
+                if (arg.ParameterType.IsAssignableFrom(typeof(ILifetimeScope)))
                 {
                     bindResult[argIdx] = scope;
                 }
@@ -157,7 +155,7 @@ namespace AutoStep.Definitions.Interaction
             return bindResult;
         }
 
-        private object? BindArgument(object? argumentValue, Type parameterType, IServiceProvider scope, ArgumentBinderRegistry registry)
+        private object? BindArgument(object? argumentValue, Type parameterType, ILifetimeScope scope, ArgumentBinderRegistry registry)
         {
             object? result;
 

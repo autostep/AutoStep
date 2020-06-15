@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using Microsoft.Extensions.Configuration;
@@ -41,22 +42,17 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         public abstract string Name { get; }
 
-        /// <summary>
-        /// Configures any services required by the step definition source (including any consumers that want to resolve services).
-        /// </summary>
-        /// <param name="servicesBuilder">The services builder.</param>
-        /// <param name="configuration">The run configuration.</param>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
+        /// <inheritdoc/>
+        public void ConfigureServices(ContainerBuilder containerBuilder, IConfiguration configuration)
         {
-            servicesBuilder = servicesBuilder.ThrowIfNull(nameof(servicesBuilder));
+            containerBuilder = containerBuilder.ThrowIfNull(nameof(containerBuilder));
 
             EnsureDefinitionsLoaded();
 
             // All types providing steps should be registered.
-            // We'll see about reloading DLLs later (TODO).
             foreach (var definitionType in definitionOwningTypes)
             {
-                servicesBuilder.RegisterPerResolveService(definitionType);
+                containerBuilder.RegisterType(definitionType).InstancePerDependency();
             }
         }
 

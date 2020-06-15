@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoStep.Execution.Dependency;
+using Autofac;
 
 namespace AutoStep.Execution.Events
 {
@@ -24,11 +24,11 @@ namespace AutoStep.Execution.Events
 
         /// <inheritdoc/>
         public ValueTask InvokeEventAsync<TContext>(
-            IServiceProvider serviceProvider,
+            ILifetimeScope serviceProvider,
             TContext context,
-            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback,
+            Func<IEventHandler, ILifetimeScope, TContext, Func<ILifetimeScope, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback,
             CancellationToken cancelToken,
-            Func<IServiceProvider, TContext, CancellationToken, ValueTask>? final = null)
+            Func<ILifetimeScope, TContext, CancellationToken, ValueTask>? final = null)
         {
             if (final is null)
             {
@@ -45,10 +45,10 @@ namespace AutoStep.Execution.Events
             return final(serviceProvider, context, cancelToken);
         }
 
-        private Func<IServiceProvider, TContext, CancellationToken, ValueTask> ChainHandler<TContext>(
-            Func<IServiceProvider, TContext, CancellationToken, ValueTask> next,
+        private Func<ILifetimeScope, TContext, CancellationToken, ValueTask> ChainHandler<TContext>(
+            Func<ILifetimeScope, TContext, CancellationToken, ValueTask> next,
             IEventHandler innerHandler,
-            Func<IEventHandler, IServiceProvider, TContext, Func<IServiceProvider, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback)
+            Func<IEventHandler, ILifetimeScope, TContext, Func<ILifetimeScope, TContext, CancellationToken, ValueTask>, CancellationToken, ValueTask> callback)
         {
             return async (resolver, ctxt, cancelToken) =>
             {

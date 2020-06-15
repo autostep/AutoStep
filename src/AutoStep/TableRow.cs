@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 
@@ -10,7 +11,7 @@ namespace AutoStep
     /// </summary>
     public class TableRow
     {
-        private readonly IServiceProvider serviceProvider;
+        private readonly ILifetimeScope serviceProvider;
         private readonly ITableRowInfo srcRow;
         private readonly Dictionary<string, int> headers;
         private readonly VariableSet variables;
@@ -24,7 +25,7 @@ namespace AutoStep
         /// <param name="serviceProvider">A service provider.</param>
         /// <param name="headers">The look-up of header names to the position in the column set.</param>
         /// <param name="variables">The set of in-scope variables.</param>
-        internal TableRow(ITableRowInfo srcRow, IServiceProvider serviceProvider, Dictionary<string, int> headers, VariableSet variables)
+        internal TableRow(ITableRowInfo srcRow, ILifetimeScope serviceProvider, Dictionary<string, int> headers, VariableSet variables)
         {
             this.srcRow = srcRow;
             this.serviceProvider = serviceProvider;

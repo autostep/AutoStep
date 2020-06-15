@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Language.Interaction;
@@ -36,12 +37,12 @@ namespace AutoStep.Definitions.Interaction
         }
 
         /// <inheritdoc/>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
+        public void ConfigureServices(ContainerBuilder containerBuilder, IConfiguration configuration)
         {
             if (interactions is object)
             {
                 // Register the interactions set, so we can retrieve it in individual steps.
-                servicesBuilder.ThrowIfNull(nameof(servicesBuilder)).RegisterInstance(interactions);
+                containerBuilder.ThrowIfNull(nameof(containerBuilder)).RegisterInstance(interactions);
             }
         }
 

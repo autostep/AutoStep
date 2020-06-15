@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 using AutoStep.Definitions.Test;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Autofac;
 
 namespace AutoStep.Tests.Definition
 {
@@ -37,11 +38,11 @@ namespace AutoStep.Tests.Definition
         {
             var assemblySource = new AssemblyStepDefinitionSource(typeof(BasicSteps).Assembly, LogFactory);
 
-            var servicesBuilder = new AutofacServiceBuilder();
+            var servicesBuilder = new ContainerBuilder();
 
             assemblySource.ConfigureServices(servicesBuilder, BlankConfiguration);
 
-            var resolve = servicesBuilder.BuildRootScope().GetRequiredService<BasicSteps>();
+            var resolve = servicesBuilder.Build().Resolve<BasicSteps>();
 
             resolve.Should().NotBeNull();
         }

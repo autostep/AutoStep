@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
 using AutoStep.Tests.Builders;
@@ -33,7 +34,7 @@ namespace AutoStep.Tests
                             .Row(3, 1, ("h1.v2", 3, 3, null), ("h2.v2", 2, 2, null))
                             .Built;
 
-            var mockScope = new Mock<IServiceProvider>();
+            var mockScope = new Mock<ILifetimeScope>();
 
             var table = new Table(srcTable, mockScope.Object, VariableSet.Blank);
 
@@ -52,7 +53,7 @@ namespace AutoStep.Tests
                             .Row(3, 1, ("h1.v2", 3, 3, null), ("h2.v2", 2, 2, null))
                             .Built;
 
-            var mockScope = new Mock<IServiceProvider>();
+            var mockScope = new Mock<ILifetimeScope>();
 
             var table = new Table(srcTable, mockScope.Object, VariableSet.Blank);
 
@@ -70,7 +71,7 @@ namespace AutoStep.Tests
                             .Row(2, 1, ("<var1> text <var2>", 2, 2, c => c.Variable("var1").Text("text").Variable("var2")))
                             .Built;
 
-            var mockScope = new Mock<IServiceProvider>();
+            var mockScope = new Mock<ILifetimeScope>();
 
             var variableSet = new VariableSet();
             variableSet.Set("var1", "123");
@@ -90,7 +91,7 @@ namespace AutoStep.Tests
                             .Row(3, 1, ("h1.v2", 3, 3, null), ("h2.v2", 2, 2, null))
                             .Built;
 
-            var mockScope = new Mock<IServiceProvider>();
+            var mockScope = new Mock<ILifetimeScope>();
 
             var table = new Table(srcTable, mockScope.Object, VariableSet.Blank);
 

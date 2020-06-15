@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
 using AutoStep.Execution.Contexts;
@@ -50,7 +51,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="variables">The set of variables currently in-scope and available to the step.</param>
         /// <param name="cancelToken">A cancellation token for the step.</param>
         /// <returns>A task that will complete when the step finishes executing.</returns>
-        public override ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+        public override ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             // Need to convert the found arguments into actual type arguments.
             var arguments = BindArguments(stepScope, context, variables, cancelToken);
@@ -78,7 +79,7 @@ namespace AutoStep.Definitions.Test
         /// </summary>
         /// <param name="scope">The current scope to resolve from.</param>
         /// <returns>A task that completes when the method exits.</returns>
-        protected abstract object GetMethodTarget(IServiceProvider scope);
+        protected abstract object GetMethodTarget(ILifetimeScope scope);
 
         /// <summary>
         /// Invoke an instance method, generating a task wrapper if needed.
@@ -114,7 +115,7 @@ namespace AutoStep.Definitions.Test
         /// <param name="variables">The currently available set of variables.</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>A bound set of arguments to pass to the method.</returns>
-        protected object[] BindArguments(IServiceProvider scope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+        protected object[] BindArguments(ILifetimeScope scope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             scope = scope.ThrowIfNull(nameof(scope));
             context = context.ThrowIfNull(nameof(context));
@@ -136,7 +137,7 @@ namespace AutoStep.Definitions.Test
             }
 
             // Get the argument bind registry.
-            var binderRegistry = scope.GetRequiredService<ArgumentBinderRegistry>();
+            var binderRegistry = scope.Resolve<ArgumentBinderRegistry>();
             var bindResult = new object[methodArgs.Length];
             var sourceArgPosition = 0;
 
@@ -145,7 +146,7 @@ namespace AutoStep.Definitions.Test
             {
                 var arg = methodArgs[argIdx];
 
-                if (typeof(IServiceProvider).IsAssignableFrom(arg.ParameterType))
+                if (typeof(ILifetimeScope).IsAssignableFrom(arg.ParameterType))
                 {
                     bindResult[argIdx] = scope;
                 }

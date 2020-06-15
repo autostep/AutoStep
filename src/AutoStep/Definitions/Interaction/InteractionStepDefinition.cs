@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Elements.Interaction;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -37,7 +38,7 @@ namespace AutoStep.Definitions.Interaction
         public override StepTableRequirement TableRequirement => StepTableRequirement.NotSupported;
 
         /// <inheritdoc/>
-        public override async ValueTask ExecuteStepAsync(IServiceProvider stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
+        public override async ValueTask ExecuteStepAsync(ILifetimeScope stepScope, StepContext context, VariableSet variables, CancellationToken cancelToken)
         {
             stepScope = stepScope.ThrowIfNull(nameof(stepScope));
             context = context.ThrowIfNull(nameof(context));
@@ -69,7 +70,7 @@ namespace AutoStep.Definitions.Interaction
             }
 
             // Resolve the interaction set.
-            var interactionSet = stepScope.GetRequiredService<IInteractionSet>();
+            var interactionSet = stepScope.Resolve<IInteractionSet>();
 
             if (interactionSet.Components.TryGetValue(componentName, out var component))
             {

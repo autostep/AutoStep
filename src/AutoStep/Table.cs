@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using AutoStep.Elements.Metadata;
 using AutoStep.Execution;
 using AutoStep.Execution.Binding;
@@ -12,7 +13,7 @@ namespace AutoStep
     /// </summary>
     public class Table
     {
-        private readonly IServiceProvider serviceProvider;
+        private readonly ILifetimeScope serviceProvider;
         private readonly VariableSet variables;
 
         private IReadOnlyList<TableRow>? cachedTableRows;
@@ -24,7 +25,7 @@ namespace AutoStep
         /// <param name="tableInfo">The source table information from a compiled test file.</param>
         /// <param name="serviceProvider">A service provider.</param>
         /// <param name="variables">The set of in-scope variables.</param>
-        public Table(ITableInfo tableInfo, IServiceProvider serviceProvider, VariableSet variables)
+        public Table(ITableInfo tableInfo, ILifetimeScope serviceProvider, VariableSet variables)
         {
             this.serviceProvider = serviceProvider;
             this.variables = variables;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using AutoStep.Execution;
 using AutoStep.Execution.Dependency;
 using AutoStep.Projects;
@@ -63,7 +64,7 @@ namespace AutoStep.Definitions.Test
         }
 
         /// <inheritdoc/>
-        public void ConfigureServices(IServicesBuilder servicesBuilder, IConfiguration configuration)
+        public void ConfigureServices(ContainerBuilder containerBuilder, IConfiguration configuration)
         {
             // No additional services needed for these.
         }

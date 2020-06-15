@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using AutoStep.Elements.Metadata;
 
 namespace AutoStep.Execution
@@ -18,7 +19,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="currentVariables">The variables currently in scope.</param>
         /// <returns>A new variable set, with named values for each column.</returns>
-        public static TableVariableSet Create(ITableInfo table, ITableRowInfo row, IServiceProvider scope, VariableSet currentVariables)
+        public static TableVariableSet Create(ITableInfo table, ITableRowInfo row, ILifetimeScope scope, VariableSet currentVariables)
         {
             table = table.ThrowIfNull(nameof(table));
             row = row.ThrowIfNull(nameof(row));
@@ -37,7 +38,7 @@ namespace AutoStep.Execution
         /// <param name="scope">The current execution scope.</param>
         /// <param name="currentVariables">The variables currently in scope.</param>
         /// <returns>A new variable set, with named values for each column.</returns>
-        public static IEnumerable<TableVariableSet> CreateSetsForRows(ITableInfo table, IServiceProvider scope, VariableSet currentVariables)
+        public static IEnumerable<TableVariableSet> CreateSetsForRows(ITableInfo table, ILifetimeScope scope, VariableSet currentVariables)
         {
             table = table.ThrowIfNull(nameof(table));
 
@@ -78,7 +79,7 @@ namespace AutoStep.Execution
         /// </summary>
         /// <param name="scope">A service scope for resolving services.</param>
         /// <param name="scopedVariables">The set of in-scope variables that will be used to resolve any variable references in the table row.</param>
-        public void LoadVariables(IServiceProvider scope, VariableSet scopedVariables)
+        public void LoadVariables(ILifetimeScope scope, VariableSet scopedVariables)
         {
             var headers = Table.Header.Headers;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using AutoStep.Execution.Contexts;
 using AutoStep.Execution.Dependency;
 using AutoStep.Execution.Events;
@@ -35,7 +36,7 @@ namespace AutoStep.Tests.Execution.Events
 
             pipeline.InvokeEventAsync<RunContext>(null!, null!, (h, s, c, n, cancel) => h.OnExecuteAsync(s, c, n, cancel), CancellationToken.None);
 
-            mock.Verify(x => x.OnExecuteAsync(null!, null!, It.IsAny<Func<IServiceProvider, RunContext, CancellationToken, ValueTask>>(), CancellationToken.None), Times.Once());
+            mock.Verify(x => x.OnExecuteAsync(null!, null!, It.IsAny<Func<ILifetimeScope, RunContext, CancellationToken, ValueTask>>(), CancellationToken.None), Times.Once());
         }
     }
 }
