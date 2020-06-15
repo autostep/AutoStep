@@ -102,7 +102,7 @@ namespace AutoStep.Tests.Execution
 
             var wasInvoked = false;
 
-            testRun.AddServiceSetupCallback((cfg, srv) => { wasInvoked = true; });
+            testRun.ConfigureContainer((cfg, srv) => { wasInvoked = true; });
 
             await testRun.ExecuteAsync(default);
 

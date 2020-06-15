@@ -87,18 +87,18 @@ namespace AutoStep.Execution
         public IConfigurationBuilder ConfigurationBuilder { get; }
 
         /// <summary>
-        /// Add a callback that will be invoked when the test run starts, to configure the set of available services.
+        /// Add a callback that will be invoked when the test run starts to configure the set of available services.
         /// </summary>
-        /// <param name="serviceSetupCallback">A callback to invoke that can configure the set of services.</param>
-        public void AddServiceSetupCallback(Action<IConfiguration, ContainerBuilder> serviceSetupCallback)
+        /// <param name="containerConfigureCallback">A callback to invoke.</param>
+        public void ConfigureContainer(Action<IConfiguration, ContainerBuilder> containerConfigureCallback)
         {
-            if (serviceSetupCallback is null)
+            if (containerConfigureCallback is null)
             {
-                throw new ArgumentNullException(nameof(serviceSetupCallback));
+                throw new ArgumentNullException(nameof(containerConfigureCallback));
             }
 
             // Will call this back later.
-            cfgCallbacks.Add(serviceSetupCallback);
+            cfgCallbacks.Add(containerConfigureCallback);
         }
 
         /// <summary>
