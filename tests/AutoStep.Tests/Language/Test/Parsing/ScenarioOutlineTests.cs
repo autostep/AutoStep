@@ -121,6 +121,50 @@ namespace AutoStep.Tests.Language.Test.Parsing
         }
 
         [Fact]
+        public async Task ScenarioOutlineNoBlankLineHasCorrectNumberOfRows()
+        {
+            const string TestFile =
+            @"
+              Feature: My Feature
+
+                Scenario Outline: My Scenario Outline
+
+                    Given I pass an argument '<variable1>'
+
+                Examples:
+                    | variable1   | variable2   |
+                    | something1  | something2  |";
+
+            await CompileAndAssertSuccessWithStatementTokens(TestFile, file => file
+                .Feature("My Feature", 2, 15, feat => feat
+                    .ScenarioOutline("My Scenario Outline", 4, 17, scen => scen
+                        .Given("I pass an argument '<variable1>'", 6, 21, step => step
+                            .Text("I")
+                            .Text("pass")
+                            .Text("an")
+                            .Text("argument")
+                            .Quote()
+                            .Variable("variable1")
+                            .Quote()
+                        )
+                        .Examples(8, 17, example => example
+                            .Table(9, 21, tab => tab
+                                .Headers(9, 21,
+                                    ("variable1", 23, 31),
+                                    ("variable2", 37, 45)
+                                )
+                                .Row(10, 21,
+                                    ("something1", 23, 32, c => c.Text("something").Int("1")),
+                                    ("something2", 37, 46, c => c.Text("something").Int("2"))
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        [Fact]
         public async Task ScenarioOutlineCanInsertExamplesVariableIntoStepTable()
         {
             const string TestFile =

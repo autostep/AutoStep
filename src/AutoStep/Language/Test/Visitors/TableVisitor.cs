@@ -136,7 +136,7 @@ namespace AutoStep.Language.Test.Visitors
             // Check if the number of cells in the row doesn't match the headings.
             if (currentRow.Cells.Count != Result!.ColumnCount)
             {
-                MessageSet.AddStoppingAtPrecedingToken(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result!.ColumnCount);
+                MessageSet.Add(context, CompilerMessageLevel.Error, CompilerMessageCode.TableColumnsMismatch, currentRow.Cells.Count, Result!.ColumnCount);
             }
 
             Result!.AddRow(currentRow);

@@ -129,13 +129,16 @@ exampleBlock: annotations
               tableBlock;
 
 tableBlock: WS? tableHeader
-            (WS? tableRow | NEWLINE)*;
+            (WS? tableRow NEWLINE
+            | NEWLINE
+            )+
+            EOF?;
 
 tableHeader: tableHeaderCell+ CELL_DELIMITER NEWLINE;
 
 tableHeaderCell: (TABLE_START | CELL_DELIMITER) WS? cellVariableName? WS?;
 
-tableRow: tableRowCell+ CELL_DELIMITER NEWLINE;
+tableRow: tableRowCell+ CELL_DELIMITER;
 
 tableRowCell: (TABLE_START | CELL_DELIMITER) WS? tableRowCellContent? WS?;
 
