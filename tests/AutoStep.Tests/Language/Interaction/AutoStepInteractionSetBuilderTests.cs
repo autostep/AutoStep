@@ -224,6 +224,95 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
+        public void CanDifferentiateStepsByComponentOnly()
+        {
+            var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
+
+            var interactions = new InteractionsConfig();
+            interactions.AddOrReplaceMethod(new DummyMethod("select", 1));
+            interactions.AddOrReplaceMethod(new DummyMethod("enabled", 0));
+            interactions.AddOrReplaceMethod(new DummyMethod("click", 0));
+
+            // Create an example file.
+            var file = new InteractionFileBuilder(); 
+            file.Trait("clickable", 1, 1, t => t
+                 .NamePart("clickable", 1)
+                 .StepDefinition(StepType.Given, "I have clicked on the $component$", 7, 1, s => s
+                     .WordPart("I", 1)
+                     .WordPart("have", 3)
+                     .WordPart("clicked", 8)
+                     .WordPart("on", 16)
+                     .WordPart("the", 19)
+                     .ComponentMatch(30)
+                     .Expression(e => e
+                         .Call("click", 9, 1, 9, 1)
+                     )
+                 )
+             );
+            file.Trait("clickable + can-disable", 1, 1, t => t
+                .NamePart("clickable", 1)
+                .NamePart("can-disable", 2)
+                .StepDefinition(StepType.Given, "I have clicked on the $component$", 7, 1, s => s
+                    .WordPart("I", 1)
+                    .WordPart("have", 3)
+                    .WordPart("clicked", 8)
+                    .WordPart("on", 16)
+                    .WordPart("the", 19)
+                    .ComponentMatch(30)
+                    .Expression(e => e
+                        .Call("enabled", 9, 1, 9, 1)
+                        .Call("click", 10, 1, 10, 1)
+                    )
+                )
+            );
+            file.Component("button", 10, 1, c => c
+                .Trait("clickable", 11, 1)
+            );
+            file.Component("field", 10, 1, c => c
+                .Trait("clickable", 11, 1)
+                .Trait("can-disable", 11, 1)
+            );
+
+            setBuilder.AddInteractionFile(file.Built);
+
+            var result = setBuilder.Build(interactions, true);
+
+            result.Success.Should().BeTrue();
+
+            var builtSet = result.Output!;
+
+            builtSet.Components.Should().HaveCount(2);
+
+            var stepSource = TestStepDefinitionSource.Blank;
+
+            var stepDefs = builtSet.GetStepDefinitions(stepSource).ToList();
+
+            stepDefs.Should().HaveCount(2);
+
+            // Check that the first step only matches button.
+            stepDefs[0].Should().BeOfType<InteractionStepDefinition>();
+            var stepParts = stepDefs[0].Definition.Should().BeOfType<InteractionStepDefinitionElement>()
+                                                           .Subject.Parts.OfType<PlaceholderMatchPart>();
+
+            // Check that the component matches what we expect.
+            stepParts.Should().HaveCount(1);
+            var match = stepParts.First().DoStepReferenceMatch("button", new[] { new TextToken(0, "button".Length) });
+
+            match.IsExact.Should().BeTrue();
+
+            // Check that the second step only matches field.
+            stepDefs[1].Should().BeOfType<InteractionStepDefinition>();
+            stepParts = stepDefs[0].Definition.Should().BeOfType<InteractionStepDefinitionElement>()
+                                                       .Subject.Parts.OfType<PlaceholderMatchPart>();
+
+            // Check that the component matches what we expect.
+            stepParts.Should().HaveCount(1);
+            match = stepParts.First().DoStepReferenceMatch("field", new[] { new TextToken(0, "field".Length) });
+
+            match.IsExact.Should().BeTrue();
+        }
+
+        [Fact]
         public void CanInheritFromADifferentControl()
         {
             var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());

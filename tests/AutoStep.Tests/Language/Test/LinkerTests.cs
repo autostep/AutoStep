@@ -1052,6 +1052,47 @@ namespace AutoStep.Tests.Language.Test
         }
 
         [Fact]
+        public void StepsCanDifferOnlyByMatchingPlaceholders()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var stepDefBuilder = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+            stepDefBuilder.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+            var stepDefBuilder2 = new InteractionStepDefinitionBuilder(StepType.Given, "The $component$ value", 1, 1);
+            stepDefBuilder2.WordPart("The", 1).ComponentMatch(5).WordPart("value", 17);
+
+            var interactionStep1 = stepDefBuilder.Built;
+            var interactionStep2 = stepDefBuilder2.Built;
+
+            interactionStep1.AddComponentMatch("button");
+            interactionStep2.AddComponentMatch("field");
+
+            var interactionStepDef1 = new InteractionStepDefinition(TestStepDefinitionSource.Blank, interactionStep1);
+            var interactionStepDef2 = new InteractionStepDefinition(TestStepDefinitionSource.Blank, interactionStep2);
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(interactionStepDef1, interactionStepDef2));
+
+            var reference1 = new StepReferenceBuilder("The button value", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("button").Text("value").Built;
+            reference1.FreezeTokens();
+
+            linker.BindSingleStep(reference1).Should().BeTrue();
+
+            reference1.Binding!.Definition.Should().BeSameAs(interactionStepDef1);
+
+            var reference2 = new StepReferenceBuilder("The field value", StepType.Given, StepType.Given, 1, 1)
+                                                    .Text("The").Text("field").Text("value").Built;
+            reference2.FreezeTokens();
+
+            linker.BindSingleStep(reference2).Should().BeTrue();
+
+            reference2.Binding!.Definition.Should().BeSameAs(interactionStepDef2);
+        }
+
+        [Fact]
         public void TableProvidedButNotSupportedGivesWarning()
         {
             var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);

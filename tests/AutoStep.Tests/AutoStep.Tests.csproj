@@ -6,14 +6,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Language\FullFiles\FullInteractionsFile.txt" />
-    <None Remove="Language\FullFiles\SingleScenarioSimple.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Language\FullFiles\SingleScenarioSimple.txt" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.0" />
@@ -38,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Language\FullFiles\SingleScenarioSimple.txt" />
     <Resource Include="Language\FullFiles\FullInteractionsFile.txt" />
   </ItemGroup>
 
