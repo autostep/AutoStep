@@ -94,6 +94,15 @@ namespace AutoStep.Elements.Interaction
         }
 
         /// <summary>
+        /// Gets a step definition signature for the element that only includes the declaration body.
+        /// </summary>
+        /// <returns>The signature object.</returns>
+        internal StepDeclarationSignature GetDeclarationOnlySignature()
+        {
+            return new StepDeclarationSignature(Type, Declaration!);
+        }
+
+        /// <summary>
         /// Checks whether this element matches the same set of components as the other element.
         /// </summary>
         /// <param name="otherElement">The other element.</param>

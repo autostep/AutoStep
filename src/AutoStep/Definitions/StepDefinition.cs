@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoStep.Elements;
+using AutoStep.Elements.Interaction;
 using AutoStep.Elements.Test;
 using AutoStep.Execution;
 using AutoStep.Execution.Contexts;
@@ -71,7 +72,7 @@ namespace AutoStep.Definitions
         /// <returns>The signature.</returns>
         public virtual object GetSignature()
         {
-            return (Type, Declaration);
+            return new StepDeclarationSignature(Type, Declaration);
         }
 
         /// <summary>

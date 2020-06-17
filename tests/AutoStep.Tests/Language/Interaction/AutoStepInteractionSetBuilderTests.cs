@@ -224,7 +224,7 @@ namespace AutoStep.Tests.Language.Interaction
         }
 
         [Fact]
-        public void CanDifferentiateStepsByComponentOnly()
+        public void MoreComplexTraitCanOverrideStepForComponent()
         {
             var setBuilder = new InteractionSetBuilder(new DefaultCallChainValidator());
 
@@ -302,7 +302,7 @@ namespace AutoStep.Tests.Language.Interaction
 
             // Check that the second step only matches field.
             stepDefs[1].Should().BeOfType<InteractionStepDefinition>();
-            stepParts = stepDefs[0].Definition.Should().BeOfType<InteractionStepDefinitionElement>()
+            stepParts = stepDefs[1].Definition.Should().BeOfType<InteractionStepDefinitionElement>()
                                                        .Subject.Parts.OfType<PlaceholderMatchPart>();
 
             // Check that the component matches what we expect.

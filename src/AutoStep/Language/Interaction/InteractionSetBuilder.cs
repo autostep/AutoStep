@@ -235,6 +235,14 @@ namespace AutoStep.Language.Interaction
 
             if (currentData.Traits is object && currentData.Traits.Any())
             {
+                // Need a set of trait steps that we want to consider registering this component with.
+                List<InteractionStepDefinitionElement?>? consideringTraitSteps = null;
+
+                if (isConcreteComponent)
+                {
+                    consideringTraitSteps = new List<InteractionStepDefinitionElement?>();
+                }
+
                 // Search the trait graph for all traits that match this component (simplest first).
                 // We merge in the state of each trait into the final component.
                 traits.SearchTraits(currentData.Traits.Select(x => x.Name), finalMethodTable, (ctxt, trait) =>
@@ -247,16 +255,14 @@ namespace AutoStep.Language.Interaction
 
                     if (isConcreteComponent)
                     {
-                        foreach (var traitStep in trait.Steps)
-                        {
-                            // Add to the set of all bound steps.
-                            allSteps.Add(traitStep);
-
-                            // Tell the trait step to include the component name for the $component$ placeholder.
-                            traitStep.AddComponentMatch(currentData.Name!);
-                        }
+                        consideringTraitSteps!.AddRange(trait.Steps);
                     }
                 });
+
+                if (isConcreteComponent)
+                {
+                    ApplyComponentToStepCandidates(currentData, allSteps, consideringTraitSteps!);
+                }
             }
 
             if (currentData.Methods is object)
@@ -314,6 +320,51 @@ namespace AutoStep.Language.Interaction
             }
 
             currentData.FinalMethodTable = finalMethodTable;
+        }
+
+        /// <summary>
+        /// For a given set of steps that came from traits, register the component as being applicable to each step.
+        /// Consider inheritance of steps, where a more complex trait that declares step can override a simpler trait's declaration of the same step.
+        /// </summary>
+        private static void ApplyComponentToStepCandidates(ComponentResolutionData currentData, HashSet<InteractionStepDefinitionElement> allSteps, List<InteractionStepDefinitionElement?> candidateTraitSteps)
+        {
+            // Walk backwards through the set of considered trait steps (most complex first).
+            // For each one, we walk through the remainder of the traits, and if they have the same declaration signature, then we remove them.
+            for (var currentPos = candidateTraitSteps.Count - 1; currentPos >= 0; currentPos--)
+            {
+                var item = candidateTraitSteps[currentPos];
+
+                // This item has already been cleared by an earlier, more complex step.
+                if (item is null)
+                {
+                    continue;
+                }
+
+                var declarationSignature = item.GetDeclarationOnlySignature();
+
+                allSteps.Add(item);
+
+                // Tell the trait step to include the component name for the $component$ placeholder.
+                item.AddComponentMatch(currentData.Name!);
+
+                // Now, continue down the set of steps for the component; we will blank out
+                // steps with the same declaration text from a less complex trait.
+                for (var nestedCurrentPos = currentPos - 1; nestedCurrentPos >= 0; nestedCurrentPos--)
+                {
+                    var nestedSearchItem = candidateTraitSteps[nestedCurrentPos];
+
+                    if (nestedSearchItem is null)
+                    {
+                        continue;
+                    }
+
+                    if (nestedSearchItem.GetDeclarationOnlySignature() == declarationSignature)
+                    {
+                        // Found a match, null it out.
+                        candidateTraitSteps[nestedCurrentPos] = null;
+                    }
+                }
+            }
         }
 
         private void ValidateTrait(TraitDefinitionElement trait, MethodTable methodTable, InteractionConstantSet constants, List<LanguageOperationMessage> messages)
