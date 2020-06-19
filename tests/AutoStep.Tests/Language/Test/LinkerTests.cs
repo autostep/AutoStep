@@ -130,6 +130,44 @@ namespace AutoStep.Tests.Language.Test
         }
 
         [Fact]
+        public void StepWithNoBindingTypeGivesNoBindingResults()
+        {
+            var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);
+
+            var linker = new Linker(compiler);
+
+            var def = new TestDef(StepType.Given, "I have done something");
+
+            linker.AddStepDefinitionSource(new TestStepDefinitionSource(def));
+
+            def.Definition.Should().NotBeNull();
+
+            // Built a file and check it links.
+            var fileBuilder = new FileBuilder();
+            fileBuilder.Feature("My Feature", 1, 1, feat => feat
+                .Scenario("My Scenario", 1, 1, scen => scen
+                    .And("I have done something", null, 1, 1, step => step
+                        .Text("I")
+                        .Text("have")
+                        .Text("done")
+                        .Text("something")
+                    )
+                ));
+
+            var file = fileBuilder.Built!;
+
+            var linkResult = linker.Link(file);
+
+            linkResult.Success.Should().BeFalse();
+
+            linkResult.Messages.Should().BeEquivalentTo(new[]
+            {
+                new LanguageOperationMessage(null, CompilerMessageLevel.Error, CompilerMessageCode.LinkerNoMatchingStepDefinition,
+                                    "No step definitions could be found that match this step.", 1, 1, 1, 25)
+            });
+        }
+
+        [Fact]
         public void CanRemoveDefinitionSource()
         {
             var compiler = new TestCompiler(TestCompilerOptions.EnableDiagnostics);

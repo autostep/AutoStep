@@ -102,25 +102,23 @@ namespace AutoStep.Language.Test.Matching
                 throw new ArgumentNullException(nameof(stepReference));
             }
 
-            if (!stepReference.BindingType.HasValue)
-            {
-                throw new ArgumentException(MatchingTreeMessages.StepReferenceMustHaveKnownBindingType, nameof(stepReference));
-            }
-
             var list = new LinkedList<MatchResult>();
             partsMatched = 0;
 
-            var root = stepReference.BindingType.Value switch
+            if (stepReference.BindingType.HasValue)
             {
-                StepType.Given => rootGivenNode,
-                StepType.When => rootWhenNode,
-                StepType.Then => rootThenNode,
-                _ => throw new ArgumentException(MatchingTreeMessages.InvalidStepReferenceBindingType, nameof(stepReference))
-            };
+                var root = stepReference.BindingType.Value switch
+                {
+                    StepType.Given => rootGivenNode,
+                    StepType.When => rootWhenNode,
+                    StepType.Then => rootThenNode,
+                    _ => throw new ArgumentException(MatchingTreeMessages.InvalidStepReferenceBindingType, nameof(stepReference))
+                };
 
-            stepReference.TokenSpan.ToArray();
+                stepReference.TokenSpan.ToArray();
 
-            root.SearchRoot(list, stepReference.RawText!, stepReference.TokenSpan, exactOnly, ref partsMatched);
+                root.SearchRoot(list, stepReference.RawText!, stepReference.TokenSpan, exactOnly, ref partsMatched);
+            }
 
             return list;
         }
