@@ -25,6 +25,11 @@ namespace AutoStep.Execution.Logging
         }
 
         /// <summary>
+        /// Gets a value indicating whether there are any entries to retrieve.
+        /// </summary>
+        public bool AnyEntries => backingSet.Count > nextPosition;
+
+        /// <summary>
         /// Attempt to retrieve the next log entry in the sequence.
         /// </summary>
         /// <param name="logEntry">The next log entry.</param>
